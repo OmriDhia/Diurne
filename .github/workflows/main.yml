@@ -29,7 +29,7 @@ jobs:
 
             # Copy files
             sudo cp -a diurne_vuejs/. /var/www/html/diurne_vuejs
-            sudo rm -rf /var/www/html/diurne_vuejs/diurne_vuejs
+            #sudo rm -rf /var/www/html/diurne_vuejs/diurne_vuejs
             # Set ownership and permissions
             sudo chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
 
