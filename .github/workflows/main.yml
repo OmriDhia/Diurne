@@ -1,0 +1,39 @@
+name: diurne_api_dev
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy_job:
+    runs-on: ubuntu-latest
+    name: deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DIURNE_HOST }}
+          username: ${{ secrets.DIURNE_USERNAME }}
+          password: ${{ secrets.DIURNE_PASSWORD }}
+          port: 22
+          script: |
+            cd /var/www/html/diurne_vuejs
+
+            # Clone or pull the repository
+            sudo git clone https://sayari.slim:${{ secrets.DIURNEGIT__PASSWORD }}@github.com/slimsayari/diurne_vuejs.git
+
+            # Copy files
+            sudo cp -a diurne_vuejs/. /var/www/html/diurne_vuejs
+            sudo rm -rf /var/www/html/diurne_vuejs/diurne_vuejs
+            # Set ownership and permissions
+            sudo chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
+
+            #build assets
+            npm install
+            npm run build  
+            
