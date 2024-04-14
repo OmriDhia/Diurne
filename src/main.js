@@ -67,7 +67,8 @@ window.$appSetting.init();
 
 import userService from "./composables/user-service";
 app.config.globalProperties.$hasPermission = (permission) =>{
-    const permissions = userService.getUserInfo().permissions;
+    const userInfo = userService.getUserInfo();
+    const permissions = userInfo ? userInfo.permissions : [];
     if(permissions.indexOf(permission) > -1){
         return true;
     }

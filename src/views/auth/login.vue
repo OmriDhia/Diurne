@@ -55,38 +55,29 @@
 import "/src/assets/sass/authentication/auth.scss";
 import "/src/assets/sass/font-icons/fontawesome/css/regular.css";
 import "/src/assets/sass/font-icons/fontawesome/css/fontawesome.css";
+import btnLoadIcon from "../../components/common/svg/btn-load-icon.vue";
+import DPassword from "../../components/base/d-password.vue";
+import userService from "../../composables/user-service";
+import { TOKEN_STORAGE_NAME } from "../../composables/constants";
+import { ref } from 'vue';
+import { useStore } from 'vuex';
 
 import { useMeta } from "/src/composables/use-meta";
 useMeta({ title: "Login" });
-</script>
 
-<script>
-import store from "../../store";
-import userService from "../../composables/user-service";
-import { TOKEN_STORAGE_NAME } from "../../composables/constants";
-import btnLoadIcon from "../../components/common/svg/btn-load-icon.vue";
-import DPassword from "../../components/base/d-password.vue";
+const store = useStore();
 
-export default {
-    components:{
-        btnLoadIcon,
-        DPassword
-    },
-    data(){
-        return {
-            email: null,
-            password: null,
-            errorMessage: null,
-            loginLoad: false
-        }
-    },
-  methods: {
-    async login() {
+const email = ref(null);
+const password = ref(null);
+const errorMessage = ref(null);
+const loginLoad = ref(false);
+
+const login = async  () => {
       try {
-        this.loginLoad = true;
+        loginLoad.value = true;
         const userData = await userService.doLogin({
-          email: this.email,
-          password: this.password
+          email: email.value,
+          password: password.value
         });
 
         localStorage.setItem(TOKEN_STORAGE_NAME,userData.token);
@@ -97,10 +88,8 @@ export default {
 
         window.location.href = '/home';
       } catch (error) {
-        this.loginLoad = false;
-        this.errorMessage = error.message;
+        loginLoad.value = false;
+        errorMessage.value = error.message;
       }
     }
-  } 
-}
 </script>

@@ -2,7 +2,7 @@
     <div class="form full-form auth-cover">
         <div class="form-container">
             <div class="form-form">
-                <div class="form-form-wrap">
+                <div class="form-form-wrap bg-grey">
                     <div class="form-container">
                         <div class="form-content">
                             <h1 class="">{{ $t('Réinitialisation de mot de passe') }}</h1>
@@ -44,22 +44,20 @@
     </div>
 </template>
 
-<script setup>
-import "/src/assets/sass/authentication/auth.scss";
-
-import { useMeta } from "/src/composables/use-meta";
-useMeta({ title: "Register Cover" });
-</script>
-
 <script>
 import userService from "../../composables/user-service";
 import btnLoadIcon from "../../components/common/svg/btn-load-icon.vue";
 import DPassword from "../../components/base/d-password.vue";
+import "/src/assets/sass/authentication/auth.scss";
+import { useMeta } from "/src/composables/use-meta";
 
 export default {
     components:{
         btnLoadIcon,
         DPassword
+    },
+    setup(){
+        useMeta({ title: "Register Cover" });
     },
     data(){
         return {

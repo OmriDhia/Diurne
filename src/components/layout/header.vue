@@ -11,7 +11,7 @@
                 </ul>
                 <div class="navbar-item flex-row ms-md-auto">
                     <div style="color:white;font-size: 14px;">
-                        Bienvenu <strong> {{ userInfo.lastname }} </strong>
+                        Bienvenu <strong> {{ userInfo ? userInfo.lastname : '' }} </strong>
                     </div>
                     <div class="dropdown nav-item user-profile-dropdown btn-group">
                         <a href="javascript:void(0);" id="ddluser" data-bs-toggle="dropdown" aria-expanded="false"
