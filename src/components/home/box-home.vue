@@ -1,8 +1,8 @@
 <template>
     <div class="panel-body">
-        <div class="card component-card-home">
+        <div class="card component-card-home" :style="{ backgroundColor: props.color }">
             <div class="card-body">
-                <empty-picture></empty-picture>
+                <img :src="'/src/assets/images/home/' + props.image" alt="">
                 <h5 class="card-user_name text-uppercase pt-3">{{ $t(props.title) }}</h5>
             </div>
         </div>
@@ -18,6 +18,14 @@ const props = defineProps({
     },
     href: {
         type: String
+    },
+    color:{
+        type: String,
+        default: '#00000029'
+    },
+    image:{
+        type: String,
+        default: 'empty.png'
     }
 });
 </script>

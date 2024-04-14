@@ -4,8 +4,8 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-4 me-auto mt-5 text-md-start text-center">
-                        <a href="index.html" class="ms-md-5">
-                            <img alt="image-404" src="/src/assets/images/logo2.svg" class="theme-logo" />
+                        <a href="/home" class="ms-md-5">
+                            <img alt="image-404" src="/src/assets/images/logo/DIURNE.png" class="theme-logo" />
                         </a>
                     </div>
                 </div>
@@ -13,9 +13,9 @@
             <div class="container-fluid error-content">
                 <div class="">
                     <h1 class="error-number">404</h1>
-                    <p class="mini-text">Ooops!</p>
-                    <p class="error-text mb-4 mt-1">The page you requested was not found!</p>
-                    <a href="/" class="btn btn-primary mt-5">Go Back</a>
+                    <p class="mini-text">Oups!</p>
+                    <p class="error-text mb-4 mt-1">{{ $t("La page que vous avez demandée n'a pas été trouvée!") }}</p>
+                    <a href="/" class="btn btn-primary mt-5">{{ $t('Retourner') }}</a>
                 </div>
             </div>
         </div>

@@ -4,32 +4,35 @@
     </div>
 </template>
 <script setup>
-    import { computed } from "vue";
 
-    import "./assets/sass/app.scss";
+import "./assets/sass/app.scss";
 
-    import { useMeta } from "./composables/use-meta";
-    import { useStore } from "vuex";
+import { useMeta } from "./composables/use-meta";
 
-    useMeta({ title: "Diurne" });
-
-    const store = useStore();
-
-    const layout = computed(() => {
-        return store.getters.layout;
-    });
+useMeta({ title: "Diurne" });
 </script>
 <script>
-    // layouts
-    import appLayout from "./layouts/app-layout.vue";
-    import authLayout from "./layouts/auth-layout.vue";
-    import homeLayout from "./layouts/home-layout.vue";
+// layouts
+import appLayout from "./layouts/app-layout.vue";
+import authLayout from "./layouts/auth-layout.vue";
+import homeLayout from "./layouts/home-layout.vue";
+import store from "./store";
 
-    export default {
-        components: {
-            app: appLayout,
-            auth: authLayout,
-            home: homeLayout,
-        },
-    };
+export default {
+    components: {
+        app: appLayout,
+        auth: authLayout,
+        home: homeLayout,
+    },
+    computed: {
+        layout: {
+            get() {
+                return store.getters.layout;
+            },
+            set(layout) {
+                store.commit('setLayout', layout)
+            }
+        }
+    }
+}
 </script>

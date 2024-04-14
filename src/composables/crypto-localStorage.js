@@ -2,7 +2,6 @@ import CryptoJS from 'crypto-js';
 import { CRYPTO_KEY } from './constants';
 
 export default {
-  methods: {
     encryptData(data) {
       const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(data), CRYPTO_KEY).toString();
       return encryptedData;
@@ -23,5 +22,4 @@ export default {
       }
       return null;
     }
-  }
 };

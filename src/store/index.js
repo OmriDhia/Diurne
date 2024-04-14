@@ -5,7 +5,6 @@ import i18n from "../i18n";
 
 export default new createStore({
     state: {
-        layout: "app",
         is_show_sidebar: true,
         is_show_search: false,
         is_dark_mode: false,
@@ -19,9 +18,6 @@ export default new createStore({
         ],
     },
     mutations: {
-        setLayout(state, payload) {
-            state.layout = payload;
-        },
         toggleSideBar(state, value) {
             state.is_show_sidebar = value;
         },
@@ -79,9 +75,7 @@ export default new createStore({
         },
     },
     getters: {
-        layout(state) {
-            return state.layout;
-        },
+       
     },
     modules: {
         common: commonModule,

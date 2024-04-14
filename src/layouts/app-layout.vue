@@ -16,8 +16,8 @@
             <!--  END SIDEBAR  -->
 
             <!--  BEGIN CONTENT AREA  -->
-            <div id="content" class="main-content">
-                <router-view />
+            <div id="content" class="main-content  mt-5">
+                <router-view></router-view>
 
                 <!-- BEGIN FOOTER -->
                 <Footer></Footer>

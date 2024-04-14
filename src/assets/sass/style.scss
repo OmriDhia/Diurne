@@ -8,7 +8,9 @@
 .cursor-move {
     cursor: move;
 }
-
+.cursor-pointer {
+    cursor: pointer !important;
+}
 .widget .widget-header {
     padding: 20px;
 }
@@ -181,11 +183,19 @@
 .header-container .navbar .navbar-item .dropdown-menu a.dropdown-item {
     padding: 8px 16px !important;
     font-size: 13px;
+    color: white;
+    text-transform: uppercase;
+    border-bottom: 1px solid white;
 }
 
 .header-container .navbar .navbar-item .dropdown-menu a.dropdown-item:hover {
-    color: #4361ee !important;
-    background: rgb(248, 248, 248) !important;
+    color: white !important;// #4361ee !important;
+    background: transparent !important;// rgb(248, 248, 248) !important;
+}
+
+.header-container .navbar .navbar-item .dropdown-menu li:last-child a.dropdown-item {
+    border: none !important;
+
 }
 
 .header-container .navbar .navbar-item .dropdown-menu .dropdown-divider {
@@ -244,7 +254,7 @@
     z-index: 899;
     box-shadow: none;
     padding: 10px;
-    padding: 0.35rem 0;
+    padding: 0px;
     // transition: top 0.3s ease-in-out 0s, opacity 0.3s ease-in-out 0s, visibility 0.3s ease-in-out 0s;
     opacity: 0;
     visibility: hidden;

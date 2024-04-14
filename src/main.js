@@ -22,6 +22,19 @@ const head = createHead();
 //Sweetalert
 import Swal from "sweetalert2";
 window.Swal = Swal;
+window.showMessage = (msg = "", type = "success") => {
+    const toast = window.Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 4000,
+    });
+    toast.fire({
+        icon: type,
+        title: msg,
+        padding: "10px 20px",
+    });
+};
 
 // nouislider - later remove and add to page due to not working in page
 import VueNouislider from "vue3-nouislider";
@@ -51,6 +64,15 @@ import "vue3-form-wizard/dist/style.css";
 import appSetting from "./app-setting";
 window.$appSetting = appSetting;
 window.$appSetting.init();
+
+import userService from "./composables/user-service";
+app.config.globalProperties.$hasPermission = (permission) =>{
+    const permissions = userService.getUserInfo().permissions;
+    if(permissions.indexOf(permission) > -1){
+        return true;
+    }
+    return false;
+}
 
 //markdown editor
 import VueEasymde from 'vue3-easymde';

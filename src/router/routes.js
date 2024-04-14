@@ -2,7 +2,7 @@ import Home from '../views/index.vue';
 
 export const routes = [
     {
-        path: '/login',
+        path: '/',
         name: 'login',
         component: () => import('../views/auth/login.vue'),
         meta: { layout: 'auth' },
@@ -20,7 +20,7 @@ export const routes = [
         meta: { layout: 'auth' },
     },
     {
-        path: '/pass-reset',
+        path: '/pass-reset/:token',
         name: 'pass-reset',
         component: () => import('../views/auth/pass_reset.vue'),
         meta: { layout: 'auth' },
@@ -34,19 +34,41 @@ export const routes = [
             requiresAuth: true
         },
     },
+    {
+        path: '/404',
+        name: 'error404',
+        component: () => import('../views/pages/error404.vue'),
+        meta: { 
+            layout: 'auth'
+        },
+    },
 
     //dashboard
     { path: '/dashboard', name: 'Home', component: Home },
 
     //users
     {
-        path: '/users/profile',
-        name: 'profile',
-        component: () => import('../views/users/profile.vue'),
-    },
-    {
-        path: '/users/account-setting',
-        name: 'account-setting',
-        component: () => import('../views/users/account_setting.vue'),
+        path: '/users',
+        name: 'users',
+        children: [
+            {
+                path: '', 
+                name: 'users',
+                component: () => import('../views/users/users.vue'),
+            },
+            {
+                path: 'account-setting/:id?',
+                name: 'account-setting',
+                component: () => import('../views/users/account_setting.vue'),
+            },
+            {
+                path: 'profile',
+                name: 'profile',
+                component: () => import('../views/users/profile.vue'),
+            }
+        ],
+        meta: { 
+            requiresAuth: true
+        },
     },
 ];

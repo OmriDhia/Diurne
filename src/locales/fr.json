@@ -19,5 +19,7 @@
     "starter_kit": "Kit de démarrage",
     "documentation": "Documentation",
     "ui_kit": "Trousse d'interface utilisateur",
-    "more": "Suite"
+    "more": "Suite",
+    "Invalid token.": "Jeton invalide.",
+    "Sign Out" : "Déconnexion"
 }

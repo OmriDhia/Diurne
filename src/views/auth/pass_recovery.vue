@@ -5,53 +5,85 @@
                 <div class="form-form-wrap">
                     <div class="form-container">
                         <div class="form-content">
-                            <h1 class="">Password Recovery</h1>
-                            <p class="signup-link">Enter your email and instructions will sent to you!</p>
+                            <h1 class="">{{ $t('Récupération de mot de passe') }}</h1>
+                            <p class="signup-link">{{ $t('Entrez votre email et les instructions vous seront envoyées
+                                !') }}</p>
+                            <div v-if="errorMessage"
+                                class="alert alert-light-danger alert-dismissible border-0 mb-2 mt-2" role="alert">
+                                <strong>{{ errorMessage }}</strong>
+                            </div>
+                            <div v-if="successMessage"
+                                class="alert alert-light-success alert-dismissible border-0 mb-2 mt-2" role="alert">
+                                <strong>{{ successMessage }}</strong>
+                            </div>
                             <form class="text-start">
                                 <div class="form">
                                     <div id="email-field" class="field-wrapper input">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            class="feather feather-at-sign"
-                                        >
-                                            <circle cx="12" cy="12" r="4"></circle>
-                                            <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path>
-                                        </svg>
-                                        <input type="email" class="form-control" placeholder="Email" />
+                                        <input type="email" class="form-control" placeholder="Email" v-model="email" />
                                     </div>
-                                    <div class="d-sm-flex justify-content-between">
+                                    <div class="d-sm-flex justify-content-end">
                                         <div class="field-wrapper">
-                                            <button type="submit" class="btn btn-primary">Reset</button>
+                                            <button @click.prevent="doSubmit" class="btn btn-primary"
+                                                :disabled="loginLoad">
+                                                <btn-load-icon v-if="loginLoad"></btn-load-icon>
+                                                {{ $t('Réinitialiser') }}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </form>
-                            <p class="terms-conditions">
-                                © 2020 All Rights Reserved. <router-link to="/">CORK</router-link> is a product of Arrangic Solutions LLP. <a href="javascript:void(0);">Cookie Preferences</a>, <a href="javascript:void(0);">Privacy</a>, and
-                                <a href="javascript:void(0);">Terms</a>.
-                            </p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="form-image">
-                <div class="l-image"></div>
+                <div class="l-image">
+                    <img src="/src/assets/images/logo/DIURNE.png">
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-    import "/src/assets/sass/authentication/auth.scss";
+import "/src/assets/sass/authentication/auth.scss";
 
-    import { useMeta } from "/src/composables/use-meta";
-    useMeta({ title: "Password Recovery Cover" });
+import { useMeta } from "/src/composables/use-meta";
+
+useMeta({ title: "Password Recovery" });
+
+</script>
+<script>
+import userService from "../../composables/user-service";
+import btnLoadIcon from "../../components/common/svg/btn-load-icon.vue";
+
+export default {
+    components: {
+        btnLoadIcon
+    },
+    data() {
+        return {
+            email: null,
+            password: null,
+            errorMessage: null,
+            loginLoad: false,
+            successMessage: null,
+        }
+    },
+    methods: {
+        async doSubmit() {
+            this.errorMessage = null;
+            this.successMessage = null;
+            try {
+                this.loginLoad = true;
+                const res = await userService.passRecover({ email: this.email });
+                this.successMessage = 'Un lien de réinitialisation de mot de passe a été envoyé à votre adresse e-mail avec succès.';
+            } catch (error) {
+                this.errorMessage = error.message;
+            }
+
+            this.loginLoad = false;
+        }
+    }
+}
 </script>

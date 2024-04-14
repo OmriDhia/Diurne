@@ -7,7 +7,7 @@
         <!--  BEGIN MAIN CONTAINER  -->
         <div class="main-container" id="container">
             <div class="col-8 m-auto mt-home">
-                <router-view />
+                <router-view></router-view>
             </div>
         </div>
     </div>

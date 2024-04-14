@@ -1,8 +1,8 @@
 <template>
-    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="391" height="109"
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="34"
         viewBox="0 0 391 109">
         <defs>
-            <filter id="a" x="0" y="0" width="391" height="109" filterUnits="userSpaceOnUse">
+            <filter id="a" x="0" y="0" height="34" filterUnits="userSpaceOnUse">
                 <feOffset dy="3" input="SourceAlpha" />
                 <feGaussianBlur stdDeviation="3" result="b" />
                 <feFlood flood-opacity="0.161" />

@@ -9,21 +9,20 @@
   width: 18rem;
   margin: 0 auto;
   box-shadow: 4px 6px 10px -3px $m-color_4;
+  cursor: pointer;
 
   .card-body {
     padding: 22px 20px;
     text-align: center;
 
     img {
-      width: 85px;
-      height: 85px;
-      margin-bottom: 25px;
-      border-radius: 50%;
+      height: 40px;
+      margin-bottom: 10px;
     }
 
     h5.card-user_name {
       font-size: 15px;
-      color: #000000;
+      color: #ffffff;
       letter-spacing: 1px;
       font-weight: 600;
     }

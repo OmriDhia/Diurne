@@ -29,7 +29,6 @@
                 align-self: center;
 
                 img {
-                    width: 34px;
                     height: 34px;
                     border-radius: 6px;
                 }
@@ -118,7 +117,10 @@
                 background: #fff;
 
                 &.show {
-                    top: 45px !important;
+                    top: 41px !important;
+                    background-color: #4260EB;
+                    border: none;
+                    border-radius: initial;
                 }
             }
         }
@@ -596,8 +598,10 @@
 
 .navbar .navbar-item .nav-item {
     &.user-profile-dropdown {
-        margin: 0 20px 0 16px;
-
+        margin: 0 244px 0 16px;
+        a.sidebarCollapse{
+            color: white;
+        }
         .nav-link.user {
             padding: 0;
             position: relative;
@@ -637,7 +641,8 @@
                 }
 
                 &:hover a {
-                    color: #4361ee;
+                    //color: #4361ee;
+                    cursor: pointer;
                 }
 
                 &.active,
@@ -646,7 +651,7 @@
                 }
 
                 &:not(:last-child) {
-                    border-bottom: 1px solid #ebedf2;
+                    //border-bottom: 1px solid #ebedf2;
                 }
 
                 svg {
@@ -837,11 +842,11 @@
                 padding: 8px 15px;
                 font-size: 13px;
                 font-weight: 500;
-                color: #3b3f5c;
+                color: white;
 
                 &:hover {
-                    background-color: #f8f8f8;
-                    color: #2196f3;
+                    //background-color: #f8f8f8;
+                    //color: #2196f3;
                 }
             }
         }

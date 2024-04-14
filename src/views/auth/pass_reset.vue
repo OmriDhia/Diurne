@@ -5,105 +5,87 @@
                 <div class="form-form-wrap">
                     <div class="form-container">
                         <div class="form-content">
-                            <h1 class="">
-                                Get started with a <br />
-                                free account
-                            </h1>
-                            <p class="signup-link">Already have an account? <router-link to="/auth/login">Log in</router-link></p>
+                            <h1 class="">{{ $t('Réinitialisation de mot de passe') }}</h1>
+                            <p class="signup-link">{{ $t('Veuillez saisir votre nouveau mot de passe !') }}</p>
+                            <div v-if="errorMessage" class="alert alert-light-danger alert-dismissible border-0 mb-2 mt-2" role="alert">
+                                <strong>{{ $t(errorMessage) }}</strong>
+                            </div>
+                            <div v-if="successMessage" class="alert alert-light-success alert-dismissible border-0 mb-2 mt-2" role="alert">
+                                <strong>{{ successMessage }}</strong>
+                            </div>
                             <form class="text-start">
                                 <div class="form">
-                                    <div id="username-field" class="field-wrapper input">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            class="feather feather-user"
-                                        >
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="12" cy="7" r="4"></circle>
-                                        </svg>
-                                        <input type="text" class="form-control" placeholder="Username" />
-                                    </div>
-                                    <div id="email-field" class="field-wrapper input">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            class="feather feather-at-sign"
-                                        >
-                                            <circle cx="12" cy="12" r="4"></circle>
-                                            <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path>
-                                        </svg>
-                                        <input type="email" class="form-control" placeholder="Email" />
-                                    </div>
                                     <div id="password-field" class="field-wrapper input mb-2">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            class="feather feather-lock"
-                                        >
-                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                        </svg>
-                                        <input type="password" class="form-control" placeholder="Password" />
+                                        <d-password v-model="password" ></d-password>
                                     </div>
-                                    <div class="field-wrapper terms_condition">
-                                        <div class="checkbox-outline-primary custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" value="true" id="chkTerms" />
-                                            <label class="custom-control-label" for="chkTerms">I agree to the <a href="javascript:void(0);"> terms and conditions </a></label>
-                                        </div>
+                                    <div id="re-password-field" class="field-wrapper input mb-2">
+                                        <d-password :id="'rePassword'" v-model="rePassword" :placeholder="'Re-Password'"></d-password>
                                     </div>
-                                    <div class="d-sm-flex justify-content-between">
-                                        <div class="field-wrapper toggle-pass d-flex align-items-center">
-                                            <p class="d-inline-block">Show Password</p>
-                                            <label class="switch s-primary mx-2">
-                                                <input type="checkbox" class="custom-control-input" checked="" />
-                                                <span class="slider round"></span>
-                                            </label>
-                                        </div>
+                                    <div class="d-sm-flex justify-content-end">
                                         <div class="field-wrapper">
-                                            <button type="submit" class="btn btn-primary">Get Started!</button>
+                                            <button @click.prevent="doSubmit" class="btn btn-primary" :disabled="loginLoad || rePassword !== password">
+                                                <btn-load-icon v-if="loginLoad"></btn-load-icon>
+                                                {{ $t('Valider') }}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </form>
-                            <p class="terms-conditions">
-                                © 2020 All Rights Reserved. <router-link to="/">CORK</router-link> is a product of Arrangic Solutions LLP. <a href="javascript:void(0);">Cookie Preferences</a>, <a href="javascript:void(0);">Privacy</a>, and
-                                <a href="javascript:void(0);">Terms</a>.
-                            </p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="form-image">
-                <div class="l-image"></div>
+                <div class="l-image">
+                    <img src="/src/assets/images/logo/DIURNE.png">
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-    import "/src/assets/sass/authentication/auth.scss";
+import "/src/assets/sass/authentication/auth.scss";
 
-    import { useMeta } from "/src/composables/use-meta";
-    useMeta({ title: "Register Cover" });
+import { useMeta } from "/src/composables/use-meta";
+useMeta({ title: "Register Cover" });
 </script>
+
+<script>
+import userService from "../../composables/user-service";
+import btnLoadIcon from "../../components/common/svg/btn-load-icon.vue";
+import DPassword from "../../components/base/d-password.vue";
+
+export default {
+    components:{
+        btnLoadIcon,
+        DPassword
+    },
+    data(){
+        return {
+            token: this.$route.params.token,
+            rePassword: null,
+            password: null,
+            errorMessage: null,
+            loginLoad: false,
+            successMessage : null,
+        }
+    },
+  methods: {
+    async doSubmit() {
+        this.errorMessage = null;
+        this.successMessage = null;
+      try { 
+        this.loginLoad = true;
+        const res = await userService.passReset(this.token, {password: this.password});
+        this.successMessage = 'Votre mot de passe a été réinitialisé avec succès.';
+      } catch (error) {
+        this.errorMessage = error.message;
+      }
+
+      this.loginLoad = false;
+    }
+  } 
+}
+</script>
+
