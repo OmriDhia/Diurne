@@ -6,8 +6,7 @@
                     <div class="form-container">
                         <div class="form-content">
                             <h1 class="">{{ $t('Récupération de mot de passe') }}</h1>
-                            <p class="signup-link">{{ $t('Entrez votre email et les instructions vous seront envoyées
-                                !') }}</p>
+                            <p class="signup-link">{{ $t('Entrez votre email et les instructions vous seront envoyées!') }}</p>
                             <div v-if="errorMessage"
                                 class="alert alert-light-danger alert-dismissible border-0 mb-2 mt-2" role="alert">
                                 <strong>{{ errorMessage }}</strong>
