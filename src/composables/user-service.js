@@ -78,5 +78,9 @@ export default {
                 throw new Error('Échec de la réinitialisation de mot de passe.');
             }
           }
+    },
+    getUserMenu(){
+        const info = this.getUserInfo();
+        return (info && info.menus) ? info.menus : [];
     }
 };

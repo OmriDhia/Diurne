@@ -11,6 +11,8 @@
 
 <script setup>
 import "../../assets/sass/components/cards/card.scss";
+import emptyPicture from "../common/svg/empty-picture.vue";
+
 const props = defineProps({
     title: {
         default: 'Recherche contacts',
@@ -28,14 +30,4 @@ const props = defineProps({
         default: 'empty.png'
     }
 });
-</script>
-
-<script>
-import emptyPicture from "../common/svg/empty-picture.vue";
-
-export default {
-    components: {
-        emptyPicture
-    }
-};
 </script>

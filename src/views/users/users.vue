@@ -147,7 +147,7 @@ const getFilterParams = () => {
         param += "&filter[firstname]=" + search.firstname
     }
     if (search.profile) {
-        param += "&filter[profile]=" + search.profile
+        param += "&filter[profileId]=" + search.profile
     }
     if (search.lastname) {
         param += "&filter[lastname]=" + search.lastname

@@ -526,4 +526,6 @@ const goToHome = () => {
 }
 
 const userInfo = userService.getUserInfo();
+const userMenu = userService.getUserMenu();
+
 </script>
