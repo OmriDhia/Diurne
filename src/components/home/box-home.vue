@@ -2,7 +2,7 @@
     <div class="panel-body">
         <div class="card component-card-home" :style="{ backgroundColor: props.color }">
             <div class="card-body">
-                <img :src="'/src/assets/images/home/' + props.image" alt="">
+                <img :src="'assets/images/home/' + props.image" alt="">
                 <h5 class="card-user_name text-uppercase pt-3">{{ $t(props.title) }}</h5>
             </div>
         </div>

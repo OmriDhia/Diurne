@@ -5,7 +5,7 @@
             <header class="header navbar navbar-expand-sm">
                 <ul class="navbar-item theme-brand flex-row text-center">
                     <li class="nav-item theme-logo cursor-pointer">
-                        <img @click="goToHome" src="/src/assets/images/logo/DIURNE.png" height="34" class="navbar-logo"
+                        <img @click="goToHome" src="assets/images/logo/DIURNE.png" height="34" class="navbar-logo"
                             alt="logo" />
                     </li>
                 </ul>

@@ -3,7 +3,7 @@
         <div class="form-container">
             <div class="form-image">
                 <div class="l-image">
-                    <img src="/src/assets/images/logo/DIURNE.png">
+                    <img src="assets/images/logo/DIURNE.png">
                 </div>
             </div>
             <div class="form-form">
