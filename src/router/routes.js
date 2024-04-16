@@ -36,8 +36,8 @@ export const routes = [
         path: '/error/:code',
         name: 'error',
         component: () => import('../views/pages/error.vue'),
-        meta: { 
-            layout: 'auth'
+        meta: {
+            requiresAuth: true
         },
     },
     

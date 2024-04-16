@@ -27,7 +27,7 @@
 
                         <ul :id="menu.name" class="collapse submenu list-unstyled" data-bs-parent="#sidebar">
                             <li v-for="child in menu.children" :key="child.id">
-                                <router-link to="/" @click="toggleMobileMenu">
+                                <router-link :to="'/'+ menu.name" @click="toggleMobileMenu">
                                     {{ $t(child.name) }}
                                 </router-link>
                             </li>

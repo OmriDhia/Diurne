@@ -1,6 +1,6 @@
 <template>
     <div class="panel-body">
-        <div class="card component-card-home" :style="{ backgroundColor: props.color }">
+        <div class="card component-card-home" :style="{ backgroundColor: props.color }" @click.prevent="goTo(props.href)">
             <div class="card-body">
                 <img :src="'/assets/images/home/' + props.image" alt="">
                 <h5 class="card-user_name text-uppercase pt-3">{{ $t(props.title) }}</h5>
@@ -30,4 +30,8 @@ const props = defineProps({
         default: 'empty.png'
     }
 });
+
+const goTo = (href) => {
+    location.href = href;
+}
 </script>
