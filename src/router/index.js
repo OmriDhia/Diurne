@@ -17,7 +17,7 @@ router.beforeEach((to, from, next) => {
     NProgress.start();
     if (to.matched.length === 0) {
         // Redirect to the NotFound component
-        next({ path: '/404' });
+        next({ path: '/error/404' });
     }else{
         // affect layout 
         if (to.meta && to.meta.layout) {

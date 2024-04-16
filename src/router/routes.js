@@ -1,5 +1,3 @@
-import Home from '../views/index.vue';
-
 export const routes = [
     {
         path: '/',
@@ -35,17 +33,14 @@ export const routes = [
         },
     },
     {
-        path: '/404',
-        name: 'error404',
-        component: () => import('../views/pages/error404.vue'),
+        path: '/error/:code',
+        name: 'error',
+        component: () => import('../views/pages/error.vue'),
         meta: { 
             layout: 'auth'
         },
     },
-
-    //dashboard
-    { path: '/dashboard', name: 'Home', component: Home },
-
+    
     //users
     {
         path: '/users',
@@ -62,7 +57,12 @@ export const routes = [
                 component: () => import('../views/users/account_setting.vue'),
             },
             {
-                path: 'profile',
+                path: 'profiles',
+                name: 'profiles',
+                component: () => import('../views/users/profiles.vue'),
+            },
+            {
+                path: 'profile/:id',
                 name: 'profile',
                 component: () => import('../views/users/profile.vue'),
             }

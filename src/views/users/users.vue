@@ -1,12 +1,12 @@
 <template>
     <div class="layout-px-spacing mt-5">
-        <d-page-title title="Gestion des utilisateurs" icon="user"></d-page-title>
+        <d-page-title title="Gestion des utilisateurs" icon="users"></d-page-title>
 
         <div class="row layout-top-spacing">
             <div class="col-xl-12 col-lg-12 col-sm-12 layout-spacing">
-                <div class="panel br-6 p-0">
+                <div class="panel br-6 ps-3 p-0">
                     <div class="row layout-top-spacing pb-3 pt-3 ps-4" v-if="$hasPermission('create user')">
-                        <button class="btn btn-primary w-25" @click.prevent="goToNewUser"> Nouveau utilisateur </button>
+                        <button class="btn btn-primary w-auto ps-5 pe-5 btn-lg" @click.prevent="goToNewUser"> Nouveau utilisateur </button>
                     </div>
                     <div class="row layout-top-spacing  align-items-end  mb-5">
                         <div class="col-7">
@@ -58,7 +58,7 @@
                                 <template #firstname="data">
                                     <div class="d-flex justify-content-between">
                                         <strong>{{ data.value.firstname + ' ' + data.value.lastname }}</strong> 
-                                        <router-link :to="'/users/account-setting/' + data.value.id">
+                                        <router-link :to="'/users/account-setting/' + data.value.id"  v-if="$hasPermission('update user')">
                                             <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
                                         </router-link>
                                     

@@ -26,8 +26,8 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right m-0" aria-labelledby="ddluser">
                             <li role="presentation" v-if="$hasPermission('read profile')">
-                                <router-link to="/users/profile" class="dropdown-item">
-                                    Profile
+                                <router-link to="/users/profiles" class="dropdown-item">
+                                    <vue-feather type="user" stroke-width="1" stroke="white"></vue-feather> Profile
                                 </router-link>
                             </li>
                             <!--li role="presentation">
@@ -37,7 +37,7 @@
                             </li-->
                             <li role="presentation" v-if="$hasPermission('read user')">
                                 <router-link to="/users" class="dropdown-item">
-                                    <vue-feather type="user" stroke-width="1" stroke="white"></vue-feather> utilisateur
+                                    <vue-feather type="users" stroke-width="1" stroke="white"></vue-feather> utilisateur
                                 </router-link>
                             </li>
                             <li role="presentation">

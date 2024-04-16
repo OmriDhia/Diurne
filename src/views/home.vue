@@ -2,7 +2,7 @@
     <div class="layout-px-spacing dash_1">
         <div class="row layout-top-spacing">
             <template v-for="menu in menus">
-                <div class="col-4 layout-spacing" v-if="hasMenuPermission(menu.menuId)" :key="menu.menuId">
+                <div class="col-xl-4 col-lg-6 col-sm-12 p-2" v-if="hasMenuPermission(menu.menuId)" :key="menu.menuId">
                     <box-home :image="menu.image" :title="menu.title" :color="menu.color"></box-home>
                 </div>
             </template>

@@ -1,7 +1,7 @@
 <template>
     <div class="layout-px-spacing mt-5">
 
-        <d-page-title title="Gestion des utilisateurs" icon="user"></d-page-title>
+        <d-page-title title="Gestion des utilisateurs" icon="users"></d-page-title>
 
         <div class="account-settings-container layout-top-spacing">
             <div class="account-content">
@@ -9,7 +9,8 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 layout-spacing">
                         <form id="general-info" class="section general-info">
                             <div class="info">
-                                <h6 class="">Nouveau utilisateur</h6>
+                                <d-panel-title
+                                    :title="(id) ? 'Mise à jour utilisateur' : 'Nouveau utilisateur'" link="/users"></d-panel-title>
                                 <div class="row">
                                     <div class="col-7">
                                         <div class="row m-2 mb-4">
@@ -49,7 +50,8 @@
                                             <d-password v-model="userObj.password"></d-password>
                                         </div>
                                         <div class="row m-2 mt-4">
-                                            <button class="btn btn-primary" @click.prevent="save">
+                                            <button class="btn btn-primary w-auto btn-lg ps-5 pe-5"
+                                                @click.prevent="save">
                                                 Enregistrer </button>
                                         </div>
                                     </div>
@@ -64,27 +66,29 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { useRoute } from 'vue-router';
 import dProfile from "../../components/base/d-profile.vue";
 import dPassword from "../../components/base/d-password.vue";
 import "/src/assets/sass/scrollspyNav.scss";
 import "/src/assets/sass/users/account-setting.scss";
 import dPageTitle from '../../components/common/d-page-title.vue';
+import dPanelTitle from '../../components/common/d-panel-title.vue'
 
 import { useMeta } from "/src/composables/use-meta";
 import axiosInstance from "../../config/http";
 import userService from "../../composables/user-service";
+import user from "../../store/modules/user";
+
 useMeta({ title: "Account Setting" });
 
 const route = useRoute();
 const { id } = route.params;
 
-if(id){
-    try{
-        const res = userService.getUserInfoApi(id);
-        console.log(res);
-    }catch{}
+if (id) {
+    onMounted(() => {
+        getcurrentUser();
+    });
 }
 
 const userObj = reactive({
@@ -97,24 +101,44 @@ const userObj = reactive({
 
 const save = async () => {
     try {
-        const res_user = await axiosInstance.post('/api/createUser', {
-            firstname: userObj.firstname,
-            lastname: userObj.lastname,
-            email: userObj.email,
-            password: userObj.password
-        })
+        if (id) {
+            const res_user = await axiosInstance.post(`/api/user/${id}/update`, {
+                firstname: userObj.firstname,
+                lastname: userObj.lastname,
+                email: userObj.email,
+                password: userObj.password
+            })
+        } else {
+            const res_user = await axiosInstance.post('/api/createUser', {
+                firstname: userObj.firstname,
+                lastname: userObj.lastname,
+                email: userObj.email,
+                password: userObj.password
+            })
+        }
+
 
         const res_profile = await axiosInstance.post('/api/AssignProfileToUser', {
             email: userObj.email,
             profileId: parseInt(userObj.profile)
         })
-        
+
         window.showMessage("L'utilisateur a été enregistré avec succès.");
+        location.href = "/users"
     } catch (error) {
-        window.showMessage("Quelque chose s'est mal passé.",'error');
+        window.showMessage("Quelque chose s'est mal passé.", 'error');
     }
 
 };
+
+const getcurrentUser = async () => {
+    try {
+        const res = await userService.getUserInfoApi(id);
+        userObj.firstname = res.firstname;
+        userObj.lastname = res.lastname;
+        userObj.email = res.email;
+    } catch { }
+}
 </script>
 <style>
 .eye-password {
@@ -122,5 +146,9 @@ const save = async () => {
     right: inherit !important;
     margin-top: 10px;
     margin-left: 33%;
+}
+
+.general-info .info h6 {
+    margin: 7px 0px !important;
 }
 </style>
