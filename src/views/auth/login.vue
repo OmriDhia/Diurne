@@ -57,7 +57,7 @@ import "/src/assets/sass/font-icons/fontawesome/css/regular.css";
 import "/src/assets/sass/font-icons/fontawesome/css/fontawesome.css";
 import btnLoadIcon from "../../components/common/svg/btn-load-icon.vue";
 import DPassword from "../../components/base/d-password.vue";
-import userService from "../../composables/user-service";
+import userService from "../../Services/user-service";
 import { TOKEN_STORAGE_NAME } from "../../composables/constants";
 import { ref } from 'vue';
 import { useStore } from 'vuex';

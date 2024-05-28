@@ -16,18 +16,13 @@
                     <div class="dropdown nav-item user-profile-dropdown btn-group">
                         <a href="javascript:void(0);" id="ddluser" data-bs-toggle="dropdown" aria-expanded="false"
                             class="sidebarCollapse" data-placement="bottom">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="feather feather-menu">
-                                <line x1="3" y1="12" x2="21" y2="12"></line>
-                                <line x1="3" y1="6" x2="21" y2="6"></line>
-                                <line x1="3" y1="18" x2="21" y2="18"></line>
-                            </svg>
+                            <vue-feather class="feather feather-menu base-icon" type="menu" stroke-width="2" width="24" height="24" fill="none" stroke-linecap="round" stroke="white"></vue-feather>
+                            <vue-feather class="feather feather-menu hover-icon" type="bar-chart-2" stroke-width="2" width="24" height="24" fill="none" stroke-linecap="round" stroke="white"></vue-feather>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right m-0" aria-labelledby="ddluser">
                             <li role="presentation" v-if="$hasPermission('read profile')">
                                 <router-link to="/users/profiles" class="dropdown-item">
-                                    <vue-feather type="user" stroke-width="1" stroke="white"></vue-feather> Profile
+                                    <vue-feather type="user" fill="none" stroke-width="1" stroke="white"></vue-feather> Profile
                                 </router-link>
                             </li>
                             <!--li role="presentation">
@@ -37,12 +32,12 @@
                             </li-->
                             <li role="presentation" v-if="$hasPermission('read user')">
                                 <router-link to="/users" class="dropdown-item">
-                                    <vue-feather type="users" stroke-width="1" stroke="white"></vue-feather> utilisateur
+                                    <vue-feather type="users" fill="none" stroke-width="1" stroke="white"></vue-feather> utilisateur
                                 </router-link>
                             </li>
                             <li role="presentation">
                                 <a href="javascript:void(0);" class="dropdown-item" @click="logout">
-                                    <vue-feather type="check-circle" stroke-width="1" stroke="white"></vue-feather> {{ $t('Sign Out') }}
+                                    <vue-feather type="check-circle" fill="none" stroke-width="1" stroke="white"></vue-feather> {{ $t('Sign Out') }}
                                 </a>
                             </li>
                         </ul>
@@ -52,7 +47,7 @@
         </div>
         <!--  END NAVBAR  -->
         <!--  BEGIN TOPBAR  -->
-        <div class="topbar-nav header navbar" role="banner">
+        <!--div class="topbar-nav header navbar" role="banner">
             <nav class="topbar">
                 <ul class="list-unstyled menu-categories" id="topAccordion">
                     <li class="menu single-menu">
@@ -484,14 +479,14 @@
                     </li>
                 </ul>
             </nav>
-        </div>
+        </div-->
         <!--  END TOPBAR  -->
     </div>
 </template>
 
 <script setup>
 import { onMounted, ref, reactive } from 'vue';
-import userService from '../../composables/user-service';
+import userService from '../../Services/user-service';
 import VueFeather from 'vue-feather';
 import { useI18n } from 'vue-i18n';
 import { useStore } from 'vuex';

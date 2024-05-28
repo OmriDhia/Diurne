@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_URL } from '../config/config';
 import {TOKEN_STORAGE_NAME} from '../composables/constants';
-import userService from '../composables/user-service';
+import userService from '../Services/user-service';
 
 // Create Axios instance
 const axiosInstance = axios.create({

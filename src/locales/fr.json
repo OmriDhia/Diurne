@@ -81,5 +81,9 @@
     "Profile": "Profil",
     "Quote": "Devis",
     "Treasury": "Trésorerie",
-    "User": "Utilisateur"
+    "User": "Utilisateur",
+    "This value should be of type string.": "Cette valeur doit être de type chaîne de caractères.",
+    "Internal Server Error" : "Erreur interne du serveur",
+    "Tva cannot be empty.": "La TVA ne peut pas être vide.",
+    "Please enter a valid postal code. It must have this form NNNNN.": "Veuillez entrer un code postal valide. Il doit avoir cette forme : NNNNN."
 }

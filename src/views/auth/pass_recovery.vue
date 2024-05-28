@@ -44,7 +44,7 @@
     </div>
 </template>
 <script>
-import userService from "../../composables/user-service";
+import userService from "../../Services/user-service";
 import btnLoadIcon from "../../components/common/svg/btn-load-icon.vue";
 import "/src/assets/sass/authentication/auth.scss";
 import { useMeta } from "/src/composables/use-meta";

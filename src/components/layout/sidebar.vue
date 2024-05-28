@@ -4,21 +4,17 @@
         <nav ref="menu" id="sidebar">
             <div class="shadow-bottom"></div>
 
-            <perfect-scrollbar class="list-unstyled menu-categories" tag="ul"
+            <perfect-scrollbar class="list-unstyled menu-categories mt-5" tag="ul"
                 :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 300, suppressScrollX: true }">
                 <li class="menu" v-for="menu in menus" :key="menu.id">
-                    <router-link to="/widgets" class="dropdown-toggle" v-if="menu.children.length === 0"
-                        @click="toggleMobileMenu">
-                        <div class="">
-                            <span>{{ $t(menu.name)}}</span>
-                        </div>
+                    <router-link :to="'/' + menu.route" class="dropdown-toggle" v-if="menu.children.length === 0"
+                                 @click.prevent="clickH()">
+                        <d-menu-item :icon="menu.icon" :name="menu.name"></d-menu-item>
                     </router-link>
                     <template v-else>
                         <a class="dropdown-toggle" data-bs-toggle="collapse" :data-bs-target="'#'+menu.name"
                             :aria-controls="menu.name" aria-expanded="false">
-                            <div class="">
-                                <span>{{ $t(menu.name) }}</span>
-                            </div>
+                            <d-menu-item :icon="menu.icon" :name="menu.name"></d-menu-item>
                             <div>
                                 <vue-feather type="chevron-right" stroke-linecap="round" stroke-linejoin="round"
                                     stroke-width="2" stroke="currentColor"></vue-feather>
@@ -27,13 +23,8 @@
 
                         <ul :id="menu.name" class="collapse submenu list-unstyled" data-bs-parent="#sidebar">
                             <li v-for="child in menu.children" :key="child.id">
-                                <router-link :to="'/'+ menu.name" @click="toggleMobileMenu">
+                                <router-link :to="'/'+ menu.name"  @click.prevent="clickHExp($event)">
                                     {{ $t(child.name) }}
-                                </router-link>
-                            </li>
-                            <li>
-                                <router-link to="/index2" @click="toggleMobileMenu">
-                                    {{ $t('analytics') }}
                                 </router-link>
                             </li>
                         </ul>
@@ -49,14 +40,50 @@
 import { onMounted, ref } from 'vue';
 import VueFeather from 'vue-feather';
 import { useStore } from 'vuex';
-import userService from '../../composables/user-service';
+import userService from '../../Services/user-service';
+import DMenuItem from './components/d-menu-item.vue';
 const store = useStore();
 
 const menu_collapse = ref('dashboard');
 const menus = userService.getUserMenu();
 
 onMounted(() => {
-    const selector = document.querySelector('#sidebar a[href="' + window.location.pathname + '"]');
+    /*const selector = document.querySelector('#sidebar a[href="' + window.location.pathname + '"]');
+    applyMenuActive(selector, true)*/
+    subMenuActive()
+});
+const clickH = ()=>{
+    const a = document.querySelectorAll('#sidebar ul.collapse');
+    a.forEach(el => {
+        applyMenuActive(el, false)
+    });
+}
+const clickHExp = (e)=>{
+    const sel = e.target;
+    const u = sel.closest('ul.collapse');
+    if (u) {
+        let el = u.closest('li.menu').querySelectorAll('.dropdown-toggle');
+        if (el) {
+            el = el[0];
+            el.dataset.active = true;
+        }
+    }
+};
+
+const subMenuActive = () => {
+    const el = document.querySelectorAll('#sidebar a');
+    el.forEach( e => {
+        console.log(e.href,window.location.pathname.includes(e.href));
+        if(e.href && window.location.href.includes(e.href)){
+            setTimeout(() => {
+                e.classList.add('active', 'router-link-active');
+                applyMenuActive(e, false)
+            },500);
+        }
+    })
+}
+
+const applyMenuActive = (selector, active) => {
     if (selector) {
         const ul = selector.closest('ul.collapse');
         if (ul) {
@@ -64,15 +91,15 @@ onMounted(() => {
             if (ele) {
                 ele = ele[0];
                 setTimeout(() => {
-                    ele.click();
+                    active ? ele.click() : '';
+                    ele.dataset.active = active;
                 });
             }
         } else {
-            selector.click();
+            active ? selector.click() : '';
         }
     }
-});
-
+}
 const toggleMobileMenu = () => {
     if (window.innerWidth < 991) {
         store.commit('toggleSideBar', !store.state.is_show_sidebar);

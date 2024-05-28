@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { API_URL } from '../config/config';
-import { TOKEN_STORAGE_NAME, USER_INFO_STORAGE_NAME } from './constants';
+import { TOKEN_STORAGE_NAME, USER_INFO_STORAGE_NAME } from '../composables/constants';
 import store from '../store';
 import {jwtDecode} from 'jwt-decode';
 import axiosInstance from '../config/http';
-import cryptoLocalStorage from './crypto-localStorage';
+import cryptoLocalStorage from '../composables/crypto-localStorage';
 
 const LOGIN_URL = `${API_URL}/api/authenticate`;
 const PASS_RECOVER_URL = `${API_URL}/forgot-password/`;
@@ -81,6 +81,26 @@ export default {
     },
     getUserMenu(){
         const info = this.getUserInfo();
-        return (info && info.menus) ? info.menus : [];
+        const menu = (info && info.menus) ? info.menus : [];
+        return menu.map(m => {
+            switch (m.name) {
+                case 'Contacts':
+                    m.icon = 'icon-contacts';
+                    break;
+                case 'Projet':
+                    m.icon = 'icon-projects';
+                    break;
+                case 'Tapis':
+                    m.icon = 'icon-tapis';
+                    break;
+                case 'Trésorerie':
+                    m.icon = '';
+                    break;
+                default:
+                    m.icon = null
+                    break;
+            }
+            return m;
+        });
     }
 };

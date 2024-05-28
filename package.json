@@ -36,6 +36,7 @@
     "jspdf-autotable": "^3.5.25",
     "jwt-decode": "^4.0.0",
     "maska": "^1.5.0",
+    "moment": "^2.30.1",
     "nprogress": "^0.2.0",
     "path": "^0.12.7",
     "sweetalert2": "^11.4.17",

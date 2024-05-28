@@ -83,7 +83,7 @@
 import { onMounted, ref, reactive} from 'vue';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
 import axiosInstance from '../../config/http';
-import dProfile from '../../components/base/d-profile.vue';
+import dProfile from '../../components/common/d-profile.vue';
 import VueFeather from 'vue-feather';
 import dPageTitle from '../../components/common/d-page-title.vue';
 

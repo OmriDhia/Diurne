@@ -305,7 +305,7 @@ span {
 
 .form-group label,
 label {
-    font-size: 15px;
+    font-size: 12px;
     color: #888ea8;
     letter-spacing: 1px;
     padding-top: 0;
@@ -332,7 +332,7 @@ label {
     font-size: 15px;
     padding: 8px 10px;
     letter-spacing: 1px;
-    padding: 0.75rem 1.25rem;
+    //padding: 0.75rem 1.25rem;
     border-radius: 6px;
     line-height: 19px;
 
@@ -386,7 +386,7 @@ label {
     border: 1px solid #bfc9d4;
     color: $dark;
     font-size: 15px;
-    padding: 12px 20px;
+    padding: 8px 20px;
     letter-spacing: 1px;
     border-radius: 6px;
     padding-right: 25px;
@@ -869,7 +869,7 @@ select.form-control.form-custom {
                 vertical-align: middle;
                 width: 20px;
                 height: 20px;
-                fill: rgba(0, 23, 55, 0.08);
+                /*fill: rgba(0, 23, 55, 0.08);*/
             }
 
             &:hover svg {

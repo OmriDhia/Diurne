@@ -68,7 +68,7 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue";
 import { useRoute } from 'vue-router';
-import dProfile from "../../components/base/d-profile.vue";
+import dProfile from "../../components/common/d-profile.vue";
 import dPassword from "../../components/base/d-password.vue";
 import "/src/assets/sass/scrollspyNav.scss";
 import "/src/assets/sass/users/account-setting.scss";
@@ -77,7 +77,7 @@ import dPanelTitle from '../../components/common/d-panel-title.vue'
 
 import { useMeta } from "/src/composables/use-meta";
 import axiosInstance from "../../config/http";
-import userService from "../../composables/user-service";
+import userService from "../../Services/user-service";
 import user from "../../store/modules/user";
 
 useMeta({ title: "Account Setting" });
@@ -102,7 +102,7 @@ const userObj = reactive({
 const save = async () => {
     try {
         if (id) {
-            const res_user = await axiosInstance.post(`/api/user/${id}/update`, {
+            const res_user = await axiosInstance.put(`/api/user/${id}/update`, {
                 firstname: userObj.firstname,
                 lastname: userObj.lastname,
                 email: userObj.email,

@@ -599,9 +599,11 @@
 .navbar .navbar-item .nav-item {
     &.user-profile-dropdown {
         margin: 0 244px 0 16px;
-        a.sidebarCollapse{
+
+        a.sidebarCollapse {
             color: white;
         }
+
         .nav-link.user {
             padding: 0;
             position: relative;
@@ -621,6 +623,7 @@
 
         .dropdown-menu {
             max-width: 13rem;
+
             li {
                 hr {
                     border: 0px;
@@ -831,6 +834,7 @@
             top: 50px !important;
             right: 20px;
             left: auto !important;
+
             &.show {
                 opacity: 1;
                 visibility: visible;

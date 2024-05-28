@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 const app = createApp(App);
+import {Helper} from "./composables/global-methods";
 
 // bootstrap
 import * as bootstrap from "bootstrap";
@@ -65,8 +66,8 @@ import appSetting from "./app-setting";
 window.$appSetting = appSetting;
 window.$appSetting.init();
 
-import userService from "./composables/user-service";
-app.config.globalProperties.$hasPermission = (permission) =>{
+import userService from "./Services/user-service";
+app.config.globalProperties.$hasPermission = window.$hasPermission = (permission) =>{
     const userInfo = userService.getUserInfo();
     const permissions = userInfo ? userInfo.permissions : [];
     if(permissions.indexOf(permission) > -1){
@@ -74,6 +75,7 @@ app.config.globalProperties.$hasPermission = (permission) =>{
     }
     return false;
 }
+app.config.globalProperties.$Helper = Helper;
 
 //markdown editor
 import VueEasymde from 'vue3-easymde';

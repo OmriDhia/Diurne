@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import userService from "../../composables/user-service";
+import userService from "../../Services/user-service";
 import btnLoadIcon from "../../components/common/svg/btn-load-icon.vue";
 import DPassword from "../../components/base/d-password.vue";
 import "/src/assets/sass/authentication/auth.scss";
