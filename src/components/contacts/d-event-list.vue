@@ -297,6 +297,9 @@
         if (filter.value.next_reminder_deadline_to) {
             param += "&filter[next_reminder_deadline_to]=" + filter.value.next_reminder_deadline_to
         }
+        if (filter.value.onlyLastEvent) {
+            param += "&filter[onlyLastEvent]=" + filter.value.onlyLastEvent
+        }
 
         return param;
     };
