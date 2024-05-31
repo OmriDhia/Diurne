@@ -42,16 +42,14 @@
         </div>
         <div class="col-md-auto">
             <div class="row">
-            <div class="col-auto p-1">
-                <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="updateContact">
-                    <vue-feather type="save" size="14"></vue-feather>
-                </button>
-            </div>
-            <div class="col-auto p-1 pe-3">
-                <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle">
-                    <vue-feather type="x" :size="14"></vue-feather>
-                </button>
-            </div>
+                <div class="col-auto p-1">
+                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="updateContact">
+                        <vue-feather type="save" size="14"></vue-feather>
+                    </button>
+                </div>
+                <div class="col-auto p-1 pe-3">
+                    <d-delete :api="`/api/contact/${data.contact_id}/delete`"></d-delete>
+                </div>
             </div>
         </div>
     </div>
@@ -61,6 +59,7 @@
     import {defineProps, ref, watch, onMounted} from 'vue';
     import axiosInstance from "../../config/http";
     import VueFeather from 'vue-feather';
+    import dDelete from "../common/d-delete.vue";
     import dGender from "../../components/common/d-gender.vue";
     import dInput from "../../components/base/d-input.vue";
     import {formatErrorViolations} from "../../composables/global-methods";

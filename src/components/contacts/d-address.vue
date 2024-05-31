@@ -76,11 +76,6 @@
                                         <vue-feather type="save" size="14"></vue-feather>
                                     </button>
                                 </div>
-                                <div class="col-auto p-1 pe-3">
-                                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle">
-                                        <vue-feather type="x" :size="14"></vue-feather>
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>

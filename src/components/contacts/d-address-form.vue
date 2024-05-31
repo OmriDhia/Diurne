@@ -63,9 +63,7 @@
             </button>
         </div>
         <div class="col-auto p-1 pe-3">
-            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle">
-                <vue-feather type="x" :size="14"></vue-feather>
-            </button>
+            <d-delete :api="`/api/address/${data.address_id}/delete`"></d-delete>
         </div>
     </div>
 </template>
@@ -79,6 +77,7 @@
     import '../../assets/sass/components/tabs-accordian/custom-accordions.scss';
     import dAddressType from "../common/d-address-type.vue";
     import dCountries from "../common/d-countries.vue";
+    import dDelete from "../common/d-delete.vue";
     import store from "../../store/index";
     
     const props = defineProps({

@@ -29,10 +29,8 @@
                     <vue-feather type="save" size="14"></vue-feather>
                 </button>
             </div>
-            <div class="col-auto p-1 pe-4">
-                <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle">
-                    <vue-feather type="x" :size="14"></vue-feather>
-                </button>
+            <div class="col-auto p-1 pe-4" v-if="data.customer_id">
+                <d-delete :api="`/api/customer/${data.customer_id}/delete`"></d-delete>
             </div>
         </div>
 
@@ -48,6 +46,7 @@
     import dDiscount from "../../components/common/d-discount.vue";
     import dLanguages from "../../components/common/d-langages.vue";
     import dInput from "../../components/base/d-input.vue";
+    import dDelete from "../common/d-delete.vue";
     import {formatErrorViolations} from "../../composables/global-methods";
 
     const props = defineProps({
@@ -58,6 +57,7 @@
     });
     
     const data = ref({
+        customer_id: null,
         customerGroupId: -1,
         code: null,
         social_reason: null,
@@ -85,16 +85,20 @@
             window.showMessage(e.message,'error')
         }
     };
+    const affectData = (newVal) => {
+        data.value.customer_id = newVal.customer_id;
+        data.value.customerGroupId = newVal.customerGroup.customer_group_id;
+        data.value.discountTypeId = newVal.discountRule.discount_rule_id;
+        data.value.social_reason = newVal.socialReason;
+        data.value.website = newVal.website;
+        data.value.code = newVal.code;
+        data.value.tva_ce = newVal.tva_ce;
+        data.value.mailingLanguageId = newVal.mailingLanguageId;
+    }; 
     watch(
         () => props.customerData,
-        (newVal, oldVal) => {
-            data.value.customerGroupId = newVal.customerGroup.customer_group_id;
-            data.value.discountTypeId = newVal.discountRule.discount_rule_id;
-            data.value.social_reason = newVal.socialReason;
-            data.value.website = newVal.website;
-            data.value.code = newVal.code;
-            data.value.tva_ce = newVal.tva_ce;
-            data.value.mailingLanguageId = newVal.mailingLanguageId;
+        (newVal) => {
+           affectData(newVal)
         }
     );
 </script>

@@ -58,16 +58,11 @@
                                 </div>
                                 <div class="col-md-auto">
                                     <div class="row">
-                                    <div class="col-auto p-1">
-                                        <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="addContact">
-                                            <vue-feather type="save" size="14"></vue-feather>
-                                        </button>
-                                    </div>
-                                    <div class="col-auto p-1 pe-3">
-                                        <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle">
-                                            <vue-feather type="x" :size="14"></vue-feather>
-                                        </button>
-                                    </div>
+                                        <div class="col-auto p-1">
+                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="addContact">
+                                                <vue-feather type="save" size="14"></vue-feather>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -150,17 +145,6 @@
             window.showMessage(e.message,'error')
         }
     };
-   /* watch(
-        () => props.customerData,
-        (newVal, oldVal) => {
-            data.value.customerGroupId = newVal.customerGroup.customer_group_id;
-            data.value.discountTypeId = newVal.discountRule.discount_rule_id;
-            data.value.social_reason = newVal.socialReason;
-            data.value.website = newVal.website;
-            data.value.code = newVal.code;
-            data.value.tva_ce = newVal.tva_ce;
-        }
-    );*/
 </script>
 <style>
 

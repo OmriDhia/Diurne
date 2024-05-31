@@ -170,6 +170,7 @@
                     </template>
                     <template #subject="data">
                         {{ data.value.subject }}
+                        <d-modal-event :customerId="data.value.customer_id"></d-modal-event>
                     </template>
                     <template #has_wrong_address="data">
                         <div title="test" class="t-dot" :class="data.value.has_wrong_address === 'true' ? 'bg-success' :'bg-danger'"></div>
@@ -189,6 +190,7 @@
     import axiosInstance from '../../config/http';
     import { filterEvent } from "../../composables/constants";
     import dNomenclatures from "../common/d-nomenclatures.vue";
+    import dModalEvent from "./d-modal-event.vue";
     
     const loading = ref(true);
     const total_rows = ref(0);
@@ -257,7 +259,7 @@
             param += "&filter[customerGroupId]=" + filter.value.customerTypeId
         }
         if (filter.value.subject) {
-            param += "&filter[subject]=" + filter.value.subject
+            param += "&filter[nomenclatureId]=" + filter.value.subject
         }
         if (filter.value.tva_ce) {
             param += "&filter[tva_ce]=" + filter.value.tva_ce
@@ -322,10 +324,10 @@
             pres: null,
         };
         getCustomers();
-    }
+    };
     const goToNewContact = () => {
         location.href = '/contacts/manage'
-    }
+    };
 </script>
 
 <style>

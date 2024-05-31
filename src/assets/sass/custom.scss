@@ -76,6 +76,11 @@ div.dropdown.user-profile-dropdown:hover, a.sidebarCollapse[aria-expanded=true] 
     }
 }
 
+.btn-icon{
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
 
 @mixin menuCategoryStyles($color) {
     .header-container {
