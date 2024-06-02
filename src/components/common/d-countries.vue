@@ -15,7 +15,7 @@
                 deselect-label=""
                 @update:model-value="handleChange($event)"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le type de d'adresse est abligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t("Le pays est abligatoire.") }}</div>
         </div>
     </div>
 </template>

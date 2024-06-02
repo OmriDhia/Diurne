@@ -68,7 +68,7 @@
         contremarqueId: 0,
         quoteId: 0,
         reminder_disabled: false,
-        commentaire: null,
+        commentaire: "",
         event_date: null,
         next_reminder_deadline: null,
         people_present: []

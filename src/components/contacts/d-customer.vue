@@ -58,12 +58,12 @@
     
     const data = ref({
         customer_id: null,
-        customerGroupId: -1,
-        code: null,
-        social_reason: null,
-        tva_ce: null,
-        website: null,
-        discountTypeId: -1,
+        customerGroupId: null,
+        code: "",
+        social_reason: "",
+        tva_ce: "",
+        website: "",
+        discountTypeId: null,
         mailingLanguageId: null,
     });
     const error = ref({});

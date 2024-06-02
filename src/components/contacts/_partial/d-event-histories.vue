@@ -63,6 +63,7 @@
       try{
           const res = await axiosInstance.get(`/api/customer/${customerId}/events`);
           datas.value = res.data.response.customerEventsData;
+          await handleComment(0);
       }catch{
           console.log("Erreur get events customer")
       }

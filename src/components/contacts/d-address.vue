@@ -61,7 +61,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6 col-sm-12">
-                                    <d-countries v-model="data.countryId"></d-countries>
+                                    <d-countries v-model="data.countryId" :error="error.countryId"></d-countries>
                                 </div>
                             </div>
                             <div class="row p-1 align-items-center">
@@ -130,19 +130,19 @@
     });
 
     const data = ref({
-        fullName: null,
-        address1: null,
-        city: null,
-        zip_code: null,
+        fullName: "",
+        address1: "",
+        city: "",
+        zip_code: "",
         state: 'test',
         is_f_valide: null,
         is_l_valide: null,
         is_wrong: null,
-        comment: null,
-        phone: null,
-        mobile_phone: null,
-        addressTypeId: -1,
-        countryId: -1
+        comment: "",
+        phone: "",
+        mobile_phone: "",
+        addressTypeId: null,
+        countryId: null
     });
     const error = ref({});
 

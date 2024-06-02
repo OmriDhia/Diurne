@@ -38,14 +38,14 @@
                     <div class="col-md-6 col-sm-12">
                         <div class="custom-control custom-radio">
                             <input type="checkbox" class="custom-control-input" id="onlyLastEvent" v-model="filter.onlyLastEvent" name="onlyLastEvent"/>
-                            <label class="custom-control-label text-dark" for="onlyLastEvent"> {{ $t('Seul dernier évènement') }} </label>
+                            <label class="custom-control-label text-black" for="onlyLastEvent"> {{ $t('Seul dernier évènement') }} </label>
                         </div>
                     </div>
                 </div>
                 <div class="row align-items-center">
                     <div class="col-md-6 col-sm-12">
                         <div class="row align-items-center">
-                            <div class="col-md-4 col-sm-12">
+                            <div class="col-md-4 col-sm-12 text-black">
                                 Date évènement:
                             </div>
                             <div class="col-md-4 col-sm-12">
@@ -58,19 +58,19 @@
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <div class="row align-items-center">
-                            <div class="col-md-7">
+                            <div class="col-md-7 text-black">
                                 {{ $t('Evènement sans projet')}}:
                             </div>
                             <div class="col-auto pe-1 ps-2">
                                 <div class="custom-control custom-radio">
                                     <input type="radio" class="custom-control-input" id="warnig-add-yes" v-model="filter.hasNoProject" name="warningAdd" value="true"/>
-                                    <label class="custom-control-label text-dark" for="warnig-add-yes"> {{ $t('Oui') }} </label>
+                                    <label class="custom-control-label text-black" for="warnig-add-yes"> {{ $t('Oui') }} </label>
                                 </div>
                             </div>
                             <div class="col-auto pe-1 ps-1">
                                 <div class="radio-success custom-control custom-radio">
                                     <input type="radio" class="custom-control-input" id="warnig-add-no" v-model="filter.hasNoProject" name="warningAdd" value="false"/>
-                                    <label class="custom-control-label text-dark" for="warnig-add-no"> {{ $t('Non') }} </label>
+                                    <label class="custom-control-label text-black" for="warnig-add-no"> {{ $t('Non') }} </label>
                                 </div>
                             </div>
                         </div>
@@ -79,7 +79,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6 col-sm-12">
                         <div class="row align-items-center">
-                            <div class="col-md-4 col-sm-12">
+                            <div class="col-md-4 col-sm-12 text-black">
                                 Date relance:
                             </div>
                             <div class="col-md-4 col-sm-12">
@@ -92,19 +92,19 @@
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <div class="row align-items-center">
-                            <div class="col-md-7">
+                            <div class="col-md-7 text-black">
                                 {{ $t('Evènement avec next step')}}:
                             </div>
                             <div class="col-auto pe-1 ps-2">
                                 <div class="custom-control custom-radio">
                                     <input type="radio" class="custom-control-input" id="finiched-add-yes" v-model="filter.hasNextStep" name="finichedAdd" value="true"/>
-                                    <label class="custom-control-label text-dark" for="finiched-add-yes"> {{ $t('Oui') }} </label>
+                                    <label class="custom-control-label text-black" for="finiched-add-yes"> {{ $t('Oui') }} </label>
                                 </div>
                             </div>
                             <div class="col-auto pe-1 ps-1">
                                 <div class="radio-success custom-control custom-radio">
                                     <input type="radio" class="custom-control-input" id="finiched-add-no" v-model="filter.hasNextStep" name="finichedgAdd" value="false"/>
-                                    <label class="custom-control-label text-dark" for="finiched-add-no"> {{ $t('Non') }} </label>
+                                    <label class="custom-control-label text-black" for="finiched-add-no"> {{ $t('Non') }} </label>
                                 </div>
                             </div>
                         </div>
@@ -135,19 +135,19 @@
             <div class="col-auto pe-1 ps-1">
                 <div class="radio-success custom-control custom-radio">
                     <input type="checkbox" class="custom-control-input" id="hasOnlyOneContact" v-model="filter.hasOnlyOneContact"/>
-                    <label class="custom-control-label text-dark" for="hasOnlyOneContact"> {{ $t('Seul un contact') }} </label>
+                    <label class="custom-control-label text-black" for="hasOnlyOneContact"> {{ $t('Seul un contact') }} </label>
                 </div>
             </div>
             <div class="col-auto pe-1 ps-2">
                 <div class="custom-control custom-radio">
                     <input type="checkbox" class="custom-control-input" id="customer-active" v-model="filter.active"/>
-                    <label class="custom-control-label text-dark" for="customer-active"> {{ $t('Seul client actif') }} </label>
+                    <label class="custom-control-label text-black" for="customer-active"> {{ $t('Seul client actif') }} </label>
                 </div>
             </div>
             <div class="col-auto pe-1 ps-1">
                 <div class="custom-control custom-radio">
                     <input type="checkbox" class="custom-control-input" id="comercial-valid" v-model="filter.hasInvalidCommercial"/>
-                    <label class="custom-control-label text-dark" for="comercial-valid"> {{ $t('Commercial à valider') }} </label>
+                    <label class="custom-control-label text-black" for="comercial-valid"> {{ $t('Commercial à valider') }} </label>
                 </div>
             </div>
         </div>
@@ -218,7 +218,7 @@
         { field: 'mobile_phone', title: 'Tél. portable'},
         { field: 'email', title: 'Email', sort: false},
         { field: 'subject', title: 'Evènement client', sort: false},
-        { field: 'event_date', title: 'Date Ev.', sort: false },
+        { field: 'event_date', title: 'Date Ev.', sort: true },
         { field: 'next_step', title: 'Next step', sort: false },
     ]) || [];
 

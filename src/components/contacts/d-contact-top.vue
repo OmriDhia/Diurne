@@ -117,15 +117,15 @@
     });
 
     const data = ref({
-        gender_id: -1,
-        firstname: null,
-        lastname: null,
-        email: null,
+        gender_id: null,
+        firstname: "",
+        lastname: "",
+        email: "",
         mailing: true,
         mailing_with_calligraphie: true,
-        phone: null,
-        mobile_phone: null,
-        fax: null,
+        phone: "",
+        mobile_phone: "",
+        fax: "",
         customerId: props.customerId
     });
     const error = ref({});

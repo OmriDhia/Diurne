@@ -87,5 +87,17 @@
     "Tva cannot be empty.": "La TVA ne peut pas être vide.",
     "nomenclatureId cannot be empty.": "Champs évènement est obligatoire",
     "Please enter a valid date.": "Veuillez entrer une date valide.",
-    "Please enter a valid postal code. It must have this form NNNNN.": "Veuillez entrer un code postal valide. Il doit avoir cette forme : NNNNN."
+    "Please enter a valid address. Special characters like !<>?=+@{}_$% are not allowed.": "Veuillez entrer une adresse valide.",
+    "Full name cannot be empty.": "Le nom complet ne peut pas être vide.",
+    "Address 1 cannot be empty.": "L'adresse ne peut pas être vide.",
+    "City cannot be empty.": "la cité ne peut pas être vide.",
+    "Zip code cannot be empty.": "la code postal ne peut pas être vide.",
+    "Email address cannot be empty.": "L'adresse e-mail ne peut pas être vide.",
+    "Firstname cannot be empty.": "Le prénom ne peut pas être vide.",
+    "Lastname cannot be empty.": "Le nom de famille ne peut pas être vide.",
+    "Please enter a valid phone Number.": "Veuillez entrer un numéro de téléphone valide.",
+    "Code cannot be empty.": "Le code ne peut pas être vide.",
+    "Social reason cannot be empty.": "La raison sociale ne peut pas être vide.",
+    "Please enter a valid postal code. It must have this form NNNNN.": "Veuillez entrer un code postal valide. Il doit avoir cette forme : NNNNN.",
+    "Please enter a valid postal code. It must have this form LNL NLN.": "Veuillez entrer un code postal valide. Il doit avoir la forme LNL NLN."
 }

@@ -75,7 +75,12 @@ div.dropdown.user-profile-dropdown:hover, a.sidebarCollapse[aria-expanded=true] 
         display: none;
     }
 }
-
+.required{
+    color: red !important;
+}
+label, .text-black{
+    color: black !important; 
+}
 .btn-icon{
     background: transparent !important;
     box-shadow: none !important;
