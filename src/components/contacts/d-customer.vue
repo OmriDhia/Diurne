@@ -57,14 +57,14 @@
     });
     
     const data = ref({
-        customer_id: null,
-        customerGroupId: null,
+        customer_id: 0,
+        customerGroupId: 0,
         code: "",
         social_reason: "",
         tva_ce: "",
         website: "",
-        discountTypeId: null,
-        mailingLanguageId: null,
+        discountTypeId: 0,
+        mailingLanguageId: 0,
     });
     const error = ref({});
 

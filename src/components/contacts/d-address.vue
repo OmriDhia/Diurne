@@ -141,8 +141,8 @@
         comment: "",
         phone: "",
         mobile_phone: "",
-        addressTypeId: null,
-        countryId: null
+        addressTypeId: 0,
+        countryId: 0
     });
     const error = ref({});
 

@@ -117,7 +117,7 @@
     });
 
     const data = ref({
-        gender_id: null,
+        gender_id: 0,
         firstname: "",
         lastname: "",
         email: "",
