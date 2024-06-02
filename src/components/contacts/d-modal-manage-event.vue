@@ -77,7 +77,7 @@
     const saveEvent = async () => {
         try{
             
-            const res = await axiosInstance.post("/api/createEvent",data);
+            const res = await axiosInstance.post("/api/createEvent",data.value);
             window.showMessage("Ajout avec succées.");
             document.querySelector("#modalEventManage .btn-close").click();
             data.value = {
