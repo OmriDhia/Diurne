@@ -40,7 +40,7 @@
     import dDateStartEnd from "../common/d-date-start-end.vue";
     import Multiselect from '@suadelabs/vue3-multiselect';
     import axiosInstance from "../../config/http";
-    import dCommertialHistories from "./d-commertial-histories.vue";
+    import dCommertialHistories from "./_partial/d-commertial-histories.vue";
     import perfectScroll from "../plugins/perfect-scrollbar1.vue";
     
     const props = defineProps({

@@ -1,6 +1,9 @@
 export const CRYPTO_KEY = "QdSr3pKrmW";
 export const TOKEN_STORAGE_NAME = "auth_token";
 export const USER_INFO_STORAGE_NAME = "user_info";
+export const EVENT_FILTRE_STORAGE_NAME = "event_filter";
+export const CONTACT_FILTRE_STORAGE_NAME = "contact_filter";
+export const CONTACT_SELECTION_STORAGE_NAME = "Selected_contact_menu";
 export const menuHomeColor = {
     contact: '#E3599E',
     contremarque: '#4260EB',
@@ -32,7 +35,7 @@ export const filterContact = {
     validAdd: null,
     hasInvalidCommercial: null,
     active: null,
-    agent: null,
+    hasOnlyOneContact: null,
     mailingLanguageId: null,
     contactMailing: null,
 };

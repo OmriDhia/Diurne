@@ -34,22 +34,38 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import dBasePage from "../../components/base/d-base-page.vue";
 import dPageTitle from "../../components/common/d-page-title.vue";
 import dEventList from "../../components/contacts/d-event-list.vue";
 import dContactList from "../../components/contacts/d-contact-list.vue";
 import { useMeta } from '/src/composables/use-meta';
+import { CONTACT_SELECTION_STORAGE_NAME } from "../../composables/constants";
+
 useMeta({ title: 'Contacts' });
 
-const type = ref('contact');
-const title = ref('Contacts');
-watch(type, (newValue, oldValue) => {
-    if(newValue === 'contact'){
+let selectedType = 'contact';
+if(localStorage.getItem(CONTACT_SELECTION_STORAGE_NAME)){
+    selectedType = localStorage.getItem(CONTACT_SELECTION_STORAGE_NAME);
+}
+const type = ref(selectedType);
+const title = ref(null);
+
+const affectTitle = (type) => {
+    if(type === 'contact'){
         title.value = 'Contacts';
     }else{
-        title.value = 'évènement';  
+        title.value = 'évènement';
     }
+};
+
+onMounted(()=>{
+    affectTitle(type.value); 
+})
+
+watch(type, (newValue) => {
+    localStorage.setItem(CONTACT_SELECTION_STORAGE_NAME,newValue);
+    affectTitle(newValue)
 });
     
 </script>

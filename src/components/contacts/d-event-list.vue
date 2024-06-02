@@ -2,7 +2,8 @@
     <div class="panel br-6 p-2">
         <div class="row p-2">
             <div class="col-auto">
-                <button class="btn btn-custom pe-5 ps-5" @click="goToNewContact">Nouveau contact</button>
+                <button class="btn btn-custom pe-5 ps-5" data-bs-toggle="modal" data-bs-target="#modalEventManage">Nouveau évènement</button>
+                <d-modal-manage-event></d-modal-manage-event>
             </div>
         </div>
         <div class="row align-items-start pe-2 ps-2 mt-3">
@@ -57,7 +58,7 @@
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <div class="row align-items-center">
-                            <div class="col-auto">
+                            <div class="col-md-7">
                                 {{ $t('Evènement sans projet')}}:
                             </div>
                             <div class="col-auto pe-1 ps-2">
@@ -91,7 +92,7 @@
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <div class="row align-items-center">
-                            <div class="col-auto">
+                            <div class="col-md-7">
                                 {{ $t('Evènement avec next step')}}:
                             </div>
                             <div class="col-auto pe-1 ps-2">
@@ -156,21 +157,22 @@
             <div class="vue3-datatable w-100">
                 <vue3-datatable :rows="rows" :columns="cols" :loading="loading" :isServerMode="true"
                                 :totalRows="total_rows" :page="params.current_page" :pageSize="params.pagesize"
-                                :pageSizeOptions="[10, 25, 50, 75, 100]" noDataContent="Aucun contact trouvé."
+                                :pageSizeOptions="[10, 25, 50, 75, 100]" noDataContent="Aucun évènement trouvé."
                                 paginationInfo="Affichage de {0} à {1} sur {2} entrées" :sortable="true"
                                 @change="changeServer" class="advanced-table text-nowrap">
                     <template #customer="data">
                         <div class="d-flex justify-content-between">
                             <strong>{{ data.value.customer}}</strong>
-                            <router-link :to="'/contacts/manage/' + data.value.id"  v-if="$hasPermission('update contact')">
+                            <router-link :to="'/contacts/manage/' + data.value.customer_id"  v-if="$hasPermission('update contact')">
                                 <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
                             </router-link>
-
                         </div>
                     </template>
                     <template #subject="data">
-                        {{ data.value.subject }}
-                        <d-modal-event :customerId="data.value.customer_id"></d-modal-event>
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ data.value.subject }}</strong>
+                            <d-modal-event :customerId="data.value.customer_id"></d-modal-event>
+                        </div>
                     </template>
                     <template #has_wrong_address="data">
                         <div title="test" class="t-dot" :class="data.value.has_wrong_address === 'true' ? 'bg-success' :'bg-danger'"></div>
@@ -190,7 +192,8 @@
     import axiosInstance from '../../config/http';
     import { filterEvent } from "../../composables/constants";
     import dNomenclatures from "../common/d-nomenclatures.vue";
-    import dModalEvent from "./d-modal-event.vue";
+    import dModalEvent from "./_partial/d-modal-event.vue";
+    import dModalManageEvent from "./d-modal-manage-event.vue";
     
     const loading = ref(true);
     const total_rows = ref(0);
@@ -198,6 +201,8 @@
     const params = reactive({
         current_page: 1,
         pagesize: 50,
+        orderBy: 'customer',
+        orderWay: 'asc'
     });
 
     const filter = ref(filterEvent);
@@ -211,9 +216,9 @@
         { field: 'commercial', title: 'Commercial'},
         { field: 'phone', title: 'Tél. fixe'},
         { field: 'mobile_phone', title: 'Tél. portable'},
-        { field: 'email', title: 'Email'},
-        { field: 'subject', title: 'Evènement client'},
-        { field: 'event_date', title: 'Date Ev.' },
+        { field: 'email', title: 'Email', sort: false},
+        { field: 'subject', title: 'Evènement client', sort: false},
+        { field: 'event_date', title: 'Date Ev.', sort: false },
         { field: 'next_step', title: 'Next step', sort: false },
     ]) || [];
 
@@ -223,7 +228,7 @@
     const getCustomers = async () => {
         try {
             loading.value = true;
-            let url = `/api/events?page=${params.current_page}&itemsPerPage=${params.pagesize}`;
+            let url = `/api/events?page=${params.current_page}&itemsPerPage=${params.pagesize}&orderBy=${params.orderBy}&orderWay=${params.orderWay}`;
             url += getFilterParams();
             const response = await axiosInstance.get(url);
             const data = await response.data.response;
@@ -236,7 +241,8 @@
     const changeServer = (data) => {
         params.current_page = data.current_page;
         params.pagesize = data.pagesize;
-
+        params.orderBy = data.sort_column;
+        params.orderWay = data.sort_direction;
         getCustomers();
     };
     const doSearch = () => {
@@ -262,7 +268,7 @@
             param += "&filter[nomenclatureId]=" + filter.value.subject
         }
         if (filter.value.tva_ce) {
-            param += "&filter[tva_ce]=" + filter.value.tva_ce
+            param += "&filter[tvaCe]=" + filter.value.tva_ce
         }
         if (filter.value.commercial) {
             param += "&filter[commercial]=" + filter.value.commercial
@@ -300,7 +306,13 @@
         if (filter.value.onlyLastEvent) {
             param += "&filter[onlyLastEvent]=" + filter.value.onlyLastEvent
         }
-
+        if (filter.value.contact) {
+            param += "&filter[contact]=" + filter.value.contact
+        }
+        if (filter.value.pres) {
+            param += "&filter[prescripteur]=" + filter.value.pres
+        }
+        
         return param;
     };
     const doReset = () => {

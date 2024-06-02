@@ -48,7 +48,7 @@
 
 <script setup>
     import { ref, onMounted, watch} from "vue"
-    import axiosInstance from "../../config/http";
+    import axiosInstance from "../../../config/http";
     import VueFeather from 'vue-feather';
     const props = defineProps({
         customerId: {

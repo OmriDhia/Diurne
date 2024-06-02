@@ -23,7 +23,10 @@
     </div>
     <div class="row justify-content-end mt-3">
         <div class="col-auto p-0">
-            <button class="btn btn-custom pe-3 ps-3" @click="addAttribution">Demande d'attribution</button>
+            <button class="btn btn-outline-custom ps-2" @click="addAttribution">
+                Ajouter
+                <vue-feather type="plus" size="14"></vue-feather>
+            </button>
         </div>
     </div>
     <div class="row justify-content-end mt-3 pe-0">
@@ -40,7 +43,8 @@
     import dDateStartEnd from "../common/d-date-start-end.vue";
     import Multiselect from '@suadelabs/vue3-multiselect';
     import axiosInstance from "../../config/http";
-    import dAgentHistories from "./d-agent-histories.vue";
+    import VueFeather from 'vue-feather';
+    import dAgentHistories from "./_partial/d-agent-histories.vue";
     import perfectScroll from "../plugins/perfect-scrollbar1.vue";
 
     const props = defineProps({

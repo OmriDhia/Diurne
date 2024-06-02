@@ -85,5 +85,7 @@
     "This value should be of type string.": "Cette valeur doit être de type chaîne de caractères.",
     "Internal Server Error" : "Erreur interne du serveur",
     "Tva cannot be empty.": "La TVA ne peut pas être vide.",
+    "nomenclatureId cannot be empty.": "Champs évènement est obligatoire",
+    "Please enter a valid date.": "Veuillez entrer une date valide.",
     "Please enter a valid postal code. It must have this form NNNNN.": "Veuillez entrer un code postal valide. Il doit avoir cette forme : NNNNN."
 }

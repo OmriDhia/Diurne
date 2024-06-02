@@ -85,7 +85,7 @@
     import dAddress from "../../components/contacts/d-address.vue"
     import dAgent from "../../components/contacts/d-agent.vue"
     import dCommercial from "../../components/contacts/d-commercial.vue"
-    import dEventHistories from "../../components/contacts/d-event-histories.vue"
+    import dEventHistories from "../../components/contacts/_partial/d-event-histories.vue"
     import { useRoute } from 'vue-router';
 
     useMeta({ title: 'Contacts' });

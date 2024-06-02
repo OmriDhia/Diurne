@@ -109,14 +109,14 @@
     import {defineProps, ref} from 'vue';
     import axiosInstance from "../../config/http";
     import VueFeather from 'vue-feather';
-    import dContactForm from "./d-contact-form.vue"
+    import dContactForm from "./_partial/d-contact-form.vue"
     import dGender from "../../components/common/d-gender.vue";
     import dInput from "../../components/base/d-input.vue";
     import {formatErrorViolations} from "../../composables/global-methods";
     import '../../assets/sass/components/tabs-accordian/custom-accordions.scss';
     import dAddressType from "../common/d-address-type.vue";
     import dCountries from "../common/d-countries.vue";
-    import dAddressForm from "../contacts/d-address-form.vue";
+    import dAddressForm from "./_partial/d-address-form.vue";
     import perfectScroll from "../plugins/perfect-scrollbar1.vue";
    
     const props = defineProps({

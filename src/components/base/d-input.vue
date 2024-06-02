@@ -8,6 +8,7 @@
                 @input="$emit('update:modelValue', $event.target.value)"
                 :class="{ 'is-invalid': error, 'form-control': true }"
                 :id="computedId"
+                :disabled="disabled"
             />
             <div v-if="error" class="invalid-feedback">{{ $t(error) }}</div>
         </div>
@@ -41,6 +42,11 @@
                 type: String,
                 required: false,
                 default: null
+            },
+            disabled:{
+                type: Boolean,
+                required: false,
+                default: false
             }
         },
         computed: {

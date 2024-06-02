@@ -70,15 +70,15 @@
 
 <script setup>
     import {defineProps, ref, watch, onMounted} from 'vue';
-    import axiosInstance from "../../config/http";
+    import axiosInstance from "../../../config/http";
     import VueFeather from 'vue-feather';
-    import dInput from "../../components/base/d-input.vue";
-    import {formatErrorViolations} from "../../composables/global-methods";
-    import '../../assets/sass/components/tabs-accordian/custom-accordions.scss';
-    import dAddressType from "../common/d-address-type.vue";
-    import dCountries from "../common/d-countries.vue";
-    import dDelete from "../common/d-delete.vue";
-    import store from "../../store/index";
+    import dInput from "../../base/d-input.vue";
+    import {formatErrorViolations} from "../../../composables/global-methods";
+    import '../../../assets/sass/components/tabs-accordian/custom-accordions.scss';
+    import dAddressType from "../../common/d-address-type.vue";
+    import dCountries from "../../common/d-countries.vue";
+    import dDelete from "../../common/d-delete.vue";
+    import store from "../../../store/index";
     
     const props = defineProps({
         addressData: {

@@ -100,7 +100,7 @@
     import {defineProps, ref} from 'vue';
     import axiosInstance from "../../config/http";
     import VueFeather from 'vue-feather';
-    import dContactForm from "./d-contact-form.vue"
+    import dContactForm from "./_partial/d-contact-form.vue"
     import dGender from "../../components/common/d-gender.vue";
     import dInput from "../../components/base/d-input.vue";
     import {formatErrorViolations} from "../../composables/global-methods";

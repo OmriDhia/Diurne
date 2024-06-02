@@ -57,13 +57,13 @@
 
 <script setup>
     import {defineProps, ref, watch, onMounted} from 'vue';
-    import axiosInstance from "../../config/http";
+    import axiosInstance from "../../../config/http";
     import VueFeather from 'vue-feather';
-    import dDelete from "../common/d-delete.vue";
-    import dGender from "../../components/common/d-gender.vue";
-    import dInput from "../../components/base/d-input.vue";
-    import {formatErrorViolations} from "../../composables/global-methods";
-    import '../../assets/sass/components/tabs-accordian/custom-accordions.scss';
+    import dDelete from "../../common/d-delete.vue";
+    import dGender from "../../common/d-gender.vue";
+    import dInput from "../../base/d-input.vue";
+    import {formatErrorViolations} from "../../../composables/global-methods";
+    import '../../../assets/sass/components/tabs-accordian/custom-accordions.scss';
 
     const props = defineProps({
         contactData: {

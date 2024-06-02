@@ -104,8 +104,8 @@
                 <div class="row align-items-center">
                     <div class="col-auto pe-1 ps-1">
                         <div class="radio-success custom-control custom-radio">
-                            <input type="checkbox" class="custom-control-input" id="hasAgent" v-model="filter.agent"/>
-                            <label class="custom-control-label text-dark" for="hasAgent"> {{ $t('Seul un contact') }} </label>
+                            <input type="checkbox" class="custom-control-input" id="hasOnlyOneContact" v-model="filter.hasOnlyOneContact"/>
+                            <label class="custom-control-label text-dark" for="hasOnlyOneContact"> {{ $t('Seul un contact') }} </label>
                         </div>
                     </div>
                     <div class="col-auto pe-1 ps-2">
@@ -196,6 +196,8 @@
   const params = reactive({
       current_page: 1,
       pagesize: 50,
+      orderBy: 'customer',
+      orderWay: 'asc'
   });
   
   const filter = ref(filterContact);
@@ -208,7 +210,7 @@
       { field: 'commercial', title: 'Commercial' },
       { field: 'phone', title: 'Tél. fixe'},
       { field: 'mobile_phone', title: 'Tél. portable' },
-      { field: 'email', title: 'Email' },
+      { field: 'email', title: 'Email', sort: false },
       { field: 'has_completed_address', title: 'Adr. Ok', sort: false  },
       { field: 'has_wrong_address', title: 'Adr. Err', sort: false },
   ]) || [];
@@ -219,7 +221,7 @@
   const getCustomers = async () => {
       try {
           loading.value = true;
-          let url_customers = `/api/customers?page=${params.current_page}&itemsPerPage=${params.pagesize}`;
+          let url_customers = `/api/customers?page=${params.current_page}&itemsPerPage=${params.pagesize}&orderBy=${params.orderBy}&orderWay=${params.orderWay}`;
           url_customers += getFilterParams();
           const response = await axiosInstance.get(url_customers);
           const data = await response.data.response;
@@ -232,6 +234,8 @@
   const changeServer = (data) => {
       params.current_page = data.current_page;
       params.pagesize = data.pagesize;
+      params.orderBy = data.sort_column;
+      params.orderWay = data.sort_direction;
 
       getCustomers();
   };
@@ -294,8 +298,8 @@
       if (filter.value.pres) {
           param += "&filter[prescripteur]=" + filter.value.pres
       }
-      if (filter.value.agent) {
-          param += "&filter[agent]=" + filter.value.agent
+      if (filter.value.hasOnlyOneContact) {
+          param += "&filter[hasOnlyOneContact]=" + filter.value.hasOnlyOneContact
       }
       return param;
   };
@@ -317,7 +321,7 @@
           validAdd: null,
           hasInvalidCommercial: null,
           active: null,
-          agent: null,
+          hasOnlyOneContact: null,
           mailingLanguageId: null,
           contactMailing: null,
       };
