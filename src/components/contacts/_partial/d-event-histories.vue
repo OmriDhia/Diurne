@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div class="col-6">
+        <div class="col-lg-12 col-xl-6">
             <div class="row">
                 <div class="col-12">
                     Evènement
@@ -30,7 +30,7 @@
                 </perfect-scrollbar>
             </div>
         </div>
-        <div class="col-6">
+        <div class="col-xl-6 col-lg-12">
             <div class="row">
                 <div class="col-12">
                     Commentaire

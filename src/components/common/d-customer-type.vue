@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label for="droit" class="form-label">Type client:</label></div>
+        <div class="col-4"><label for="droit" class="form-label">Type client<span class="required" v-if="required">*</span>:</label></div>
         <div class="col-8">
             <select id="droit"  :class="{ 'is-invalid': error, 'form-select': true }" :value="type" @input="handleChange($event.target.value)">
                 <option value="" selected disabled>Type de client</option>
@@ -24,6 +24,10 @@
                 type: String,
                 default: ''
             },
+            required:{
+                type: Boolean,
+                default: false
+            }
         },
         data() {
             return {

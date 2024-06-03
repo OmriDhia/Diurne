@@ -17,7 +17,7 @@
                         <div class="card-body">
                             <div class="row p-1 align-items-center">
                                 <div class="col-sm-12 col-md-6">
-                                    <d-gender v-model="data.gender_id" :error="error.gender_id"></d-gender>
+                                    <d-gender required="true" v-model="data.gender_id" :error="error.gender_id"></d-gender>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
                                     <d-input label="Tel. portable" v-model="data.mobile_phone" :error="error.mobile_phone"></d-input>
@@ -25,7 +25,7 @@
                             </div>
                             <div class="row p-1 align-items-center">
                                 <div class="col-sm-12 col-md-6">
-                                    <d-input label="Nom" v-model="data.lastname" :error="error.lastname"></d-input>
+                                    <d-input required="true" label="Nom" v-model="data.lastname" :error="error.lastname"></d-input>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
                                     <d-input label="Tél. fixe" v-model="data.phone" :error="error.phone"></d-input>
@@ -33,10 +33,10 @@
                             </div>
                             <div class="row p-1 align-items-center">
                                 <div class="col-sm-12 col-md-6">
-                                    <d-input label="Prénom" v-model="data.firstname" :error="error.firstname"></d-input>
+                                    <d-input required="true" label="Prénom" v-model="data.firstname" :error="error.firstname"></d-input>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
-                                    <d-input label="Email" v-model="data.email" :error="error.email"></d-input>
+                                    <d-input required="true" label="Email" v-model="data.email" :error="error.email"></d-input>
                                 </div>
                             </div>
                             <div class="row align-items-center justify-content-between">
@@ -69,7 +69,7 @@
                         </div>
                     </div>
                 </div>
-                <perfect-scrollbar tag="div" class="h-250"
+                <perfect-scrollbar tag="div" class="h-250" v-if="props.contactData.length > 0"
                                    :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 300, suppressScrollX: true }">
                 <template v-for="(item, index) in props.contactData">
                     <div class="card mb-1">

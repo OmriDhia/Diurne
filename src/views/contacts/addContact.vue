@@ -18,7 +18,7 @@
         </template>
         <template v-slot:body>
             <div class="row mt-3 mb-3 pe-0" v-if="currentCustomer.customer_id">
-                <div class="col-md-6 col-sm-12">
+                <div class="col-md-6 col-sm-12 pe-sm-0">
                     <d-panel>
                         <template v-slot:panel-header>
                             <d-panel-title title="Adresse"></d-panel-title>
@@ -30,7 +30,7 @@
                         </template>
                     </d-panel>
                 </div>
-                <div class="col-md-6 col-sm-12 p-0">
+                <div class="col-md-6 col-sm-12 p-0 ps-sm-2 mt-sm-3">
                     <d-panel>
                         <template v-slot:panel-header>
                             <d-panel-title title="Agent"></d-panel-title>
@@ -48,7 +48,7 @@
                 </div>
             </div>
             <div class="row mt-3 mb-3 pe-0" v-if="currentCustomer.customer_id">
-                <div class="col-md-6 col-sm-12">
+                <div class="col-md-6 col-sm-12 ps-sm-2 pe-sm-0">
                     <d-panel>
                         <template v-slot:panel-header>
                             <d-panel-title title="évènement"></d-panel-title>

@@ -9,7 +9,7 @@
                             alt="logo" />
                     </li>
                 </ul>
-                <div class="navbar-item flex-row ms-md-auto">
+                <div class="navbar-item flex-row ms-md-auto align-items-center">
                     <div style="color:white;font-size: 14px;">
                         Bienvenu <strong> {{ userInfo ? userInfo.lastname : '' }} </strong>
                     </div>

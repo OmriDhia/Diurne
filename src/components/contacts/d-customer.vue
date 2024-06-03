@@ -1,27 +1,27 @@
 <template>
     <div class="col-sm-12 col-md-6">
         <div class="row p-2">
-            <d-customer-type :error="error.customerGroupId" v-model="data.customerGroupId"></d-customer-type>
+            <d-customer-type required="true" :error="error.customerGroupId" v-model="data.customerGroupId"></d-customer-type>
         </div>
         <div class="row p-2 pe-3">
             <div class="col-sm-12 col-md-6 pe-4">
-                <d-input label="Code contact" v-model="data.code" :error="error.code"></d-input>
+                <d-input  required="true" label="Code contact" v-model="data.code" :error="error.code"></d-input>
             </div>
             <div class="col-sm-12 col-md-6 pe-4">
-                <d-input label="CE TVA" v-model="data.tva_ce" :error="error.tva_ce"></d-input>
+                <d-input required="true" label="CE TVA" v-model="data.tva_ce" :error="error.tva_ce"></d-input>
             </div>
         </div>
         <div class="row p-2">
-            <d-discount  :error="error.customerGroupId" v-model="data.discountTypeId"></d-discount>
+            <d-discount required="true" :error="error.customerGroupId" v-model="data.discountTypeId"></d-discount>
         </div>
         <div class="row p-2">
-            <d-input label="Raison social" :error="error.social_reason" v-model="data.social_reason"></d-input>
+            <d-input required="true" label="Raison social" :error="error.social_reason" v-model="data.social_reason"></d-input>
         </div>
         <div class="row p-2">
             <d-input label="Site web" :error="error.website" v-model="data.website"></d-input>
         </div>
         <div class="row p-2">
-            <d-languages label="Site web" :error="error.website" v-model="data.mailingLanguageId"></d-languages>
+            <d-languages :error="error.website" v-model="data.mailingLanguageId"></d-languages>
         </div>
         <div class="row align-content-end justify-content-end p-2 pe-3">
             <div class="col-auto p-1">

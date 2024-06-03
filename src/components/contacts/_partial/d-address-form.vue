@@ -1,18 +1,18 @@
 <template>
     <div class="row p-1 align-items-center">
         <div class="col-sm-12 col-md-6">
-            <d-address-type v-model="data.addressTypeId" :error="error.addressTypeId"></d-address-type>
+            <d-address-type required="true" v-model="data.addressTypeId" :error="error.addressTypeId"></d-address-type>
         </div>
         <div class="col-sm-12 col-md-6">
-            <d-input label="Code postale" v-model="data.zip_code" :error="error.zip_code"></d-input>
+            <d-input required="true" label="Code postale" v-model="data.zip_code" :error="error.zip_code"></d-input>
         </div>
     </div>
     <div class="row p-1 align-items-center">
         <div class="col-sm-12 col-md-6">
-            <d-input label="Nom" v-model="data.fullName" :error="error.fullName"></d-input>
+            <d-input required="true" label="Nom" v-model="data.fullName" :error="error.fullName"></d-input>
         </div>
         <div class="col-sm-12 col-md-6">
-            <d-input label="Adresse" v-model="data.address1" :error="error.address1"></d-input>
+            <d-input required="true" label="Adresse" v-model="data.address1" :error="error.address1"></d-input>
         </div>
     </div>
     <div class="row p-1 align-items-center">
@@ -20,7 +20,7 @@
             <d-input label="Tél." v-model="data.phone" :error="error.phone"></d-input>
         </div>
         <div class="col-sm-12 col-md-6">
-            <d-input label="Ville" v-model="data.city" :error="error.city"></d-input>
+            <d-input required="true" label="Ville" v-model="data.city" :error="error.city"></d-input>
         </div>
     </div>
     <div class="row align-items-center">
@@ -40,14 +40,14 @@
                 </div>
                 <div class="col-md-auto">
                     <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
-                        <input type="checkbox" v-model="data.is_wrong" class="custom-control-input" id="'addressCheckbox3-'+props.index"/>
+                        <input type="checkbox" v-model="data.is_wrong" class="custom-control-input" :id="'addressCheckbox3-'+props.index"/>
                         <label class="custom-control-label" :for="'addressCheckbox3-'+props.index">Erronée</label>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-sm-12">
-            <d-countries v-model="data.countryId"></d-countries>
+            <d-countries required="true" v-model="data.countryId"></d-countries>
         </div>
     </div>
     <div class="row p-1 align-items-center">
@@ -96,19 +96,19 @@
 
     const data = ref({
         address_id: null,
-        fullName: null,
-        address1: null,
-        city: null,
-        zip_code: null,
-        state: null,
+        fullName: "",
+        address1: "",
+        city: "",
+        zip_code: "",
+        state: "",
         is_f_valide: null,
         is_l_valide: null,
         is_wrong: null,
-        comment: null,
-        phone: null,
-        mobile_phone: null,
-        addressTypeId: -1,
-        countryId: -1
+        comment: "",
+        phone: "",
+        mobile_phone: "",
+        addressTypeId: 0,
+        countryId: 0
     });
     const error = ref({});
 

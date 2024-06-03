@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label" :for="computedId">{{ label }}:</label></div>
+        <div class="col-4"><label class="form-label" :for="computedId">{{ label }}<span class="required" v-if="required">*</span>:  </label></div>
         <div class="col-8">
             <input
                 :type="type"
@@ -44,6 +44,11 @@
                 default: null
             },
             disabled:{
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            required: {
                 type: Boolean,
                 required: false,
                 default: false

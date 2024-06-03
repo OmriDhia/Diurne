@@ -54,7 +54,7 @@
     }
 }
 .h-250{
-    height: 250px !important;
+    height: 200px !important;
 }
 .h-100{
     height: 111px !important;
@@ -192,4 +192,31 @@ label, .text-black{
 
 .treasure {
     @include menuCategoryStyles($treasure-color);
+}
+
+@media (max-width: 1024px) {
+    .navbar .navbar-item .nav-item.user-profile-dropdown {
+        margin: 0 2rem  0 16px;
+    }
+}
+@media (max-width: 425px) {
+    .navbar .navbar-item .nav-item.user-profile-dropdown {
+        margin: 0 2rem  0 16px;
+    }
+    header > div > div:nth-child(1){
+       max-width: 90px;
+        font-size: 10px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .mt-sm-3 {
+        margin-top: 2rem !important;
+    }
+    .pe-sm-0 {
+        padding-right: 0 !important;
+    }
+    .ps-sm-2 {
+        padding-left: 0.5rem !important;
+    }
 }

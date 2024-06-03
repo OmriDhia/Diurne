@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Client* :</label></div>
+        <div class="col-4"><label class="form-label">Client<span class="required" v-if="required">*</span> :</label></div>
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"
@@ -43,6 +43,10 @@
                 type: String,
                 default: ''
             },
+            required:{
+                type: Boolean,
+                default: false
+            }
         },
         data() {
             return {

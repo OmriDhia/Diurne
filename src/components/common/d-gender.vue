@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-center">
-        <div class="col-4"><label for="gender" class="form-label">Civilité:</label></div>
+        <div class="col-4"><label for="gender" class="form-label">Civilité<span class="required" v-if="required">*</span>:</label></div>
         <div class="col-8">
             <select id="gender"  :class="{ 'is-invalid': error, 'form-select': true }" :value="gender" @input="handleChange($event.target.value)">
                 <option value="-1" selected="selected">Selectionnez une civilité</option>
@@ -23,6 +23,10 @@
             error: {
                 type: String,
                 default: ''
+            },
+            required: {
+                type: Boolean,
+                default: false
             },
         },
         data() {

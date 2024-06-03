@@ -10,14 +10,14 @@
                     <div class="modal-body">
                         <div class="row align-items-center">
                             <div class="col-lg-6 col-md-12">
-                                <d-customer-dropdown v-model="data.customerId"  :error="error.customerId"></d-customer-dropdown>
-                                <d-nomenclatures v-model="data.nomenclatureId" :error="error.nomenclatureId"></d-nomenclatures>
-                                <d-input :type="'date'" label="Date évènement" v-model="data.event_date" :error="error.event_date"></d-input>
+                                <d-customer-dropdown required="true" v-model="data.customerId"  :error="error.customerId"></d-customer-dropdown>
+                                <d-nomenclatures required="true" v-model="data.nomenclatureId" :error="error.nomenclatureId"></d-nomenclatures>
+                                <d-input required="true" :type="'date'" label="Date évènement" v-model="data.event_date" :error="error.event_date"></d-input>
                                 <d-input label="Contremarque" :disabled="true"></d-input>
                                 <d-input label="Devis" :disabled="true"></d-input>
                                 <div class="row align-items-center">
                                     <div class="col-lg-8 col-md-12">
-                                        <d-input :type="'date'" :error="error.next_reminder_deadline" label="Date next relance" v-model="data.next_reminder_deadline"></d-input>
+                                        <d-input required="true" :type="'date'" :error="error.next_reminder_deadline" label="Date next relance" v-model="data.next_reminder_deadline"></d-input>
                                     </div>
                                     <div class="col-lg-4 col-md-12">
                                         <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
@@ -94,7 +94,6 @@
         }catch (e){
             if(e.response.data.violations){
                 error.value = formatErrorViolations(e.response.data.violations);
-                console.log(error.value)
             }
             window.showMessage(e.message,'error')
         }
