@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="modal animated fadeInDown" id="modalEventManage" tabindex="-1" role="dialog" aria-labelledby="fadeinModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title text-capitalize" id="fadeinModalLabel">évènement</h5>
@@ -32,6 +32,33 @@
                                 <textarea class="form-control" v-model="data.commentaire" style="height: 250px" id="textComment"></textarea>
                             </div>
                         </div>
+                        <div class="row align-items-center">
+                            <div class="col-lg-6 col-md-12 ps-0">
+                                <d-panel-title title="Personne présente"></d-panel-title>
+                                <div class="ps-3">
+                                    <d-customer-dropdown v-model="contactId"></d-customer-dropdown>
+                                </div>
+                                <div class="row justify-content-end">
+                                    <div class="col-auto mt-2">
+                                        <button class="btn btn-outline-custom ps-2" @click="addContact">
+                                            Ajouter
+                                            <vue-feather type="plus" size="14"></vue-feather>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="ps-3 mt-4">
+                                    <d-users-dropdown v-model="userId"></d-users-dropdown>
+                                </div>
+                                <div class="row justify-content-end">
+                                    <div class="col-auto mt-2">
+                                        <button class="btn btn-outline-custom ps-2" @click="addUser">
+                                            Ajouter
+                                            <vue-feather type="plus" size="14"></vue-feather>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-custom pe-2 ps-2" @click.prevent="saveEvent">Enregistrer</button>
@@ -49,6 +76,9 @@
     import dInput from "../base/d-input.vue";
     import axiosInstance from "../../config/http";
     import { formatErrorViolations } from "../../composables/global-methods"
+    import dPanelTitle from "../common/d-panel-title.vue";
+    import dContactDropdown from "../common/d-contact-dropdown.vue";
+    import dUsersDropdown from "../common/d-users-dropdown.vue";
     
     const props = defineProps({
         eventId : {
@@ -71,8 +101,13 @@
         commentaire: "",
         event_date: null,
         next_reminder_deadline: null,
-        people_present: []
+        people_present: {
+            contacts: [],
+            users: []
+        }
     });
+    const contactId = ref(0);
+    const userId = ref(0);
     const error = ref({});
     const saveEvent = async () => {
         try{
@@ -96,6 +131,21 @@
                 error.value = formatErrorViolations(e.response.data.violations);
             }
             window.showMessage(e.message,'error')
+        }
+    }
+    
+    const addContact = () => {
+        if(contactId.value > 0){
+            data.value.people_present.contacts.push(contactId.value)
+            contactId.value = 0; 
+            window.showMessage("Le contact client est ajouté avec succée.")
+        }
+    }
+    const addUser = () => {
+        if(userId.value > 0){
+            data.value.people_present.users.push(userId.value)
+            userId.value = 0;
+            window.showMessage("Le contact diurne est ajouté avec succée.")
         }
     }
 </script>
