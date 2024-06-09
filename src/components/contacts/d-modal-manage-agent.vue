@@ -36,8 +36,11 @@
                         </div>
                     </div>
                     <div class="row p-1 align-items-center">
-                        <div class="col-sm-12 col-md-12">
+                        <div class="col-sm-12 col-md-6">
                             <d-input label="Nom de la banque" v-model="data.bankName" :error="error.bankName"></d-input>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <d-input label="Code rapide" v-model="data.swiftCode" :error="error.swiftCode"></d-input>
                         </div>
                     </div>
                 </div>
@@ -130,7 +133,7 @@
             fax: "",
             sale_contdition: "",
             commission: 0,
-            bank_name: "",
+            bankName: "",
             iban: "",
             swiftCode:"",
             intermediaryTypeId: 0
@@ -149,7 +152,7 @@
         data.value.iban = newVal.iban;
         data.value.mobile_phone = newVal.mobile_phone;
         data.value.phone = newVal.phone;
-        data.value.swift_code = newVal.swift_code;
+        data.value.swiftCode = newVal.swift_code;
     };
     watch(
         () => props.agentData,
