@@ -37,7 +37,7 @@
                     </div>
                     <div class="row p-1 align-items-center">
                         <div class="col-sm-12 col-md-12">
-                            <d-input label="Nom de la banque" v-model="data.bankName" :error="error.bankname"></d-input>
+                            <d-input label="Nom de la banque" v-model="data.bankName" :error="error.bankName"></d-input>
                         </div>
                     </div>
                 </div>
@@ -130,7 +130,7 @@
             fax: "",
             sale_contdition: "",
             commission: 0,
-            bankName: "",
+            bank_name: "",
             iban: "",
             swiftCode:"",
             intermediaryTypeId: 0
@@ -143,7 +143,7 @@
         data.value.id = newVal.id;
         data.value.firstname = newVal.firstname;
         data.value.lastname = newVal.lastname;
-        data.value.gender_id = newVal.gender;
+        data.value.gender_id = newVal.gender_id;
         data.value.bankName = newVal.bank_name;
         data.value.email = newVal.email;
         data.value.iban = newVal.iban;

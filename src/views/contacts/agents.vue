@@ -138,7 +138,9 @@ const getAgents = async () => {
         const data = response.data.response;
         total_rows.value = data.count;
         rows.value = data.agents;
-    } catch { }
+    } catch(e) { 
+        console.error(e.toString())
+    }
 
     loading.value = false;
 };
