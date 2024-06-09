@@ -125,7 +125,14 @@
             default: []
         },
         customerId: {
-            type: Number
+            type: [Number, null]
+        },
+        intermediaryId: {
+            type: [Number, null]
+        },
+        intermediary: {
+            type: Boolean,
+            default: false
         }
     });
 
@@ -148,13 +155,20 @@
 
     const addAddress = async () => {
         try{
-            if(props.customerId){
+            if(props.customerId || props.intermediary){
                 error.value = {};
                 const res = await axiosInstance.post("api/createAddress",data.value);
-                const res2 = await axiosInstance.post("api/AssignAddressToCustomer",{
-                    addressId: res.data.response.address_id,
-                    customerId: props.customerId
-                });
+                if(props.intermediary && props.intermediaryId){
+                    const res2 = await axiosInstance.post("api/AssignAddressToIntermediary",{
+                        addressId: res.data.response.address_id,
+                        intermediaryId: props.intermediaryId
+                    });
+                }else if(props.customerId){
+                    const res2 = await axiosInstance.post("api/AssignAddressToCustomer",{
+                        addressId: res.data.response.address_id,
+                        customerId: props.customerId
+                    }); 
+                }
                 window.showMessage("Ajout avec succées.");
                 window.location.reload();
             }

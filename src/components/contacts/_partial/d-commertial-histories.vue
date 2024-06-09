@@ -23,7 +23,7 @@
                         {{ item.to.replace(' 00:00:00', '')}}
                     </td>
                     <td aria-colindex="4" role="cell" class="">
-                        <div title="test" class="t-dot" :class="item.is_validated === 'true' ? 'bg-success' :'bg-danger'"></div>
+                        <div title="test" class="t-dot" :class="item.status == 'Pending' ?  'bg-warning' : item.status == 'Accepted' ? 'bg-success' :'bg-danger'"></div>
                     </td>
                 </tr>
             </tbody>

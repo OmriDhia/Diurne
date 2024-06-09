@@ -7,7 +7,7 @@
             <perfect-scrollbar class="list-unstyled menu-categories mt-5" tag="ul"
                 :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 300, suppressScrollX: true }">
                 <li class="menu" v-for="menu in menus" :key="menu.id">
-                    <router-link :to="'/' + menu.route" class="dropdown-toggle" v-if="menu.children.length === 0"
+                    <router-link :to="getPathByName(menu.route)" class="dropdown-toggle" v-if="menu.children.length === 0"
                                  @click.prevent="clickH()">
                         <d-menu-item :icon="menu.icon" :name="menu.name"></d-menu-item>
                     </router-link>
@@ -22,8 +22,13 @@
                         </a>
 
                         <ul :id="menu.name" class="collapse submenu list-unstyled" data-bs-parent="#sidebar">
+                            <li v-if="menu.route && menu.route === 'contacts'">
+                                <router-link :to="getPathByName(menu.route)"  @click.prevent="clickHExp($event)">
+                                    {{ $t(menu.name) }}
+                                </router-link>
+                            </li>
                             <li v-for="child in menu.children" :key="child.id">
-                                <router-link :to="'/'+ menu.name"  @click.prevent="clickHExp($event)">
+                                <router-link :to="getPathByName(child.route)"  @click.prevent="clickHExp($event)">
                                     {{ $t(child.name) }}
                                 </router-link>
                             </li>
@@ -40,13 +45,25 @@
 import { onMounted, ref } from 'vue';
 import VueFeather from 'vue-feather';
 import { useStore } from 'vuex';
+import {useRouter} from 'vue-router';
 import userService from '../../Services/user-service';
 import DMenuItem from './components/d-menu-item.vue';
 const store = useStore();
+const router = useRouter();
 
 const menu_collapse = ref('dashboard');
 const menus = userService.getUserMenu();
+const routes = router.getRoutes();
 
+const getPathByName = (name) => {
+    try{
+        const routeInfo = router.resolve({ name: name });
+        return routeInfo.href;
+    }catch{
+        return '/error/404';
+    }
+   
+}
 onMounted(() => {
     /*const selector = document.querySelector('#sidebar a[href="' + window.location.pathname + '"]');
     applyMenuActive(selector, true)*/
@@ -55,7 +72,7 @@ onMounted(() => {
 const clickH = ()=>{
     const a = document.querySelectorAll('#sidebar ul.collapse');
     a.forEach(el => {
-        applyMenuActive(el, false)
+        applyMenuActive(el, true)
     });
 }
 const clickHExp = (e)=>{
@@ -73,11 +90,10 @@ const clickHExp = (e)=>{
 const subMenuActive = () => {
     const el = document.querySelectorAll('#sidebar a');
     el.forEach( e => {
-        console.log(e.href,window.location.pathname.includes(e.href));
         if(e.href && window.location.href.includes(e.href)){
             setTimeout(() => {
                 e.classList.add('active', 'router-link-active');
-                applyMenuActive(e, false)
+                applyMenuActive(e, true)
             },500);
         }
     })

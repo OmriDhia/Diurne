@@ -208,7 +208,22 @@ label, .text-black{
         font-size: 10px !important;
     }
 }
-
+#sidebar ul.menu-categories ul.submenu > li {
+    a{
+        margin-left: 10px;
+        &.active, &:hover{
+            color: black !important;
+            margin-left: 20px;
+            &:before{
+                content: none !important;
+            }
+        }
+        &:before{
+            content: none !important;
+        }
+    }
+    
+}
 @media (max-width: 576px) {
     .mt-sm-3 {
         margin-top: 2rem !important;

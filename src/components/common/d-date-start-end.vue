@@ -28,14 +28,15 @@
 
 <script setup>
     import { ref, onMounted, watch } from 'vue';
+    import {Helper} from "../../composables/global-methods";
 
     const props = defineProps({
         dates: {
             type: Object
         }
     });
-    
-    const startDate = ref('');
+    const date = Helper.FormatDate(new Date());
+    const startDate = ref(Helper.FormatDate(new Date()));
     const endDate = ref('');
     
     const emit = defineEmits(['update:dates']);
@@ -48,7 +49,7 @@
         affectData(props.dates)
     });
     const affectData = (dates) => {
-        startDate.value = dates.startDate || '';
+        startDate.value = dates.startDate || date;
         endDate.value = dates.endDate || '';
     };
     watch(

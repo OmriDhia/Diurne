@@ -64,7 +64,6 @@
     const addAttribution = async () => {
         try{
             let url = 'api/AssignIntermediaryToCustomer';
-            console.log(agent.value);
             const res = await axiosInstance.post(url,{
                 intermediaryId: agent.value.id,
                 customerId: props.customerId,
@@ -73,7 +72,7 @@
             });
 
             const name = agent.value.name.split(" ");
-            agentsData.value.push({
+            agentsData.value.unshift({
                 intermediary_id: agent.value.id,
                 customer_id: props.customerId,
                 firstname: name[0],
@@ -98,7 +97,7 @@
 
     const getAgents = async (firstname = "", lastname = "") => {
         try{
-            let url = 'api/agents?page=1&itemPerPage=30';
+            let url = '/api/contact/agents?page=1&itemPerPage=30&orderBy=firstname&orderWay=asc';
 
             if(firstname){
                 url += '&filter[firstname]='+firstname;

@@ -166,6 +166,31 @@
 
                         </div>
                     </template>
+                    <template #commercial="data">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ data.value.commercial}}</strong>
+                           <div v-if="data.value.status == 'Pending' ">
+                               <button type="button" class="btn btn-icon p-0" v-if="data.value.loading">
+                                   <vue-feather type="loader" animation="spin"></vue-feather>
+                               </button>
+                               <button type="button" 
+                                       class="btn btn-icon p-0"
+                                       data-bs-toggle="dropdown"
+                                       aria-haspopup="true"
+                                       aria-expanded="false" v-if="!data.value.loading" >
+                                   <vue-feather type="clipboard"></vue-feather>
+                               </button>
+                               <ul class="dropdown-menu p-0" style="will-change: transform" v-if="!loadingAttribution">
+                                   <li class="p-2 text-uppercase" style="background-color: green">
+                                       <a href="javascript:void(0);" class="dropdown-item text-white" @click.prevent="doValidation('validation',data)">Valider</a>
+                                   </li>
+                                   <li class="p-2 text-uppercase" style="background-color: red">
+                                       <a href="javascript:void(0);" class="dropdown-item text-white"  @click.prevent="doValidation('reject',data)">Annuler</a>
+                                   </li>
+                               </ul>
+                           </div>
+                        </div>
+                    </template>
                     <template #has_completed_address="data">
                         <div title="test" class="t-dot" :class="data.value.has_completed_address === 'true' ? 'bg-success' :'bg-danger'"></div>
                     </template>
@@ -191,6 +216,7 @@
   import { filterContact } from "../../composables/constants";
 
   const loading = ref(true);
+  const loadingAttribution = ref(false);
   const total_rows = ref(0);
 
   const params = reactive({
@@ -327,6 +353,22 @@
       };
       getCustomers();
   }
+  const doValidation = async (action, attribution) => {
+      try{
+          attribution.value.loading = true;
+          if(action === "validation"){
+              const res = await axiosInstance.post('/api/CommercialAttributionValidation/' + attribution.value.attribution_id);
+              window.showMessage("La demande d'attribution est bien validée.");
+          }else{
+              const res = await axiosInstance.post('/api/CommercialAttributionAnnulation/' + attribution.value.attribution_id);
+              window.showMessage("La demande d'attribution est rejetée avec succès.");
+          }
+          // attribution.value.loading = false;
+          getCustomers();
+      }catch (e){
+          
+      }
+  }
   const goToNewContact = () => {
       location.href = '/contacts/manage'
   }
@@ -350,6 +392,10 @@
     .btn-reset{
         box-shadow: none !important;
         margin-right: 5px;
+    }
+    .dropdown-item:active, .dropdown-item:hover{
+        background: none !important;
+        
     }
 </style>
 

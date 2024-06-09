@@ -98,6 +98,7 @@
     "Please enter a valid phone Number.": "Veuillez entrer un numéro de téléphone valide.",
     "Code cannot be empty.": "Le code ne peut pas être vide.",
     "Social reason cannot be empty.": "La raison sociale ne peut pas être vide.",
+    "This value should not be blank.": "Cette valeur ne doit pas être vide.",
     "Please enter a valid postal code. It must have this form NNNNN.": "Veuillez entrer un code postal valide. Il doit avoir cette forme : NNNNN.",
     "Please enter a valid postal code. It must have this form LNL NLN.": "Veuillez entrer un code postal valide. Il doit avoir la forme LNL NLN."
 }

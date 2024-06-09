@@ -30,7 +30,7 @@
                         </template>
                     </d-panel>
                 </div>
-                <div class="col-md-6 col-sm-12 p-0 ps-sm-2 mt-sm-3">
+                <div class="col-md-6 col-sm-12 p-0 ps-sm-2 mt-md-1 mt-sm-3">
                     <d-panel>
                         <template v-slot:panel-header>
                             <d-panel-title title="Agent"></d-panel-title>

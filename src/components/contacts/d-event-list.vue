@@ -110,7 +110,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row row align-items-center justify-content-end pe-5 mt-5">
+                <div class="row align-items-center justify-content-end pe-5 mt-5">
                     <div class="col-auto">
                         <button class="btn btn-outline-custom">
                             éditer list emailing

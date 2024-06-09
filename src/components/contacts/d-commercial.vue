@@ -69,7 +69,7 @@
             });
             
             const name = commertial.value.name.split(' ');
-            commercialData.value.push({
+            commercialData.value.unshift({
                 commercial_id: commertial.value.user_id,
                 customer_id: props.customerId,
                 firstname: name[0],

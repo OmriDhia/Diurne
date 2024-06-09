@@ -111,7 +111,6 @@
     const error = ref({});
     const saveEvent = async () => {
         try{
-            
             const res = await axiosInstance.post("/api/createEvent",data.value);
             window.showMessage("Ajout avec succées.");
             document.querySelector("#modalEventManage .btn-close").click();
@@ -136,14 +135,14 @@
     
     const addContact = () => {
         if(contactId.value > 0){
-            data.value.people_present.contacts.push(contactId.value)
+            data.value.people_present.contacts.push(contactId.value);
             contactId.value = 0; 
             window.showMessage("Le contact client est ajouté avec succée.")
         }
     }
     const addUser = () => {
         if(userId.value > 0){
-            data.value.people_present.users.push(userId.value)
+            data.value.people_present.users.push(userId.value);
             userId.value = 0;
             window.showMessage("Le contact diurne est ajouté avec succée.")
         }

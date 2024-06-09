@@ -16,8 +16,8 @@ export const menuHomeColor = {
     treasure: '#EBC31A'
 }
 export const intermediaryType ={
-    agent: 3,
-    perscripteur: 4,
+    agent: "Agent",
+    perscripteur: "Prescripteur",
 }
 export const filterContact = {
     lastname: null,

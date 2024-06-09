@@ -112,6 +112,16 @@ export const routes = [
         },
     },
     {
+        path: '/agents',
+        name: 'get_agents',
+        component: () => import('../views/contacts/agents.vue'),
+        meta: {
+            requiresAuth: true,
+            permission: "read contact",
+            class: 'contacts'
+        },
+    },
+    {
         path: '/projet',
         name: 'projet',
         children: [

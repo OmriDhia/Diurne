@@ -114,11 +114,9 @@
 
     const updateAddress = async () => {
         try{
-            if(props.customerId){
-                error.value = {};
-                const res = await axiosInstance.put("api/updateAddress/" + data.value.address_id, data.value);
-                window.showMessage("Mise a jour avec succées.")
-            }
+            error.value = {};
+            const res = await axiosInstance.put("api/updateAddress/" + data.value.address_id, data.value);
+            window.showMessage("Mise a jour avec succées.")
         }catch(e){
             if(e.response.data.violations){
                 error.value = formatErrorViolations(e.response.data.violations)
