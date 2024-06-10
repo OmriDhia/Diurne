@@ -1,8 +1,13 @@
 <template>
     <div>
-        <d-base-modal id="modalAgentManage" title="Agent" @onClose="handleClose">
+        <d-base-modal id="modalAgentManage" title="Intermediaire" @onClose="handleClose">
             <template v-slot:modal-body>
                 <div class="col-12">
+                    <div class="row p-1 align-items-center justify-content-center">
+                        <div class="col-sm-12 col-md-8">
+                            <d-intermediary-type required="true" v-model="data.intermediaryTypeId" :error="error.intermediaryTypeId"></d-intermediary-type>
+                        </div>
+                    </div>
                     <div class="row p-1 align-items-center">
                         <div class="col-sm-12 col-md-6">
                             <d-gender required="true" v-model="data.gender_id" :error="error.gender_id"></d-gender>
@@ -40,7 +45,7 @@
                             <d-input label="Nom de la banque" v-model="data.bankName" :error="error.bankName"></d-input>
                         </div>
                         <div class="col-sm-12 col-md-6">
-                            <d-input label="Code rapide" v-model="data.swiftCode" :error="error.swiftCode"></d-input>
+                            <d-input label="Code swift" v-model="data.swiftCode" :error="error.swiftCode"></d-input>
                         </div>
                     </div>
                 </div>
@@ -61,7 +66,8 @@
     import dGender from "../common/d-gender.vue";
     import dBaseModal from "../base/d-base-modal.vue";
     import {intermediaryType} from "../../composables/constants";
-
+    import dIntermediaryType from "../common/d-intermediary-type.vue";
+  
     const props = defineProps({
         agentData: {
             type: Object,
@@ -84,25 +90,12 @@
         intermediaryTypeId: 0
     });
     const error = ref({});
-    const intermediaryTypeArray = ref([]);
     
     onMounted(()=>{
-        getIntermediaryType();
         affectData(props.agentData);
     });
     
-    const getIntermediaryType= async () => {
-        try {
-            const res = await axiosInstance.get("api/intermediaryTypes");
-            intermediaryTypeArray.value = res.data.response.intermediaryTypes;
-        }catch (e){
-            console.error(e.toString());
-        }
-    };
-    
     const saveAgent = async () =>{
-        const ag = intermediaryTypeArray.value.filter(a => a.name === intermediaryType.agent)[0]
-        data.value.intermediaryTypeId = ag ? ag.intermediaryType_id : 0;
         try{
             if(data.value.id){
                 const res = await axiosInstance.put("/api/updateIntermediary/" + data.value.id,data.value);
@@ -141,8 +134,6 @@
     };
 
     const affectData = (newVal) => {
-        const ag = intermediaryTypeArray.value.filter(a => a.name === intermediaryType.agent)[0]
-        data.value.intermediaryTypeId = ag ? ag.intermediaryType_id : 0;
         data.value.id = newVal.id;
         data.value.firstname = newVal.firstname;
         data.value.lastname = newVal.lastname;
@@ -153,6 +144,7 @@
         data.value.mobile_phone = newVal.mobile_phone;
         data.value.phone = newVal.phone;
         data.value.swiftCode = newVal.swift_code;
+        data.value.intermediaryTypeId = newVal.intermediaryTypeId
     };
     watch(
         () => props.agentData,
@@ -164,6 +156,7 @@
 
     const handleClose = () => {
         initData();
+        error.value = {};
         emit('onClose')
     }
 </script>

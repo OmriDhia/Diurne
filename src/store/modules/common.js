@@ -7,6 +7,7 @@ export default {
         countries: [],
         nomenclatures: [],
         languages: [],
+        intermediaryTypes: []
     },
     mutations: {
         setLayout(state, payload) {
@@ -30,6 +31,9 @@ export default {
         setLanguages(state, payload) {
             state.languages = payload;
         },
+        setIntermediaryTypes(state, payload) {
+            state.intermediaryTypes = payload;
+        },
     },
     getters: {
         layout(state) {
@@ -52,6 +56,9 @@ export default {
         },
         languages(state) {
             return state.languages;
+        },
+        intermediaryTypes(state) {
+            return state.intermediaryTypes;
         },
     },
 }

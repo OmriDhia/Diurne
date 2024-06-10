@@ -46,6 +46,7 @@
     import VueFeather from 'vue-feather';
     import dAgentHistories from "./_partial/d-agent-histories.vue";
     import perfectScroll from "../plugins/perfect-scrollbar1.vue";
+    import {Helper} from "../../composables/global-methods";
 
     const props = defineProps({
         customerId: {
@@ -67,7 +68,7 @@
             const res = await axiosInstance.post(url,{
                 intermediaryId: agent.value.id,
                 customerId: props.customerId,
-                fromDate: dates.value.startDate,
+                fromDate: Helper.FormatDate(dates.value.startDate),
                 toDate: dates.value.endDate
             });
 

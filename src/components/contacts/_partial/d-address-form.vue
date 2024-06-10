@@ -138,8 +138,8 @@
         data.value.is_l_valide = address.is_l_valide;
         data.value.is_wrong = address.is_wrong;
         data.value.comment = address.comment;
-        /*data.value.phone = address.phone;
-        data.value.mobile_phone = address.mobile_phone;*/
+        data.value.phone = address.phone;
+        /*data.value.mobile_phone = address.mobile_phone;*/
         data.value.addressTypeId = address.addressType.addressTypeId;
         data.value.countryId = address.country;
     };

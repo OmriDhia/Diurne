@@ -42,6 +42,7 @@
     import axiosInstance from "../../config/http";
     import dCommertialHistories from "./_partial/d-commertial-histories.vue";
     import perfectScroll from "../plugins/perfect-scrollbar1.vue";
+    import {Helper} from "../../composables/global-methods";
     
     const props = defineProps({
         customerId: {
@@ -54,16 +55,21 @@
 
     const commertials = ref([]);
     const commertial = ref('');
-    const dates = ref({startDate: null, endDate: null});
+    const dates = ref({startDate: "", endDate: ""});
     const commercialData = ref([]);
 
     const addAttribution = async () => {
         try{
+            if(commercialData.value[0] && commercialData.value[0].status === "Pending"){
+                window.showMessage("La dernière attribution est en attente de validation.", 'error');
+                return;
+            }
             let url = 'api/AssignCommercialToCustomer';
             const res = await axiosInstance.post(url,{
                 commercialId: commertial.value.user_id,
                 customerId: props.customerId,
                 isValidated: false,
+                status: "Pending",
                 fromDate: dates.value.startDate,
                 toDate: dates.value.endDate
             });
@@ -74,6 +80,7 @@
                 customer_id: props.customerId,
                 firstname: name[0],
                 lastname: name[1],
+                status: "Pending",
                 from: dates.value.startDate,
                 to: dates.value.endDate,
                 is_validated: false,

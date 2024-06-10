@@ -112,9 +112,9 @@ export const routes = [
         },
     },
     {
-        path: '/agents',
-        name: 'get_agents',
-        component: () => import('../views/contacts/agents.vue'),
+        path: '/intermediaries',
+        name: 'get_intermediaries',
+        component: () => import('../views/contacts/intermediares.vue'),
         meta: {
             requiresAuth: true,
             permission: "read contact",

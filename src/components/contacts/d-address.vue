@@ -170,7 +170,13 @@
                     }); 
                 }
                 window.showMessage("Ajout avec succées.");
-                window.location.reload();
+                let add = res.data.response;
+                add.addressType = {
+                    addressTypeId : res.data.response.type.addressType_id
+                };
+                add.country = res.data.response.country.country_id;
+                add.postcode = res.data.response.country.zip_code;
+                props.addressData.unshift(add);
             }
         }catch(e){
             if(e.response.data.violations){

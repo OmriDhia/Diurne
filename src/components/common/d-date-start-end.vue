@@ -51,6 +51,7 @@
     const affectData = (dates) => {
         startDate.value = dates.startDate || date;
         endDate.value = dates.endDate || '';
+        updateDates();
     };
     watch(
         () => props.dates,

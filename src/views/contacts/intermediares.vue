@@ -5,30 +5,43 @@
         </template>
         <template v-slot:header>
             <div class="panel br-6 p-2">
-                <div class="row d-flex justify-content-start">
+                <div class="row d-flex justify-content-start p-3">
                     <div class="col-auto">
-                        <button class="btn btn-custom pe-5 ps-5" data-bs-toggle="modal" data-bs-target="#modalAgentManage">Nouveau Agent</button>
+                        <button class="btn btn-custom pe-5 ps-5" data-bs-toggle="modal" data-bs-target="#modalAgentManage">Nouveau Intermediaire</button>
                     </div>
                     <d-modal-manage-agent :agentData="agentData" @onClose="onClose"></d-modal-manage-agent>
                 </div>
-                <div class="row justify-content-end p-3">
-                    <div class="col-md-4 col-sm-12 p-0">
-                       <d-input label="Nom" v-model="filter.lastname"></d-input>
+                <div class="row justify-content-end p-3 align-items-center">
+                    <div class="col-lg-4 col-md-12">
+                        <div class="row align-items-center">
+                            <div class="col-12">
+                                <d-input label="Nom" v-model="filter.lastname"></d-input>
+                            </div>
+                            <div class="col-12">
+                                <d-input label="Prénom" v-model="filter.firstname"></d-input>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4 col-sm-12 pe-2 ps-2">
-                        <d-input label="Prénom" v-model="filter.firstname"></d-input>
+                    <div class="col-lg-4 col-md-12">
+                        <div class="row align-items-center">
+                            <div class="col-12">
+                                <d-input label="Email" v-model="filter.email"></d-input>
+                            </div>
+                            <div class="col-12">
+                                <d-intermediary-type v-model="filter.intermediaryTypeId"></d-intermediary-type>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4 col-sm-12 pe-2 ps-2">
-                        <d-input label="Email" v-model="filter.email"></d-input>
-                    </div>
-                </div>
-                <div class="row justify-content-end p-3">
-                    <div class="col-auto p-0">
-                        <button v-if="filterActive" class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">
-                            Reset filtre </button>
-                    </div>
-                    <div class="col-auto p-0 me-2">
-                        <button class="btn btn-custom pe-3 ps-3" @click.prevent="doSearch">Recherche</button>
+                    <div class="col-lg-4 col-md-12">
+                        <div class="row align-items-end justify-content-end">
+                            <div class="col-auto p-0">
+                                <button v-if="filterActive" class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">
+                                    Reset filtre </button>
+                            </div>
+                            <div class="col-auto p-0 me-2">
+                                <button class="btn btn-custom pe-3 ps-3" @click.prevent="doSearch">Recherche</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -92,6 +105,7 @@ import dBasePage from "../../components/base/d-base-page.vue";
 import dPageTitle from "../../components/common/d-page-title.vue";
 import dModalManageAgent from "../../components/contacts/d-modal-manage-agent.vue";
 import dModalManageAgentAddress from "../../components/contacts/_partial/d-modal-manage-agent-address.vue";
+import DIntermediaryType from "../../components/common/d-intermediary-type.vue";
 
 useMeta({ title: 'Agents' });
 
@@ -108,7 +122,8 @@ const params = reactive({
 const filter = ref({
     firstname: "",
     lastname: "",
-    email: ""
+    email: "",
+    intermediaryTypeId: 0,
 });
 const rows = ref(null);
 const filterActive = ref(false);
@@ -121,7 +136,9 @@ const cols = ref([
     { field: 'firstname', title: 'Prénom' },
     { field: 'email', title: 'Email' },
     { field: 'phone', title: 'Tél. fixe', sort: false},
+    { field: 'intermediaryType', title: 'Type', sort: false},
     { field: 'address', title: 'Adresse', sort: false},
+    { field: 'swift_code', title: 'Code swift', sort: false },
     { field: 'bank_name', title: 'Bank name', sort: false },
     { field: 'iban', title: 'IBAN', sort: false },
 ]) || [];
@@ -132,12 +149,12 @@ onMounted(() => {
 const getAgents = async () => {
     try {
         loading.value = true;
-        let url_customers = `/api/contact/agents?page=${params.current_page}&itemPerPage=${params.pagesize}&orderBy=${params.orderBy}&orderWay=${params.orderWay}`;
+        let url_customers = `/api/contact/intermediaries?page=${params.current_page}&itemPerPage=${params.pagesize}&orderBy=${params.orderBy}&orderWay=${params.orderWay}`;
         url_customers += getFilterParams();
         const response = await axiosInstance.get(url_customers);
         const data = response.data.response;
         total_rows.value = data.count;
-        rows.value = data.agents;
+        rows.value = data.intermediaries;
     } catch(e) { 
         console.error(e.toString())
     }
@@ -168,6 +185,9 @@ const getFilterParams = () => {
     if (filter.value.email) {
         param += "&filter[email]=" + filter.value.email
     }
+    if (filter.value.intermediaryTypeId) {
+        param += "&filter[intermediaryTypeId]=" + filter.value.intermediaryTypeId
+    }
     return param;
 };
 const doReset = () => {
@@ -183,11 +203,11 @@ const onClose = () => {
     addressData.value = [];
     intermediaryId.value = null;
     getAgents();
-}
+};
 
 const editAgents = (agent) => {
     agentData.value = agent; 
-}
+};
 const editAddress = (agent) => {
     addressData.value = agent.addresses; 
     intermediaryId.value = agent.id; 
