@@ -42,18 +42,17 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import VueFeather from 'vue-feather';
 import { useStore } from 'vuex';
-import {useRouter} from 'vue-router';
+import {useRouter, useRoute} from 'vue-router';
 import userService from '../../Services/user-service';
-import DMenuItem from './components/d-menu-item.vue';
+import dMenuItem from './components/d-menu-item.vue';
 const store = useStore();
 const router = useRouter();
 
 const menu_collapse = ref('dashboard');
 const menus = userService.getUserMenu();
-const routes = router.getRoutes();
 
 const getPathByName = (name) => {
     try{
@@ -62,8 +61,11 @@ const getPathByName = (name) => {
     }catch{
         return '/error/404';
     }
-   
-}
+};
+const route = useRoute()
+watch(route, (to) => {
+    subMenuActive(false)
+});
 onMounted(() => {
     /*const selector = document.querySelector('#sidebar a[href="' + window.location.pathname + '"]');
     applyMenuActive(selector, true)*/
@@ -87,14 +89,14 @@ const clickHExp = (e)=>{
     }
 };
 
-const subMenuActive = () => {
+const subMenuActive = (click = true) => {
     const el = document.querySelectorAll('#sidebar a');
     el.forEach( e => {
         if(e.href && window.location.href.includes(e.href)){
             setTimeout(() => {
                 e.classList.add('active', 'router-link-active');
-                applyMenuActive(e, true)
-            },500);
+                applyMenuActive(e, click)
+            });
         }
     })
 }
@@ -107,8 +109,10 @@ const applyMenuActive = (selector, active) => {
             if (ele) {
                 ele = ele[0];
                 setTimeout(() => {
-                    active ? ele.click() : '';
-                    ele.dataset.active = active;
+                    if(ele.ariaExpanded == "false"){
+                        ele.click();
+                        ele.dataset.active = true
+                    }
                 });
             }
         } else {

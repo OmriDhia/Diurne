@@ -111,7 +111,10 @@ label, .text-black{
     .multiselect__option--highlight, .multiselect__option:hover{
         background-color: $color !important;
     }
-    
+    .multiselect__tag{
+        background: $color;
+        margin-bottom: 0px;
+    }
     #sidebar ul.menu-categories li.menu {
         > a.active,
         > .dropdown-toggle[data-active=true][aria-expanded=true] {

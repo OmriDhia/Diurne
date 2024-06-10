@@ -4,8 +4,9 @@
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"
-                :model-value="customerId"
+                v-model="customerId"
                 :options="customers"
+                :multiple="true"
                 placeholder="Client"
                 track-by="id"
                 label="customer"
@@ -36,7 +37,7 @@
         },
         props: {
             modelValue: {
-                type: [Number, null],
+                type: [Array, null],
                 required: true
             },
             error: {
@@ -50,17 +51,21 @@
         },
         data() {
             return {
-                customerId: null,
+                customerId: [],
                 customers: [],
             };
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', parseInt(value.id));
+                this.$emit('update:modelValue', this.customerId);
             },
             handleSearch(searchQuery){
                 const se = searchQuery.split(' ');
                 this.getCustomers(se[0], se[1]);
+            },
+            addTag(newTag){
+                this.customers.push(newTag);
+                this.customerId.push(newTag);
             },
             async getCustomers (firstname = "", lastname = ""){
                 try{
@@ -86,7 +91,7 @@
         },
         watch: {
             modelValue(newValue) {
-                this.customerId = this.customers.filter(ad => ad.id === newValue)[0];
+                this.customerId = newValue
             }
         }
     };

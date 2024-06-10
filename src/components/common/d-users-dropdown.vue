@@ -4,7 +4,8 @@
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"
-                :model-value="userId"
+                :multiple="true"
+                v-model="userId"
                 :options="users"
                 placeholder="Contact diurne"
                 track-by="id"
@@ -13,6 +14,7 @@
                 selected-label=""
                 select-label=""
                 deselect-label=""
+                @tag="addTag"
                 @update:model-value="handleChange($event)"
                 @search-change="handleSearch($event)"
             ></multiselect>
@@ -36,7 +38,7 @@
         },
         props: {
             modelValue: {
-                type: [Number, null],
+                type: [Array, null],
                 required: true
             },
             error: {
@@ -50,13 +52,17 @@
         },
         data() {
             return {
-                userId: null,
+                userId: [],
                 users: [],
             };
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', parseInt(value.id));
+                this.$emit('update:modelValue', this.userId);
+            },
+            addTag(newTag){
+                this.users.push(newTag);
+                this.userId.push(newTag);  
             },
             handleSearch(searchQuery){
                 const se = searchQuery.split(' ');
@@ -91,7 +97,7 @@
         },
         watch: {
             modelValue(newValue) {
-                this.userId = this.users.filter(ad => ad.id === newValue)[0];
+                this.userId = newValue;
             }
         }
     };

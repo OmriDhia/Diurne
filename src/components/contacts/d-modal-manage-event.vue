@@ -38,24 +38,8 @@
                                 <div class="ps-3">
                                     <d-customer-dropdown v-model="contactId"></d-customer-dropdown>
                                 </div>
-                                <div class="row justify-content-end">
-                                    <div class="col-auto mt-2">
-                                        <button class="btn btn-outline-custom ps-2" @click="addContact">
-                                            Ajouter
-                                            <vue-feather type="plus" size="14"></vue-feather>
-                                        </button>
-                                    </div>
-                                </div>
                                 <div class="ps-3 mt-4">
                                     <d-users-dropdown v-model="userId"></d-users-dropdown>
-                                </div>
-                                <div class="row justify-content-end">
-                                    <div class="col-auto mt-2">
-                                        <button class="btn btn-outline-custom ps-2" @click="addUser">
-                                            Ajouter
-                                            <vue-feather type="plus" size="14"></vue-feather>
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -106,11 +90,17 @@
             users: []
         }
     });
-    const contactId = ref(0);
-    const userId = ref(0);
+    const contactId = ref([]);
+    const userId = ref([]);
     const error = ref({});
     const saveEvent = async () => {
         try{
+            data.value.people_present.contacts = contactId.value.map(e => {
+                return e.id
+            });
+            data.value.people_present.users = userId.value.map(e => {
+                return e.id
+            });
             const res = await axiosInstance.post("/api/createEvent",data.value);
             window.showMessage("Ajout avec succées.");
             document.querySelector("#modalEventManage .btn-close").click();
@@ -123,28 +113,16 @@
                 commentaire: null,
                 event_date: null,
                 next_reminder_deadline: null,
-                people_present: []
+                people_present: {
+                    contacts: [],
+                    users: []
+                }
             };
         }catch (e){
             if(e.response.data.violations){
                 error.value = formatErrorViolations(e.response.data.violations);
             }
             window.showMessage(e.message,'error')
-        }
-    }
-    
-    const addContact = () => {
-        if(contactId.value > 0){
-            data.value.people_present.contacts.push(contactId.value);
-            contactId.value = 0; 
-            window.showMessage("Le contact client est ajouté avec succée.")
-        }
-    }
-    const addUser = () => {
-        if(userId.value > 0){
-            data.value.people_present.users.push(userId.value);
-            userId.value = 0;
-            window.showMessage("Le contact diurne est ajouté avec succée.")
         }
     }
 </script>
