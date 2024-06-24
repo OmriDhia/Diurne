@@ -81,20 +81,20 @@
                     </div>
                 </div>
                 <perfect-scrollbar tag="div" class="h-250"
-                                   :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 300, suppressScrollX: true }">
+                                   :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 272, suppressScrollX: true }">
                 <template v-for="(item, index) in props.addressData">
                     <div class="card mb-1">
                         <header class="card-header" role="tab">
                             <section class="mb-0 mt-0">
-                                <div class="" role="menu" data-bs-toggle="collapse" :data-bs-target="'#address'+index" aria-expanded="true" :aria-controls="'address'+index">
-                                    {{ 'Adresse ' + (index+1) }}
+                                <div class="collapsed" role="menu" data-bs-toggle="collapse" :data-bs-target="'#address'+index" aria-expanded="false" :aria-controls="'address'+index">
+                                    {{ item.address1 + ' ' + item.postcode + ' ' + item.city }}
                                     <div class="icons">
                                         <vue-feather type="chevron-down" size="14"></vue-feather>
                                     </div>
                                 </div>
                             </section>
                         </header>
-                        <div :id="'address'+index" class="collapse" :class="{show: index === 0}" :aria-labelledby="'address'+index">
+                        <div :id="'address'+index" class="collapse" :aria-labelledby="'address'+index">
                             <div class="card-body">
                                 <d-address-form :addressData="item" :customerId="props.customerId" :index="index"></d-address-form>
                             </div>

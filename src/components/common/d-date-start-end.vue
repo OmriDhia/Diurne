@@ -12,7 +12,7 @@
                 </div>
                 
             </div>
-            <div class="col-md-6 col-sm-12 pe-0">
+            <div class="col-md-6 col-sm-12 pe-0" v-if="!props.hideDateEnd">
                 <div class="row align-items-center">
                     <div class="col-4">
                         <label for="end-date">Date de fin:</label>
@@ -33,6 +33,10 @@
     const props = defineProps({
         dates: {
             type: Object
+        },
+        hideDateEnd:{
+            type: Boolean,
+            default: false,
         }
     });
     const date = Helper.FormatDate(new Date());

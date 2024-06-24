@@ -9,7 +9,7 @@
         <div class="row align-items-start pe-2 ps-2 mt-3">
             <div class="col-md-4 col-sm-12">
                 <div class="row">
-                    <d-customer-type v-model="filter.customerTypeId"></d-customer-type>
+                    <d-customer-type-dropdown :multiple="true" v-model="filter.customerTypeId"></d-customer-type-dropdown>
                 </div>
                 <div class="row">
                     <d-input label="Raison social" v-model="filter.rs" ></d-input>
@@ -63,13 +63,13 @@
                             </div>
                             <div class="col-auto pe-1 ps-2">
                                 <div class="custom-control custom-radio">
-                                    <input type="radio" class="custom-control-input" id="warnig-add-yes" v-model="filter.hasNoProject" name="warningAdd" value="true"/>
+                                    <input type="checkbox" class="custom-control-input" id="warnig-add-yes" v-model="filter.hasNoProjectY" name="warningAdd" value="true"/>
                                     <label class="custom-control-label text-black" for="warnig-add-yes"> {{ $t('Oui') }} </label>
                                 </div>
                             </div>
                             <div class="col-auto pe-1 ps-1">
                                 <div class="radio-success custom-control custom-radio">
-                                    <input type="radio" class="custom-control-input" id="warnig-add-no" v-model="filter.hasNoProject" name="warningAdd" value="false"/>
+                                    <input type="checkbox" class="custom-control-input" id="warnig-add-no" v-model="filter.hasNoProjectN" name="warningAdd" value="false"/>
                                     <label class="custom-control-label text-black" for="warnig-add-no"> {{ $t('Non') }} </label>
                                 </div>
                             </div>
@@ -97,13 +97,13 @@
                             </div>
                             <div class="col-auto pe-1 ps-2">
                                 <div class="custom-control custom-radio">
-                                    <input type="radio" class="custom-control-input" id="finiched-add-yes" v-model="filter.hasNextStep" name="finichedAdd" value="true"/>
+                                    <input type="checkbox" class="custom-control-input" id="finiched-add-yes" v-model="filter.hasNextStepY" name="finichedAdd" value="true"/>
                                     <label class="custom-control-label text-black" for="finiched-add-yes"> {{ $t('Oui') }} </label>
                                 </div>
                             </div>
                             <div class="col-auto pe-1 ps-1">
                                 <div class="radio-success custom-control custom-radio">
-                                    <input type="radio" class="custom-control-input" id="finiched-add-no" v-model="filter.hasNextStep" name="finichedgAdd" value="false"/>
+                                    <input type="checkbox" class="custom-control-input" id="finiched-add-no" v-model="filter.hasNextStepN" name="finichedgAdd" value="false"/>
                                     <label class="custom-control-label text-black" for="finiched-add-no"> {{ $t('Non') }} </label>
                                 </div>
                             </div>
@@ -155,6 +155,21 @@
     <div class="panel br-6 p-2 mt-3">
         <div class="row mt-5 ms-2 mb-5">
             <div class="vue3-datatable w-100">
+                <div class="mb-2 relative">
+                    <div class="btn-group custom-dropdown mb-4 me-2 btn-group-lg">
+                        <button class="btn btn-outline-custom p-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Cacher / Montrer Colonnes
+                        </button>
+                        <ul class="dropdown-menu p-2">
+                            <li v-for="col in cols" :key="col.field">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" :checked="!col.hide" :id="col.field" @change="col.hide = !$event.target.checked" :name="col.field"/>
+                                    <label class="custom-control-label text-black" :for="col.field"> {{ col.title }} </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
                 <vue3-datatable :rows="rows" :columns="cols" :loading="loading" :isServerMode="true"
                                 :totalRows="total_rows" :page="params.current_page" :pageSize="params.pagesize"
                                 :pageSizeOptions="[10, 25, 50, 75, 100]" noDataContent="Aucun évènement trouvé."
@@ -194,9 +209,11 @@
     import dNomenclatures from "../common/d-nomenclatures.vue";
     import dModalEvent from "./_partial/d-modal-event.vue";
     import dModalManageEvent from "./d-modal-manage-event.vue";
+    import dCustomerTypeDropdown from "../common/d-customer-type-dropdown.vue";
     
     const loading = ref(true);
     const total_rows = ref(0);
+    const isOpen = ref(false);
 
     const params = reactive({
         current_page: 1,
@@ -262,7 +279,8 @@
             param += "&filter[socialReason]=" + filter.value.rs
         }
         if (filter.value.customerTypeId) {
-            param += "&filter[customerGroupId]=" + filter.value.customerTypeId
+            param += "&filter[customerGroupId]=" 
+                + filter.value.customerTypeId.map(e => e.customerGroup_id).join(',');
         }
         if (filter.value.subject) {
             param += "&filter[nomenclatureId]=" + filter.value.subject
@@ -285,11 +303,17 @@
         if (filter.value.hasOnlyOneContact) {
             param += "&filter[hasOnlyOneContact]=" + filter.value.hasOnlyOneContact
         }
-        if (filter.value.hasNoProject) {
-            param += "&filter[hasNoProject]=" + filter.value.hasNoProject
+        if (filter.value.hasNoProjectY) {
+            param += "&filter[hasNoProject]=" + filter.value.hasNoProjectY
         }
-        if (filter.value.hasNextStep) {
-            param += "&filter[hasNextStep]=" + filter.value.hasNextStep
+        if (filter.value.hasNoProjectN) {
+            param += "&filter[hasNoProject]=" + filter.value.hasNoProjectN
+        }
+        if (filter.value.hasNextStepY) {
+            param += "&filter[hasNextStep]=" + filter.value.hasNextStepY
+        }
+        if (filter.value.hasNextStepN) {
+            param += "&filter[hasNextStep]=" + filter.value.hasNextStepN
         }
         if (filter.value.eventDate_from) {
             param += "&filter[eventDate_from]=" + filter.value.eventDate_from
@@ -328,8 +352,10 @@
             hasInvalidCommercial: null,
             active: null,
             hasOnlyOneContact: null,
-            hasNoProject: null,
-            hasNextStep: null,
+            hasNoProjectY: null,
+            hasNoProjectN: null,
+            hasNextStepY: null,
+            hasNextStepN: null,
             eventDate_from: null,
             eventDate_to: null,
             next_reminder_deadline_from: null,

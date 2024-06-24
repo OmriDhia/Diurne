@@ -70,12 +70,12 @@
                     </div>
                 </div>
                 <perfect-scrollbar tag="div" class="h-250" v-if="props.contactData.length > 0"
-                                   :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 300, suppressScrollX: true }">
+                                   :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 272, suppressScrollX: true }">
                 <template v-for="(item, index) in props.contactData">
                     <div class="card mb-1">
                         <header class="card-header" role="tab">
                             <section class="mb-0 mt-0">
-                                <div class="" role="menu" data-bs-toggle="collapse" :data-bs-target="'#contact'+index" aria-expanded="true" :aria-controls="'contact'+index">
+                                <div class="" role="menu" data-bs-toggle="collapse" :data-bs-target="'#contact'+index" aria-expanded="false" :aria-controls="'contact'+index">
                                     {{ item.firstname + " " + item.lastname }}
                                     <div class="icons">
                                         <vue-feather type="chevron-down" size="14"></vue-feather>
@@ -83,7 +83,7 @@
                                 </div>
                             </section>
                         </header>
-                        <div :id="'contact'+index" class="collapse" :class="{show: index === 0}" :aria-labelledby="'contact'+index">
+                        <div :id="'contact'+index" class="collapse" :aria-labelledby="'contact'+index">
                             <div class="card-body">
                                 <d-contact-form :contactData="item" :customerId="props.customerId" :index="index"></d-contact-form>
                             </div>

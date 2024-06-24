@@ -3,9 +3,13 @@
         <div class="row p-2">
             <d-customer-type required="true" :error="error.customerGroupId" v-model="data.customerGroupId"></d-customer-type>
         </div>
+        <div class="row p-2">
+            <d-input required="true" label="Raison social" :error="error.social_reason" v-model="data.social_reason"></d-input>
+        </div>
         <div class="row p-2 pe-3">
             <div class="col-sm-12 col-md-6 pe-4">
                 <d-input  required="true" label="Code contact" v-model="data.code" :error="error.code"></d-input>
+                <button class="btn" @click.prevent="incrimentSuffix" v-if="data.customer_id === 0">Incrimenter</button>
             </div>
             <div class="col-sm-12 col-md-6 pe-4">
                 <d-input required="true" label="CE TVA" v-model="data.tva_ce" :error="error.tva_ce"></d-input>
@@ -13,9 +17,6 @@
         </div>
         <div class="row p-2">
             <d-discount required="true" :error="error.customerGroupId" v-model="data.discountTypeId"></d-discount>
-        </div>
-        <div class="row p-2">
-            <d-input required="true" label="Raison social" :error="error.social_reason" v-model="data.social_reason"></d-input>
         </div>
         <div class="row p-2">
             <d-input label="Site web" :error="error.website" v-model="data.website"></d-input>
@@ -67,7 +68,7 @@
         mailingLanguageId: 0,
     });
     const error = ref({});
-
+    let codeSuffix = ref(1);
     const createCustomer = async () => {
         try{
             if(props.customerData.customer_id){
@@ -94,11 +95,30 @@
         data.value.code = newVal.code;
         data.value.tva_ce = newVal.tva_ce;
         data.value.mailingLanguageId = newVal.mailingLanguageId;
-    }; 
+    };
+    const changeCode = (Rs) => {
+        if(Rs){
+            data.value.code = Rs.substr(0,4) + codeSuffix.value.toString().padStart(2, '0'); 
+        }else{
+            data.value.code = "";
+        }
+    };
+    const incrimentSuffix = (Rs) => {
+        codeSuffix.value++;
+        changeCode(data.value.social_reason);
+    };
     watch(
         () => props.customerData,
         (newVal) => {
            affectData(newVal)
+        }
+    );
+    watch(
+        () => data.value.social_reason,
+        (newVal) => {
+            if(data.value.customer_id === 0 ){
+                changeCode(newVal);
+            }
         }
     );
 </script>
