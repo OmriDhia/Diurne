@@ -30,7 +30,7 @@
                         </template>
                     </d-panel>
                 </div>
-                <div class="col-md-6 col-sm-12 p-0 ps-sm-2 mt-md-1 mt-sm-3">
+                <div class="col-md-6 col-sm-12 p-0 ps-sm-2 mt-md-1 mt-sm-3 mt-xl-0">
                     <d-panel>
                         <template v-slot:panel-header>
                             <d-panel-title title="Agent"></d-panel-title>
@@ -115,6 +115,15 @@
     }
     
 </script>
-<style>
-
+<style scoped>
+    .row {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display:         flex;
+    }
+    .row > [class*='col-'] {
+        display: flex;
+        flex-direction: column;
+    }
 </style>

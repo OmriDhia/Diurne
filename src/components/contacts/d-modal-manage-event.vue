@@ -10,7 +10,7 @@
                     <div class="modal-body">
                         <div class="row align-items-center">
                             <div class="col-lg-6 col-md-12">
-                                <d-customer-dropdown required="true" v-model="data.customerId"  :error="error.customerId"></d-customer-dropdown>
+                                <d-customer-dropdown required="true" v-model="eventCustomerId"  :error="error.customerId"></d-customer-dropdown>
                                 <d-nomenclatures required="true" v-model="data.nomenclatureId" :error="error.nomenclatureId"></d-nomenclatures>
                                 <d-input required="true" :type="'date'" label="Date évènement" v-model="data.event_date" :error="error.event_date"></d-input>
                                 <d-input label="Contremarque" :disabled="true"></d-input>
@@ -36,7 +36,7 @@
                             <div class="col-lg-6 col-md-12 ps-0">
                                 <d-panel-title title="Personne présente"></d-panel-title>
                                 <div class="ps-3">
-                                    <d-customer-dropdown v-model="contactId"></d-customer-dropdown>
+                                    <d-customer-dropdown v-model="contactId" multiple="true"></d-customer-dropdown>
                                 </div>
                                 <div class="ps-3 mt-4">
                                     <d-users-dropdown v-model="userId"></d-users-dropdown>
@@ -91,6 +91,7 @@
         }
     });
     const contactId = ref([]);
+    const eventCustomerId = ref({id: 0});
     const userId = ref([]);
     const error = ref({});
     const saveEvent = async () => {
@@ -101,9 +102,11 @@
             data.value.people_present.users = userId.value.map(e => {
                 return e.id
             });
+            data.value.customerId = eventCustomerId.value.id;
             const res = await axiosInstance.post("/api/createEvent",data.value);
             window.showMessage("Ajout avec succées.");
             document.querySelector("#modalEventManage .btn-close").click();
+            eventCustomerId.value = {id: 0};
             data.value = {
                 nomenclatureId: null,
                 customerId: null,

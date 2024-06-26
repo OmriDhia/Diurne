@@ -81,7 +81,7 @@
                     </div>
                 </div>
                 <perfect-scrollbar tag="div" class="h-250"
-                                   :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 272, suppressScrollX: true }">
+                                   :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 270, suppressScrollX: true }">
                 <template v-for="(item, index) in props.addressData">
                     <div class="card mb-1">
                         <header class="card-header" role="tab">

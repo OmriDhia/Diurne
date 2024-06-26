@@ -6,7 +6,7 @@
                 :class="{ 'is-invalid': error}"
                 v-model="customerId"
                 :options="customers"
-                :multiple="true"
+                :multiple="multiple"
                 placeholder="Client"
                 track-by="id"
                 label="customer"
@@ -45,6 +45,10 @@
                 default: ''
             },
             required:{
+                type: Boolean,
+                default: false
+            },
+            multiple:{
                 type: Boolean,
                 default: false
             }

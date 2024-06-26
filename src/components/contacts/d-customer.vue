@@ -6,14 +6,15 @@
         <div class="row p-2">
             <d-input required="true" label="Raison social" :error="error.social_reason" v-model="data.social_reason"></d-input>
         </div>
-        <div class="row p-2 pe-3">
-            <div class="col-sm-12 col-md-6 pe-4">
-                <d-input  required="true" label="Code contact" v-model="data.code" :error="error.code"></d-input>
-                <button class="btn" @click.prevent="incrimentSuffix" v-if="data.customer_id === 0">Incrimenter</button>
-            </div>
-            <div class="col-sm-12 col-md-6 pe-4">
-                <d-input required="true" label="CE TVA" v-model="data.tva_ce" :error="error.tva_ce"></d-input>
-            </div>
+        <div class="row p-2">
+            <d-input  :button="data.customer_id === 0" required="true" label="Code contact" v-model="data.code" :error="error.code">
+                <template v-slot:input-button>
+                    <button class="btn btn-success" @click.prevent="incrimentSuffix" v-if="data.customer_id === 0">Générer</button>
+                </template>
+            </d-input>
+        </div>
+        <div class="row p-2">
+            <d-input required="true" label="CE TVA" v-model="data.tva_ce" :error="error.tva_ce"></d-input>
         </div>
         <div class="row p-2">
             <d-discount required="true" :error="error.customerGroupId" v-model="data.discountTypeId"></d-discount>

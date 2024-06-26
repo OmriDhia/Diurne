@@ -54,7 +54,10 @@
     }
 }
 .h-250{
-    height: 272px !important;
+    max-height: 272px !important;
+}
+.h-200{
+    max-height: 200px !important;
 }
 .h-100{
     height: 111px !important;

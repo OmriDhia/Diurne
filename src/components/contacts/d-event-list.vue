@@ -15,13 +15,13 @@
                     <d-input label="Raison social" v-model="filter.rs" ></d-input>
                 </div>
                 <div class="row">
-                    <d-input label="CE TVA" v-model="filter.tva_ce" ></d-input>
+                    <d-input label="Nom" v-model="filter.lastname" ></d-input>
                 </div>
                 <div class="row">
-                    <d-input label="Site web" v-model="filter.webSite" ></d-input>
+                    <d-input label="Prénom" v-model="filter.firstname" ></d-input>
                 </div>
                 <div class="row">
-                    <d-input label="Contact" v-model="filter.contact" ></d-input>
+                    <d-input label="Email" v-model="filter.email" ></d-input>
                 </div>
                 <div class="row">
                     <d-input label="Commercial" v-model="filter.commercial" ></d-input>
@@ -285,14 +285,11 @@
         if (filter.value.subject) {
             param += "&filter[nomenclatureId]=" + filter.value.subject
         }
-        if (filter.value.tva_ce) {
-            param += "&filter[tvaCe]=" + filter.value.tva_ce
+        if (filter.value.email) {
+            param += "&filter[eamil]=" + filter.value.email
         }
         if (filter.value.commercial) {
             param += "&filter[commercial]=" + filter.value.commercial
-        }
-        if (filter.value.webSite) {
-            param += "&filter[website]=" + filter.value.webSite
         }
         if (filter.value.active && filter.value.active !== 'all') {
             param += "&filter[active]=" + filter.value.active
@@ -345,9 +342,8 @@
             firstname: null,
             lastname: null,
             rs: null,
-            tva_ce: null,
+            email: null,
             commercial: null,
-            webSite: null,
             customerTypeId: null,
             hasInvalidCommercial: null,
             active: null,

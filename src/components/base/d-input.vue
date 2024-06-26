@@ -1,7 +1,7 @@
 <template>
     <div class="row align-items-center pt-2">
         <div class="col-4"><label class="form-label" :for="computedId">{{ label }}<span class="required" v-if="required">*</span>:  </label></div>
-        <div class="col-8">
+        <div :class="{'col-5' : button,'col-8': !button}">
             <input
                 :type="type"
                 :value="modelValue"
@@ -11,6 +11,9 @@
                 :disabled="disabled"
             />
             <div v-if="error" class="invalid-feedback">{{ $t(error) }}</div>
+        </div>
+        <div class="col-3">
+            <slot name="input-button"></slot>
         </div>
     </div>
 </template>
@@ -51,6 +54,10 @@
             required: {
                 type: Boolean,
                 required: false,
+                default: false
+            },
+            button: {
+                type: Boolean,
                 default: false
             }
         },

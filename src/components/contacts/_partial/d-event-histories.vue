@@ -5,8 +5,8 @@
                 <div class="col-12">
                     Evènement
                 </div>
-                <perfect-scrollbar tag="div" class="h-250 col-12"
-                                   :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 300, suppressScrollX: true }">
+                <perfect-scrollbar tag="div" class="h-200 col-12"
+                                   :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 200, suppressScrollX: true }">
                     <div class="table-checkable table-highlight-head table-responsive">
                         <table role="table" aria-busy="false" aria-colcount="5" class="histories-event-table table b-table table-striped table-hover table-bordered">
                             <tbody role="rowgroup">
@@ -35,10 +35,10 @@
                 <div class="col-12">
                     Commentaire
                 </div>
-            <perfect-scrollbar tag="div" class="h-250 col-12"
-                               :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 300, suppressScrollX: true }">
+            <perfect-scrollbar tag="div" class="h-200 col-12"
+                               :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 200, suppressScrollX: true }">
                 
-                    <textarea id="textarea" v-model="comment" class="form-control h-250"></textarea>
+                    <textarea id="textarea" v-model="comment" class="form-control h-200"></textarea>
                
             </perfect-scrollbar>
             </div>
