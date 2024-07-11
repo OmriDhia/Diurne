@@ -63,3 +63,16 @@ export const filterEvent = {
     pres: null,
     contact: null,
 };
+
+export const filterContremarque = {
+    customer: null,
+    contremarque: null,
+    commercial: null,
+    endDate: null,
+    prescriptor: null,
+    pendingProject: null,
+    projectRelance: null,
+    projectRelanceX: null,
+    projectWithoutRelance: null,
+    allProjects: null,
+};

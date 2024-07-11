@@ -122,16 +122,26 @@ export const routes = [
         },
     },
     {
-        path: '/projet',
-        name: 'projet',
+        path: '/projet/contremarques',
+        name: 'contremarques',
         children: [
             {
                 path: '',
                 name: 'projectsList',
-                component: () => import('../views/projects/projects.vue'),
+                component: () => import('../views/projects/contremarques/contremarques.vue'),
                 meta: {
                     requiresAuth: true,
-                    class: 'projects'
+                    class: 'projects',
+                    permission: "read contremarque",
+                },
+            },
+            {
+                path: 'manage/:id?',
+                name: 'projectsListManage',
+                component: () => import('../views/projects/contremarques/manage.vue'),
+                meta: {
+                    requiresAuth: true,
+                    permission: "create contremarque",
                 },
             },
         ],

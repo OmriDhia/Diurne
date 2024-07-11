@@ -1,17 +1,26 @@
 <template>
-    <div class="row layout-top-spacing align-items-center justify-content-between ps-4 pe-4">
+    <div :class="{'row': true,
+    'layout-top-spacing': true,
+    'align-items-center': true,
+    'justify-content-between': true,
+    'pe-4': true,
+    [className]: true
+    }">
         <h6 class="panel-title w-auto">{{ title }}</h6>
         <router-link v-if="link" :to="link" class="w-auto d-flex align-items-center"><vue-feather type="arrow-left" size="26"></vue-feather>Retour</router-link>
     </div>
-    <div class="row ps-4 pe-4">
+    <div :class="{'row': true,
+    'pe-4': true,
+    [className]: true
+    }">
         <hr/>
     </div>
     
 </template>
 <script>
-import VueFeather from 'vue-feather';
+    import VueFeather from 'vue-feather';
 
-export default {
+    export default {
     components: {
         VueFeather
     },
@@ -22,6 +31,10 @@ export default {
         link: {
             type: [String, null],
         },
+        className:{
+            type: String,
+            default: "ps-4"
+        }
     },
 };
 </script>

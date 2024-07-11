@@ -38,7 +38,7 @@ export default {
                     title: 'Recherche Contremarque',
                     image: 'contremarque.png',
                     color: menuHomeColor.contremarque,
-                    href: '/contremarque',
+                    href: '/projet/contremarques',
                     permission: "read contremarque",
                 },
                 {
