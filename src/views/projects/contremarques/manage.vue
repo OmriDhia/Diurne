@@ -127,7 +127,7 @@
                         </template>
                         <template v-slot:panel-body>
                             <div class="row pe-2 ps-0">
-                                <d-event-histories :customerId="currentCustomer.customer_id"></d-event-histories>
+                                <d-event-histories :customerId="currentCustomer.customer_id" :contremarqueId="contremarque.contremarque_id"></d-event-histories>
                             </div>
                         </template>
                     </d-panel>
@@ -169,7 +169,7 @@
 
     const route = useRoute();
     const contremarque_id = route.params.id;
-    const selectedCustomer = ref({});
+    const selectedCustomer = ref(0);
     const selectedContact = ref({});
     const contremarque = ref({});
     const tarifId = ref(0);
@@ -208,7 +208,7 @@
 
     const saveContremarque = async () => {
         try{
-            data.value.customer_id = selectedCustomer.value.customer_id;
+            data.value.customer_id = selectedCustomer.value;
             data.value.prescriber_id = data.value.prescriber_id.id;
             data.value.customerDiscount_id = tarifId.value.discount_rule_id;
             if(contremarque_id){
@@ -237,7 +237,7 @@
             if(contremarque_id){
                 contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
                 selectedCustomer.value = contremarque.value.customer.customer_id;
-                await getCustomer(contremarque.value.customer.customer_id);
+                //await getCustomer(contremarque.value.customer.customer_id);
                 const p = contremarque.value.prescriber;
                 data.value = {
                     project_number: contremarque.projectNumber,

@@ -210,7 +210,7 @@ const getFilterParams = () => {
 
     let param = "";
     if (filter.value.customer) {
-        param += "&customerId=" + filter.value.customer.id
+        param += "&customerId=" + filter.value.customer
     }
     if (filter.value.contremarque) {
         param += "&designation=" + filter.value.contremarque

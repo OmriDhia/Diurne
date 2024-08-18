@@ -37,7 +37,7 @@
         },
         props: {
             modelValue: {
-                type: [Object,Array, null],
+                type: [Number,Array, null],
                 required: true
             },
             error: {
@@ -70,15 +70,15 @@
             },
             handleSearch(searchQuery){
                 const se = searchQuery.split(' ');
-                this.getCustomers(se[0], se[1]);
+                this.getCustomers(searchQuery);
             },
             addTag(newTag){
                 this.customers.push(newTag);
                 this.customerId.push(newTag);
             },
-            async getCustomers (firstname = "", lastname = "", socialReason =""){
+            async getCustomers (socialReason ="", firstname = "", lastname = "", ){
                 try{
-                    let url = '/api/customers?page=1&itemsPerPage=30';
+                    let url = '/api/customers?page=1&itemsPerPage=100';
 
                     if(firstname){
                         url += '&filter[firstname]='+firstname;
@@ -94,10 +94,10 @@
 
                     const res = await axiosInstance.get(url);
                     this.customers = res.data.response.customers;
-
-                    if(socialReason){
-                        this.customerId = this.customers.filter(e => e.id === this.customerId.customer_id )
+                    if(this.modelValue){
+                        this.customerId = this.customers.filter(e => e.id === this.modelValue);
                     }
+                    
                 }catch{
                     console.log('Erreur get customers list.')
                 }
@@ -112,12 +112,7 @@
                     this.customerId = newValue;
                 }else{
                     this.customerId = this.customers.filter(e => e.id === newValue);
-                    if(newValue !== null && typeof newValue === "object" && this.firstOne){
-                        this.firstOne = false;
-                        this.getCustomers("","",newValue.socialReason);
-                    }  
                 }
-                
             }
         }
     };

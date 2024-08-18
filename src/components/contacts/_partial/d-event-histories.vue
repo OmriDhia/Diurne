@@ -65,6 +65,9 @@
     const props = defineProps({
         customerId: {
             type: Number
+        },
+        contremarqueId: {
+            type: Number
         }
     });
     
@@ -72,7 +75,7 @@
     const selected = ref(null);
     const selectedEvent = ref(null);
     const comment = ref("");
-    const getEventHistories = async (customerId) => {
+    const getEventHistories = async (customerId, contremarqueId = null) => {
       try{
           const res = await axiosInstance.get(`/api/customer/${customerId}/events`);
           datas.value = res.data.response.customerEventsData;
@@ -85,6 +88,7 @@
         selected.value = index;
         comment.value = datas.value[index].commentaire;
         selectedEvent.value = datas.value[index];
+        selectedEvent.value.contramarqueId = props.contremarqueId ? props.contremarqueId : 0;
     };
     onMounted(()=>{
         getEventHistories(props.customerId);
@@ -93,6 +97,10 @@
         () => props.customerId,
         (newVal) => {
             getEventHistories(newVal)
+        },
+        () => props.contremarqueId,
+        (newVal) => {
+            selectedEvent.value.contramarqueId = newVal;
         }
     );
 </script>

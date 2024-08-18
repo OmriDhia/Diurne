@@ -109,8 +109,8 @@
             }
         },
         watch: {
-            contremarqueId: (newVal) => {
-                console.log(newVal)
+            contremarqueId(newVal){
+                this.getLocations();
             }
         }
     };

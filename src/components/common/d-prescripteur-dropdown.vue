@@ -5,9 +5,7 @@
             <multiselect
                 :class="{ 'is-invalid': error}"
                 v-model="presId"
-                :options="presDatas.map(d => {
-                return {id: d.id, name: d.gender + ' ' + d.firstname}
-                })"
+                :options="presDatas"
                 :multiple="multiple"
                 placeholder="Préscipteur"
                 track-by="id"
@@ -76,7 +74,7 @@
             },
             async getCustomers (firstname = "", lastname = "", socialReason =""){
                 try{
-                    let url = '/api/prescripters?page=1&itemPerPage=50';
+                    let url = '/api/prescripters?page=1&itemPerPage=100';
 
                     if(firstname){
                         url += '&filter[firstname]='+firstname;
@@ -91,10 +89,12 @@
                     }
 
                     const res = await axiosInstance.get(url);
-                    this.presDatas = res.data.response.prescripters;
-
-                    if(socialReason){
-                        this.customerId = this.customers.filter(e => e.id === this.customerId.customer_id )
+                    const data = res.data.response.prescripters;
+                    this.presDatas = data.map(d => {
+                        return {id: d.id, name: d.gender + ' ' + d.firstname}
+                    })
+                    if(this.modelValue){
+                        this.presId = this.modelValue;
                     }
                 }catch{
                     console.log('Erreur get prescripteur list.')

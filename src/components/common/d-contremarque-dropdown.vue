@@ -60,10 +60,10 @@
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', parseInt(value.id));
+                this.$emit('update:modelValue', parseInt(value.contremarque_id));
             },
             handleSearch(searchQuery){
-                this.getCustomers(searchQuery);
+                this.getContremarques(searchQuery);
             },
             async getContremarques (designation = ""){
                 try{
@@ -77,8 +77,10 @@
                     }
 
                     const res = await axiosInstance.get(url);
-                    console.log(res);
                     this.contremarques = res.data.contremarques;
+                    if(this.modelValue){
+                        this.contremarqueId = this.contremarques.filter(ad => ad.contremarque_id === this.modelValue)[0];
+                    }
                 }catch(e){
                     console.error(e);
                     console.log('Erreur get contremarques list.')
@@ -90,7 +92,7 @@
         },
         watch: {
             modelValue(newValue) {
-                this.customerId = this.customers.filter(ad => ad.id === newValue)[0];
+                this.contremarqueId = this.contremarques.filter(ad => ad.contremarque_id === newValue)[0];
             },
             customerId(){
                 this.getContremarques();

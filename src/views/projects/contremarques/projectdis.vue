@@ -116,16 +116,19 @@
                             <tbody role="rowgroup">
                             <tr v-for="(item, i) in carpetDesign" :key="item.id">
                                 <td aria-colindex="1" role="cell">
+                                    {{item.location.description ? item.location.description : ''}}
                                 </td>
                                 <td aria-colindex="2" role="cell" class="">
+                                    {{item.status.name ? item.status.name : ''}}
                                 </td>
                                 <td aria-colindex="3" role="cell" class="">
+                                    {{item.projectDi}}
                                 </td>
                                 <td aria-colindex="4" role="cell" class="">
-                                    {{item.carpetSpecification.collection ? item.carpetSpecification.collection.reference : ''}}
+                                    {{ (item.carpetSpecification && item.carpetSpecification.collection) ? item.carpetSpecification.collection.reference : ''}}
                                 </td>
                                 <td aria-colindex="5" role="cell" class="">
-                                    {{item.carpetSpecification.model ? item.carpetSpecification.model.code : ''}}
+                                    {{ (item.carpetSpecification && item.carpetSpecification.model) ? item.carpetSpecification.model.code : ''}}
                                 </td>
                                 <td aria-colindex="6" role="cell" class="p-0">
                                     <div class="row ps-4 align-items-center">

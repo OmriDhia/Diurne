@@ -141,13 +141,14 @@
         }; 
     };
     const affectData = (event) => {
+        console.log(event);
         if(event){
             data.value = {
                 event_id: event.event_id,
                 nomenclatureId: event.nomenclature.nomenclature_id,
                 customerId: props.customerId,
-                contremarqueId: 0,
-                quoteId: 0,
+                contremarqueId: event.contramarqueId ? event.contramarqueId : 0,
+                quoteId: event.quoteId ? event.quoteId : 0,
                 reminder_disabled: false,
                 commentaire: event.commentaire,
                 event_date: Helper.FormatDate(event.event_date.date,"YYYY-MM-DD"),
