@@ -13,6 +13,7 @@
                 selected-label=""
                 select-label=""
                 deselect-label=""
+                @tag="addTag"
                 @update:model-value="handleChange($event)"
                 @search-change="handleSearch($event)"
             ></multiselect>
@@ -56,7 +57,15 @@
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', parseInt(value.id));
+                if(this.multiple){
+                    this.$emit('update:modelValue', value);
+                }else{
+                    this.$emit('update:modelValue', parseInt(value.id));
+                }
+            },
+            addTag(newTag){
+                this.customers.push(newTag);
+                this.customerId.push(newTag);
             },
             handleSearch(searchQuery){
                 const se = searchQuery.split(' ');
@@ -86,7 +95,11 @@
         },
         watch: {
             modelValue(newValue) {
-                this.customerId = this.customers.filter(ad => ad.id === newValue)[0];
+                if(this.multiple){
+                    this.customerId = this.customers.filter(ad =>newValue.includes(ad.id));
+                }else{
+                    this.customerId = this.customers.filter(ad => ad.id === newValue)[0];
+                }
             }
         }
     };

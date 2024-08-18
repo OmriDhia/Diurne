@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-center">
-        <d-modal-manage-locations :locationData="selectedLocation" @onClose="handleClose"></d-modal-manage-locations>
+        <d-modal-manage-locations :locationData="selectedLocation" :contremarqueId="contremarqueId" @onClose="handleClose"></d-modal-manage-locations>
         <div class="row pe-2 ps-2">
             <div class="col-auto">
                 <button class="btn btn-custom pe-5 ps-5" data-bs-toggle="modal" data-bs-target="#modalLocationManage">
@@ -97,8 +97,10 @@
             },
             updateLocation(location){
                 this.selectedLocation = location;
-            },handleClose(){
+            },
+            handleClose(){
                 this.selectedLocation = null
+                this.getLocations();
             }
         },
         mounted() {

@@ -97,7 +97,7 @@
         },
         watch: {
             modelValue(newValue) {
-                this.userId = this.users.filter(u => newValue.includes(u.id));
+               this.userId = newValue;
             }
         }
     };

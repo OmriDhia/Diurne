@@ -62,7 +62,11 @@
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', this.customerId);
+                if(this.multiple){
+                    this.$emit('update:modelValue', this.customerId);
+                }else{
+                    this.$emit('update:modelValue', parseInt(value.id));  
+                }
             },
             handleSearch(searchQuery){
                 const se = searchQuery.split(' ');
@@ -104,11 +108,16 @@
         },
         watch: {
             modelValue(newValue) {
-                this.customerId = newValue;
-                if(newValue !== null && typeof newValue === "object" && this.firstOne){
-                    this.firstOne = false;
-                    this.getCustomers("","",newValue.socialReason);
+                if(this.multiple){
+                    this.customerId = newValue;
+                }else{
+                    this.customerId = this.customers.filter(e => e.id === newValue);
+                    if(newValue !== null && typeof newValue === "object" && this.firstOne){
+                        this.firstOne = false;
+                        this.getCustomers("","",newValue.socialReason);
+                    }  
                 }
+                
             }
         }
     };

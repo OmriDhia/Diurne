@@ -25,7 +25,7 @@
                     </div>
                     <div class="row p-1 align-items-center">
                         <div class="col-sm-12 col-md-6">
-                            <d-input type="Date" label="Date devis" v-model="data.quote_processing_date" :error="error.quote_processing_date"></d-input>
+                            <d-input type="datetime-local" label="Date devis" v-model="data.quote_processing_date" :error="error.quote_processing_date"></d-input>
                         </div>
                         <div class="col-sm-12 col-md-6">
                             <div class="custom-control custom-radio">
@@ -55,6 +55,9 @@
     const props = defineProps({
         locationData: {
             type: Object,
+        },
+        contremarqueId:{
+            type: Number
         }
     });
     
@@ -80,6 +83,9 @@
         try{
             data.value.price_min = parseFloat(data.value.price_min);
             data.value.price_max = parseFloat(data.value.price_max);
+            data.value.quote_processing_date = Helper.FormatDate(data.value.quote_processing_date,"YYYY-MM-DD HH:mm:ss");
+            data.value.createdAt = Helper.FormatDate(data.value.createdAt,"YYYY-MM-DD HH:mm:ss");
+            data.value.contremarqueId = props.contremarqueId;
             if(data.value.location_id){
                 const res = await axiosInstance.put("/api/updateLocation/" + data.value.location_id,data.value);
                 window.showMessage("Mise à jour avec succées.");

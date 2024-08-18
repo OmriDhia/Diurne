@@ -13,7 +13,7 @@
                                 <d-customer-dropdown :required="true" v-model="eventCustomerId"  :error="error.customerId"></d-customer-dropdown>
                                 <d-nomenclatures :required="true" v-model="data.nomenclatureId" :error="error.nomenclatureId"></d-nomenclatures>
                                 <d-input :required="true" :type="'date'" label="Date évènement" v-model="data.event_date" :error="error.event_date"></d-input>
-                                <d-input label="Contremarque" :disabled="true"></d-input>
+                                <d-contremarque-dropdown v-model="data.contremarqueId" :error="error.contremarqueId" :customerId="eventCustomerId"></d-contremarque-dropdown>
                                 <d-input label="Devis" :disabled="true"></d-input>
                                 <div class="row align-items-center">
                                     <div class="col-lg-8 col-md-12">
@@ -63,7 +63,8 @@
     import dPanelTitle from "../common/d-panel-title.vue";
     import dContactDropdown from "../common/d-contact-dropdown.vue";
     import dUsersDropdown from "../common/d-users-dropdown.vue";
-    
+    import dContremarqueDropdown from "../common/d-contremarque-dropdown.vue";
+  
     const props = defineProps({
         customerId : {
             type: Number
@@ -94,7 +95,7 @@
         }
     });
     const contactId = ref([]);
-    const eventCustomerId = ref({id: 0});
+    const eventCustomerId = ref(0);
     const userId = ref([]);
     const error = ref({});
     const saveEvent = async () => {
@@ -105,7 +106,7 @@
             data.value.people_present.users = userId.value.map(e => {
                 return e.id
             });
-            data.value.customerId = eventCustomerId.value.id;
+            data.value.customerId = eventCustomerId.value;
             if(data.value.event_id){
                 
             }else{
@@ -114,7 +115,7 @@
             }
             
             document.querySelector("#modalEventManage .btn-close").click();
-            eventCustomerId.value = {id: 0};
+            eventCustomerId.value = 0;
             
         }catch (e){
             if(e.response.data.violations){
@@ -144,7 +145,7 @@
             data.value = {
                 event_id: event.event_id,
                 nomenclatureId: event.nomenclature.nomenclature_id,
-                customerId: null,
+                customerId: props.customerId,
                 contremarqueId: 0,
                 quoteId: 0,
                 reminder_disabled: false,
@@ -156,9 +157,10 @@
                     users: []
                 }
             };
-            eventCustomerId.value.id = props.customerId;
+            eventCustomerId.value = props.customerId;
         }
     };
+    const emit = defineEmits(['onClose']);
     const handleClose = () => {
         initData();
         error.value = {};

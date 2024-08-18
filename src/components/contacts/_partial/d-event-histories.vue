@@ -52,7 +52,7 @@
             </perfect-scrollbar>
             </div>
         </div>
-        <d-modal-manage-event :eventData="selectedEvent" ></d-modal-manage-event>
+        <d-modal-manage-event :eventData="selectedEvent" :customerId="props.customerId"></d-modal-manage-event>
     </div>
 </template>
 

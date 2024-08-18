@@ -114,7 +114,7 @@
                             </tr>
                             </thead>
                             <tbody role="rowgroup">
-                            <tr v-for="(item, i) in datas" :key="item.project_di" :class="{'selectedDi': i === selected}" @click="handleSelected(i)">
+                            <tr v-for="(item, i) in carpetDesign" :key="item.id">
                                 <td aria-colindex="1" role="cell">
                                 </td>
                                 <td aria-colindex="2" role="cell" class="">
@@ -122,8 +122,10 @@
                                 <td aria-colindex="3" role="cell" class="">
                                 </td>
                                 <td aria-colindex="4" role="cell" class="">
+                                    {{item.carpetSpecification.collection ? item.carpetSpecification.collection.reference : ''}}
                                 </td>
                                 <td aria-colindex="5" role="cell" class="">
+                                    {{item.carpetSpecification.model ? item.carpetSpecification.model.code : ''}}
                                 </td>
                                 <td aria-colindex="6" role="cell" class="p-0">
                                     <div class="row ps-4 align-items-center">
@@ -218,7 +220,7 @@ const handleSelected = async (index) => {
     comment.value = datas.value[index].commentaire;
     selectedData.value = datas.value[index];
     unitOfMesurements.value = selectedData.value.unit;
-    transDate.value = Helper.FormatDate(selectedData.value.transmition_date.date)
+    transDate.value = Helper.FormatDate(selectedData.value.transmition_date.date);
     carpetDesign.value = await contremarqueService.getcarpetDesign(contremarque_id,selectedData.value.project_di)
 };
 onMounted(()=>{

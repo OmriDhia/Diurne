@@ -109,8 +109,8 @@
                     </d-panel>
                 </div>
             </div>
-            <div class="row mt-3 mb-3 pe-0" v-if="currentCustomer.customer_id">
-                <div class="col-md-6 col-sm-12 ps-sm-2 pe-sm-0">
+            <div class="row mt-3 mb-3 pe-0">
+                <div class="col-md-6 col-sm-12 ps-sm-2 pe-sm-0"  v-if="contremarque_id">
                     <d-panel>
                         <template v-slot:panel-header>
                             <d-panel-title title="Liste des enplacements de la contremarque"></d-panel-title>
@@ -120,7 +120,7 @@
                         </template>
                     </d-panel>
                 </div>
-                <div class="col-md-6 col-sm-12 ps-sm-2 pe-sm-0">
+                <div class="col-md-6 col-sm-12 ps-sm-2 pe-sm-0"  v-if="currentCustomer.customer_id">
                     <d-panel>
                         <template v-slot:panel-header>
                             <d-panel-title title="évènement"></d-panel-title>
@@ -189,8 +189,8 @@
     });
     const currentCustomer = ref({});
     
-    watch(selectedCustomer, (customer) => {
-        getCustomer(customer.id)
+    watch(selectedCustomer, (customerId) => {
+        getCustomer(customerId)
     });
     
     const getCustomer = async (customer_id) => {
@@ -198,7 +198,7 @@
             if(customer_id){
                 currentCustomer.value =  await contremarqueService.getCustomerById(customer_id);
                 tarifId.value = currentCustomer.value.discountRule;
-                contact.value = currentCustomer.value.contactsData[0]
+                contact.value = currentCustomer.value.contactsData[0];
             }
         }catch(e){
             const msg = "Un client d'id " + customer_id + " n'existe pas";
@@ -221,9 +221,9 @@
                 const res = await axiosInstance.post("/api/createContremarque",data.value);
                 window.showMessage("Ajout avec succées.")
             }
-            setTimeout()(()=>{
+            setTimeout(()=>{
                 goToContremarqueList();
-            }, 2000)
+            }, 2000);
         }catch(e){
             if(e.response.data.violations){
                 error.value = formatErrorViolations(e.response.data.violations)
@@ -236,9 +236,8 @@
         try{
             if(contremarque_id){
                 contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
-                selectedCustomer.value = contremarque.value.customer;
+                selectedCustomer.value = contremarque.value.customer.customer_id;
                 await getCustomer(contremarque.value.customer.customer_id);
-                console.log(contremarque.value);
                 const p = contremarque.value.prescriber;
                 data.value = {
                     project_number: contremarque.projectNumber,

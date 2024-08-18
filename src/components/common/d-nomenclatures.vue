@@ -69,11 +69,11 @@
                         const res = await axiosInstance.get('/api/nomenclatures');
                         this.nomenclatures = res.data.response.nomenclatures;
                         this.nomenclature = this.nomenclatures.filter(ad => ad.nomenclature_id === this.modelValue)[0];
-                        if(this.nomenclature){
+                        /*if(this.nomenclature){
                             this.$emit('update:modelValue', parseInt(this.nomenclature.nomenclature_id));  
                         }else{
                             this.nomenclature = null 
-                        }
+                        }*/
                     } catch (error) {
                         console.error('Failed to fetch address types:', error);
                     }
