@@ -4,19 +4,18 @@
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"
-                :model-value="customerId"
-                :options="customers"
-                placeholder="Client"
+                :model-value="carpertTypeId"
+                :options="carpetTypes"
+                placeholder="Type de tapis"
                 track-by="id"
-                label="customer"
-                :searchable="true"
+                label="name"
                 selected-label=""
                 select-label=""
                 deselect-label=""
                 @update:model-value="handleChange($event)"
                 @search-change="handleSearch($event)"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champ client est abligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t("Le champ type de tapis est abligatoire.") }}</div>
         </div>
     </div>
 </template>
@@ -50,43 +49,33 @@
         },
         data() {
             return {
-                customerId: null,
-                customers: [],
+                carpertTypeId: null,
+                carpetTypes: [
+                    {id: 1, name: "tapis"},
+                    {id: 2, name: "échantillon"}
+                ],
             };
         },
         methods: {
             handleChange(value) {
                 this.$emit('update:modelValue', parseInt(value.id));
             },
-            handleSearch(searchQuery){
-                const se = searchQuery.split(' ');
-                this.getCustomers(se[0], se[1]);
-            },
-            async getCustomers (firstname = "", lastname = ""){
+            async getCarpetTypes (){
                 try{
-                    let url = '/api/customers?page=1&itemsPerPage=50';
-
-                    if(firstname){
-                        url += '&filter[firstname]='+firstname;
-                    }
-
-                    if(lastname){
-                        url += '&filter[lastname]='+lastname;
-                    }
-
+                    let url = '/api/carpet-types';
                     const res = await axiosInstance.get(url);
-                    this.customers = res.data.response.customers;
+                    this.carpetTypes = res.data.response.carpet_types;
                 }catch{
-                    console.log('Erreur get customers list.')
+                    console.log('Erreur get carpet type list.')
                 }
             },
         },
         mounted() {
-            this.getCustomers();
+            this.getCarpetTypes();
         },
         watch: {
             modelValue(newValue) {
-                this.customerId = this.customers.filter(ad => ad.id === newValue)[0];
+                this.carpertTypeId = this.carpetTypes.filter(ad => ad.id === newValue)[0];
             }
         }
     };

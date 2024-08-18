@@ -14,9 +14,11 @@
             <!--  BEGIN SIDEBAR  -->
             <Sidebar></Sidebar>
             <!--  END SIDEBAR  -->
-
+            <div id="content-loader" class="main-content mt-5" v-if="loading">
+                <div class="loader multi-loader mx-auto"></div>
+            </div>
             <!--  BEGIN CONTENT AREA  -->
-            <div id="content" class="main-content  mt-5">
+            <div id="content" class="main-content  mt-5" v-else>
                 <router-view></router-view>
 
                 <!-- BEGIN FOOTER -->
@@ -24,6 +26,8 @@
                 <!-- END FOOTER -->
             </div>
             <!--  END CONTENT AREA  -->
+            
+            
         </div>
     </div>
 </template>
@@ -32,4 +36,8 @@
     import Header from "../components/layout/header.vue";
     import Sidebar from "../components/layout/sidebar.vue";
     import Footer from "../components/layout/footer.vue";
+    import { ref } from "vue";
+    import Store from "../store/index";
+
+    const loading = ref(Store.getters.loading);
 </script>

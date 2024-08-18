@@ -5,14 +5,14 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title text-capitalize" id="fadeinModalLabel">évènement</h5>
-                        <button type="button" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" class="btn-close"></button>
+                        <button type="button" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" class="btn-close" @click="handleClose"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row align-items-center">
                             <div class="col-lg-6 col-md-12">
-                                <d-customer-dropdown required="true" v-model="eventCustomerId"  :error="error.customerId"></d-customer-dropdown>
-                                <d-nomenclatures required="true" v-model="data.nomenclatureId" :error="error.nomenclatureId"></d-nomenclatures>
-                                <d-input required="true" :type="'date'" label="Date évènement" v-model="data.event_date" :error="error.event_date"></d-input>
+                                <d-customer-dropdown :required="true" v-model="eventCustomerId"  :error="error.customerId"></d-customer-dropdown>
+                                <d-nomenclatures :required="true" v-model="data.nomenclatureId" :error="error.nomenclatureId"></d-nomenclatures>
+                                <d-input :required="true" :type="'date'" label="Date évènement" v-model="data.event_date" :error="error.event_date"></d-input>
                                 <d-input label="Contremarque" :disabled="true"></d-input>
                                 <d-input label="Devis" :disabled="true"></d-input>
                                 <div class="row align-items-center">
@@ -36,10 +36,10 @@
                             <div class="col-lg-6 col-md-12 ps-0">
                                 <d-panel-title title="Personne présente"></d-panel-title>
                                 <div class="ps-3">
-                                    <d-customer-dropdown v-model="contactId" multiple="true"></d-customer-dropdown>
+                                    <d-customer-dropdown v-model="contactId" :multiple="true"></d-customer-dropdown>
                                 </div>
                                 <div class="ps-3 mt-4">
-                                    <d-users-dropdown v-model="userId"></d-users-dropdown>
+                                    <d-users-dropdown v-model="userId" :multiple="true"></d-users-dropdown>
                                 </div>
                             </div>
                         </div>
@@ -53,26 +53,29 @@
     </div>
 </template>
 <script setup>
-    import { ref } from "vue";
+    import { ref, watch } from "vue";
     import VueFeather from 'vue-feather';
     import dNomenclatures from "../common/d-nomenclatures.vue";
     import dCustomerDropdown from "../common/d-customer-dropdown.vue";
     import dInput from "../base/d-input.vue";
     import axiosInstance from "../../config/http";
-    import { formatErrorViolations } from "../../composables/global-methods"
+    import {formatErrorViolations, Helper} from "../../composables/global-methods"
     import dPanelTitle from "../common/d-panel-title.vue";
     import dContactDropdown from "../common/d-contact-dropdown.vue";
     import dUsersDropdown from "../common/d-users-dropdown.vue";
     
     const props = defineProps({
-        eventId : {
+        customerId : {
+            type: Number
+        },
+        contremarqueId : {
             type: Number
         },
         id: {
             type: String
         },
         eventData: {
-            type: Object,
+            type: [Object,null],
         }
     });
     
@@ -103,29 +106,68 @@
                 return e.id
             });
             data.value.customerId = eventCustomerId.value.id;
-            const res = await axiosInstance.post("/api/createEvent",data.value);
-            window.showMessage("Ajout avec succées.");
+            if(data.value.event_id){
+                
+            }else{
+                const res = await axiosInstance.post("/api/createEvent",data.value);
+                window.showMessage("Ajout avec succées."); 
+            }
+            
             document.querySelector("#modalEventManage .btn-close").click();
             eventCustomerId.value = {id: 0};
-            data.value = {
-                nomenclatureId: null,
-                customerId: null,
-                contremarqueId: 0,
-                quoteId: 0,
-                reminder_disabled: false,
-                commentaire: null,
-                event_date: null,
-                next_reminder_deadline: null,
-                people_present: {
-                    contacts: [],
-                    users: []
-                }
-            };
+            
         }catch (e){
             if(e.response.data.violations){
                 error.value = formatErrorViolations(e.response.data.violations);
             }
             window.showMessage(e.message,'error')
         }
+    };
+    const initData = (event) => {
+        data.value = {
+            nomenclatureId: null,
+            customerId: null,
+            contremarqueId: 0,
+            quoteId: 0,
+            reminder_disabled: false,
+            commentaire: null,
+            event_date: null,
+            next_reminder_deadline: null,
+            people_present: {
+                contacts: [],
+                users: []
+            }
+        }; 
+    };
+    const affectData = (event) => {
+        if(event){
+            data.value = {
+                event_id: event.event_id,
+                nomenclatureId: event.nomenclature.nomenclature_id,
+                customerId: null,
+                contremarqueId: 0,
+                quoteId: 0,
+                reminder_disabled: false,
+                commentaire: event.commentaire,
+                event_date: Helper.FormatDate(event.event_date.date,"YYYY-MM-DD"),
+                next_reminder_deadline: event.next_reminder_deadline,
+                people_present: {
+                    contacts: [],
+                    users: []
+                }
+            };
+            eventCustomerId.value.id = props.customerId;
+        }
+    };
+    const handleClose = () => {
+        initData();
+        error.value = {};
+        emit('onClose')
     }
+    watch(
+        () => props.eventData,
+        (event) => {
+            affectData(event)
+        }
+    );
 </script>

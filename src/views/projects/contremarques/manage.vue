@@ -11,10 +11,10 @@
                           <d-input label="Contremarque" v-model="data.designation"></d-input>
                       </div>
                       <div class="col-md-4 col-sm-12">
-                          <d-input label="Lieu distination"  v-model="data.destination_location"></d-input>
+                          <d-input label="Lieu distination" v-model="data.destination_location"></d-input>
                       </div>
                       <div class="col-md-4 col-sm-12">
-                          <d-input type="date" label="Date cible"  v-model="data.target_date"></d-input>
+                          <d-input type="date" label="Date cible" v-model="data.target_date"></d-input>
                       </div>
                   </div>
               </template>
@@ -31,6 +31,53 @@
                             <div class="row pe-2 ps-0">
                                 <d-customer-dropdown v-model="selectedCustomer"></d-customer-dropdown>
                             </div>
+                            <div class="row pe-2 ps-0" v-if="currentCustomer.contactsData">
+                                <d-base-dropdown name="Contact" label="firstname" trackBy="contact_id" :datas="currentCustomer.contactsData" v-model="contact"></d-base-dropdown>
+                            </div>
+                            <div class="row pe-2 ps-0" v-if="currentCustomer.contactsData">
+                                <d-discount v-model="tarifId.discount_rule_id"></d-discount>
+                            </div>
+                            <div class="row pe-2 ps-0 justify-content-center mt-5" v-if="contremarque_id">
+                                <div class="col-auto">
+                                    <button class="btn btn-custom ps-5 pe-5 text-uppercase" @click="goToDIProjet">Voir les di projets</button>
+                                </div>
+                            </div>
+                            <div class="row pe-2 ps-0 justify-content-center  mt-2"  v-if="contremarque_id">
+                                <div class="col-auto">
+                                    <button class="btn btn-custom ps-5 pe-5 text-uppercase">Voir les devis</button>
+                                </div>
+                                <div class="col-auto">
+                                    <button class="btn btn-custom ps-4 pe-4 text-uppercase">Voir les commandes</button>
+                                </div>
+                            </div>
+                            <div class="row pe-2 ps-0 justify-content-center  mt-2"  v-if="contremarque_id">
+                                <div class="col-auto">
+                                    <div class="col-auto">
+                                        <button class="btn btn-outline-custom">
+                                            Suivi DI projets
+                                            <vue-feather type="arrow-right" size="14"></vue-feather>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="col-auto">
+                                        <button class="btn btn-outline-custom">
+                                            Suivi DI client
+                                            <vue-feather type="arrow-right" size="14"></vue-feather>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row align-content-end justify-content-end p-2 pe-3">
+                                <div class="col-auto p-1">
+                                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="saveContremarque">
+                                        <vue-feather type="save" size="14"></vue-feather>
+                                    </button>
+                                </div>
+                                <div class="col-auto p-1 pe-4" v-if="data.customer_id">
+                                    <d-delete :api="''"></d-delete>
+                                </div>
+                            </div>
                         </template>
                     </d-panel>
                 </div>
@@ -41,7 +88,18 @@
                         </template>
                         <template v-slot:panel-body>
                             <div class="row pe-2 ps-0">
-                              
+                                <d-prescripteur-dropdown v-model="data.prescriber_id"></d-prescripteur-dropdown>
+                            </div>
+                            <div class="row pe-2 ps-0 align-items-center">
+                                <div class="col-md-6">
+                                    <d-input label="Commission (%)" type="Number" v-model="data.commission" :error="null"></d-input> 
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="custom-control custom-radio">
+                                        <input type="checkbox" class="custom-control-input" id="warnig-add-yes" v-model="data.commission_on_deposit" name="warningAdd" value="true"/>
+                                        <label class="custom-control-label text-black" for="warnig-add-yes"> {{ $t('Commission sur acompte') }} </label>
+                                    </div>
+                                </div>
                             </div>
                             <d-panel-title title="Commercial" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0">
@@ -58,11 +116,7 @@
                             <d-panel-title title="Liste des enplacements de la contremarque"></d-panel-title>
                         </template>
                         <template v-slot:panel-body>
-                            <div class="row pe-2 ps-0">
-                                <div class="col-auto">
-                                    <button class="btn btn-custom pe-5 ps-5" @click="goToNewContremarque">Nouveau</button>
-                                </div>
-                            </div>
+                            <d-locations :contremarqueId="contremarque.contremarque_id"> </d-locations>
                         </template>
                     </d-panel>
                 </div>
@@ -91,23 +145,36 @@
 </template>
 
 <script setup>
+    import VueFeather from 'vue-feather';
+    import { useRoute } from 'vue-router';
     import {ref, onMounted, watch} from 'vue';
     import {useMeta} from '/src/composables/use-meta';
+    import { Helper } from "../../../composables/global-methods";
     import axiosInstance from "../../../config/http";
+    import contremarqueService from "../../../Services/contremarque-service"
+    import dPrescripteurDropdown from "../../../components/common/d-prescripteur-dropdown.vue"
+    import dBaseDropdown from "../../../components/base/d-base-dropdown.vue";
+    import dDiscount from "../../../components/common/d-discount.vue";
     import dBasePage from "../../../components/base/d-base-page.vue"
     import dInput from "../../../components/base/d-input.vue"
     import dPageTitle from "../../../components/common/d-page-title.vue"
     import dPanelTitle from "../../../components/common/d-panel-title.vue";
     import dPanel from "../../../components/common/d-panel.vue";
     import dCommertialHistories from "../../../components/contacts/_partial/d-commertial-histories.vue"
-    import { useRoute } from 'vue-router';
     import dCustomerDropdown from "../../../components/common/d-customer-dropdown.vue";
-
-    useMeta({ title: 'Contacts' });
+    import dEventHistories from "../../../components/contacts/_partial/d-event-histories.vue";
+    import dLocations from "../../../components/projet/contremarques/d-locations.vue";
+    
+    useMeta({ title: 'Gestion Contremarque' });
 
     const route = useRoute();
-    const customer_id = route.params.id;
+    const contremarque_id = route.params.id;
     const selectedCustomer = ref({});
+    const selectedContact = ref({});
+    const contremarque = ref({});
+    const tarifId = ref(0);
+    const contact = ref({});
+    const error = ref({});
     
     const data = ref({
         project_number: "",
@@ -119,7 +186,7 @@
         prescriber_id: 0,
         commission: 0,
         commission_on_deposit: true
-    })
+    });
     const currentCustomer = ref({});
     
     watch(selectedCustomer, (customer) => {
@@ -129,21 +196,78 @@
     const getCustomer = async (customer_id) => {
         try{
             if(customer_id){
-                const res = await axiosInstance.get("api/customer/" + customer_id);
-                currentCustomer.value = res.data.response.customerData;
-                console.log(currentCustomer.value);
+                currentCustomer.value =  await contremarqueService.getCustomerById(customer_id);
+                tarifId.value = currentCustomer.value.discountRule;
+                contact.value = currentCustomer.value.contactsData[0]
             }
         }catch(e){
             const msg = "Un client d'id " + customer_id + " n'existe pas";
             window.showMessage(msg,'error');
         }
     };
+
+    const saveContremarque = async () => {
+        try{
+            data.value.customer_id = selectedCustomer.value.customer_id;
+            data.value.prescriber_id = data.value.prescriber_id.id;
+            data.value.customerDiscount_id = tarifId.value.discount_rule_id;
+            if(contremarque_id){
+                error.value = {};
+                const res = await axiosInstance.put("/api/updateContremarque/" + contremarque_id,data.value);
+                window.showMessage("Mise a jour avec succées.")
+            }else{
+                const respn = await axiosInstance.post("/api/createContremarque",data.value);demandNumber
+                data.value.project_number = respn.data.response.demandNumber;
+                const res = await axiosInstance.post("/api/createContremarque",data.value);
+                window.showMessage("Ajout avec succées.")
+            }
+            setTimeout()(()=>{
+                goToContremarqueList();
+            }, 2000)
+        }catch(e){
+            if(e.response.data.violations){
+                error.value = formatErrorViolations(e.response.data.violations)
+            }
+            window.showMessage(e.message,'error')
+        }
+    };
+
+    const getContremarque = async () => {
+        try{
+            if(contremarque_id){
+                contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
+                selectedCustomer.value = contremarque.value.customer;
+                await getCustomer(contremarque.value.customer.customer_id);
+                console.log(contremarque.value);
+                const p = contremarque.value.prescriber;
+                data.value = {
+                    project_number: contremarque.projectNumber,
+                    designation: contremarque.value.designation,
+                    destination_location: contremarque.value.destination_location,
+                    target_date: Helper.FormatDate(contremarque.value.target_date.date,"YYYY-MM-DD"),
+                    customer_id: contremarque.value.customer.customer_id,
+                    customerDiscount_id: contremarque.value.discount_rule_id,
+                    prescriber_id: {id: p.id, name: p.gender + ' ' + p.firstname},
+                    commission: contremarque.value.commission,
+                    commission_on_deposit: contremarque.value.commission_on_deposit
+                };
+            }
+        }catch(e){
+            const msg = "Une contremarque d'id " + contremarque_id + " n'existe pas";
+            window.showMessage(msg,'error');
+        }
+    };
     onMounted(() => {
-       
+       if(contremarque_id){
+           getContremarque();
+       }
     });
 
     const goToContremarqueList = () => {
         location.href = '/projet/contremarques'
+    };
+    const goToDIProjet = () => {
+        location.href = '/projet/contremarques/projectdis/' + contremarque_id
     }
     
 </script>

@@ -16,5 +16,12 @@ export const Helper = {
     FormatDate: (date, format="DD-MM-YYYY") => {
         const dateToFormat = moment(date);
         return dateToFormat.format(format);
+    },
+    FormatPrice: (price) => {
+        const formatter = new Intl.NumberFormat('fr-FR', {
+            style: 'currency',
+            currency: 'EUR',
+        });
+        return formatter.format(price)
     }
 }

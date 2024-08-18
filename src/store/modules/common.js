@@ -2,6 +2,7 @@ export default {
     state: {
         layout: "app",
         page_class: "",
+        loading: false,
         genders: [],
         addressTypes: [],
         countries: [],
@@ -12,6 +13,9 @@ export default {
     mutations: {
         setLayout(state, payload) {
             state.layout = payload;
+        },
+        setLoading(state, payload) {
+            state.loading = payload;
         },
         setPageClass(state, payload) {
             state.page_class = payload;
@@ -38,6 +42,9 @@ export default {
     getters: {
         layout(state) {
             return state.layout;
+        },
+        loading(state) {
+            return state.loading;
         },
         pageClass(state) {
             return state.page_class;

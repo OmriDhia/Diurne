@@ -70,7 +70,7 @@
             },
             async getUsers (firstname = "", lastname = ""){
                 try{
-                    let url = '/api/users?page=1&itemPerPage=30';
+                    let url = '/api/users?page=1&itemPerPage=50';
 
                     if(firstname){
                         url += '&filter[firstname]='+firstname;
@@ -97,7 +97,7 @@
         },
         watch: {
             modelValue(newValue) {
-                this.userId = newValue;
+                this.userId = this.users.filter(u => newValue.includes(u.id));
             }
         }
     };

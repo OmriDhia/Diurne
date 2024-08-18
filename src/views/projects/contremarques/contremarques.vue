@@ -115,6 +115,21 @@
                                     {{ $Helper.FormatDate(data.value.createdAt.date)}}
                                 </div>
                             </template>
+                            <template #lastEvent="data">
+                                <div class="d-flex justify-content-between">
+                                    {{ data.value.last_event.subject }}
+                                </div>
+                            </template>
+                            <template #lastEventDate="data">
+                                <div class="d-flex justify-content-between">
+                                    {{ $Helper.FormatDate(data.value.last_event.event_date)}}
+                                </div>
+                            </template>
+                            <template #relanceDate="data">
+                                <div class="d-flex justify-content-between">
+                                    {{ data.value.last_event.next_reminder_deadline ? $Helper.FormatDate(data.value.last_event.next_reminder_deadline) : ''}}
+                                </div>
+                            </template>
                         </vue3-datatable>
                     </div>
                 </div>

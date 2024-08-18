@@ -144,6 +144,15 @@ export const routes = [
                     permission: "create contremarque",
                 },
             },
+            {
+                path: 'projectdis/:id',
+                name: 'projectDIS',
+                component: () => import('../views/projects/contremarques/projectdis.vue'),
+                meta: {
+                    requiresAuth: true,
+                    permission: "create contremarque",
+                },
+            },
         ],
         meta: {
             requiresAuth: true,

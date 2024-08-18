@@ -5,9 +5,9 @@
                 <div class="col-12">
                     Evènement
                 </div>
-                <perfect-scrollbar tag="div" class="h-200 col-12"
+                <perfect-scrollbar tag="div" class="h-200 pe-1 col-12"
                                    :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 200, suppressScrollX: true }">
-                    <div class="table-checkable table-highlight-head table-responsive">
+                    <div class="table-checkable table-highlight-head table-responsive block-custom-border">
                         <table role="table" aria-busy="false" aria-colcount="5" class="histories-event-table table b-table table-striped table-hover table-bordered">
                             <tbody role="rowgroup">
                             <tr v-for="(item, i) in datas" :key="item.event_id" :class="{'selected': i === selected}" @click="handleComment(i)">
@@ -35,14 +35,24 @@
                 <div class="col-12">
                     Commentaire
                 </div>
-            <perfect-scrollbar tag="div" class="h-200 col-12"
+            <perfect-scrollbar tag="div" class="h-200-forced col-12 block-custom-border"
                                :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 200, suppressScrollX: true }">
                 
-                    <textarea id="textarea" v-model="comment" class="form-control h-200"></textarea>
-               
+                    <textarea id="textarea" v-model="comment" class="form-control h-200-forced"></textarea>
+                <div class="position-absolute d-flex bottom-0">
+                    <div class="col-auto p-1">
+                        <d-delete :api="''"></d-delete>
+                    </div>
+                    <div class="col-auto p-1 pe-4">
+                        <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" data-bs-toggle="modal" data-bs-target="#modalEventManage">
+                            <vue-feather type="search" size="14"></vue-feather>
+                        </button>
+                    </div>
+                </div>
             </perfect-scrollbar>
             </div>
         </div>
+        <d-modal-manage-event :eventData="selectedEvent" ></d-modal-manage-event>
     </div>
 </template>
 
@@ -50,6 +60,8 @@
     import { ref, onMounted, watch} from "vue"
     import axiosInstance from "../../../config/http";
     import VueFeather from 'vue-feather';
+    import dDelete from "../../common/d-delete.vue";
+    import dModalManageEvent from "../../contacts/d-modal-manage-event.vue";
     const props = defineProps({
         customerId: {
             type: Number
@@ -58,6 +70,7 @@
     
     const datas = ref([]);
     const selected = ref(null);
+    const selectedEvent = ref(null);
     const comment = ref("");
     const getEventHistories = async (customerId) => {
       try{
@@ -71,6 +84,7 @@
     const handleComment = async (index) => {
         selected.value = index;
         comment.value = datas.value[index].commentaire;
+        selectedEvent.value = datas.value[index];
     };
     onMounted(()=>{
         getEventHistories(props.customerId);

@@ -1,15 +1,17 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Client<span class="required" v-if="required">*</span> :</label></div>
+        <div class="col-4"><label class="form-label">Préscripteur<span class="required" v-if="required">*</span> :</label></div>
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"
-                v-model="customerId"
-                :options="customers"
+                v-model="presId"
+                :options="presDatas.map(d => {
+                return {id: d.id, name: d.gender + ' ' + d.firstname}
+                })"
                 :multiple="multiple"
-                placeholder="Client"
+                placeholder="Préscipteur"
                 track-by="id"
-                label="customer"
+                label="name"
                 :searchable="true"
                 selected-label=""
                 select-label=""
@@ -55,26 +57,26 @@
         },
         data() {
             return {
-                customerId: [],
-                customers: [],
+                presId: [],
+                presDatas: [],
                 firstOne: true,
             };
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', this.customerId);
+                this.$emit('update:modelValue', this.presId);
             },
             handleSearch(searchQuery){
                 const se = searchQuery.split(' ');
                 this.getCustomers(se[0], se[1]);
             },
             addTag(newTag){
-                this.customers.push(newTag);
-                this.customerId.push(newTag);
+                this.presDatas.push(newTag);
+                this.presId.push(newTag);
             },
             async getCustomers (firstname = "", lastname = "", socialReason =""){
                 try{
-                    let url = '/api/customers?page=1&itemsPerPage=30';
+                    let url = '/api/prescripters?page=1&itemPerPage=50';
 
                     if(firstname){
                         url += '&filter[firstname]='+firstname;
@@ -89,13 +91,13 @@
                     }
 
                     const res = await axiosInstance.get(url);
-                    this.customers = res.data.response.customers;
+                    this.presDatas = res.data.response.prescripters;
 
                     if(socialReason){
                         this.customerId = this.customers.filter(e => e.id === this.customerId.customer_id )
                     }
                 }catch{
-                    console.log('Erreur get customers list.')
+                    console.log('Erreur get prescripteur list.')
                 }
             },
         },
@@ -104,11 +106,11 @@
         },
         watch: {
             modelValue(newValue) {
-                this.customerId = newValue;
-                if(newValue !== null && typeof newValue === "object" && this.firstOne){
+                this.presId = newValue;
+                /*if(newValue !== null && typeof newValue === "object" && this.firstOne){
                     this.firstOne = false;
                     this.getCustomers("","",newValue.socialReason);
-                }
+                }*/
             }
         }
     };
