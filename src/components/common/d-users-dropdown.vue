@@ -58,7 +58,9 @@
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', this.userId);
+                this.$emit('update:modelValue', value.map(e => {
+                    return e.id
+                }));
             },
             addTag(newTag){
                 this.users.push(newTag);
@@ -89,6 +91,10 @@
                             name: e.firstname + " " + e.lastname
                         }
                     });
+
+                    if(this.modelValue){
+                        this.userId = this.users.filter(f => this.modelValue.indexOf(f.id) > -1 )
+                    }
                 }catch{
                     console.log('Erreur get users list.')
                 }
@@ -99,7 +105,9 @@
         },
         watch: {
             modelValue(newValue) {
-               this.userId = newValue;
+                if(newValue){
+                    this.userId = this.users.filter(f => newValue.indexOf(f.id) > -1 )
+                }
             }
         }
     };

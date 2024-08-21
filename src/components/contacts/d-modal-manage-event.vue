@@ -17,7 +17,7 @@
                                 <d-input label="Devis" :disabled="true"></d-input>
                                 <div class="row align-items-center">
                                     <div class="col-lg-8 col-md-12">
-                                        <d-input :type="'date'" :error="error.next_reminder_deadline" label="Date next relance" v-model="data.next_reminder_deadline"></d-input>
+                                        <d-input :type="'date'" label="Date next relance" v-model="data.next_reminder_deadline"  :error="error.next_reminder_deadline"></d-input>
                                     </div>
                                     <div class="col-lg-4 col-md-12">
                                         <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
@@ -89,8 +89,8 @@
         quoteId: 0,
         reminder_disabled: false,
         commentaire: "",
-        event_date: null,
-        next_reminder_deadline: null,
+        event_date: "",
+        next_reminder_deadline: "",
         people_present: {
             contacts: [],
             users: []
@@ -103,12 +103,8 @@
     const error = ref({});
     const saveEvent = async () => {
         try{
-            data.value.people_present.contacts = contactId.value.map(e => {
-                return e.id
-            });
-            data.value.people_present.users = userId.value.map(e => {
-                return e.id
-            });
+            data.value.people_present.contacts = contactId.value;
+            data.value.people_present.users = userId.value;
             data.value.customerId = eventCustomerId.value;
             if(data.value.event_id){
                 const res = await axiosInstance.put("api/updateEvent/" + data.value.event_id,data.value);
@@ -155,13 +151,20 @@
                 reminder_disabled: false,
                 commentaire: event.commentaire,
                 event_date: Helper.FormatDate(event.event_date.date,"YYYY-MM-DD"),
-                next_reminder_deadline: event.next_reminder_deadline,
-                people_present: {
-                    contacts: [],
-                    users: []
-                }
+                next_reminder_deadline: event.next_reminder_deadline ? Helper.FormatDate(event.next_reminder_deadline.date,"YYYY-MM-DD") : "",
+                people_present: event.people_present
             };
             eventCustomerId.value = props.customerId;
+            userId.value = [];
+            contactId.value = [];
+            if(event.people_present){
+                if(event.people_present.contacts){
+                    contactId.value = event.people_present.contacts
+                }
+                if(event.people_present.users){
+                    userId.value = event.people_present.users
+                }
+            }
         }
     };
     /*const getCustomerContacts = (customerId) => {

@@ -78,8 +78,8 @@
                         <d-input :disabled="true" v-model="contremarque.designation" label="Contremarque"></d-input>
                         <d-input :disabled="true" v-model="transDate" label="Date trasmission"></d-input>
                         <d-input :disabled="true" v-model="selectedData.demande_number" label="N° de la demande"></d-input>
-                        <d-input :disabled="true" v-model="comment" label="Deadline"></d-input>
-                        <d-input :disabled="true" v-model="comment" label="Commertial"></d-input>
+                        <d-input :disabled="true" v-model="deadline" label="Deadline"></d-input>
+                        <d-input :disabled="true" v-model="commercial" label="Commercial"></d-input>
                     </div>
                     <div class="col-xl-8 col-md-12 pe-2">
                         <div class="row m-2 block-custom-border">
@@ -206,15 +206,19 @@ const contremarque = ref({});
 const customer = ref({});
 const transDate = ref("");
 const carpetDesign = ref([]);
+const deadline = ref(null);
+const commercial = ref(null);
 
 const getProjectDIS = async () => {
     try{
         const res = await axiosInstance.get(`/api/contremarque/${contremarque_id}/projectDis`);
         datas.value = res.data.response.projectDis;
         contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
+        commercial.value = (contremarque.value.commercials) ? contremarque.value.commercials[0].firstname + " " + contremarque.value.commercials[0].lastname : "";
         customer.value = contremarque.value.customer;
         await handleSelected(0);
-    }catch{
+    }catch (e){
+        console.log(e);
         console.log("Erreur get events customer")
     }
 };
@@ -225,6 +229,7 @@ const handleSelected = async (index) => {
     unitOfMesurements.value = selectedData.value.unit;
     transDate.value = Helper.FormatDate(selectedData.value.transmition_date.date);
     carpetDesign.value = await contremarqueService.getcarpetDesign(contremarque_id,selectedData.value.project_di)
+    deadline.value = (selectedData.value.deadline) ? Helper.FormatDate(selectedData.value.deadline.date) : "";
 };
 onMounted(()=>{
     getProjectDIS();

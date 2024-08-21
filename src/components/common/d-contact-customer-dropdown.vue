@@ -62,7 +62,9 @@
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', this.contact);
+                this.$emit('update:modelValue', value.map(e => {
+                    return e.id
+                }));
             },
             addTag(newTag){
                 this.contacts.push(newTag);
@@ -79,7 +81,10 @@
                                 id : e.contact_id,
                                 name: e.firstname + " " + e.lastname
                             }
-                        });  
+                        });
+                        if(this.modelValue){
+                            this.contact = this.contacts.filter(f => this.modelValue.indexOf(f.id) > -1 )
+                        }
                     }
                 }catch{
                     console.log('Erreur get contact customer list.')
@@ -91,7 +96,9 @@
         },
         watch: {
             modelValue(newValue) {
-                this.contact = newValue;
+                if(newValue){
+                    this.contact = this.contacts.filter(f => newValue.indexOf(f.id) > -1 )
+                }
             },
             customerId(newValue) {
                 this.getContacts();
