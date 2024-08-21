@@ -17,7 +17,7 @@
                                 <d-input label="Devis" :disabled="true"></d-input>
                                 <div class="row align-items-center">
                                     <div class="col-lg-8 col-md-12">
-                                        <d-input required="true" :type="'date'" :error="error.next_reminder_deadline" label="Date next relance" v-model="data.next_reminder_deadline"></d-input>
+                                        <d-input :type="'date'" :error="error.next_reminder_deadline" label="Date next relance" v-model="data.next_reminder_deadline"></d-input>
                                     </div>
                                     <div class="col-lg-4 col-md-12">
                                         <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
@@ -36,7 +36,7 @@
                             <div class="col-lg-6 col-md-12 ps-0">
                                 <d-panel-title title="Personne présente"></d-panel-title>
                                 <div class="ps-3">
-                                    <d-customer-dropdown v-model="contactId" :multiple="true"></d-customer-dropdown>
+                                    <d-contact-customer-dropdown :customerId="eventCustomerId" v-model="contactId"></d-contact-customer-dropdown>
                                 </div>
                                 <div class="ps-3 mt-4">
                                     <d-users-dropdown v-model="userId" :multiple="true"></d-users-dropdown>
@@ -64,7 +64,9 @@
     import dContactDropdown from "../common/d-contact-dropdown.vue";
     import dUsersDropdown from "../common/d-users-dropdown.vue";
     import dContremarqueDropdown from "../common/d-contremarque-dropdown.vue";
-  
+    import dContactCustomerDropdown from "../common/d-contact-customer-dropdown.vue";
+    import contactService from "../../Services/contact-service";
+
     const props = defineProps({
         customerId : {
             type: Number
@@ -95,6 +97,7 @@
         }
     });
     const contactId = ref([]);
+    const contactCustomer = ref([]);
     const eventCustomerId = ref(0);
     const userId = ref([]);
     const error = ref({});
@@ -108,7 +111,8 @@
             });
             data.value.customerId = eventCustomerId.value;
             if(data.value.event_id){
-                
+                const res = await axiosInstance.put("api/updateEvent/" + data.value.event_id,data.value);
+                window.showMessage("Mise a jour avec succées.");
             }else{
                 const res = await axiosInstance.post("/api/createEvent",data.value);
                 window.showMessage("Ajout avec succées."); 
@@ -141,7 +145,6 @@
         }; 
     };
     const affectData = (event) => {
-        console.log(event);
         if(event){
             data.value = {
                 event_id: event.event_id,
@@ -161,16 +164,25 @@
             eventCustomerId.value = props.customerId;
         }
     };
+    /*const getCustomerContacts = (customerId) => {
+        contactCustomer.value = contactService.getContactsByCustomerId(customerId)
+    };*/
     const emit = defineEmits(['onClose']);
     const handleClose = () => {
-        initData();
+        if(!data.value.event_id){
+            initData(); 
+        }
         error.value = {};
         emit('onClose')
-    }
+    };
     watch(
         () => props.eventData,
         (event) => {
             affectData(event)
-        }
+        },
+        () => eventCustomerId,
+        (id) => {
+            
+        },
     );
 </script>

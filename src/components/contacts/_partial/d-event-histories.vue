@@ -40,9 +40,9 @@
                 
                     <textarea id="textarea" v-model="comment" class="form-control h-200-forced"></textarea>
                 <div class="position-absolute d-flex bottom-0">
-                    <div class="col-auto p-1">
+                    <!--div class="col-auto p-1">
                         <d-delete :api="''"></d-delete>
-                    </div>
+                    </div-->
                     <div class="col-auto p-1 pe-4">
                         <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" data-bs-toggle="modal" data-bs-target="#modalEventManage">
                             <vue-feather type="search" size="14"></vue-feather>
@@ -77,7 +77,11 @@
     const comment = ref("");
     const getEventHistories = async (customerId, contremarqueId = null) => {
       try{
-          const res = await axiosInstance.get(`/api/customer/${customerId}/events`);
+          let url = `/api/customer/${customerId}/events`;
+          if(props.contremarqueId){
+              url += "?contremarqueId=" + props.contremarqueId  
+          }
+          const res = await axiosInstance.get(url);
           datas.value = res.data.response.customerEventsData;
           await handleComment(0);
       }catch{

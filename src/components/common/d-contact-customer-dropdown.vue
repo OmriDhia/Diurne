@@ -1,13 +1,13 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Contact diurne<span class="required" v-if="required">*</span> :</label></div>
+        <div class="col-4"><label class="form-label">Contact client:<span class="required" v-if="required">*</span> :</label></div>
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"
                 :multiple="true"
-                v-model="userId"
-                :options="users"
-                placeholder="Contact diurne"
+                v-model="contact"
+                :options="contacts"
+                placeholder="Contact client"
                 track-by="id"
                 label="name"
                 :searchable="true"
@@ -18,7 +18,7 @@
                 @update:model-value="handleChange($event)"
                 @search-change="handleSearch($event)"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champ client est abligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t("Le champ contact client est abligatoire.") }}</div>
         </div>
     </div>
 </template>
@@ -48,58 +48,53 @@
             required:{
                 type: Boolean,
                 default: false
+            },
+            customerId:{
+                type: Number,
+                required: true
             }
         },
         data() {
             return {
-                userId: [],
-                users: [],
+                contact: [],
+                contacts: [],
             };
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', this.userId);
+                this.$emit('update:modelValue', this.contact);
             },
             addTag(newTag){
-                this.users.push(newTag);
-                this.userId.push(newTag);  
+                this.contacts.push(newTag);
+                this.contact.push(newTag);  
             },
-            handleSearch(searchQuery){
-                const se = searchQuery.split(' ');
-                this.getUsers(se[0], se[1]);
-            },
-            async getUsers (firstname = "", lastname = ""){
+            async getContacts (){
                 try{
-                    let url = 'api/users?page=1&itemPerPage=100';
+                    if(this.customerId){
+                        let url = `/api/customer/${this.customerId}/contacts`;
 
-                    if(firstname){
-                        url += '&filter[firstname]='+firstname;
+                        const res = await axiosInstance.get(url);
+                        this.contacts = res.data.response.contacts.map(e => {
+                            return {
+                                id : e.contact_id,
+                                name: e.firstname + " " + e.lastname
+                            }
+                        });  
                     }
-
-                    if(lastname){
-                        url += '&filter[lastname]='+lastname;
-                    }
-
-                    url += "&filter[profiles]=Super admin,Commercial,Commercial manager,Designer,Designer manager,ADV,Assistant commercial";
-
-                    const res = await axiosInstance.get(url);
-                    this.users = res.data.response.users.map(e => {
-                        return {
-                            id : e.id,
-                            name: e.firstname + " " + e.lastname
-                        }
-                    });
                 }catch{
-                    console.log('Erreur get users list.')
+                    console.log('Erreur get contact customer list.')
                 }
             },
         },
         mounted() {
-            this.getUsers();
+            this.getContacts();
         },
         watch: {
             modelValue(newValue) {
-               this.userId = newValue;
+                this.contact = newValue;
+            },
+            customerId(newValue) {
+                this.getContacts();
             }
         }
     };

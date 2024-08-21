@@ -10,7 +10,7 @@
                     </div>
                 </div>
                 <div class="row d-flex justify-content-center align-items-center p-2">
-                    <div class="col-md-4 col-sm-12">
+                    <div class="col-md-6 col-sm-12">
                         <div class="row">
                             <d-customer-dropdown v-model="filter.customer"></d-customer-dropdown>
                         </div>
@@ -27,7 +27,7 @@
                             <d-input label="Prescripteur" v-model="filter.prescriptor" ></d-input>
                         </div>
                     </div>
-                    <div class="col-md-8 col-sm-12">
+                    <div class="col-md-6 col-sm-12">
                         <div class="row mt-2">
                             <div class="col-md-3 col-sm-12">
                                 <div class="custom-control custom-radio">
@@ -245,6 +245,7 @@ const doReset = () => {
         projectWithoutRelance: null,
         allProjects: null,
     };
+    getContremarques();
 };
 
 const goToNewContremarque = () => {
