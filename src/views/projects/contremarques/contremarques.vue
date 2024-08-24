@@ -219,7 +219,7 @@ const getFilterParams = () => {
         param += "&targetDate=" + filter.value.endDate
     }
     if (filter.value.commercial) {
-        param += "&commercialName=" + filter.value.commercial
+        param += "&commercial=" + filter.value.commercial
     }
     return param;
 };

@@ -69,7 +69,6 @@
                 }
             },
             handleSearch(searchQuery){
-                const se = searchQuery.split(' ');
                 this.getCustomers(searchQuery);
             },
             addTag(newTag){
@@ -94,10 +93,9 @@
 
                     const res = await axiosInstance.get(url);
                     this.customers = res.data.response.customers;
-                    if(this.modelValue){
+                    /*if(this.modelValue){
                         this.customerId = this.customers.filter(e => e.id === this.modelValue);
-                    }
-                    
+                    }*/
                 }catch{
                     console.log('Erreur get customers list.')
                 }
@@ -105,6 +103,7 @@
         },
         mounted() {
             this.getCustomers();
+            console.log("mounted");
         },
         watch: {
             modelValue(newValue) {
