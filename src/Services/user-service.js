@@ -82,6 +82,7 @@ export default {
     getUserMenu(){
         const info = this.getUserInfo();
         const menu = (info && info.menus) ? info.menus : [];
+        console.log(menu);
         return menu.map(m => {
             switch (m.name) {
                 case 'Contacts':

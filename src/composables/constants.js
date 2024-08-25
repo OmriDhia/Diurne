@@ -76,3 +76,10 @@ export const filterContremarque = {
     projectWithoutRelance: null,
     allProjects: null,
 };
+
+export const filterSuiviDi = {
+    customer: null,
+    contremarque: null,
+    diNumber: null,
+    carpetStatus: null,
+};

@@ -159,4 +159,24 @@ export const routes = [
             class: 'projects'
         },
     },
+    {
+        path: '/projet/di_list',
+        name: 'suiviDI',
+        children: [
+            {
+                path: '',
+                name: 'di_list',
+                component: () => import('../views/projects/suiviDi/suiviDi.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'projects',
+                    permission: "read contremarque",
+                },
+            },
+        ],
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        },
+    },
 ];
