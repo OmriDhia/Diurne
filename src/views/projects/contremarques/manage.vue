@@ -8,13 +8,13 @@
               <template v-slot:panel-header>
                   <div class="row p-2 align-items-center">
                       <div class="col-md-4 col-sm-12">
-                          <d-input label="Contremarque" v-model="data.designation"></d-input>
+                          <d-input label="Contremarque" :required="true" v-model="data.designation"></d-input>
                       </div>
                       <div class="col-md-4 col-sm-12">
                           <d-input label="Lieu distination" v-model="data.destination_location"></d-input>
                       </div>
                       <div class="col-md-4 col-sm-12">
-                          <d-input type="date" label="Date cible" v-model="data.target_date"></d-input>
+                          <d-input type="date" label="Date cible" :required="true" v-model="data.target_date"></d-input>
                       </div>
                   </div>
               </template>
@@ -29,7 +29,7 @@
                         </template>
                         <template v-slot:panel-body>
                             <div class="row pe-2 ps-0">
-                                <d-customer-dropdown v-model="selectedCustomer"></d-customer-dropdown>
+                                <d-customer-dropdown :required="true" v-model="selectedCustomer"></d-customer-dropdown>
                             </div>
                             <div class="row pe-2 ps-0" v-if="currentCustomer.contactsData">
                                 <d-base-dropdown name="Contact" label="firstname" trackBy="contact_id" :datas="currentCustomer.contactsData" v-model="contact"></d-base-dropdown>
@@ -53,7 +53,7 @@
                             <div class="row pe-2 ps-0 justify-content-center  mt-2"  v-if="contremarque_id">
                                 <div class="col-auto">
                                     <div class="col-auto">
-                                        <button class="btn btn-outline-custom">
+                                        <button class="btn btn-outline-custom" @click="goToListSUiviDI()">
                                             Suivi DI projets
                                             <vue-feather type="arrow-right" size="14"></vue-feather>
                                         </button>
@@ -267,8 +267,10 @@
     };
     const goToDIProjet = () => {
         location.href = '/projet/contremarques/projectdis/' + contremarque_id
-    }
-    
+    };
+    const goToListSUiviDI = () => {
+        location.href = "/projet/di_list"
+    };
 </script>
 <style scoped>
     .row {

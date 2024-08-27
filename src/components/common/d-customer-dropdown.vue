@@ -93,9 +93,9 @@
 
                     const res = await axiosInstance.get(url);
                     this.customers = res.data.response.customers;
-                    /*if(this.modelValue){
+                    if(this.modelValue){
                         this.customerId = this.customers.filter(e => e.id === this.modelValue);
-                    }*/
+                    }
                 }catch{
                     console.log('Erreur get customers list.')
                 }

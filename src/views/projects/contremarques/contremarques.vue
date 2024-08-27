@@ -31,19 +31,19 @@
                         <div class="row mt-2">
                             <div class="col-md-4 col-sm-12">
                                 <div class="custom-control custom-radio">
-                                    <input type="checkbox" class="custom-control-input" id="pendingProject" v-model="filter.pendingProject"/>
+                                    <input type="checkbox" class="custom-control-input" id="pendingProject" v-model="filter.pendingProject" value="1"/>
                                     <label class="custom-control-label text-black" for="pendingProject"> {{ $t('Projet en cours') }} </label>
                                 </div>
                             </div>
                             <div class="col-md-4 col-sm-12">
                                 <div class="custom-control custom-radio">
-                                    <input type="checkbox" class="custom-control-input" id="projectRelance" v-model="filter.projectRelance"/>
+                                    <input type="checkbox" class="custom-control-input" id="projectRelance" v-model="filter.projectRelance" value="1"/>
                                     <label class="custom-control-label text-black" for="projectRelance"> {{ $t('Relance dépassée') }} </label>
                                 </div>
                             </div>
                             <div class="col-md-4 col-sm-12">
                                 <div class="custom-control custom-radio">
-                                    <input type="checkbox" class="custom-control-input" id="projectRelanceX" v-model="filter.projectRelanceX"/>
+                                    <input type="checkbox" class="custom-control-input" id="projectRelanceX" v-model="filter.projectRelanceX" value="1"/>
                                     <label class="custom-control-label text-black" for="projectRelanceX"> {{ $t('Relance dépassée dans la semaine') }} </label>
                                 </div>
                             </div>
@@ -51,13 +51,13 @@
                         <div class="row mt-2">
                             <div class="col-md-4 col-sm-12">
                                 <div class="custom-control custom-radio">
-                                    <input type="checkbox" class="custom-control-input" id="projectWithoutRelance" v-model="filter.projectWithoutRelance"/>
+                                    <input type="checkbox" class="custom-control-input" id="projectWithoutRelance" v-model="filter.projectWithoutRelance" value="1"/>
                                     <label class="custom-control-label text-black" for="projectWithoutRelance"> {{ $t('Projet sans relance') }} </label>
                                 </div>
                             </div>
                             <div class="col-md-4 col-sm-12">
                                 <div class="custom-control custom-radio">
-                                    <input type="checkbox" class="custom-control-input" id="allProjects" v-model="filter.allProjects"/>
+                                    <input type="checkbox" class="custom-control-input" id="allProjects" v-model="filter.allProjects" value="1"/>
                                     <label class="custom-control-label text-black" for="allProjects"> {{ $t('Tous les projets') }} </label>
                                 </div>
                             </div>
@@ -159,8 +159,8 @@ const total_rows = ref(0);
 const params = reactive({
     current_page: 1,
     pagesize: 50,
-    orderBy: 'designation',
-    orderWay: 'asc'
+    orderBy: 'contremarque_id',
+    orderWay: 'desc'
 });
 
 const filter = ref(filterContremarque);
@@ -168,6 +168,7 @@ const filterActive = ref(false);
 const rows = ref(null);
 
 const cols = ref([
+    { field: 'contremarque_id', title: '#' },
     { field: 'designation', title: 'Contremarque' },
     { field: 'customer_name', title: 'Client' },
     { field: 'createdAt', title: 'Date création' },
@@ -203,7 +204,7 @@ const changeServer = (data) => {
     getContremarques();
 };
 const doSearch = () => {
-    filterActive.value = true
+    filterActive.value = true;
     getContremarques();
 };
 const getFilterParams = () => {
@@ -221,8 +222,20 @@ const getFilterParams = () => {
     if (filter.value.commercial) {
         param += "&commercial=" + filter.value.commercial
     }
-    if (filter.value.prescriptor) {
+    if (filter.value.projectWithoutRelance) {
         param += "&prescripteur=" + filter.value.prescriptor
+    }
+    if (filter.value.projectWithoutRelance) {
+        param += "&withoutRelaunch=" + filter.value.projectWithoutRelance
+    }
+    if (filter.value.pendingProject) {
+        param += "&isCurrentProject=" + filter.value.pendingProject
+    }
+    if (filter.value.projectRelance) {
+        param += "&relanceExceeded=" + filter.value.projectRelance
+    }
+    if (filter.value.projectRelanceX) {
+        param += "&relanceExceededByWeek=" + filter.value.prescriptor
     }
     return param;
 };
