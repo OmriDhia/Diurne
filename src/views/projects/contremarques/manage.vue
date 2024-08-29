@@ -8,13 +8,13 @@
               <template v-slot:panel-header>
                   <div class="row p-2 align-items-center">
                       <div class="col-md-4 col-sm-12">
-                          <d-input label="Contremarque" :required="true" v-model="data.designation"></d-input>
+                          <d-input label="Contremarque" :required="true" v-model="data.designation" :error="error.designation"></d-input>
                       </div>
                       <div class="col-md-4 col-sm-12">
                           <d-input label="Lieu distination" v-model="data.destination_location"></d-input>
                       </div>
                       <div class="col-md-4 col-sm-12">
-                          <d-input type="date" label="Date cible" :required="true" v-model="data.target_date"></d-input>
+                          <d-input type="date" label="Date cible" :required="true" v-model="data.target_date" :error="error.target_date"></d-input>
                       </div>
                   </div>
               </template>
@@ -29,13 +29,13 @@
                         </template>
                         <template v-slot:panel-body>
                             <div class="row pe-2 ps-0">
-                                <d-customer-dropdown :required="true" v-model="selectedCustomer"></d-customer-dropdown>
+                                <d-customer-dropdown :required="true" v-model="selectedCustomer" :error="error.customer_id"></d-customer-dropdown>
                             </div>
                             <div class="row pe-2 ps-0" v-if="currentCustomer.contactsData">
                                 <d-base-dropdown name="Contact" label="firstname" trackBy="contact_id" :datas="currentCustomer.contactsData" v-model="contact"></d-base-dropdown>
                             </div>
                             <div class="row pe-2 ps-0" v-if="currentCustomer.contactsData">
-                                <d-discount v-model="tarifId.discount_rule_id"></d-discount>
+                                <d-discount v-model="tarifId.discount_rule_id"  :error="error.customerDiscount_id"></d-discount>
                             </div>
                             <div class="row pe-2 ps-0 justify-content-center mt-5" v-if="contremarque_id">
                                 <div class="col-auto">
@@ -88,7 +88,7 @@
                         </template>
                         <template v-slot:panel-body>
                             <div class="row pe-2 ps-0">
-                                <d-prescripteur-dropdown v-model="data.prescriber_id"></d-prescripteur-dropdown>
+                                <d-prescripteur-dropdown v-model="prescriber" :error="error.prescriber_id"></d-prescripteur-dropdown>
                             </div>
                             <div class="row pe-2 ps-0 align-items-center">
                                 <div class="col-md-6">
@@ -152,7 +152,7 @@
     import { useRoute } from 'vue-router';
     import {ref, onMounted, watch} from 'vue';
     import {useMeta} from '/src/composables/use-meta';
-    import { Helper } from "../../../composables/global-methods";
+    import { Helper, formatErrorViolations } from "../../../composables/global-methods";
     import axiosInstance from "../../../config/http";
     import contremarqueService from "../../../Services/contremarque-service"
     import dPrescripteurDropdown from "../../../components/common/d-prescripteur-dropdown.vue"
@@ -177,6 +177,7 @@
     const contremarque = ref({});
     const tarifId = ref(0);
     const contact = ref({});
+    const prescriber = ref({});
     const error = ref({});
     
     const data = ref({
@@ -212,16 +213,15 @@
     const saveContremarque = async () => {
         try{
             data.value.customer_id = selectedCustomer.value;
-            data.value.prescriber_id = data.value.prescriber_id.id;
-            data.value.customerDiscount_id = tarifId.value.discount_rule_id;
+            data.value.prescriber_id = (prescriber.value) ? prescriber.value: 0;
+            data.value.customerDiscount_id = (tarifId.value.discount_rule_id) ? tarifId.value.discount_rule_id : 0;
+            data.value.commission = parseFloat(data.value.commission);
+            error.value = {};
             if(contremarque_id){
-                error.value = {};
                 const res = await axiosInstance.put("/api/updateContremarque/" + contremarque_id,data.value);
                 window.showMessage("Mise a jour avec succées.")
             }else{
-                const respn = await axiosInstance.post("/api/createContremarque",data.value);demandNumber
-                data.value.project_number = respn.data.response.demandNumber;
-                const res = await axiosInstance.post("/api/createContremarque",data.value);
+                const respn = await axiosInstance.post("/api/createContremarque",data.value);
                 window.showMessage("Ajout avec succées.")
             }
             setTimeout(()=>{
@@ -249,10 +249,11 @@
                     target_date: Helper.FormatDate(contremarque.value.target_date.date,"YYYY-MM-DD"),
                     customer_id: contremarque.value.customer.customer_id,
                     customerDiscount_id: contremarque.value.discount_rule_id,
-                    prescriber_id: {id: p.id, name: p.gender + ' ' + p.firstname},
+                    prescriber_id: p.id,
                     commission: contremarque.value.commission,
                     commission_on_deposit: contremarque.value.commission_on_deposit
                 };
+                prescriber.value = p.id;
             }
         }catch(e){
             const msg = "Une contremarque d'id " + contremarque_id + " n'existe pas";

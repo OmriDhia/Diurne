@@ -62,7 +62,7 @@
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', this.presId);
+                this.$emit('update:modelValue', parseInt(value.id));
             },
             handleSearch(searchQuery){
                 const se = searchQuery.split(' ');
@@ -94,7 +94,7 @@
                         return {id: d.id, name: d.gender + ' ' + d.firstname}
                     })
                     if(this.modelValue){
-                        this.presId = this.modelValue;
+                        this.presId = this.presDatas.filter(d => d.id === this.modelValue)[0];
                     }
                 }catch{
                     console.log('Erreur get prescripteur list.')
@@ -106,7 +106,7 @@
         },
         watch: {
             modelValue(newValue) {
-                this.presId = newValue;
+                this.presId = this.presDatas.filter(d => d.id === newValue)[0];
                 /*if(newValue !== null && typeof newValue === "object" && this.firstOne){
                     this.firstOne = false;
                     this.getCustomers("","",newValue.socialReason);

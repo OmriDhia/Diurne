@@ -93,7 +93,7 @@
                 const res = await axiosInstance.post("/api/createLocation",data.value);
                 window.showMessage("Ajout avec succées.");
             }
-            document.querySelector("#modalAgentManage .btn-close").click();
+            document.querySelector("#modalLocationManage .btn-close").click();
             initData();
         }catch (e){
             if(e.response.data.violations){
@@ -123,7 +123,7 @@
                 carpetTypeId: newVal.carpetType_id,
                 description: newVal.description,
                 quote_processed: newVal.quote_processed,
-                quote_processing_date: Helper.FormatDate(newVal.quote_processing_date,'YYYY-MM-DD'),
+                quote_processing_date: Helper.FormatDate(newVal.quote_processing_date.date,'YYYY-MM-DD HH:mm:ss'),
                 price_min: newVal.price_min,
                 price_max: newVal.price_max,
                 createdAt: new Date(newVal.created_at.date),
