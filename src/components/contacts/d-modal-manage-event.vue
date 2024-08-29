@@ -132,8 +132,8 @@
             quoteId: 0,
             reminder_disabled: false,
             commentaire: null,
-            event_date: null,
-            next_reminder_deadline: null,
+            event_date: "",
+            next_reminder_deadline: "",
             people_present: {
                 contacts: [],
                 users: []

@@ -232,10 +232,10 @@ const getFilterParams = () => {
         param += "&isCurrentProject=1"
     }
     if (filter.value.projectRelance) {
-        param += "&relanceExceeded=1"
+        param += "&relaunchExceeded=1"
     }
     if (filter.value.projectRelanceX) {
-        param += "&relanceExceededByWeek=1"
+        param += "&relaunchExceededByWeek=1"
     }
     return param;
 };
