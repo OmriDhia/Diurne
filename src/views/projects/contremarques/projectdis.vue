@@ -30,7 +30,7 @@
                                     {{ $Helper.FormatDate(item.createdAt.date,"DD/MM/YYYY")}}
                                 </td>
                                 <td aria-colindex="2" role="cell" class="">
-                                    {{ $Helper.FormatDate(item.transmition_date.date,"DD/MM/YYYY")}}
+                                    {{ (item.transmition_date && item.transmition_date.date && item.transmitted_to_studio) ? $Helper.FormatDate(item.transmition_date.date,"DD/MM/YYYY") : ""}}
                                 </td>
                                 <td aria-colindex="2" role="cell" class="">
                                     <div title="test" class="t-dot" :class="item.transmitted_to_studio ? 'bg-success' :'bg-danger'"></div>
@@ -60,7 +60,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-3 col-md-4 col xs-12">
+                    <div class="col-md-4 col xs-12">
                         <d-unit-measurements v-model="unitOfMesurements.id" :disabled="true"></d-unit-measurements>
                     </div>
                     <div class="col-xl-3 col-md-4 col xs-12">
@@ -133,7 +133,7 @@
                                 <td aria-colindex="6" role="cell" class="p-0">
                                     <div class="row ps-4 align-items-center">
                                         <div class="col-auto p-1">
-                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle">
+                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"  @click="goToUpdateOrder(item.id)">
                                                 <vue-feather type="search" size="14"></vue-feather>
                                             </button>
                                         </div>
@@ -152,7 +152,7 @@
                     <div class="w-25">
                         <div class="row">
                             <div class="col-auto">
-                                <button class="btn btn-custom pe-4 ps-4">Nouveau</button>
+                                <button class="btn btn-custom pe-4 ps-4" @click="goTocreateOrder">Nouveau</button>
                             </div>
                         </div>
                     </div>
@@ -161,16 +161,16 @@
                     <div class="col-auto">
                         <d-btn-outlined label="Editer la demande de l'image projet " icon="arrow-right" buttonClass="ps-4"></d-btn-outlined>
                     </div>
-                    <!--div class="col-auto">
-                        <button class="btn btn-custom pe-5 ps-5">COPIER LA DI</button>
-                    </div-->
                     <div class="col-auto">
-                        <button class="btn btn-custom pe-5 ps-5">NOUVELLE DI</button>
+                        <button class="btn btn-custom pe-5 ps-5"  data-bs-toggle="modal" data-bs-target="#modalCreateDI">NOUVELLE DI</button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-custom pe-5 ps-5" v-if="!selectedData.transmitted_to_studio" @click="TransStudio">Transmettre au studio</button>
                     </div>
                 </div>
             </div>
         </div>
-       
+        <d-modal-create-di :contremarqueId="contremarque_id" @onClose="getDIS"></d-modal-create-di>
     </div>
 </template>
 
@@ -181,6 +181,7 @@ import dPageTitle from '../../../components/common/d-page-title.vue';
 import dUnitMeasurements from '../../../components/common/d-unit-measurements.vue';
 import dBtnOutlined from "../../../components/base/d-btn-outlined.vue"
 import dDelete from "../../../components/common/d-delete.vue"
+import dModalCreateDi from "../../../components/projet/contremarques/_Partials/d-modal-create-di.vue"
 import VueFeather from 'vue-feather';
 import axiosInstance from '../../../config/http';
 import { useRoute } from 'vue-router';
@@ -208,15 +209,35 @@ const transDate = ref("");
 const carpetDesign = ref([]);
 const deadline = ref(null);
 const commercial = ref(null);
-
-const getProjectDIS = async () => {
+const getDIS = async () => {
     try{
         const res = await axiosInstance.get(`/api/contremarque/${contremarque_id}/projectDis`);
         datas.value = res.data.response.projectDis;
+        await handleSelected(0);
+    }catch (e){
+        console.log("Erreur get data di")
+    }
+};
+const getProjectDIS = async () => {
+    try{
+        getDIS();
         contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
         commercial.value = (contremarque.value.commercials) ? contremarque.value.commercials[0].firstname + " " + contremarque.value.commercials[0].lastname : "";
         customer.value = contremarque.value.customer;
-        await handleSelected(0);
+    }catch (e){
+        console.log(e);
+        console.log("Erreur get events customer")
+    }
+};
+const TransStudio = async () => {
+    try{
+        const d = {
+            transmitted_to_studio: true,
+            transmition_date: new Date()
+        };
+        const res = await axiosInstance.put(`/api/projectDi/${selectedData.value.project_di}/update`,d);
+        getDIS();
+        window.showMessage("Demande d'image est transmis avec succées.")
     }catch (e){
         console.log(e);
         console.log("Erreur get events customer")
@@ -227,9 +248,15 @@ const handleSelected = async (index) => {
     comment.value = datas.value[index].commentaire;
     selectedData.value = datas.value[index];
     unitOfMesurements.value = selectedData.value.unit;
-    transDate.value = Helper.FormatDate(selectedData.value.transmition_date.date);
+    transDate.value = (selectedData.value.transmition_date && selectedData.value.transmitted_to_studio) ? Helper.FormatDate(selectedData.value.transmition_date.date) : "";
     carpetDesign.value = await contremarqueService.getcarpetDesign(contremarque_id,selectedData.value.project_di)
     deadline.value = (selectedData.value.deadline) ? Helper.FormatDate(selectedData.value.deadline.date) : "";
+};
+const goTocreateOrder =  () => {
+    location.href = `/projet/dis/model/${selectedData.value.project_di}/create`;
+};
+const goToUpdateOrder =  (id) => {
+    location.href = `/projet/dis/model/${selectedData.value.project_di}/update/${id}`;
 };
 onMounted(()=>{
     getProjectDIS();

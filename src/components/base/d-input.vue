@@ -1,7 +1,7 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label" :for="computedId">{{ label }}<span class="required" v-if="required">*</span>:  </label></div>
-        <div :class="{'col-5' : button,'col-8': !button}">
+        <div class="col-4" v-if="label"><label class="form-label" :for="computedId">{{ label }}<span class="required" v-if="required">*</span>:  </label></div>
+        <div :class="{'col-5' : button && label,'col-8': !button && label, 'col-12': !label }">
             <input
                 :type="type"
                 :value="modelValue"

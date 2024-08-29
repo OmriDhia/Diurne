@@ -69,11 +69,11 @@
                                 </div>
                             </div>
                             <div class="row align-content-end justify-content-end p-2 pe-3">
-                                <div class="col-auto p-1">
+                                <!--div class="col-auto p-1">
                                     <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="saveContremarque">
                                         <vue-feather type="save" size="14"></vue-feather>
                                     </button>
-                                </div>
+                                </div-->
                                 <div class="col-auto p-1 pe-4" v-if="data.customer_id">
                                     <d-delete :api="''"></d-delete>
                                 </div>
@@ -109,7 +109,7 @@
                     </d-panel>
                 </div>
             </div>
-            <div class="row mt-3 mb-3 pe-0">
+            <div class="row mt-3 pe-0">
                 <div class="col-md-6 col-sm-12 ps-sm-2 pe-sm-0"  v-if="contremarque_id">
                     <d-panel>
                         <template v-slot:panel-header>
@@ -120,7 +120,7 @@
                         </template>
                     </d-panel>
                 </div>
-                <div class="col-md-6 col-sm-12 ps-sm-2 pe-sm-0"  v-if="currentCustomer.customer_id">
+                <div class="col-md-6 col-sm-12 ps-sm-2 pe-sm-0"  v-if="contremarque_id">
                     <d-panel>
                         <template v-slot:panel-header>
                             <d-panel-title title="évènement"></d-panel-title>
@@ -135,9 +135,12 @@
             </div>
         </template>
         <template v-slot:footer>
-            <div class="row p-2">
+            <div class="row p-2 justify-content-between">
                 <div class="col-auto">
                     <button class="btn btn-custom pe-5 ps-5" @click="goToContremarqueList">Retour à la liste</button>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-custom pe-5 ps-5" @click="saveContremarque">Enregistrer</button>
                 </div>
             </div>
         </template>
@@ -269,7 +272,7 @@
         location.href = '/projet/contremarques/projectdis/' + contremarque_id
     };
     const goToListSUiviDI = () => {
-        location.href = "/projet/di_list"
+        location.href = "/projet/dis"
     };
 </script>
 <style scoped>

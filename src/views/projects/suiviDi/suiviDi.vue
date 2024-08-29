@@ -1,9 +1,14 @@
 <template>
     <div class="layout-px-spacing mt-4">
         <d-page-title :title="'Suivi de di'"></d-page-title>
-
+        <d-modal-create-di></d-modal-create-di>
         <div class="row layout-top-spacing mt-3 p-2">
             <div class="panel br-6 p-2">
+                <!--div class="row p-2">
+                    <div class="col-auto">
+                        <button class="btn btn-custom pe-5 ps-5"  data-bs-toggle="modal" data-bs-target="#modalCreateDI">NOUVELLE DI</button>
+                    </div>
+                </div-->
                 <div class="row d-flex justify-content-center align-items-center p-2">
                     <div class="col-md-6 col-sm-12">
                         <div class="row">
@@ -55,14 +60,14 @@
                                         :pageSizeOptions="[10, 25, 50, 75, 100]" noDataContent="Aucun contact trouvé."
                                         paginationInfo="Affichage de {0} à {1} sur {2} entrées" :sortable="true"
                                         @change="changeServer" class="advanced-table text-nowrap">
-                            <!--template #designation="data">
+                            <template #diNumber="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.designation}}</strong>
-                                    <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id"  v-if="$hasPermission('update contremarque')">
+                                    <strong>{{ data.value.diNumber}}</strong>
+                                    <div>
                                         <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
-                                    </router-link>
+                                    </div>
                                 </div>
-                            </template-->
+                            </template>
                             <template #diDate="data">
                                 <div class="d-flex justify-content-between">
                                     {{ $Helper.FormatDate(data.value.diDate,"DD/MM/YYYY")}}
@@ -99,6 +104,7 @@ import dCarpetStatusDropdown from '../../../components/common/d-carpet-status-dr
 import dPageTitle from '../../../components/common/d-page-title.vue';
 import VueFeather from 'vue-feather';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
+import dModalCreateDi from "../../../components/projet/contremarques/_Partials/d-modal-create-di.vue"
 import axiosInstance from '../../../config/http';
 import { ref, reactive, onMounted } from 'vue';
 import { filterSuiviDi } from '../../../composables/constants';

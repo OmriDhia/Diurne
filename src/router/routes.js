@@ -160,13 +160,33 @@ export const routes = [
         },
     },
     {
-        path: '/projet/di_list',
+        path: '/projet/dis',
         name: 'suiviDI',
         children: [
             {
                 path: '',
                 name: 'di_list',
                 component: () => import('../views/projects/suiviDi/suiviDi.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'projects',
+                    permission: "read contremarque",
+                },
+            },
+            {
+                path: 'model/:id_di/create',
+                name: 'di_orderDesigner_create',
+                component: () => import('../views/projects/suiviDi/orderCarpetDesigner.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'projects',
+                    permission: "read contremarque",
+                },
+            },
+            {
+                path: 'model/:id_di/update/:id',
+                name: 'di_orderDesigner_update',
+                component: () => import('../views/projects/suiviDi/orderCarpetDesigner.vue'),
                 meta: {
                     requiresAuth: true,
                     class: 'projects',

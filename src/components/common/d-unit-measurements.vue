@@ -1,23 +1,27 @@
 <template>
-    <div class="d-flex">
+    <div class="row">
         <div class="col-auto pe-1 ps-2 text-black">
             Unité de mesure<span class="required" v-if="required">*</span>:
         </div>
         <template v-for="item in unitOfMesurements">
             <div class="col-auto pe-1 ps-2">
                 <div class="custom-control custom-radio">
-                    <input type="radio" class="custom-control-input" :id="'Unit-'+item.id" v-model="unit"
-                           name="unitOfMesurements" :value="item.id" :disabled="disabled"/>
-                    <label class="custom-control-label text-black" :for="'Unit-'+item.id">
+                    <input type="radio" class="custom-control-input" :id="computedId+'-'+item.id" v-model="unit"
+                           :name="'unitOfMesurements-'+computedId" :value="item.id" :disabled="disabled"/>
+                    <label class="custom-control-label text-black" :for="computedId+'-'+item.id">
                         {{item.abbreviation}} </label>
                 </div>
             </div>
         </template>
+        <div class="col-12" v-if="error">
+            <div  class="invalid-feedback">{{ $t("Le champ unité de mesure est abligatoire.") }}</div>
+        </div>
     </div>
 </template>
 
 <script>
     import axiosInstance from '../../config/http';
+    import {generateUniqueId} from "../../composables/global-methods";
 
     export default {
         props: {
@@ -66,6 +70,11 @@
             },
             modelValue(unit) {
                 this.unit = unit;
+            }
+        },
+        computed: {
+            computedId() {
+                return generateUniqueId();
             }
         }
     };

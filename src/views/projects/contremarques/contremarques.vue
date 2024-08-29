@@ -226,16 +226,16 @@ const getFilterParams = () => {
         param += "&prescripteur=" + filter.value.prescriptor
     }
     if (filter.value.projectWithoutRelance) {
-        param += "&withoutRelaunch=" + filter.value.projectWithoutRelance
+        param += "&withoutRelaunch=1"
     }
     if (filter.value.pendingProject) {
-        param += "&isCurrentProject=" + filter.value.pendingProject
+        param += "&isCurrentProject=1"
     }
     if (filter.value.projectRelance) {
-        param += "&relanceExceeded=" + filter.value.projectRelance
+        param += "&relanceExceeded=1"
     }
     if (filter.value.projectRelanceX) {
-        param += "&relanceExceededByWeek=" + filter.value.prescriptor
+        param += "&relanceExceededByWeek=1"
     }
     return param;
 };
