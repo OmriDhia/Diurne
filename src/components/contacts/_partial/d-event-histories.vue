@@ -77,13 +77,15 @@
     const comment = ref("");
     const getEventHistories = async (customerId, contremarqueId = null) => {
       try{
-          let url = `/api/customer/${customerId}/events`;
-          if(props.contremarqueId){
-              url += "?contremarqueId=" + props.contremarqueId  
+          if(customerId){
+              let url = `/api/customer/${customerId}/events`;
+              if(props.contremarqueId){
+                  url += "?contremarqueId=" + props.contremarqueId  
+              }
+              const res = await axiosInstance.get(url);
+              datas.value = res.data.response.customerEventsData;
+              await handleComment(0);
           }
-          const res = await axiosInstance.get(url);
-          datas.value = res.data.response.customerEventsData;
-          await handleComment(0);
       }catch{
           console.log("Erreur get events customer")
       }

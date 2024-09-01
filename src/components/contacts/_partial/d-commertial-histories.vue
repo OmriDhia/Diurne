@@ -17,10 +17,10 @@
                         {{ item.firstname + " " + item.lastname }}
                     </td> 
                     <td aria-colindex="2" role="cell" class="">
-                        {{ item.from.replace(' 00:00:00', '')}}
+                        {{ (item.from) ? $Helper.FormatDate(item.from) : ''}}
                     </td>
                     <td aria-colindex="3" role="cell" class="">
-                        {{ item.to.replace(' 00:00:00', '')}}
+                        {{ (item.to) ? $Helper.FormatDate(item.to) : ''}}
                     </td>
                     <td aria-colindex="4" role="cell" class="">
                         <div title="test" class="t-dot" :class="item.status == 'Pending' ?  'bg-warning' : item.status == 'Accepted' ? 'bg-success' :'bg-danger'"></div>

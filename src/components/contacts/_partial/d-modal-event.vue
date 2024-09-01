@@ -1,9 +1,6 @@
 <template>
     <div>
-        <button type="button" class="btn btn-icon p-0"  data-bs-toggle="modal" :data-bs-target="'#Modal_'+props.customerId">
-            <vue-feather type="file-text"></vue-feather>
-        </button>
-        <div class="modal animated fadeInDown" :id="'Modal_'+props.customerId" tabindex="-1" role="dialog" aria-labelledby="fadeinModalLabel" aria-hidden="true">
+        <div class="modal animated fadeInDown" id="ModalUpdateEventContact" tabindex="-1" role="dialog" aria-labelledby="fadeinModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">

@@ -5,12 +5,12 @@
         </template>
         <template v-slot:header>
             <div class="panel br-6 p-2">
-                <div class="row d-flex justify-content-start p-3">
+                <!--div class="row d-flex justify-content-start p-3">
                     <div class="col-auto">
                         <button class="btn btn-custom pe-5 ps-5" data-bs-toggle="modal" data-bs-target="#modalAgentManage">Nouveau Intermediaire</button>
                     </div>
                     <d-modal-manage-agent :agentData="agentData" @onClose="onClose"></d-modal-manage-agent>
-                </div>
+                </div-->
                 <div class="row justify-content-end p-3 align-items-center">
                     <div class="col-lg-4 col-md-12">
                         <div class="row align-items-center">

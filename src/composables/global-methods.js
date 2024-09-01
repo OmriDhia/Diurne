@@ -13,7 +13,7 @@ export function formatErrorViolations(violations) {
 }
 
 export const Helper = {
-    FormatDate: (date, format="DD-MM-YYYY") => {
+    FormatDate: (date, format="YYYY-MM-DD") => {
         const dateToFormat = moment(date);
         return dateToFormat.format(format);
     },

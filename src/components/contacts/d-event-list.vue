@@ -186,7 +186,9 @@
                     <template #subject="data">
                         <div class="d-flex justify-content-between">
                             <strong>{{ data.value.subject }}</strong>
-                            <d-modal-event :customerId="data.value.customer_id"></d-modal-event>
+                            <button type="button" class="btn btn-icon p-0"  data-bs-toggle="modal" data-bs-target="#ModalUpdateEventContact" @click="selectCustomer(data.value.customer_id)">
+                                <vue-feather type="file-text"></vue-feather>
+                            </button>
                         </div>
                     </template>
                     <template #has_wrong_address="data">
@@ -195,6 +197,7 @@
                 </vue3-datatable>
             </div>
         </div>
+        <d-modal-event :customerId="selectedCustomerId"></d-modal-event>
     </div>
 </template>
 
@@ -361,6 +364,9 @@
             pres: null,
         };
         getCustomers();
+    };
+    const selectCustomer = (customerId) => {
+        selectedCustomerId.value = customerId;
     };
     const goToNewContact = () => {
         location.href = '/contacts/manage'

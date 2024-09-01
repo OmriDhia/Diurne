@@ -183,7 +183,7 @@
                     </template>
                     <template #commercial="data">
                         <div class="d-flex justify-content-between">
-                            <strong>{{ data.value.commercial}}</strong>
+                            <strong>{{ data.value.before_last_commercial}} <span class="font-size-0-7"> / {{ data.value.last_commercial}}</span></strong>
                            <div v-if="data.value.status == 'Pending' ">
                                <button type="button" class="btn btn-icon p-0" v-if="data.value.loading">
                                    <vue-feather type="loader" animation="spin"></vue-feather>
@@ -207,10 +207,7 @@
                         </div>
                     </template>
                     <template #has_completed_address="data">
-                        <div title="test" class="t-dot" :class="data.value.has_completed_address === 'true' ? 'bg-success' :'bg-danger'"></div>
-                    </template>
-                    <template #has_wrong_address="data">
-                        <div title="test" class="t-dot" :class="data.value.has_wrong_address === 'true' ? 'bg-success' :'bg-danger'"></div>
+                        <div :title="data.value.has_completed_address === 'true' ? 'Ok' :'Err'" class="t-dot" :class="data.value.has_completed_address === 'true' ? 'bg-success' :'bg-danger'"></div>
                     </template>
                 </vue3-datatable>
             </div>
@@ -252,8 +249,7 @@
       { field: 'phone', title: 'Tél. fixe'},
       { field: 'mobile_phone', title: 'Tél. portable' },
       { field: 'email', title: 'Email', sort: false },
-      { field: 'has_completed_address', title: 'Adr. Ok', sort: false  },
-      { field: 'has_wrong_address', title: 'Adr. Err', sort: false },
+      { field: 'has_completed_address', title: 'Adr.', sort: false  },
   ]) || [];
 
   onMounted(() => {
