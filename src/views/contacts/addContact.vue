@@ -51,6 +51,18 @@
                 <div class="col-md-6 col-sm-12 ps-sm-2 pe-sm-0">
                     <d-panel>
                         <template v-slot:panel-header>
+                            <d-panel-title title="Contremarque"></d-panel-title>
+                        </template>
+                        <template v-slot:panel-body>
+                            <div class="row pe-2 ps-0">
+                                <d-contremarque-histories :customerId="currentCustomer.customer_id"></d-contremarque-histories>
+                            </div>
+                        </template>
+                    </d-panel>
+                </div>
+                <div class="col-md-6 col-sm-12 ps-sm-2 pe-sm-0">
+                    <d-panel>
+                        <template v-slot:panel-header>
                             <d-panel-title title="évènement"></d-panel-title>
                         </template>
                         <template v-slot:panel-body>
@@ -86,6 +98,7 @@
     import dAgent from "../../components/contacts/d-agent.vue"
     import dCommercial from "../../components/contacts/d-commercial.vue"
     import dEventHistories from "../../components/contacts/_partial/d-event-histories.vue"
+    import dContremarqueHistories from "../../components/contacts/_partial/d-contremarque-histories.vue"
     import { useRoute } from 'vue-router';
 
     useMeta({ title: 'Contacts' });
