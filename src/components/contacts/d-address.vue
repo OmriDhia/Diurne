@@ -15,7 +15,7 @@
                         <div class="card-body">
                             <div class="row p-1 align-items-center">
                                 <div class="col-sm-12 col-md-6">
-                                    <d-address-type required="true" v-model="data.addressTypeId" :error="error.addressTypeId"></d-address-type>
+                                    <d-address-type :disableOptions="props.disableOptions" required="true" v-model="data.addressTypeId" :error="error.addressTypeId"></d-address-type>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
                                     <d-input required="true" label="Code postale" v-model="data.zip_code" :error="error.zip_code"></d-input>
@@ -131,6 +131,10 @@
             type: [Number, null]
         },
         intermediary: {
+            type: Boolean,
+            default: false
+        },
+        disableOptions: {
             type: Boolean,
             default: false
         }

@@ -29,7 +29,7 @@
                 mailings: [
                     {id: 1, name:"Uniquement avec colligraphie"},
                     {id: 2, name:"Uniquement sans colligraphie"},
-                    {id: 3, name:"Tous les colligraphies"},
+                    {id: 3, name:"Tous les projets"},
                 ]
             };
         },

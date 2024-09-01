@@ -31,7 +31,7 @@
         components:{
             Multiselect
         },
-        computed: {
+        /*computed: {
             addressTypes: {
                 get() {
                     return store.getters.addressTypes;
@@ -40,7 +40,7 @@
                     store.commit('setAddressTypes', value)
                 }
             }
-        },
+        },*/
         props: {
             modelValue: {
                 type: [Number, null],
@@ -54,10 +54,15 @@
                 type: Boolean,
                 default: false
             },
+            disableOptions: {
+                type: Boolean,
+                default: false
+            },
         },
         data() {
             return {
                 type: null,
+                addressTypes: [],
             };
         },
         methods: {
@@ -69,6 +74,13 @@
                     try {
                         const res = await axiosInstance.get('/api/addressTypes');
                         this.addressTypes = res.data.response.addressTypes;
+                        if(this.disableOptions){
+                            const options = ['Livraison','Facturation'];
+                            this.addressTypes = this.addressTypes.map(obj => {
+                                return { ...obj, $isDisabled: options.indexOf(obj.name) > -1 }
+                            });
+                        }
+                        console.log(this.addressTypes)
                         this.type = this.addressTypes.filter(ad => ad.addressType_id === this.modelValue)[0]
                     } catch (error) {
                         console.error('Failed to fetch address types:', error);

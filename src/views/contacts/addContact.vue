@@ -25,7 +25,7 @@
                         </template>
                         <template v-slot:panel-body>
                             <div class="row pe-2 ps-0">
-                                <d-address :addressData="currentCustomer.addressesData" :customerId="currentCustomer.customer_id"></d-address>
+                                <d-address :disableOptions="!currentCustomer.already_has_postal_address" :addressData="currentCustomer.addressesData" :customerId="currentCustomer.customer_id"></d-address>
                             </div>
                         </template>
                     </d-panel>
