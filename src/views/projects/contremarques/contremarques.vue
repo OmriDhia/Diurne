@@ -126,7 +126,7 @@
                                 </div>
                             </template>
                             <template #relanceDate="data">
-                                <div class="d-flex justify-content-between">
+                                <div :class="{'d-flex':true,'justify-content-between':true, 'text-danger fw-bold':overDate(data.value.last_event.next_reminder_deadline), 'text-warning fw-bold':overWeek(data.value.last_event.next_reminder_deadline)}">
                                     {{ data.value.last_event.next_reminder_deadline ? $Helper.FormatDate(data.value.last_event.next_reminder_deadline) : ''}}
                                 </div>
                             </template>
@@ -148,6 +148,7 @@ import Vue3Datatable from '@bhplugin/vue3-datatable';
 import axiosInstance from '../../../config/http';
 import { ref, reactive, onMounted } from 'vue';
 import { filterContremarque } from '../../../composables/constants';
+import moment from "moment";
 
 import { useMeta } from '/src/composables/use-meta';
 useMeta({ title: 'Contremarque' });
@@ -238,6 +239,19 @@ const getFilterParams = () => {
         param += "&relaunchExceededByWeek=1"
     }
     return param;
+};
+const overWeek = (date) => {
+    const now = moment();
+    const startOfWeek = now.clone().startOf('Week');
+    const endOfWeek = now.clone().endOf('Week');
+    const inputDate = moment(date);
+    
+    return inputDate.isBetween(startOfWeek, endOfWeek);
+};
+const overDate = (date) => {
+    const now = moment();
+    const inputDate = moment(date);
+    return inputDate.isBefore(now);
 };
 /*watch(type, (newValue, oldValue) => {
     if(newValue === 'contact'){
