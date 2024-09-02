@@ -189,6 +189,10 @@ label, .text-black{
     ::selection {
         color: $color !important;
     }
+    .vue3-datatable .bh-pagination .bh-page-item:hover, .vue3-datatable .bh-pagination .bh-page-item.bh-active{
+        background-color: $color !important;
+        color: #fff;
+    }
 }
 
 .contacts {

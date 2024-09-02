@@ -350,7 +350,7 @@
             customerTypeId: null,
             hasInvalidCommercial: null,
             active: null,
-            hasOnlyOneContact: null,
+            hasOnlyOneContact: true,
             hasNoProjectY: null,
             hasNoProjectN: null,
             hasNextStepY: null,
