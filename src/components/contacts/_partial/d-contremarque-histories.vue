@@ -1,13 +1,13 @@
 <template>
     <div class="row">
         <div class="col-lg-12 col-xl-6">
-            <div class="row">
+            <div class="row" v-if="datas[0]">
                 <div class="col-12">
                     Client:
                 </div>
                 <perfect-scrollbar tag="div" class="h-200 pe-1 col-12"
                                    :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 200, suppressScrollX: true }">
-                    <div class="table-checkable table-highlight-head table-responsive block-custom-border">
+                    <div class="table-checkable table-highlight-head block-custom-border">
                         <table role="table" aria-busy="false" aria-colcount="5" class="histories-event-table table b-table table-striped table-bordered">
                             <tbody role="rowgroup">
                             <tr v-for="(item, i) in datas" :key="i">
@@ -31,6 +31,11 @@
                         </table>
                     </div>
                 </perfect-scrollbar>
+            </div>
+            <div class="row" v-else>
+                <div class="col-12">
+                    Ce client ne possède pas des contremarques.
+                </div>
             </div>
         </div>
         <div class="col-xl-6 col-lg-12">
@@ -87,5 +92,11 @@
     }
     .table > tbody > tr > td {
         font-size: 0.8rem;
+    }
+    .table-striped>tbody>tr:nth-of-type(odd)>* {
+        --bs-table-accent-bg: var(--bs-table-bg);
+    }
+    .table>:not(caption)>*>*{
+        --bs-table-accent-bg: #EDF9FD;
     }
 </style>

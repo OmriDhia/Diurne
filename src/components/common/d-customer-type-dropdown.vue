@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Type lient<span class="required" v-if="required">*</span> :</label></div>
+        <div class="col-4"><label class="form-label">Type de client<span class="required" v-if="required">*</span> :</label></div>
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"

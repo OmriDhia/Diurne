@@ -69,8 +69,6 @@
                         </div>
                     </div>
                 </div>
-                <perfect-scrollbar tag="div" class="h-250" v-if="props.contactData.length > 0"
-                                   :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 272, suppressScrollX: true }">
                 <template v-for="(item, index) in props.contactData">
                     <div class="card mb-1">
                         <header class="card-header" role="tab">
@@ -83,15 +81,17 @@
                                 </div>
                             </section>
                         </header>
-                        <div :id="'contact'+index" class="collapse" :aria-labelledby="'contact'+index">
+                        <div :id="'contact'+index" class="collapse" :aria-labelledby="'contact'+index"  data-bs-parent="#toggleAccordion">
                             <div class="card-body">
                                 <d-contact-form :contactData="item" :customerId="props.customerId" :index="index"></d-contact-form>
                             </div>
                         </div>
                     </div>
                 </template>
-                </perfect-scrollbar>
             </div>
+        </div>
+        <div class="row mt-2 pe-2 justify-content-end">
+            <d-btn-outlined icon="plus" label="Ajouter" @click.prevent="addNewContact"></d-btn-outlined>
         </div>
     </div>
 </template>
@@ -105,6 +105,7 @@
     import dInput from "../../components/base/d-input.vue";
     import {formatErrorViolations} from "../../composables/global-methods";
     import '../../assets/sass/components/tabs-accordian/custom-accordions.scss';
+    import dBtnOutlined from "../base/d-btn-outlined.vue"
 
     const props = defineProps({
         contactData: {
@@ -145,6 +146,16 @@
             window.showMessage(e.message,'error')
         }
     };
+
+    const addNewContact = () => {
+        const element = document.querySelector("#toggleAccordion > div:nth-child(1) > header > section > div");
+
+        if(element.ariaExpanded === "false"){
+            element.click();
+        }
+
+        document.getElementById("toggleAccordion").scrollIntoView();
+    }
 </script>
 <style>
 

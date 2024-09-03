@@ -1,108 +1,110 @@
 <template>
-            <div id="toggleAccordionAddress" class="accordion ps-1">
-                <div class="card mb-1">
-                    <header class="card-header" role="tab">
-                        <section class="mb-0 mt-0">
-                            <div class="collapsed" role="menu" data-bs-toggle="collapse" data-bs-target="#headingAddressOne1" aria-expanded="true" aria-controls="headingAddressOne1">
-                                Nouveau adresse
-                                <div class="icons">
-                                    <vue-feather type="chevron-down" size="14"></vue-feather>
+    <div>
+    <div id="toggleAccordionAddress" class="accordion ps-1">
+        <div class="card mb-1">
+            <header class="card-header" role="tab">
+                <section class="mb-0 mt-0">
+                    <div class="collapsed" role="menu" data-bs-toggle="collapse" data-bs-target="#headingAddressOne1" aria-expanded="true" aria-controls="headingAddressOne1">
+                        Nouveau adresse
+                        <div class="icons">
+                            <vue-feather type="chevron-down" size="14"></vue-feather>
+                        </div>
+                    </div>
+                </section>
+            </header>
+            <div id="headingAddressOne1" class="collapse show" aria-labelledby="headingAddressOne1"  data-bs-parent="#toggleAccordionAddress">
+                <div class="card-body">
+                    <div class="row p-1 align-items-center">
+                        <div class="col-sm-12 col-md-6">
+                            <d-address-type :disableOptions="props.disableOptions" required="true" v-model="data.addressTypeId" :error="error.addressTypeId"></d-address-type>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <d-input required="true" label="Code postale" v-model="data.zip_code" :error="error.zip_code"></d-input>
+                        </div>
+                    </div>
+                    <div class="row p-1 align-items-center">
+                        <div class="col-sm-12 col-md-6">
+                            <d-input required="true" label="Nom" v-model="data.fullName" :error="error.fullName"></d-input>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <d-input required="true" label="Adresse" v-model="data.address1" :error="error.address1"></d-input>
+                        </div>
+                    </div>
+                    <div class="row p-1 align-items-center">
+                        <div class="col-sm-12 col-md-6">
+                            <d-input label="Tél." v-model="data.phone" :error="error.phone"></d-input>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <d-input required="true" label="Ville" v-model="data.city" :error="error.city"></d-input>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-md-6 col-sm-12 pe-md-0">
+                            <div class="row">
+                            <div class="col-md-auto p-md-0 ps-md-2">
+                                <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
+                                    <input type="checkbox" v-model="data.is_f_valide" class="custom-control-input" id="addressAdd1"/>
+                                    <label class="custom-control-label" for="addressAdd1"> F-valide </label>
                                 </div>
                             </div>
-                        </section>
-                    </header>
-                    <div id="headingAddressOne1" class="collapse show" aria-labelledby="headingAddressOne1" data-bs-parent="#toggleAccordionAddress">
-                        <div class="card-body">
-                            <div class="row p-1 align-items-center">
-                                <div class="col-sm-12 col-md-6">
-                                    <d-address-type :disableOptions="props.disableOptions" required="true" v-model="data.addressTypeId" :error="error.addressTypeId"></d-address-type>
-                                </div>
-                                <div class="col-sm-12 col-md-6">
-                                    <d-input required="true" label="Code postale" v-model="data.zip_code" :error="error.zip_code"></d-input>
+                            <div class="col-md-auto p-md-0 ps-md-1">
+                                <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
+                                    <input type="checkbox" v-model="data.is_l_valide" class="custom-control-input" id="addressAdd2"/>
+                                    <label class="custom-control-label" for="addressAdd2">L-valide</label>
                                 </div>
                             </div>
-                            <div class="row p-1 align-items-center">
-                                <div class="col-sm-12 col-md-6">
-                                    <d-input required="true" label="Nom" v-model="data.fullName" :error="error.fullName"></d-input>
-                                </div>
-                                <div class="col-sm-12 col-md-6">
-                                    <d-input required="true" label="Adresse" v-model="data.address1" :error="error.address1"></d-input>
-                                </div>
-                            </div>
-                            <div class="row p-1 align-items-center">
-                                <div class="col-sm-12 col-md-6">
-                                    <d-input label="Tél." v-model="data.phone" :error="error.phone"></d-input>
-                                </div>
-                                <div class="col-sm-12 col-md-6">
-                                    <d-input required="true" label="Ville" v-model="data.city" :error="error.city"></d-input>
-                                </div>
-                            </div>
-                            <div class="row align-items-center">
-                                <div class="col-md-6 col-sm-12 pe-md-0">
-                                    <div class="row">
-                                    <div class="col-md-auto p-md-0 ps-md-2">
-                                        <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
-                                            <input type="checkbox" v-model="data.is_f_valide" class="custom-control-input" id="addressAdd1"/>
-                                            <label class="custom-control-label" for="addressAdd1"> F-valide </label>
-                                        </div>
+                                <div class="col-md-auto p-md-0 ps-md-1">
+                                    <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
+                                        <input type="checkbox" v-model="data.is_wrong" class="custom-control-input" id="addressAdd3"/>
+                                        <label class="custom-control-label" for="addressAdd3">Erronée</label>
                                     </div>
-                                    <div class="col-md-auto p-md-0 ps-md-1">
-                                        <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
-                                            <input type="checkbox" v-model="data.is_l_valide" class="custom-control-input" id="addressAdd2"/>
-                                            <label class="custom-control-label" for="addressAdd2">L-valide</label>
-                                        </div>
-                                    </div>
-                                        <div class="col-md-auto p-md-0 ps-md-1">
-                                            <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
-                                                <input type="checkbox" v-model="data.is_wrong" class="custom-control-input" id="addressAdd3"/>
-                                                <label class="custom-control-label" for="addressAdd3">Erronée</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <d-countries required="true" v-model="data.countryId" :error="error.countryId"></d-countries>
                                 </div>
                             </div>
-                            <div class="row p-1 align-items-center">
-                                <div class="col-md-3 col-sm-12"><label class="form-label">Remarques adresses:</label></div>
-                                <div class="col-md-9 col-sm-12">
-                                    <textarea v-model="data.comment" class="form-control"></textarea>
-                                </div>
-                            </div>
-                            <div class="row align-items-center justify-content-end">
-                                <div class="col-auto p-1">
-                                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="addAddress">
-                                        <vue-feather type="save" size="14"></vue-feather>
-                                    </button>
-                                </div>
-                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <d-countries required="true" v-model="data.countryId" :error="error.countryId"></d-countries>
+                        </div>
+                    </div>
+                    <div class="row p-1 align-items-center">
+                        <div class="col-md-3 col-sm-12"><label class="form-label">Remarques adresses:</label></div>
+                        <div class="col-md-9 col-sm-12">
+                            <textarea v-model="data.comment" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="row align-items-center justify-content-end">
+                        <div class="col-auto p-1">
+                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="addAddress">
+                                <vue-feather type="save" size="14"></vue-feather>
+                            </button>
                         </div>
                     </div>
                 </div>
-                <perfect-scrollbar tag="div" class="h-250-forced"
-                                   :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 250, suppressScrollX: true }">
-                <template v-for="(item, index) in props.addressData">
-                    <div class="card mb-1">
-                        <header class="card-header" role="tab">
-                            <section class="mb-0 mt-0">
-                                <div class="collapsed" role="menu" data-bs-toggle="collapse" :data-bs-target="'#address'+index" aria-expanded="false" :aria-controls="'address'+index">
-                                    {{ item.address1 + ' ' + item.postcode + ' ' + item.city }}
-                                    <div class="icons">
-                                        <vue-feather type="chevron-down" size="14"></vue-feather>
-                                    </div>
-                                </div>
-                            </section>
-                        </header>
-                        <div :id="'address'+index" class="collapse" :aria-labelledby="'address'+index">
-                            <div class="card-body">
-                                <d-address-form :addressData="item" :customerId="props.customerId" :index="index"></d-address-form>
+            </div>
+        </div>
+        <template v-for="(item, index) in props.addressData">
+            <div class="card mb-1">
+                <header class="card-header" role="tab">
+                    <section class="mb-0 mt-0">
+                        <div class="collapsed" role="menu" data-bs-toggle="collapse" :data-bs-target="'#address'+index" aria-expanded="false" :aria-controls="'address'+index">
+                            {{ item.address1 + ' ' + item.postcode + ' ' + item.city }}
+                            <div class="icons">
+                                <vue-feather type="chevron-down" size="14"></vue-feather>
                             </div>
                         </div>
+                    </section>
+                </header>
+                <div :id="'address'+index" class="collapse" :aria-labelledby="'address'+index" data-bs-parent="#toggleAccordionAddress">
+                    <div class="card-body">
+                        <d-address-form :addressData="item" :customerId="props.customerId" :index="index"></d-address-form>
                     </div>
-                </template>
-                </perfect-scrollbar>
+                </div>
             </div>
+        </template>
+    </div>
+    <div class="row mt-2 justify-content-end">
+        <d-btn-outlined icon="plus" label="Ajouter" @click.prevent="addNewAddress"></d-btn-outlined>
+    </div>
+</div>
 </template>
 
 <script setup>
@@ -118,6 +120,7 @@
     import dCountries from "../common/d-countries.vue";
     import dAddressForm from "./_partial/d-address-form.vue";
     import perfectScroll from "../plugins/perfect-scrollbar1.vue";
+    import dBtnOutlined from "../base/d-btn-outlined.vue"
    
     const props = defineProps({
         addressData: {
@@ -189,6 +192,16 @@
             window.showMessage(e.message,'error')
         }
     };
+    
+    const addNewAddress = () => {
+        const element = document.querySelector("#toggleAccordionAddress > div:nth-child(1) > header > section > div");
+
+        if(element.ariaExpanded === "false"){
+            element.click();
+        }
+        
+        document.getElementById("toggleAccordionAddress").scrollIntoView();
+    }
 </script>
 <style>
 

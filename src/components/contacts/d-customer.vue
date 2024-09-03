@@ -25,6 +25,14 @@
         <div class="row p-2">
             <d-languages :error="error.website" v-model="data.mailingLanguageId"></d-languages>
         </div>
+        <div class="row p-2">
+            <div class="col-md-auto">
+                <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
+                    <input type="checkbox" v-model="data.agent" class="custom-control-input" id="isAgent"/>
+                    <label class="custom-control-label" for="isAgent"> Agent </label>
+                </div>
+            </div>
+        </div>
         <div class="row align-content-end justify-content-end p-2 pe-3">
             <div class="col-auto p-1">
                 <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="createCustomer">
@@ -67,6 +75,7 @@
         website: "",
         discountTypeId: 0,
         mailingLanguageId: 0,
+        agent: false
     });
     const error = ref({});
     let codeSuffix = ref(1);
@@ -96,6 +105,7 @@
         data.value.code = newVal.code;
         data.value.tva_ce = newVal.tva_ce;
         data.value.mailingLanguageId = newVal.mailingLanguageId;
+        data.value.agent =  newVal.agent;
     };
     const changeCode = (Rs) => {
         if(Rs){

@@ -60,7 +60,7 @@
                 <d-input label="Prescripteur" v-model="filter.pres" ></d-input>
             </div>
             <div class="col-md-6 col-sm-12 col-lg-3">
-                <d-customer-type v-model="filter.customerTypeId"></d-customer-type>
+                <d-customer-type-dropdown v-model="filter.customerTypeId"></d-customer-type-dropdown>
             </div>
             <div class="col-md-6 col-sm-12 col-lg-3">
                 <div class="row align-items-center">
@@ -219,7 +219,7 @@
   import { ref , reactive, onMounted} from 'vue';
   import dInput from '../base/d-input.vue';
   import dCountries from "../common/d-countries.vue";
-  import dCustomerType from "../common/d-customer-type.vue";
+  import dCustomerTypeDropdown from "../common/d-customer-type-dropdown.vue";
   import dContactMailing from "../common/d-contact-mailing.vue";
   import dLanguages from "../common/d-langages.vue";
   import VueFeather from 'vue-feather';
@@ -305,8 +305,8 @@
           param += "&filter[mailingLanguageId]=" + filter.value.mailingLanguageId
       }
       if (filter.value.customerTypeId) {
-          console.log(filter.value.customerTypeId)
-          param += "&filter[customerGroupId]=" + filter.value.customerTypeId
+          const typeId = filter.value.customerTypeId.map(e => e.customerGroup_id).join(',')
+          param += "&filter[customerGroupId]=" + typeId
       }
       if (filter.value.contactMailing) {
           param += "&filter[contactMailing]=" + filter.value.contactMailing
