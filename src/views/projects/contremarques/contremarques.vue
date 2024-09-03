@@ -74,23 +74,26 @@
                     </div>
                 </div>
             </div>
-            <div class="panel br-6 p-2 mt-3">
-                <div class="row mt-5 ms-2 mb-5">
+            <div class="panel br-6 p-2 mt-3"  id="fullscreen">
+                <div class="row mt-2 mb-4">
                     <div class="vue3-datatable w-100">
-                        <div class="mb-2 relative">
-                            <div class="btn-group custom-dropdown mb-4 me-2 btn-group-lg">
-                                <button class="btn btn-outline-custom p-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Cacher / Montrer Colonnes
-                                </button>
-                                <ul class="dropdown-menu p-2">
-                                    <li v-for="col in cols" :key="col.field">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" :checked="!col.hide" :id="col.field" @change="col.hide = !$event.target.checked" :name="col.field"/>
-                                            <label class="custom-control-label text-black" :for="col.field"> {{ col.title }} </label>
-                                        </div>
-                                    </li>
-                                </ul>
+                        <div class="row mb-4 relative align-items-center justify-content-between">
+                            <div class="col-auto">
+                                <div class="btn-group custom-dropdown me-2 btn-group-lg">
+                                    <button class="btn btn-outline-custom p-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Cacher / Montrer Colonnes
+                                    </button>
+                                    <ul class="dropdown-menu p-2">
+                                        <li v-for="col in cols" :key="col.field">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" :checked="!col.hide" :id="col.field" @change="col.hide = !$event.target.checked" :name="col.field"/>
+                                                <label class="custom-control-label text-black" :for="col.field"> {{ col.title }} </label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
+                            <d-btn-fullscreen></d-btn-fullscreen>
                         </div>
                         <vue3-datatable :rows="rows" :columns="cols" :loading="loading" :isServerMode="true"
                                         :totalRows="total_rows" :page="params.current_page" :pageSize="params.pagesize"
@@ -141,6 +144,7 @@
 
 <script setup>
 import dInput from '../../../components/base/d-input.vue';
+import dBtnFullscreen from '../../../components/base/d-btn-fullscreen.vue';
 import dCustomerDropdown from '../../../components/common/d-customer-dropdown.vue';
 import dPageTitle from '../../../components/common/d-page-title.vue';
 import VueFeather from 'vue-feather';
