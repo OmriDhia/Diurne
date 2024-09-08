@@ -88,7 +88,7 @@
                         </template>
                         <template v-slot:panel-body>
                             <div class="row pe-2 ps-0">
-                                <d-prescripteur-dropdown v-model="prescriber" :error="error.prescriber_id"></d-prescripteur-dropdown>
+                                <d-customer-dropdown :isPrescripteur="true" v-model="prescriber" :error="error.prescriber_id"></d-customer-dropdown>
                             </div>
                             <div class="row pe-2 ps-0 align-items-center">
                                 <div class="col-md-6">

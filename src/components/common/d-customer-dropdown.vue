@@ -1,13 +1,20 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Client<span class="required" v-if="required">*</span> :</label></div>
+        <div class="col-4"><label class="form-label">
+            <tempalte v-if="isPrescripteur">
+                Prescripteur
+            </tempalte>
+            <tempalte v-else>
+                Client
+            </tempalte>
+            <span class="required" v-if="required">*</span> :</label></div>
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"
                 v-model="customerId"
                 :options="customers"
                 :multiple="multiple"
-                placeholder="Client"
+                :placeholder=" isPrescripteur ? 'Prescripteur' : 'Client'"
                 track-by="id"
                 label="customer"
                 :searchable="true"
@@ -49,6 +56,10 @@
                 default: false
             },
             multiple:{
+                type: Boolean,
+                default: false
+            },
+            isPrescripteur:{
                 type: Boolean,
                 default: false
             }
