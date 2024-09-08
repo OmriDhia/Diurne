@@ -2,13 +2,10 @@
     <div class="row">
         <div class="col-lg-12 col-xl-6">
             <div class="row" v-if="datas[0]">
-                <div class="col-12">
-                    Client:
-                </div>
-                <perfect-scrollbar tag="div" class="h-200 pe-1 col-12"
+                <perfect-scrollbar tag="div" class="h-200-forced p-0 col-12 block-custom-border"
                                    :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 200, suppressScrollX: true }">
-                    <div class="table-checkable table-highlight-head block-custom-border">
-                        <table role="table" aria-busy="false" aria-colcount="5" class="histories-event-table table b-table table-striped table-bordered">
+                    <div class="table-checkable table-highlight-head">
+                        <table role="table" aria-busy="false" aria-colcount="5" class="histories-event-table table b-table table-striped">
                             <tbody role="rowgroup">
                             <tr v-for="(item, i) in datas" :key="i">
                                 <td aria-colindex="1" role="cell">

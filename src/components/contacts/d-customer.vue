@@ -1,10 +1,16 @@
 <template>
     <div class="col-sm-12 col-md-6">
         <div class="row p-2">
-            <d-customer-type required="true" :error="error.customerGroupId" v-model="data.customerGroupId"></d-customer-type>
+            <d-customer-type :required="true" :error="error.customerGroupId" v-model="data.customerGroupId"></d-customer-type>
         </div>
-        <div class="row p-2">
+        <div class="row p-2" v-if="!isParticular">
             <d-input required="true" label="Raison social" :error="error.social_reason" v-model="data.social_reason"></d-input>
+        </div>
+        <div class="row p-2" v-if="isParticular">
+            <d-input required="true" label="Nom" :error="error.lastname" v-model="data.lastname"></d-input>
+        </div>
+        <div class="row p-2" v-if="isParticular">
+            <d-input label="Prénom" :error="error.firstname" v-model="data.firstname"></d-input>
         </div>
         <div class="row p-2">
             <d-input  :button="data.customer_id === 0" required="true" label="Code contact" v-model="data.code" :error="error.code">
@@ -13,22 +19,22 @@
                 </template>
             </d-input>
         </div>
-        <div class="row p-2">
+        <div class="row p-2" v-if="!isParticular">
             <d-input required="true" label="CE TVA" v-model="data.tva_ce" :error="error.tva_ce"></d-input>
         </div>
         <div class="row p-2">
             <d-discount required="true" :error="error.customerGroupId" v-model="data.discountTypeId"></d-discount>
         </div>
-        <div class="row p-2">
+        <div class="row p-2" v-if="!isParticular">
             <d-input label="Site web" :error="error.website" v-model="data.website"></d-input>
         </div>
-        <div class="row p-2">
+        <div class="row p-2" v-if="!isParticular">
             <d-languages :error="error.website" v-model="data.mailingLanguageId"></d-languages>
         </div>
         <div class="row p-2">
             <div class="col-md-auto">
                 <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
-                    <input type="checkbox" v-model="data.agent" class="custom-control-input" id="isAgent"/>
+                    <input type="checkbox" v-model="data.is_agent" class="custom-control-input" id="isAgent"/>
                     <label class="custom-control-label" for="isAgent"> Agent </label>
                 </div>
             </div>
@@ -58,6 +64,7 @@
     import dInput from "../../components/base/d-input.vue";
     import dDelete from "../common/d-delete.vue";
     import {formatErrorViolations} from "../../composables/global-methods";
+    import {particularCustomerGroupId, publicDiscountTypeId} from "../../composables/constants";
 
     const props = defineProps({
         customerData: {
@@ -72,12 +79,19 @@
         code: "",
         social_reason: "",
         tva_ce: "",
+        firstname: "",
+        lastname: "",
+        email: "",
         website: "",
+        phone: "",
+        mobile_phone: "",
+        fax: "",
         discountTypeId: 0,
         mailingLanguageId: 0,
-        agent: false
+        is_agent: false
     });
     const error = ref({});
+    const isParticular = ref(false);
     let codeSuffix = ref(1);
     const createCustomer = async () => {
         try{
@@ -105,7 +119,9 @@
         data.value.code = newVal.code;
         data.value.tva_ce = newVal.tva_ce;
         data.value.mailingLanguageId = newVal.mailingLanguageId;
-        data.value.agent =  newVal.agent;
+        data.value.is_agent =  newVal.is_agent;
+        data.value.firstname =  newVal.firstname;
+        data.value.lastname =  newVal.lastname;
     };
     const changeCode = (Rs) => {
         if(Rs){
@@ -129,6 +145,18 @@
         (newVal) => {
             if(data.value.customer_id === 0 ){
                 changeCode(newVal);
+            }
+        }
+    );
+    watch(
+        () => data.value.customerGroupId,
+        (groupId) => {
+            if(groupId === publicDiscountTypeId){
+                isParticular.value = true;
+                data.value.discountTypeId = particularCustomerGroupId;
+            }else{
+                isParticular.value = false;
+                data.value.discountTypeId = 0;
             }
         }
     );

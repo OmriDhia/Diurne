@@ -5,7 +5,7 @@ export function generateUniqueId(prefix = 'input') {
 }
 
 export function formatErrorViolations(violations) {
-    let obj = {}
+    let obj = {};
     const err = violations.map( m => {
         obj = {...obj, [m.propertyPath]: m.title}
     });

@@ -1,7 +1,7 @@
 <template>
     <div class="row p-1 align-items-center">
         <div class="col-sm-12 col-md-6">
-            <d-gender required="true" v-model="data.gender_id" :error="error.gender_id"></d-gender>
+            <d-gender v-model="data.gender_id" :error="error.gender_id"></d-gender>
         </div>
         <div class="col-sm-12 col-md-6">
             <d-input label="Tel. portable" v-model="data.mobile_phone" :error="error.mobile_phone"></d-input>
@@ -17,10 +17,10 @@
     </div>
     <div class="row p-1 align-items-center">
         <div class="col-sm-12 col-md-6">
-            <d-input required="true" label="Prénom" v-model="data.firstname" :error="error.firstname"></d-input>
+            <d-input label="Prénom" v-model="data.firstname" :error="error.firstname"></d-input>
         </div>
         <div class="col-sm-12 col-md-6">
-            <d-input required="true" label="Email" v-model="data.email" :error="error.email"></d-input>
+            <d-input label="Email" v-model="data.email" :error="error.email"></d-input>
         </div>
     </div>
     <div class="row align-items-center justify-content-between">

@@ -85,6 +85,8 @@ const clickHExp = (e)=>{
         if (el) {
             el = el[0];
             el.dataset.active = true;
+        }else{
+            el.dataset.active = false;
         }
     }
 };
@@ -105,6 +107,7 @@ const applyMenuActive = (selector, active) => {
     if (selector) {
         const ul = selector.closest('ul.collapse');
         if (ul) {
+            //const e = document.querySelectorAll('li.menu .dropdown-toggle');
             let ele = ul.closest('li.menu').querySelectorAll('.dropdown-toggle');
             if (ele) {
                 ele = ele[0];

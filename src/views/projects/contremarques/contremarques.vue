@@ -227,7 +227,7 @@ const getFilterParams = () => {
     if (filter.value.commercial) {
         param += "&commercial=" + filter.value.commercial
     }
-    if (filter.value.projectWithoutRelance) {
+    if (filter.value.prescriptor) {
         param += "&prescripteur=" + filter.value.prescriptor
     }
     if (filter.value.projectWithoutRelance) {

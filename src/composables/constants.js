@@ -38,6 +38,8 @@ export const filterContact = {
     hasOnlyOneContact: null,
     mailingLanguageId: null,
     contactMailing: null,
+    is_agent: null,
+    is_prescripteur: null,
 };
 export const filterEvent = {
     firstname: null,
@@ -83,3 +85,6 @@ export const filterSuiviDi = {
     diNumber: null,
     carpetStatus: null,
 };
+
+export const particularCustomerGroupId = 1;
+export const publicDiscountTypeId = 1;

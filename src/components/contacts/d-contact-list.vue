@@ -120,6 +120,18 @@
                             <label class="custom-control-label text-black" for="comercial-valid"> {{ $t('Commercial à valider') }} </label>
                         </div>
                     </div>
+                    <div class="col-auto pe-1 ps-1">
+                        <div class="custom-control custom-radio">
+                            <input type="checkbox" class="custom-control-input" id="isAgent" v-model="filter.is_agent"/>
+                            <label class="custom-control-label text-black" for="isAgent"> {{ $t('Agent') }} </label>
+                        </div>
+                    </div>
+                    <div class="col-auto pe-1 ps-1">
+                        <div class="custom-control custom-radio">
+                            <input type="checkbox" class="custom-control-input" id="isPrescripteur" v-model="filter.is_prescripteur"/>
+                            <label class="custom-control-label text-black" for="isPrescripteur"> {{ $t('Prescripteur') }} </label>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-3 col-sm-12">
@@ -212,6 +224,12 @@
                     <template #has_completed_address="data">
                         <div :title="data.value.has_completed_address === 'true' ? 'Ok' :'Err'" class="t-dot" :class="data.value.has_completed_address === 'true' ? 'bg-success' :'bg-danger'"></div>
                     </template>
+                    <template #is_agent="data">
+                        <div class="t-dot" :class="data.value.is_agent === 'true' ? 'bg-success' :'bg-danger'"></div>
+                    </template>
+                    <template #is_prescripteur="data">
+                        <div class="t-dot" :class="data.value.is_prescripteur === 'true' ? 'bg-success' :'bg-danger'"></div>
+                    </template>
                 </vue3-datatable>
             </div>
         </div>
@@ -254,6 +272,8 @@
       { field: 'mobile_phone', title: 'Tél. portable' },
       { field: 'email', title: 'Email', sort: false },
       { field: 'has_completed_address', title: 'Adr.', sort: false  },
+      { field: 'is_agent', title: 'Agent', sort: false  },
+      { field: 'is_prescripteur', title: 'Prescripteur', sort: false  },
   ]) || [];
 
   onMounted(() => {
@@ -342,6 +362,12 @@
       if (filter.value.hasOnlyOneContact) {
           param += "&filter[hasOnlyOneContact]=" + filter.value.hasOnlyOneContact
       }
+      if (filter.value.is_agent) {
+          param += "&filter[is_agent]=true";
+      }
+      if (filter.value.is_prescripteur) {
+          param += "&filter[is_prescripteur]=true";
+      }
       return param;
   };
   const doReset = () => {
@@ -365,6 +391,8 @@
           hasOnlyOneContact: null,
           mailingLanguageId: null,
           contactMailing: null,
+          is_agent: null,
+          is_prescripteur: null,
       };
       getCustomers();
   }

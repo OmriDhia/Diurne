@@ -75,20 +75,12 @@
                 this.customers.push(newTag);
                 this.customerId.push(newTag);
             },
-            async getCustomers (socialReason ="", firstname = "", lastname = "", ){
+            async getCustomers (customerName = "",){
                 try{
-                    let url = '/api/customers?page=1&itemsPerPage=100';
+                    let url = '/api/customers?page=1&itemsPerPage=100&orderBy=customer&orderWay=asc';
 
-                    if(firstname){
-                        url += '&filter[firstname]='+firstname;
-                    }
-                    
-                    if(socialReason){
-                        url += '&filter[socialReason]='+socialReason;
-                    }
-
-                    if(lastname){
-                        url += '&filter[lastname]='+lastname;
+                    if(customerName){
+                        url += '&filter[customerName]='+customerName;
                     }
 
                     const res = await axiosInstance.get(url);

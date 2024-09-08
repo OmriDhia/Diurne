@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-center mb-2 pe-0">
-        <div class="col-md-3 col-sm-12"><label class="form-label">Commertial:</label></div>
+        <div class="col-md-3 col-sm-12"><label class="form-label">Agent:</label></div>
         <div class="col-md-9 col-sm-12">
             <multiselect
                 :class="{ 'is-invalid': error}"
@@ -98,7 +98,7 @@
 
     const getAgents = async (firstname = "", lastname = "") => {
         try{
-            let url = '/api/contact/agents?page=1&itemPerPage=30&orderBy=firstname&orderWay=asc';
+            let url = '/api/agents?page=1&itemsPerPage=50&orderBy=firstname&orderWay=asc';
 
             if(firstname){
                 url += '&filter[firstname]='+firstname;
@@ -109,9 +109,9 @@
             }
 
             const res = await axiosInstance.get(url);
-            agents.value = res.data.response.agents.map(com => {
+            agents.value = res.data.response.customers.map(com => {
                 return {
-                    name: com.firstname + ' ' + com.lastname,
+                    name: com.customer,
                     id: com.id
                 }
             });

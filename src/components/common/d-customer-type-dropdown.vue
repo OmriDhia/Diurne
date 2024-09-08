@@ -7,7 +7,7 @@
                 v-model="customerId"
                 :options="customers"
                 :multiple="true"
-                placeholder="Client"
+                placeholder="Type client"
                 track-by="customerGroup_id"
                 label="name"
                 :searchable="true"

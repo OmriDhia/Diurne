@@ -193,6 +193,10 @@ label, .text-black{
         background-color: $color !important;
         color: #fff;
     }
+
+    .header-container .navbar .navbar-item .nav-item.dropdown .dropdown-menu.show {
+        background-color: $color !important;
+    }
 }
 
 .contacts {
