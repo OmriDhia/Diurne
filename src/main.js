@@ -5,6 +5,9 @@ import store from "./store";
 const app = createApp(App);
 import {Helper} from "./composables/global-methods";
 
+//vue-i18n
+import i18n from "./i18n";
+
 // bootstrap
 import * as bootstrap from "bootstrap";
 window.bootstrap = bootstrap;
@@ -32,7 +35,7 @@ window.showMessage = (msg = "", type = "success") => {
     });
     toast.fire({
         icon: type,
-        title: msg,
+        title: i18n.global.t(msg),
         padding: "10px 20px",
     });
 };
@@ -48,8 +51,7 @@ import Maska from "maska";
 import { registerScrollSpy } from "vue3-scroll-spy/dist/index";
 registerScrollSpy(app, { offset: 118 });
 
-//vue-i18n
-import i18n from "./i18n";
+
 
 // datatables
 import { ClientTable } from "v-tables-3";

@@ -115,7 +115,12 @@
                 currentCustomer.value = res.data.response.customerData;
             }
         }catch(e){
-            const msg = "Un client d'id " + customer_id + " n'existe pas";
+            let msg = "";
+            if(e.response.data && e.response.data.detail.includes("failed: not_found")){
+                msg = "Un client d'id " + customer_id + " n'existe pas";
+            }else{
+                msg = e.message;
+            }
             window.showMessage(msg,'error');
         }
     };

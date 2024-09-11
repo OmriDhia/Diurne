@@ -189,14 +189,8 @@
         }catch(e){
             if(e.response.data.violations){
                 error.value = formatErrorViolations(e.response.data.violations)
-                
-                Object.entries(error.value).forEach(([key, value]) => {
-                    console.log(key+": "+value);
-                    window.showMessage($i18n.global.t(key) +': ' + $i18n.global.t(value),'error')
-                });
-            }else{
-                window.showMessage(e.message,'error')
             }
+            window.showMessage(e.message,'error')
         }
     };
     

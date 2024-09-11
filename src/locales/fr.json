@@ -109,5 +109,7 @@
     "Please enter a valid postal code. It must have this form LNL NLN.": "Veuillez entrer un code postal valide. Il doit avoir la forme LNL NLN.",
     "This value should be of type float.": "La valeur du champ doit être de type décimale.",
     "Quote processing date must be a valid date in Y-m-d H:i:s format.": "La date de traitement du devis doit être une date valide au format Y-m-d H:i:s.",
-    "Designation cannot be empty.": "La désignation ne peut pas être vide."
+    "Designation cannot be empty.": "La désignation ne peut pas être vide.",
+    "Request failed with status code 422": "Une ou plusieurs champs sont obligatoires ou ne sont pas conformes au type demandé. Veuillez vérifier les champs saisis.",
+    "Request failed with status code 500": "Erreur serveur. Veuillez contacter l'administrateur système."
 }
