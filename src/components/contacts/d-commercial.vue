@@ -38,7 +38,8 @@
 <script setup>
     import { ref , onMounted, watch} from "vue";
     import dDateStartEnd from "../common/d-date-start-end.vue";
-    import Multiselect from '@suadelabs/vue3-multiselect';
+    import Multiselect from 'vue-multiselect'
+    import 'vue-multiselect/dist/vue-multiselect.css';
     import axiosInstance from "../../config/http";
     import dCommertialHistories from "./_partial/d-commertial-histories.vue";
     import perfectScroll from "../plugins/perfect-scrollbar1.vue";

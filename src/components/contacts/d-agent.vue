@@ -41,7 +41,8 @@
 <script setup>
     import { ref , onMounted, watch} from "vue";
     import dDateStartEnd from "../common/d-date-start-end.vue";
-    import Multiselect from '@suadelabs/vue3-multiselect';
+    import Multiselect from 'vue-multiselect'
+    import 'vue-multiselect/dist/vue-multiselect.css';
     import axiosInstance from "../../config/http";
     import VueFeather from 'vue-feather';
     import dAgentHistories from "./_partial/d-agent-histories.vue";
