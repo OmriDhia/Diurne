@@ -23,8 +23,8 @@
 
 <script>
     import axiosInstance from '../../config/http';
-    import Multiselect from '@suadelabs/vue3-multiselect'
-    import '@suadelabs/vue3-multiselect/dist/vue3-multiselect.css';
+    import Multiselect from 'vue-multiselect'
+    import 'vue-multiselect/dist/vue-multiselect.css';
     import store from "../../store/index";
 
     export default {

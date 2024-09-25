@@ -4,10 +4,10 @@
         <div :class="{'col-8': !hideLabel,'col-12': hideLabel}">
             <multiselect
                 :class="{ 'is-invalid': error}"
-                :multiple="true"
+                :multiple="isMultiple"
                 v-model="userId"
                 :options="users"
-                placeholder="Designeur diurne"
+                placeholder="Designeur"
                 track-by="id"
                 label="name"
                 :searchable="true"
@@ -18,16 +18,15 @@
                 @update:model-value="handleChange($event)"
                 @search-change="handleSearch($event)"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champ client est abligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t("Le champ designeur est abligatoire.") }}</div>
         </div>
     </div>
 </template>
 
 <script>
     import axiosInstance from '../../config/http';
-    import Multiselect from '@suadelabs/vue3-multiselect'
-    import '@suadelabs/vue3-multiselect/dist/vue3-multiselect.css';
-    import store from "../../store/index";
+    import Multiselect from 'vue-multiselect'
+    import 'vue-multiselect/dist/vue-multiselect.css';
 
     export default {
         components:{
@@ -52,6 +51,10 @@
             hideLabel: {
                 type: Boolean,
                 default: false
+            }, 
+            isMultiple: {
+                type: Boolean,
+                default: false
             },
         },
         data() {
@@ -62,9 +65,13 @@
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', value.map(e => {
-                    return e.id
-                }));
+                if(this.isMultiple){
+                    this.$emit('update:modelValue', value.map(e => {
+                        return e.id
+                    }));  
+                }else{
+                    this.$emit('update:modelValue', value.id);
+                }
             },
             addTag(newTag){
                 this.users.push(newTag);
@@ -97,7 +104,11 @@
                     });
 
                     if(this.modelValue){
-                        this.userId = this.users.filter(f => this.modelValue.indexOf(f.id) > -1 )
+                        if(this.isMultiple){
+                            this.userId = this.users.filter(f => this.modelValue.indexOf(f.id) > -1 )
+                        }else{
+                            this.userId = this.users.filter(f => this.modelValue === f.id)[0]
+                        }
                     }
                 }catch{
                     console.log('Erreur get users list.')
@@ -110,7 +121,11 @@
         watch: {
             modelValue(newValue) {
                 if(newValue){
-                    this.userId = this.users.filter(f => newValue.indexOf(f.id) > -1 )
+                    if(this.isMultiple){
+                        this.userId = this.users.filter(f => newValue.indexOf(f.id) > -1 )
+                    }else{
+                        this.userId = this.users.filter(f => newValue === f.id)[0]
+                    }
                 }
             }
         }

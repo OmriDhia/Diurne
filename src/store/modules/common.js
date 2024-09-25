@@ -8,7 +8,15 @@ export default {
         countries: [],
         nomenclatures: [],
         languages: [],
-        intermediaryTypes: []
+        intermediaryTypes: [],
+        diObject: {
+            format: "",
+            deadline: new Date(),
+            transmitted_to_studio: false,
+            transmition_date: null,
+            unit_id: 0,
+            contremarque_id: 0
+        }
     },
     mutations: {
         setLayout(state, payload) {
@@ -38,6 +46,9 @@ export default {
         setIntermediaryTypes(state, payload) {
             state.intermediaryTypes = payload;
         },
+        setDiObject(state, payload) {
+            state.diObject = payload;
+        },
     },
     getters: {
         layout(state) {
@@ -66,6 +77,9 @@ export default {
         },
         intermediaryTypes(state) {
             return state.intermediaryTypes;
+        },
+        diObject(state) {
+            return state.diObject;
         },
     },
 }

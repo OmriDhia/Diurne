@@ -162,7 +162,7 @@
                         <d-btn-outlined label="Editer la demande de l'image projet " icon="arrow-right" buttonClass="ps-4"></d-btn-outlined>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-custom pe-5 ps-5"  data-bs-toggle="modal" data-bs-target="#modalCreateDI">NOUVELLE DI</button>
+                        <button class="btn btn-custom pe-5 ps-5"  data-bs-toggle="modal" data-bs-target="#modalDIManage">NOUVELLE DI</button>
                     </div>
                     <div class="col-auto">
                         <button class="btn btn-custom pe-5 ps-5" v-if="!selectedData.transmitted_to_studio" @click="TransStudio">Transmettre au studio</button>
@@ -170,7 +170,7 @@
                 </div>
             </div>
         </div>
-        <d-modal-create-di :contremarqueId="contremarque_id" @onClose="getDIS"></d-modal-create-di>
+        <d-modal-manage-di :contremarqueId="contremarque_id" @onClose="getDIS"></d-modal-manage-di>
     </div>
 </template>
 
@@ -181,7 +181,7 @@ import dPageTitle from '../../../components/common/d-page-title.vue';
 import dUnitMeasurements from '../../../components/common/d-unit-measurements.vue';
 import dBtnOutlined from "../../../components/base/d-btn-outlined.vue"
 import dDelete from "../../../components/common/d-delete.vue"
-import dModalCreateDi from "../../../components/projet/contremarques/_Partials/d-modal-create-di.vue"
+import dModalManageDi from "../../../components/projet/contremarques/_Partials/d-modal-manage-di.vue"
 import VueFeather from 'vue-feather';
 import axiosInstance from '../../../config/http';
 import { useRoute } from 'vue-router';

@@ -60,12 +60,12 @@
 </template>
 
 <script>
-    import axiosInstance from '../../../config/http';
-    import dModalManageLocations from "./_Partials/d-modal-manage-locations.vue";
-    import dBtnOutlined from "../../base/d-btn-outlined.vue";
-    import dDelete from "../../common/d-delete.vue";
     import VueFeather from 'vue-feather';
-
+    import dDelete from "../../common/d-delete.vue";
+    import dBtnOutlined from "../../base/d-btn-outlined.vue";
+    import contremarqueService from "../../../Services/contremarque-service";
+    import dModalManageLocations from "./_Partials/d-modal-manage-locations.vue";
+    
     export default {
         components: {
             dModalManageLocations,
@@ -88,9 +88,7 @@
         methods: {
             async getLocations() {
                 try {
-                    const res = await axiosInstance.get('/api/locationsByContremarque/' + this.contremarqueId);
-                    this.locations = res.data.response.locations;
-                    console.log(this.locations)
+                    this.locations = await contremarqueService.getLocationsByContremarque(this.contremarqueId)
                 } catch (error) {
                     console.error('Failed to fetch profiles:', error);
                 }

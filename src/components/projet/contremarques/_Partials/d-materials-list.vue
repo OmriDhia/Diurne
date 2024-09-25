@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-center">
-        <perfect-scrollbar tag="div" class="h-130-forced row pe-2 ps-2 mt-2 block-custom-border"
+        <perfect-scrollbar tag="div" class="h-130-forced col-12 pe-2 ps-2 mt-2 block-custom-border"
                            :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 130, suppressScrollX: true }">
             <div class="row align-items-start p-2 ">
                 <h6 class="w-100 p-0 pb-1 title-border-bottom">Matière demandés</h6>
@@ -22,7 +22,7 @@
             </template>
         </perfect-scrollbar>
         <d-modal-add-material @addMaterial="addMaterial($event)"></d-modal-add-material>
-        <div class="row ps-0 mt-2">
+        <div class="col-12 ps-0 mt-2">
             <div class="col-auto ps-0">
                 <button class="btn ms-0 btn-outline-custom" data-bs-toggle="modal" data-bs-target="#modalAddMaterials">
                     Ajouter
@@ -69,10 +69,12 @@
 
             },
             addMaterial(data){
-               this.materials.push(data)
+                this.materials.push(data);
+                this.$store.commit("setMaterials", this.materials)
             },
             handleDelete(index){
                 this.materials.splice(index, 1)
+                this.$store.commit("setMaterials", this.materials)
             }
         },
         mounted() {

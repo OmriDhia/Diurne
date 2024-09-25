@@ -23,8 +23,8 @@
 
 <script>
     import axiosInstance from '../../config/http';
-    import Multiselect from '@suadelabs/vue3-multiselect'
-    import '@suadelabs/vue3-multiselect/dist/vue3-multiselect.css';
+    import Multiselect from 'vue-multiselect'
+    import 'vue-multiselect/dist/vue-multiselect.css';
     import store from "../../store/index";
 
     export default {
@@ -67,7 +67,7 @@
             },
             async getContremarques (designation = ""){
                 try{
-                    let url = '/api/contremarques?page=1&limit=50&order=designation&orderWay=asc';
+                    let url = '/api/contremarques?page=1&limit=200&order=designation&orderWay=asc';
                     
                     if(this.customerId){
                         url += '&customerId=' + this.customerId;

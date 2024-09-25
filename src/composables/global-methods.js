@@ -1,5 +1,6 @@
 import moment from "moment";
 import i18n from "../i18n";
+import { FILE_URL} from "./constants";
 
 export function generateUniqueId(prefix = 'input') {
     return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
@@ -32,5 +33,12 @@ export const Helper = {
             currency: 'EUR',
         });
         return formatter.format(price)
+    },
+    getImagePath: (attachment) => {
+        if(attachment && attachment.path){
+            const baseUrl = attachment.path.replace('/var/www/html/api_diurne/public',FILE_URL)
+            return baseUrl + '/' + attachment.file; 
+        }
+        return "/assets/images/projet/no-image.png";
     }
-}
+};

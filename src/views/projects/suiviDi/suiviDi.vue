@@ -67,7 +67,7 @@
                                 <div class="d-flex justify-content-between">
                                     <strong>{{ data.value.diNumber}}</strong>
                                     <div>
-                                        <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
+                                        <vue-feather type="search"  stroke-width="1" class="cursor-pointer" @click="goTodetails(data.value.di_id, data.value.order_design_id)"></vue-feather>
                                     </div>
                                 </div>
                             </template>
@@ -94,9 +94,9 @@
                         </vue3-datatable>
                     </div>
                 </div>
+                <d-modal-manage-di :diId="selectedDiId" @onClose="handleClose"></d-modal-manage-di>
             </div>
         </div>
-       
     </div>
 </template>
 
@@ -108,7 +108,7 @@ import dCarpetStatusDropdown from '../../../components/common/d-carpet-status-dr
 import dPageTitle from '../../../components/common/d-page-title.vue';
 import VueFeather from 'vue-feather';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
-import dModalCreateDi from "../../../components/projet/contremarques/_Partials/d-modal-create-di.vue"
+import dModalManageDi from "../../../components/projet/contremarques/_Partials/d-modal-manage-di.vue"
 import axiosInstance from '../../../config/http';
 import { ref, reactive, onMounted } from 'vue';
 import { filterSuiviDi } from '../../../composables/constants';
@@ -130,6 +130,7 @@ const params = reactive({
 const filter = ref(filterSuiviDi);
 const filterActive = ref(false);
 const rows = ref(null);
+const selectedDiId = ref(0);
 
 const cols = ref([
     { field: 'diNumber', title: 'N° de la DI' },
@@ -162,7 +163,6 @@ const getDI = async () => {
         
         url += getFilterParams();
         const response = await axiosInstance.get(url);
-        console.log(response)
         const data = response.data;
         total_rows.value = data.response.count;
         rows.value = data.response.carpetDesignOrders;
@@ -208,6 +208,15 @@ const doReset = () => {
         carpetStatus: null,
     };
     getDI();
+};
+const handleUpdateDI = async (diId) => {
+    selectedDiId.value = diId;
+};
+const goTodetails = (id_di,carperOrderId = 0) => {
+    location.href = `/projet/dis/model/${id_di}/update/${carperOrderId}`;
+}
+const handleClose = () => {
+    //selectedDiId.value = null;
 };
 
 const goToNewContremarque = () => {

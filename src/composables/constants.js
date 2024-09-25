@@ -1,3 +1,4 @@
+export const FILE_URL = "https://diurne-api.webntricks.com";
 export const CRYPTO_KEY = "QdSr3pKrmW";
 export const TOKEN_STORAGE_NAME = "auth_token";
 export const USER_INFO_STORAGE_NAME = "user_info";
@@ -88,3 +89,9 @@ export const filterSuiviDi = {
 
 export const particularCustomerGroupId = 1;
 export const publicDiscountTypeId = 1;
+
+export const designerStatusConst = [
+    {id: 1, label: "Demarrage"},
+    {id: 2, label: "Pause"},
+    {id: 3, label: "Fin"}
+]

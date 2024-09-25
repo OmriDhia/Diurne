@@ -35,14 +35,17 @@
             </div>
             
             <div class="panel br-6 p-2 mt-3">
-                <div class="row ms-2 mt-2 mb-2">
-                   <div class="col-md-12 col-xl-9">
+                <div class="container p-0">
+                <div class="row m-2">
+                   <div class="col-md-12 col-xl-9 pe-4">
+                       <div class="container p-0">
                        <div class="row">
                            <div class="col-xl-4 col-md-12">
                                <d-input :disabled="true" v-model="customer.socialReason" label="Client"></d-input>
                                <d-input :disabled="true" v-model="contremarque.designation" label="Contremarque"></d-input>
+                               <d-location-dropdown :contremarqueId="projectDi.contremarque" v-model="dataCarpetOrder.location_id" :error="errorCarpetOrder.location_id"></d-location-dropdown>
                                <d-input :disabled="true" v-model="transDate" label="Date trasmission"></d-input>
-                               <d-input :disabled="true" v-model="selectedData.demande_number" label="N° de la demande"></d-input>
+                               <d-input :disabled="true" v-model="projectDi.demande_number" label="N° de la demande"></d-input>
                                <d-input :disabled="true" v-model="deadline" label="Deadline"></d-input>
                                <d-input :disabled="true" v-model="commercial" label="Commercial"></d-input>
                            </div>
@@ -64,48 +67,66 @@
                                    </div>
                                </div>
                            </div>
+                           <div class="row justify-content-end">
+                               <div class="col-auto">
+                                   <button class="btn btn-custom mb-2 text-uppercase" @click="saveCarpetOrder">Enregistrer</button>  
+                               </div>
+                           </div>
                        </div>
-                       <div class="row align-items-center">
-                           <div class="col-md-2 col-sm-6">
+                       <div class="row align-items-center justify-content-between mt-5" v-if="carpetDesignOrderId">
+                           <!--div class="col-md-auto col-sm-6">
                                <d-input></d-input>
+                           </div-->
+                           <div class="col-md-auto col-sm-6">
+                               <d-carpet-status-dropdown v-model="dataCarpetOrder.status_id"></d-carpet-status-dropdown>
                            </div>
-                           <div class="col-md-4 col-sm-6">
-                               <d-carpet-status-dropdown v-model="carpetStatusId"></d-carpet-status-dropdown>
-                           </div>
-                           <div class="col-md-2 col-sm-6">
+                           <div class="col-md-auto col-sm-6">
                                <button class="btn btn-custom text-uppercase">Copie id</button>
                            </div>
-                           <div class="col-md-4 col-sm-6">
+                           <div class="col-md-auto col-sm-6">
                                <button class="btn btn-custom mb-2 text-uppercase">Générer matière par defaut</button>
                            </div>
                        </div>
-                       <div class="row ms-2 mt-4 mb-2">
+                       <div class="row ps-2 mt-4 mb-2"  v-if="carpetDesignOrderId">
                            <div class="col-xl-4 col-md-12">
                                 <d-materials-list></d-materials-list>
                            </div>
                            <div class="col-xl-8 col-md-12">
                                <div class="row">
                                    <div class="col-xl-6 col-md-12">
-                                        <d-collections-dropdown v-model="collectionId"></d-collections-dropdown>
+                                        <d-collections-dropdown v-model="dataSpecification.collectionId" :error="errorCarpetOrdeSpecification.collectionId"></d-collections-dropdown>
                                    </div>
                                    <div class="col-xl-6 col-md-12">
-                                       <d-model-dropdown v-model="collectionId"></d-model-dropdown>
+                                       <d-model-dropdown v-model="dataSpecification.modelId" :error="errorCarpetOrdeSpecification.modelId"></d-model-dropdown>
                                    </div>
                                    <div class="col-xl-6 col-md-12">
-                                       <d-qualities-dropdown v-model="collectionId"></d-qualities-dropdown>
+                                       <d-qualities-dropdown v-model="dataSpecification.qualityId" :error="errorCarpetOrdeSpecification.qualityId"></d-qualities-dropdown>
                                    </div>
                                </div>
                            </div>
                        </div>
+                       <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
+                           <d-measurements-di></d-measurements-di>
+                       </div>
+                       <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
+                           <div class="text-black p-0 pb-2">Description de l'image</div>
+                           <textarea v-model="dataSpecification.description" class="w-100 h-130-forced block-custom-border"></textarea>
+                       </div>
+                       <div class="row justify-content-end"  v-if="carpetDesignOrderId">
+                           <div class="col-auto">
+                               <button class="btn btn-custom mb-2 text-uppercase" @click="saveCarpetOrderSpecifications">Enregistrer</button>
+                           </div>
+                       </div>
+                       </div>
                    </div>
-                    <div class="col-md-12 col-xl-3">
-                        <d-designer-list></d-designer-list>
+                    <div class="col-md-12 col-xl-3 ps-1" v-if="carpetDesignOrderId">
+                        <d-designer-list :carpetDesignOrderId="carpetDesignOrderId" :designersProps="currentCarpetObject.designers"></d-designer-list>
+                        <d-images-list :carpetDesignOrderId="carpetDesignOrderId"></d-images-list>
                     </div>
                 </div>
-                
+                </div>
             </div>
         </div>
-       
     </div>
 </template>
 
@@ -118,14 +139,13 @@ import dBtnOutlined from "../../../components/base/d-btn-outlined.vue"
 import dDelete from "../../../components/common/d-delete.vue"
 import VueFeather from 'vue-feather';
 import axiosInstance from '../../../config/http';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 import { ref, onMounted, watch } from 'vue';
 import { filterContremarque } from '../../../composables/constants';
 import contremarqueService from "../../../Services/contremarque-service";
 import dCarpetStatusDropdown from "../../../components/common/d-carpet-status-dropdown.vue"
-
-import Store from "../../../store";
-
+import dMeasurementsDi from "../../../components/projet/contremarques/d-mesurement-di.vue"
 import { useMeta } from '/src/composables/use-meta';
 import {Helper} from "../../../composables/global-methods";
 import dCollectionsDropdown from "../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue";
@@ -134,18 +154,22 @@ import dQualitiesDropdown from "../../../components/projet/contremarques/dropdow
 import dMaterialsDropdown from "../../../components/projet/contremarques/dropdown/d-materials-dropdown.vue";
 import dMaterialsList from "../../../components/projet/contremarques/_Partials/d-materials-list.vue";
 import dDesignerList from "../../../components/projet/contremarques/d-designer-list.vue";
+import dImagesList from "../../../components/projet/contremarques/d-images-list.vue";
+import dLocationDropdown from "../../../components/projet/contremarques/dropdown/d-location-dropdown.vue";
 
-useMeta({ title: 'Demande Image' });
+useMeta({ title: 'Maquette' });
+
+const store = useStore();
 
 const route = useRoute();
+const router = useRouter();
 const id_di = route.params.id_di;
-const id = route.params.id;
+const carpetDesignOrderId = route.params.carpetDesignOrderId ?? null ;
 const carpetStatusId = ref(null);
 const collectionId = ref(null);
 const datas = ref([]);
 const selected = ref(null);
 const selectedData = ref({});
-const comment = ref("");
 const format = ref("");
 const unitOfMesurements = ref("");
 const contremarque = ref({});
@@ -154,5 +178,118 @@ const transDate = ref("");
 const carpetDesign = ref([]);
 const deadline = ref(null);
 const commercial = ref(null);
+const currentCarpetObject = ref({});
+const specification = ref({});
+const dataCarpetOrder = ref({
+    location_id: 0,
+    status_id: 0
+});
+const errorCarpetOrder = ref({});
+const errorCarpetOrdeSpecification = ref({});
+const dataSpecification = ref({
+    reference: "",
+    description: "",
+    collectionId: 0,
+    modelId: 0,
+    qualityId: 0,
+    hasSpecialShape: false,
+    isOversized: false,
+    specialShapeId: 0,
+    dimensions: {},
+    materials: []
+});
+const projectDi = ref({});
+
+const getProjectDI = async () => {
+    try{
+        projectDi.value = await contremarqueService.getProjectDiById(id_di);
+        if(projectDi.value){
+            unitOfMesurements.value = projectDi.value.unit;
+            format.value = projectDi.value.format;
+            deadline.value = Helper.FormatDate(projectDi.value.deadline.date);
+            transDate.value = Helper.FormatDate(projectDi.value.transmition_date.date);
+            contremarque.value = await contremarqueService.getContremarqueById(projectDi.value.contremarque);
+            commercial.value = (contremarque.value.commercials) ? contremarque.value.commercials[0].firstname + " " + contremarque.value.commercials[0].lastname : "";
+            customer.value = contremarque.value.customer;
+        }
+        
+    }catch (e){
+        console.log(e);
+        console.log("Erreur get events customer")
+    }
+};
+
+const getOrderCarpet = async (id) => {
+    try{
+        if(id){
+            const res = await axiosInstance.get(`/api/carpet-design-orders/${id}`);
+            currentCarpetObject.value = res.data.response;
+            dataCarpetOrder.value.location_id =  currentCarpetObject.value.location.location_id
+            dataCarpetOrder.value.status_id =  currentCarpetObject.value.location.status
+        }
+    }catch (e){
+        console.log(e)
+    }
+}
+
+onMounted( () => {
+    getOrderCarpet(carpetDesignOrderId);
+    getProjectDI()
+})
+
+const saveCarpetOrder = async () => {
+    try{
+        if(carpetDesignOrderId){
+            const res = await axiosInstance.put(`/api/carpet-design-order/${carpetDesignOrderId}`,dataCarpetOrder.value);
+            window.showMessage("Mise à jour avec succées.");
+        }else{
+            const res = await axiosInstance.post(`/api/projectDi/${id_di}/carpet-design-order`,dataCarpetOrder.value);
+            window.showMessage("Ajout avec succées.");
+            setTimeout(() => {
+                const resolvedRoute = router.resolve({ name: 'di_orderDesigner_update', params: { id_di: id_di,carpetDesignOrderId: res.data.response.id}});
+                document.location.href = resolvedRoute.href
+                },2000)
+            console.log(res.data.response.id);
+        }
+        
+    }catch (e){
+        if(e.response.data && e.response.data.violations){
+            error.value = formatErrorViolations(e.response.data.violations);
+        }
+        window.showMessage(e.message,'error')
+    }
+}
+const saveCarpetOrderSpecifications = async () => {
+    try{
+        const measurements = store.getters.measurements;
+        console.log(measurements);
+        dataSpecification.value.dimensions = measurements.reduce((acc, dimension) => {
+            acc[dimension.id] = dimension.unit.map(u => {
+                return {
+                    dimension_id: u.id,
+                    value: u.value ? u.value : 0
+                }
+            });
+            return acc;
+        }, {});
+        
+        dataSpecification.value.materials = store.getters.materials;
+        
+        const res = await axiosInstance.post(`/api/carpetDesignOrder/${carpetDesignOrderId}/createCarpetSpecification`,dataSpecification.value);
+        window.showMessage("Ajout avec succées.");
+        /*setTimeout(() => {
+            const resolvedRoute = router.resolve({ name: 'di_orderDesigner_update', params: { id_di: id_di,carpetDesignOrderId: res.data.response.id}});
+            document.location.href = resolvedRoute.href
+            },2000);
+        console.log(res.data.response.id);*/
+        
+    }catch (e){
+        console.log(e)
+        if(e.response.data && e.response.data.violations){
+            error.value = formatErrorViolations(e.response.data.violations);
+        }
+        window.showMessage(e.message,'error')
+    }
+}
 
 </script>

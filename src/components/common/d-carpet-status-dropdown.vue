@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Etat du Tapis<span class="required" v-if="required">*</span> :</label></div>
+        <div class="col-4"><label class="form-label">Etat Tapis<span class="required" v-if="required">*</span> :</label></div>
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"
@@ -22,8 +22,8 @@
 
 <script>
     import axiosInstance from '../../config/http';
-    import Multiselect from '@suadelabs/vue3-multiselect'
-    import '@suadelabs/vue3-multiselect/dist/vue3-multiselect.css';
+    import Multiselect from 'vue-multiselect'
+    import 'vue-multiselect/dist/vue-multiselect.css';
     import store from "../../store/index";
 
     export default {

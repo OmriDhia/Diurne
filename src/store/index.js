@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 import commonModule from './modules/common';
 import userModule from "./modules/user";
+import contremarqueModule from "./modules/contremarque";
 import i18n from "../i18n";
 
 export default new createStore({
@@ -79,6 +80,7 @@ export default new createStore({
     },
     modules: {
         common: commonModule,
-        user: userModule
+        user: userModule,
+        contremarque: contremarqueModule
     },
 });

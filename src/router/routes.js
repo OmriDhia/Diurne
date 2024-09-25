@@ -184,7 +184,7 @@ export const routes = [
                 },
             },
             {
-                path: 'model/:id_di/update/:id',
+                path: 'model/:id_di/update/:carpetDesignOrderId',
                 name: 'di_orderDesigner_update',
                 component: () => import('../views/projects/suiviDi/orderCarpetDesigner.vue'),
                 meta: {

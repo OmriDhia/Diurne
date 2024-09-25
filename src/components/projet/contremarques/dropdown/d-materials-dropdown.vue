@@ -1,33 +1,32 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4" v-if="!hideLabel"><label class="form-label">Matière<span class="required" v-if="required">*</span>:</label>
+        <div class="col-4" v-if="!hideLabel"><label class="form-label">Matière<span class="required"
+                                                                                    v-if="required">*</span>:</label>
         </div>
         <div :class="{'col-8': !hideLabel,'col-12': hideLabel}">
-            <div class="row">
-                <multiselect
-                    :class="{ 'is-invalid': error}"
-                    :model-value="value"
-                    :options="data"
-                    placeholder="Matière"
-                    track-by="id"
-                    label="reference"
-                    :searchable="true"
-                    selected-label=""
-                    select-label=""
-                    deselect-label=""
-                    @change=""
-                    @update:model-value="handleChange($event)"
-                ></multiselect>
-                <div v-if="error" class="invalid-feedback">{{ $t("Le champs matière est abligatoire.") }}</div>
-            </div>
+            <multiselect
+                :class="{ 'is-invalid': error}"
+                :model-value="value"
+                :options="data"
+                placeholder="Matière"
+                track-by="id"
+                label="reference"
+                :searchable="true"
+                selected-label=""
+                select-label=""
+                deselect-label=""
+                @change=""
+                @update:model-value="handleChange($event)"
+            ></multiselect>
+            <div v-if="error" class="invalid-feedback">{{ $t("Le champs matière est abligatoire.") }}</div>
         </div>
     </div>
 </template>
 
 <script>
     import axiosInstance from '../../../../config/http';
-    import Multiselect from '@suadelabs/vue3-multiselect'
-    import '@suadelabs/vue3-multiselect/dist/vue3-multiselect.css';
+    import Multiselect from 'vue-multiselect'
+    import 'vue-multiselect/dist/vue-multiselect.css';
 
     export default {
         components: {
@@ -65,7 +64,7 @@
                 try {
                     const res = await axiosInstance.get('/api/materials');
                     this.data = res.data.response;
-                    if(this.modelValue){
+                    if (this.modelValue) {
                         this.value = this.data.filter(ad => ad.id === this.modelValue)[0]
                     }
                 } catch (error) {

@@ -277,15 +277,43 @@ label, .text-black{
 .h-200-forced{
     height: 200px !important;
 }
+.h-400-forced {
+    height: 400px !important;
+}
 .h-130-forced{
     height: 130px !important;
 }
 .bg-theme{
     background-color: #D4EFF8 !important;
 }
+.font-size-0-6{
+    font-size: 0.6rem;
+}
 .font-size-0-7{
     font-size: 0.7rem;
+    span{
+        font-size: 0.7rem;
+    }
+}
+.font-size-0-8{
+    font-size: 0.8rem;
+    span{
+        font-size: 0.8rem; 
+    }
+}
+.font-size-0-9{
+    font-size: 0.9rem;
 }
 .title-border-bottom{
-    border-bottom: 1px solid #f1f2f3;
+    border-bottom: 2px solid #f1f2f3;
+}
+.title-width{
+    width: calc( 100% - 1rem);
+}
+
+@media (min-width: 1200px) {
+    .col-xl-5-1 {
+        flex: 0 0 auto;
+        width: 45%;
+    }
 }
