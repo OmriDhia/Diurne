@@ -24,8 +24,10 @@
     import dInput from "../../base/d-input.vue";
 
     const props = defineProps({
-        
-    })
+        dimensionsProps : {
+            type: Object
+        }
+    });
     const store = useStore();
     const measurements = ref([]);
 
@@ -41,6 +43,23 @@
                     value: ""
                 }))
             }));
+
+            if (props.dimensionsProps) {
+                measurements.value = measurements.value.map(m => {
+                    const d = props.dimensionsProps[m.id];
+                    if (d) {
+                        m.unit = m.unit.map(u => {
+                            let tmpU = d.find(t => t.unit_id === u.id);
+                            if (tmpU) {
+                                u.value = parseFloat(tmpU.value);
+                            }
+                            return u;
+                        });
+                    }
+                    return m;
+                });
+            }
+            console.log(measurements.value)
         } catch (e) {
             console.error(e.message);
         }
@@ -54,6 +73,12 @@
         () => measurements.value,
         (newMeasurements) => {
             store.commit('setMeasurements', newMeasurements);
+        }
+    );
+    watch(
+        () => props.dimensionsProps,
+        (dimensions) => {
+            
         }
     );
 </script>

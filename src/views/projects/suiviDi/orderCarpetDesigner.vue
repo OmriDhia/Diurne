@@ -50,22 +50,7 @@
                                <d-input :disabled="true" v-model="commercial" label="Commercial"></d-input>
                            </div>
                            <div class="col-xl-8 col-md-12 pe-2">
-                               <div class="row m-2 block-custom-border">
-                                   <div class="col-md-12 bg-theme text-center p-2">
-                                       Document joints à la DI :
-                                   </div>
-                                   <perfect-scrollbar tag="div" class="h-200-forced col-12"
-                                                      :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 200, suppressScrollX: true }">
-
-                                   </perfect-scrollbar>
-                                   <div class="col-md-12">
-                                       <div class="row justify-content-center">
-                                           <div class="col-auto">
-                                               <button class="btn btn-custom pe-5 ps-5 mb-2">Parcourir</button>
-                                           </div>
-                                       </div>
-                                   </div>
-                               </div>
+                               <d-attachments :carpetDesignOrderId="carpetDesignOrderId"></d-attachments>
                            </div>
                            <div class="row justify-content-end">
                                <div class="col-auto">
@@ -89,7 +74,7 @@
                        </div>
                        <div class="row ps-2 mt-4 mb-2"  v-if="carpetDesignOrderId">
                            <div class="col-xl-4 col-md-12">
-                                <d-materials-list></d-materials-list>
+                                <d-materials-list :materielsProps="currentMaterials"></d-materials-list>
                            </div>
                            <div class="col-xl-8 col-md-12">
                                <div class="row">
@@ -106,11 +91,14 @@
                            </div>
                        </div>
                        <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
-                           <d-measurements-di></d-measurements-di>
+                           <d-measurements-di :dimensionsProps="currentDimensions"></d-measurements-di>
                        </div>
                        <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
                            <div class="text-black p-0 pb-2">Description de l'image</div>
                            <textarea v-model="dataSpecification.description" class="w-100 h-130-forced block-custom-border"></textarea>
+                       </div>
+                       <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
+                            <d-composition-steps :carpetDesignOrderId="carpetDesignOrderId" v-if="carpetDesignOrderId"></d-composition-steps>
                        </div>
                        <div class="row justify-content-end"  v-if="carpetDesignOrderId">
                            <div class="col-auto">
@@ -156,6 +144,8 @@ import dMaterialsList from "../../../components/projet/contremarques/_Partials/d
 import dDesignerList from "../../../components/projet/contremarques/d-designer-list.vue";
 import dImagesList from "../../../components/projet/contremarques/d-images-list.vue";
 import dLocationDropdown from "../../../components/projet/contremarques/dropdown/d-location-dropdown.vue";
+import dCompositionSteps from "../../../components/projet/contremarques/_Partials/d-composition-steps.vue";
+import dAttachments from "../../../components/projet/contremarques/_Partials/d-attachments.vue";
 
 useMeta({ title: 'Maquette' });
 
@@ -179,6 +169,8 @@ const carpetDesign = ref([]);
 const deadline = ref(null);
 const commercial = ref(null);
 const currentCarpetObject = ref({});
+const currentMaterials = ref({});
+const currentDimensions = ref({});
 const specification = ref({});
 const dataCarpetOrder = ref({
     location_id: 0,
@@ -225,8 +217,24 @@ const getOrderCarpet = async (id) => {
             const res = await axiosInstance.get(`/api/carpet-design-orders/${id}`);
             currentCarpetObject.value = res.data.response;
             dataCarpetOrder.value.location_id =  currentCarpetObject.value.location.location_id;
-            dataCarpetOrder.value.status_id =  currentCarpetObject.value.location.status;
-            dataSpecification.value.description = currentCarpetObject.value.carpetSpecification.description;
+            dataCarpetOrder.value.status_id =  currentCarpetObject.value.status.id;
+            const dSP = currentCarpetObject.value.carpetSpecification;
+            if(dSP){
+                currentDimensions.value = dSP.carpetDimensions;
+                currentMaterials.value = dSP.carpetMaterials;
+                dataSpecification.value = {
+                    id: dSP.id,
+                    reference: "",
+                    description: dSP.description,
+                    collectionId: dSP.collection ? dSP.collection.id : 0,
+                    modelId: dSP.model ? dSP.model.id : 0,
+                    qualityId: dSP.quality ? dSP.quality.id : 0,
+                    hasSpecialShape: dSP.has_special_shape,
+                    isOversized: dSP.is_oversized,
+                    specialShapeId: dSP.specialShape ? dSP.specialShape.id : 0,
+                };
+            }
+            
         }
     }catch (e){
         console.log(e)
@@ -268,7 +276,7 @@ const saveCarpetOrderSpecifications = async () => {
             acc[dimension.id] = dimension.unit.map(u => {
                 return {
                     dimension_id: u.id,
-                    value: u.value ? u.value : 0
+                    value: u.value ? parseFloat(u.value) : 0
                 }
             });
             return acc;
@@ -276,16 +284,15 @@ const saveCarpetOrderSpecifications = async () => {
         
         dataSpecification.value.materials = store.getters.materials;
         
-        const res = await axiosInstance.post(`/api/carpetDesignOrder/${carpetDesignOrderId}/createCarpetSpecification`,dataSpecification.value);
-        window.showMessage("Ajout avec succées.");
-        /*setTimeout(() => {
-            const resolvedRoute = router.resolve({ name: 'di_orderDesigner_update', params: { id_di: id_di,carpetDesignOrderId: res.data.response.id}});
-            document.location.href = resolvedRoute.href
-            },2000);
-        console.log(res.data.response.id);*/
+        if(dataSpecification.value.id){
+            const res = await axiosInstance.put(`/api/carpetDesignOrder/${carpetDesignOrderId}/updateCarpetSpecification/${dataSpecification.value.id}`, dataSpecification.value);
+            window.showMessage("Mise a jour avec succées.");
+        }else{
+            const res = await axiosInstance.post(`/api/carpetDesignOrder/${carpetDesignOrderId}/createCarpetSpecification`, dataSpecification.value);
+            window.showMessage("Ajout avec succées."); 
+        }
         
     }catch (e){
-        console.log(e)
         if(e.response.data && e.response.data.violations){
             error.value = formatErrorViolations(e.response.data.violations);
         }

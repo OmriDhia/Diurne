@@ -62,6 +62,10 @@
                     let url = '/api/contremarque/carpetDesignOrder/statuses';
                     const res = await axiosInstance.get(url);
                     this.carpetStatus = res.data.response.statuses;
+                    
+                    if(this.modelValue){
+                        this.carpertStatusId = this.carpetStatus.find(ad => ad.id === this.modelValue);
+                    }
                 }catch{
                     console.log('Erreur get carpet status list.')
                 }
@@ -72,7 +76,9 @@
         },
         watch: {
             modelValue(newValue) {
-                this.carpertStatusId = this.carpetStatus.filter(ad => ad.id === newValue)[0];
+                if(newValue){
+                    this.carpertStatusId = this.carpetStatus.find(ad => ad.id === newValue); 
+                }
             }
         }
     };

@@ -66,6 +66,10 @@
                 try {
                     const res = await axiosInstance.get('/api/collections');
                     this.data = res.data.response;
+
+                    if(this.modelValue){
+                        this.value = this.data.filter(ad => ad.id === this.modelValue)[0]
+                    }
                 } catch (error) {
                     console.error('Failed to fetch address types:', error);
                 }

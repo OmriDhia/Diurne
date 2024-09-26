@@ -50,7 +50,9 @@
             dDelete
         },
         props: {
-            
+            materielsProps:{
+                type: Array
+            }  
         },
         data() {
             return {
@@ -59,21 +61,18 @@
             };
         },
         methods: {
-            async getLocations() {
-                
-            },
-            updateLocation(location){
-                
-            },
-            handleClose(){
-
+            formatDataProps(){
+                this.materials = this.materielsProps.map(m => ({
+                    material_id: m.id,
+                    rate: parseFloat(m.rate)
+                }));
             },
             addMaterial(data){
                 this.materials.push(data);
                 this.$store.commit("setMaterials", this.materials)
             },
             handleDelete(index){
-                this.materials.splice(index, 1)
+                this.materials.splice(index, 1);
                 this.$store.commit("setMaterials", this.materials)
             }
         },
@@ -81,7 +80,9 @@
            
         },
         watch: {
-           
+            materielsProps(){
+                this.formatDataProps();
+            }
         }
     };
 </script>

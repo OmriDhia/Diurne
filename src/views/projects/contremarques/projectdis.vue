@@ -82,22 +82,7 @@
                         <d-input :disabled="true" v-model="commercial" label="Commercial"></d-input>
                     </div>
                     <div class="col-xl-8 col-md-12 pe-2">
-                        <div class="row m-2 block-custom-border">
-                            <div class="col-md-12 bg-theme text-center p-2">
-                                Document joints à la DI : 
-                            </div>
-                            <perfect-scrollbar tag="div" class="h-200-forced col-12"
-                                               :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 200, suppressScrollX: true }">
-                                
-                            </perfect-scrollbar>
-                            <div class="col-md-12">
-                                <div class="row justify-content-center">
-                                    <div class="col-auto">
-                                        <button class="btn btn-custom pe-5 ps-5 mb-2">Parcourir</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <d-attachment :diId="selectedData.project_di"></d-attachment>
                     </div>
                 </div>
                 <div class="row p-2 mt-3">
@@ -188,6 +173,7 @@ import { useRoute } from 'vue-router';
 import { ref, onMounted, watch } from 'vue';
 import { filterContremarque } from '../../../composables/constants';
 import contremarqueService from "../../../Services/contremarque-service";
+import dAttachment from "../../../components/projet/contremarques/_Partials/d-attachments.vue";
 
 import Store from "../../../store/index";
 
