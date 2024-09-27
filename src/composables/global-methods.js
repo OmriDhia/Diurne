@@ -41,9 +41,9 @@ export const Helper = {
         }
         return "/assets/images/projet/no-image.png";
     },
-    hasDefinedValue: (obj) => {
+    hasDefinedValue: (obj, excludedKey = "") => {
         for (let key in obj) {
-            if (obj[key] !== null && obj[key] !== undefined && obj[key] !== '') {
+            if (obj[key] !== null && obj[key] !== undefined && obj[key] !== '' && key !== excludedKey) {
                 return true;
             }
         }

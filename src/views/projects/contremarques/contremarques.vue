@@ -151,8 +151,9 @@ import VueFeather from 'vue-feather';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
 import axiosInstance from '../../../config/http';
 import { ref, reactive, onMounted } from 'vue';
-import { filterContremarque } from '../../../composables/constants';
+import { filterContremarque, FILTER_CONTREMARQUE_STORAGE_NAME } from '../../../composables/constants';
 import moment from "moment";
+import { Helper } from "../../../composables/global-methods";
 
 import { useMeta } from '/src/composables/use-meta';
 useMeta({ title: 'Contremarque' });
@@ -168,7 +169,7 @@ const params = reactive({
     orderWay: 'desc'
 });
 
-const filter = ref(filterContremarque);
+const filter = ref(Object.assign({}, filterContremarque));
 const filterActive = ref(false);
 const rows = ref(null);
 
@@ -185,6 +186,11 @@ const cols = ref([
 ]) || [];
 
 onMounted(() => {
+    const f = Helper.getStorage(FILTER_CONTREMARQUE_STORAGE_NAME);
+    if(f && Helper.hasDefinedValue(f)){
+        filter.value = f;
+        filterActive.value = true;
+    }
     getContremarques();
 });
 const getContremarques = async () => {
@@ -210,6 +216,7 @@ const changeServer = (data) => {
 };
 const doSearch = () => {
     filterActive.value = true;
+    Helper.setStorage(FILTER_CONTREMARQUE_STORAGE_NAME, filter.value);
     getContremarques();
 };
 const getFilterParams = () => {
@@ -257,28 +264,11 @@ const overDate = (date) => {
     const inputDate = moment(date);
     return inputDate.isBefore(now);
 };
-/*watch(type, (newValue, oldValue) => {
-    if(newValue === 'contact'){
-        title.value = 'Contacts';
-    }else{
-        title.value = 'évènement';  
-    }
-});*/
 
 const doReset = () => {
     filterActive.value = false;
-    filter.value = {
-        customer: null,
-        contremarque: null,
-        commercial: null,
-        endDate: null,
-        prescriptor: null,
-        pendingProject: null,
-        projectRelance: null,
-        projectRelanceX: null,
-        projectWithoutRelance: null,
-        allProjects: null,
-    };
+    filter.value = Object.assign({}, filterContremarque);
+    Helper.setStorage(FILTER_CONTREMARQUE_STORAGE_NAME, filter.value);
     getContremarques();
 };
 

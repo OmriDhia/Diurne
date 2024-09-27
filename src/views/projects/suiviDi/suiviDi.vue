@@ -111,9 +111,10 @@ import Vue3Datatable from '@bhplugin/vue3-datatable';
 import dModalManageDi from "../../../components/projet/contremarques/_Partials/d-modal-manage-di.vue"
 import axiosInstance from '../../../config/http';
 import { ref, reactive, onMounted } from 'vue';
-import { filterSuiviDi } from '../../../composables/constants';
-
+import {FILTER_SUIVI_DI_STORAGE_NAME, filterSuiviDi} from '../../../composables/constants';
 import { useMeta } from '/src/composables/use-meta';
+import { Helper } from "../../../composables/global-methods";
+
 useMeta({ title: 'Contremarque' });
 
 const loading = ref(true);
@@ -127,7 +128,7 @@ const params = reactive({
     orderWay: null
 });
 
-const filter = ref(filterSuiviDi);
+const filter = ref(Object.assign({}, filterSuiviDi));
 const filterActive = ref(false);
 const rows = ref(null);
 const selectedDiId = ref(0);
@@ -146,6 +147,11 @@ const cols = ref([
 ]) || [];
 
 onMounted(() => {
+    const f = Helper.getStorage(FILTER_SUIVI_DI_STORAGE_NAME);
+    if(f && Helper.hasDefinedValue(f)){
+        filter.value = f;
+        filterActive.value = true;
+    }
     getDI();
 });
 const getDI = async () => {
@@ -179,6 +185,7 @@ const changeServer = (data) => {
 };
 const doSearch = () => {
     filterActive.value = true;
+    Helper.setStorage(FILTER_SUIVI_DI_STORAGE_NAME, filter.value);
     getDI();
 };
 const getFilterParams = () => {
@@ -201,12 +208,8 @@ const getFilterParams = () => {
 
 const doReset = () => {
     filterActive.value = false;
-    filter.value = {
-        customer: null,
-        contremarque: null,
-        diNumber: null,
-        carpetStatus: null,
-    };
+    filter.value = Object.assign({}, filterSuiviDi);
+    Helper.setStorage(FILTER_SUIVI_DI_STORAGE_NAME, filter.value);
     getDI();
 };
 const handleUpdateDI = async (diId) => {

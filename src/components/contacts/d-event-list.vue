@@ -211,13 +211,14 @@
     import VueFeather from 'vue-feather';
     import Vue3Datatable from '@bhplugin/vue3-datatable';
     import axiosInstance from '../../config/http';
-    import { filterEvent } from "../../composables/constants";
+    import { filterEvent, FILTER_EVENT_STORAGE_NAME } from "../../composables/constants";
     import dNomenclatures from "../common/d-nomenclatures.vue";
     import dModalEvent from "./_partial/d-modal-event.vue";
     import dModalManageEvent from "./d-modal-manage-event.vue";
     import dBtnFullscreen from '../base/d-btn-fullscreen.vue';
     import dCustomerTypeDropdown from "../common/d-customer-type-dropdown.vue";
-    
+    import { Helper } from "../../composables/global-methods";
+
     const loading = ref(true);
     const total_rows = ref(0);
     const isOpen = ref(false);
@@ -229,7 +230,7 @@
         orderWay: 'asc'
     });
 
-    const filter = ref(filterEvent);
+    const filter = ref(Object.assign({}, filterEvent));
     const rows = ref(null);
     const filterActive = ref(false);
     const selectedCustomerId = ref(null);
@@ -247,6 +248,11 @@
     ]) || [];
 
     onMounted(() => {
+        const f = Helper.getStorage(FILTER_EVENT_STORAGE_NAME);
+        if(f && Helper.hasDefinedValue(f,'hasOnlyOneContact')){
+            filter.value = f;
+            filterActive.value = true;
+        }
         getCustomers();
     });
     const getCustomers = async () => {
@@ -270,7 +276,8 @@
         getCustomers();
     };
     const doSearch = () => {
-        filterActive.value = true
+        filterActive.value = true;
+        Helper.setStorage(FILTER_EVENT_STORAGE_NAME, filter.value);
         getCustomers();
     };
     const getFilterParams = () => {
@@ -345,28 +352,8 @@
     };
     const doReset = () => {
         filterActive.value = false;
-        filter.value = {
-            firstname: null,
-            lastname: null,
-            rs: null,
-            email: null,
-            commercial: null,
-            customerTypeId: null,
-            hasInvalidCommercial: null,
-            active: null,
-            hasOnlyOneContact: true,
-            hasNoProjectY: null,
-            hasNoProjectN: null,
-            hasNextStepY: null,
-            hasNextStepN: null,
-            eventDate_from: null,
-            eventDate_to: null,
-            next_reminder_deadline_from: null,
-            next_reminder_deadline_to: null,
-            subject: null,
-            onlyLastEvent: null,
-            pres: null,
-        };
+        filter.value = Object.assign({}, filterEvent);
+        Helper.setStorage(FILTER_EVENT_STORAGE_NAME, filter.value);
         getCustomers();
     };
     const selectCustomer = (customerId) => {
