@@ -40,5 +40,24 @@ export const Helper = {
             return baseUrl + '/' + attachment.file; 
         }
         return "/assets/images/projet/no-image.png";
-    }
+    },
+    hasDefinedValue: (obj) => {
+        for (let key in obj) {
+            if (obj[key] !== null && obj[key] !== undefined && obj[key] !== '') {
+                return true;
+            }
+        }
+        return false;
+    },
+    getStorage: (name)=> {
+        if(localStorage.getItem(name)){
+            return JSON.parse(localStorage.getItem(name))
+        }
+        return null;
+    },
+    setStorage: (name, value)=> {
+        if(value){
+            localStorage.setItem(name, JSON.stringify(value))
+        }
+    },
 };

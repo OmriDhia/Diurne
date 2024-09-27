@@ -10,7 +10,7 @@
                 </div>
             </template>
             <template v-slot:modal-footer>
-                <button class="btn btn-custom pe-2 ps-2" @click.prevent="saveAgent">Enregistrer</button>
+                <button class="btn btn-custom pe-2 ps-2" @click.prevent="nextStep">Suivant</button>
             </template>
         </d-base-modal>
     </div>
@@ -28,9 +28,11 @@
         }
     });
 
-  
+    const nextStep = () => {
+      
+    }
     const emit = defineEmits(['onClose']);
-
+    
     const handleClose = () => {
         emit('onClose')
     }

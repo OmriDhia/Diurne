@@ -247,7 +247,8 @@
   import VueFeather from 'vue-feather';
   import Vue3Datatable from '@bhplugin/vue3-datatable';
   import axiosInstance from '../../config/http';
-  import { filterContact } from "../../composables/constants";
+  import { filterContact, FILTER_CONTACT_STORAGE_NAME } from "../../composables/constants";
+  import {Helper} from "../../composables/global-methods";
 
   const loading = ref(true);
   const loadingAttribution = ref(false);
@@ -260,7 +261,7 @@
       orderWay: 'asc'
   });
   
-  const filter = ref(filterContact);
+  const filter = ref(Object.assign({}, filterContact));
   const rows = ref(null);
   const filterActive = ref(false);
 
@@ -277,6 +278,11 @@
   ]) || [];
 
   onMounted(() => {
+      const f = Helper.getStorage(FILTER_CONTACT_STORAGE_NAME);
+      if(f && Helper.hasDefinedValue(f)){
+          filter.value = f;
+          filterActive.value = true;
+      }
       getCustomers();
   });
   const getCustomers = async () => {
@@ -301,7 +307,8 @@
       getCustomers();
   };
   const doSearch = () => {
-      filterActive.value = true
+      filterActive.value = true;
+      Helper.setStorage(FILTER_CONTACT_STORAGE_NAME, filter.value);
       getCustomers();
   };
   const getFilterParams = () => {
@@ -372,28 +379,8 @@
   };
   const doReset = () => {
       filterActive.value = false;
-      filter.value = {
-          lastname: null,
-          postCode: null,
-          rs: null,
-          city: null,
-          firstname: null,
-          tva_ce: null,
-          commercial: null,
-          webSite: null,
-          country: null,
-          pres: null,
-          customerTypeId: null,
-          wrongAdd: null,
-          validAdd: null,
-          hasInvalidCommercial: null,
-          active: null,
-          hasOnlyOneContact: null,
-          mailingLanguageId: null,
-          contactMailing: null,
-          is_agent: null,
-          is_prescripteur: null,
-      };
+      filter.value = Object.assign({}, filterContact);
+      Helper.setStorage(FILTER_CONTACT_STORAGE_NAME, filter.value);
       getCustomers();
   }
   const doValidation = async (action, attribution) => {

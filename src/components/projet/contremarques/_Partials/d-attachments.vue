@@ -117,23 +117,7 @@
     };
     
     const handleDownload = async (attachment) => {
-        //window.open(Helper.getImagePath(attachment), '_blank', `download=${attachment.file}`);
-        fetch(Helper.getImagePath(attachment),{
-            mode: 'cors'  // Enables cross-origin requests
-        })
-            .then(response => response.blob())  // Fetch the file data as a blob
-            .then(blob => {
-                const blobUrl = URL.createObjectURL(blob);  // Create a temporary URL for the blob
-                const a = document.createElement('a');  // Create an anchor element
-                a.href = blobUrl;
-                a.download = attachment.file;  // Set the file name
-                document.body.appendChild(a);  // Append the anchor to the body
-                a.click();  // Programmatically click the anchor to start download
-                document.body.removeChild(a);  // Remove the anchor from the document
-                URL.revokeObjectURL(blobUrl);  // Revoke the object URL to free up memory
-            })
-            .catch(error => console.error('Download failed:', error));
-    
+        await attachmentService.downloadFile(attachment);
     };
     
     watch(

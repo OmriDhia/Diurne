@@ -8,7 +8,7 @@
             <div class="row row-cols-1 row-cols-md-2 g-4">
                 <div class="col" v-for="(item, index) in images" :key="index">
                     <div class="card border-0">
-                        <img :src="$Helper.getImagePath(item.attachment)" class="card-img-top cursor-pointer" @click="downloadImage(item.attachment.file,$Helper.getImagePath(item.attachment))" alt="Image Preview">
+                        <img :src="$Helper.getImagePath(item.attachment)" class="card-img-top cursor-pointer" @click="downloadImage(item.attachment)" alt="Image Preview">
                         <div class="card-body p-0 mt-2">
                             <div class="meta-info">
                                 <h6 class="card-title">{{ item.image_reference}}</h6>
@@ -39,6 +39,7 @@
     import VueFeather from 'vue-feather';
     import { ref, onMounted } from 'vue';
     import contremarqueService from "../../../Services/contremarque-service";
+    import attachmentService from "../../../Services/attachment-service";
     import dModalAddImage from "./_Partials/d-modal-add-image.vue";
     import axios from 'axios';
 
@@ -61,8 +62,8 @@
     const handleClose = async () => {
             await getImages()
     };
-    const downloadImage = (name, imageLink) => {
-        
+    const downloadImage = async (attachment) => {
+        await attachmentService.downloadFile(attachment);
     };
 
     onMounted(async () => {

@@ -2,9 +2,12 @@ export const FILE_URL = "https://diurne-api.webntricks.com";
 export const CRYPTO_KEY = "QdSr3pKrmW";
 export const TOKEN_STORAGE_NAME = "auth_token";
 export const USER_INFO_STORAGE_NAME = "user_info";
-export const EVENT_FILTRE_STORAGE_NAME = "event_filter";
-export const CONTACT_FILTRE_STORAGE_NAME = "contact_filter";
 export const CONTACT_SELECTION_STORAGE_NAME = "Selected_contact_menu";
+export const FILTER_CONTACT_STORAGE_NAME = "filterContact";
+export const FILTER_EVENT_STORAGE_NAME = "filterEvent";
+export const FILTER_CONTREMARQUE_STORAGE_NAME = "filterContremarque";
+export const FILTER_SUIVI_DI_STORAGE_NAME = "filterSuiviDi";
+
 export const menuHomeColor = {
     contact: '#E3599E',
     contremarque: '#4260EB',
