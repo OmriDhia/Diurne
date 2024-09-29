@@ -39,72 +39,72 @@
                 <div class="row m-2">
                    <div class="col-md-12 col-xl-9 pe-4">
                        <div class="container p-0">
-                       <div class="row">
-                           <div class="col-xl-4 col-md-12">
-                               <d-input :disabled="true" v-model="customer.socialReason" label="Client"></d-input>
-                               <d-input :disabled="true" v-model="contremarque.designation" label="Contremarque"></d-input>
-                               <d-location-dropdown :contremarqueId="projectDi.contremarque" v-model="dataCarpetOrder.location_id" :error="errorCarpetOrder.location_id"></d-location-dropdown>
-                               <d-input :disabled="true" v-model="transDate" label="Date trasmission"></d-input>
-                               <d-input :disabled="true" v-model="projectDi.demande_number" label="N° de la demande"></d-input>
-                               <d-input :disabled="true" v-model="deadline" label="Deadline"></d-input>
-                               <d-input :disabled="true" v-model="commercial" label="Commercial"></d-input>
+                           <div class="row">
+                               <div class="col-xl-4 col-md-12">
+                                   <d-input :disabled="true" v-model="customer.customerName" label="Client"></d-input>
+                                   <d-input :disabled="true" v-model="contremarque.designation" label="Contremarque"></d-input>
+                                   <d-location-dropdown :contremarqueId="projectDi.contremarque" v-model="dataCarpetOrder.location_id" :error="errorCarpetOrder.location_id"></d-location-dropdown>
+                                   <d-input :disabled="true" v-model="transDate" label="Date trasmission"></d-input>
+                                   <d-input :disabled="true" v-model="projectDi.demande_number" label="N° de la demande"></d-input>
+                                   <d-input :disabled="true" v-model="deadline" label="Deadline"></d-input>
+                                   <d-input :disabled="true" v-model="commercial" label="Commercial"></d-input>
+                               </div>
+                               <div class="col-xl-8 col-md-12 pe-2">
+                                   <d-attachments :carpetDesignOrderId="carpetDesignOrderId"></d-attachments>
+                               </div>
+                               <div class="row justify-content-end">
+                                   <div class="col-auto">
+                                       <button class="btn btn-custom mb-2 text-uppercase" @click="saveCarpetOrder">Enregistrer</button>  
+                                   </div>
+                               </div>
                            </div>
-                           <div class="col-xl-8 col-md-12 pe-2">
-                               <d-attachments :carpetDesignOrderId="carpetDesignOrderId"></d-attachments>
+                           <div class="row align-items-center justify-content-between mt-5" v-if="carpetDesignOrderId">
+                               <!--div class="col-md-auto col-sm-6">
+                                   <d-input></d-input>
+                               </div-->
+                               <div class="col-md-auto col-sm-6">
+                                   <d-carpet-status-dropdown v-model="dataCarpetOrder.status_id"></d-carpet-status-dropdown>
+                               </div>
+                               <div class="col-md-auto col-sm-6">
+                                   <button class="btn btn-custom text-uppercase">Copie id</button>
+                               </div>
+                               <div class="col-md-auto col-sm-6">
+                                   <button class="btn btn-custom mb-2 text-uppercase">Générer matière par defaut</button>
+                               </div>
                            </div>
-                           <div class="row justify-content-end">
+                           <div class="row ps-2 mt-4 mb-2"  v-if="carpetDesignOrderId">
+                               <div class="col-xl-4 col-md-12">
+                                    <d-materials-list :materielsProps="currentMaterials"></d-materials-list>
+                               </div>
+                               <div class="col-xl-8 col-md-12">
+                                   <div class="row">
+                                       <div class="col-xl-6 col-md-12">
+                                            <d-collections-dropdown v-model="dataSpecification.collectionId" :error="errorCarpetOrdeSpecification.collectionId"></d-collections-dropdown>
+                                       </div>
+                                       <div class="col-xl-6 col-md-12">
+                                           <d-model-dropdown v-model="dataSpecification.modelId" :error="errorCarpetOrdeSpecification.modelId"></d-model-dropdown>
+                                       </div>
+                                       <div class="col-xl-6 col-md-12">
+                                           <d-qualities-dropdown v-model="dataSpecification.qualityId" :error="errorCarpetOrdeSpecification.qualityId"></d-qualities-dropdown>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                           <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
+                               <d-measurements-di :dimensionsProps="currentDimensions"></d-measurements-di>
+                           </div>
+                           <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
+                               <div class="text-black p-0 pb-2">Description de l'image</div>
+                               <textarea v-model="dataSpecification.description" class="w-100 h-130-forced block-custom-border"></textarea>
+                           </div>
+                           <div class="row justify-content-end"  v-if="carpetDesignOrderId">
                                <div class="col-auto">
-                                   <button class="btn btn-custom mb-2 text-uppercase" @click="saveCarpetOrder">Enregistrer</button>  
+                                   <button class="btn btn-custom mb-2 text-uppercase" @click="saveCarpetOrderSpecifications">Enregistrer</button>
                                </div>
                            </div>
-                       </div>
-                       <div class="row align-items-center justify-content-between mt-5" v-if="carpetDesignOrderId">
-                           <!--div class="col-md-auto col-sm-6">
-                               <d-input></d-input>
-                           </div-->
-                           <div class="col-md-auto col-sm-6">
-                               <d-carpet-status-dropdown v-model="dataCarpetOrder.status_id"></d-carpet-status-dropdown>
+                           <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetSpecificationId">
+                                <d-compositions :compositionData="compositionData" :carpetSpecificationId="carpetSpecificationId" v-if="carpetDesignOrderId"></d-compositions>
                            </div>
-                           <div class="col-md-auto col-sm-6">
-                               <button class="btn btn-custom text-uppercase">Copie id</button>
-                           </div>
-                           <div class="col-md-auto col-sm-6">
-                               <button class="btn btn-custom mb-2 text-uppercase">Générer matière par defaut</button>
-                           </div>
-                       </div>
-                       <div class="row ps-2 mt-4 mb-2"  v-if="carpetDesignOrderId">
-                           <div class="col-xl-4 col-md-12">
-                                <d-materials-list :materielsProps="currentMaterials"></d-materials-list>
-                           </div>
-                           <div class="col-xl-8 col-md-12">
-                               <div class="row">
-                                   <div class="col-xl-6 col-md-12">
-                                        <d-collections-dropdown v-model="dataSpecification.collectionId" :error="errorCarpetOrdeSpecification.collectionId"></d-collections-dropdown>
-                                   </div>
-                                   <div class="col-xl-6 col-md-12">
-                                       <d-model-dropdown v-model="dataSpecification.modelId" :error="errorCarpetOrdeSpecification.modelId"></d-model-dropdown>
-                                   </div>
-                                   <div class="col-xl-6 col-md-12">
-                                       <d-qualities-dropdown v-model="dataSpecification.qualityId" :error="errorCarpetOrdeSpecification.qualityId"></d-qualities-dropdown>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                       <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
-                           <d-measurements-di :dimensionsProps="currentDimensions"></d-measurements-di>
-                       </div>
-                       <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
-                           <div class="text-black p-0 pb-2">Description de l'image</div>
-                           <textarea v-model="dataSpecification.description" class="w-100 h-130-forced block-custom-border"></textarea>
-                       </div>
-                       <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
-                            <d-composition-steps :carpetDesignOrderId="carpetDesignOrderId" v-if="carpetDesignOrderId"></d-composition-steps>
-                       </div>
-                       <div class="row justify-content-end"  v-if="carpetDesignOrderId">
-                           <div class="col-auto">
-                               <button class="btn btn-custom mb-2 text-uppercase" @click="saveCarpetOrderSpecifications">Enregistrer</button>
-                           </div>
-                       </div>
                        </div>
                    </div>
                     <div class="col-md-12 col-xl-3 ps-1" v-if="carpetDesignOrderId">
@@ -144,7 +144,7 @@ import dMaterialsList from "../../../components/projet/contremarques/_Partials/d
 import dDesignerList from "../../../components/projet/contremarques/d-designer-list.vue";
 import dImagesList from "../../../components/projet/contremarques/d-images-list.vue";
 import dLocationDropdown from "../../../components/projet/contremarques/dropdown/d-location-dropdown.vue";
-import dCompositionSteps from "../../../components/projet/contremarques/_Partials/d-composition-steps.vue";
+import dCompositions from "../../../components/projet/contremarques/d-compositions.vue";
 import dAttachments from "../../../components/projet/contremarques/_Partials/d-attachments.vue";
 
 useMeta({ title: 'Maquette' });
@@ -191,6 +191,8 @@ const dataSpecification = ref({
     materials: []
 });
 const projectDi = ref({});
+const compositionData = ref({});
+const carpetSpecificationId = ref(0);
 
 const getProjectDI = async () => {
     try{
@@ -220,8 +222,10 @@ const getOrderCarpet = async (id) => {
             dataCarpetOrder.value.status_id =  currentCarpetObject.value.status.id;
             const dSP = currentCarpetObject.value.carpetSpecification;
             if(dSP){
+                carpetSpecificationId.value = dSP.id;
                 currentDimensions.value = dSP.carpetDimensions;
                 currentMaterials.value = dSP.carpetMaterials;
+                compositionData.value = dSP.carpedComposition;
                 dataSpecification.value = {
                     id: dSP.id,
                     reference: "",
@@ -289,7 +293,10 @@ const saveCarpetOrderSpecifications = async () => {
             window.showMessage("Mise a jour avec succées.");
         }else{
             const res = await axiosInstance.post(`/api/carpetDesignOrder/${carpetDesignOrderId}/createCarpetSpecification`, dataSpecification.value);
-            window.showMessage("Ajout avec succées."); 
+            window.showMessage("Ajout avec succées.");
+            setTimeout(() => {
+                document.location.reload();
+            },1000)
         }
         
     }catch (e){

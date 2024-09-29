@@ -80,7 +80,6 @@
                                 return { ...obj, $isDisabled: options.indexOf(obj.name) > -1 }
                             });
                         }
-                        console.log(this.addressTypes)
                         this.type = this.addressTypes.filter(ad => ad.addressType_id === this.modelValue)[0]
                     } catch (error) {
                         console.error('Failed to fetch address types:', error);

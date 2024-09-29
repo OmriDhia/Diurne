@@ -9,4 +9,12 @@ export default {
             throw new Error('Échec de récupération de la contacts client');
           }
     },
+    async getCustomerById(customer_id){
+        try {
+            const res = await axiosInstance.get(`/api/customer/${customer_id}`);
+            return res.data.response.customerData;
+        } catch (error) {
+            throw new Error('Échec de récupération de la contacts client');
+        }
+    },
 };

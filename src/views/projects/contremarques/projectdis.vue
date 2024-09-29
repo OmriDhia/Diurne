@@ -74,7 +74,7 @@
             <div class="panel br-6 p-2 mt-3">
                 <div class="row ms-2 mt-2 mb-2">
                     <div class="col-xl-4 col-md-12">
-                        <d-input :disabled="true" v-model="customer.socialReason" label="Client"></d-input>
+                        <d-input :disabled="true" v-model="customer.customerName" label="Client"></d-input>
                         <d-input :disabled="true" v-model="contremarque.designation" label="Contremarque"></d-input>
                         <d-input :disabled="true" v-model="transDate" label="Date trasmission"></d-input>
                         <d-input :disabled="true" v-model="selectedData.demande_number" label="N° de la demande"></d-input>

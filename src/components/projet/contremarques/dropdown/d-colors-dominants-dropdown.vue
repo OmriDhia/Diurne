@@ -1,13 +1,13 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Qualité<span class="required" v-if="required">*</span>:</label>
+        <div class="col-4"><label class="form-label">Couleur<span class="required" v-if="required">*</span>:</label>
         </div>
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"
                 :model-value="value"
                 :options="data"
-                placeholder="Qualité"
+                placeholder="Couleur"
                 track-by="id"
                 label="name"
                 :searchable="true"
@@ -16,7 +16,7 @@
                 deselect-label=""
                 @update:model-value="handleChange($event)"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champs qualité est abligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t("Le champs Couleur est abligatoire.") }}</div>
         </div>
     </div>
 </template>
@@ -52,16 +52,13 @@
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', parseInt(value.id));
+                this.$emit('update:modelValue', value);
             },
             async getData() {
                 try {
-                    const res = await axiosInstance.get('/api/qualities');
+                    const res = await axiosInstance.get('/api/dominant-colors');
                     this.data = res.data.response;
                     
-                    if(this.modelValue){
-                        this.value = this.data.filter(ad => ad.id === this.modelValue)[0]
-                    }
                 } catch (error) {
                     console.error('Failed to fetch address types:', error);
                 }
@@ -75,7 +72,7 @@
         },
         watch: {
             modelValue(newValue) {
-                this.value = this.data.filter(ad => ad.id === newValue)[0]
+                this.value = newValue
             }
         }
     };

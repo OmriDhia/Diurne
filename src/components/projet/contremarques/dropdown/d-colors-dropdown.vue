@@ -1,22 +1,22 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Qualité<span class="required" v-if="required">*</span>:</label>
+        <div class="col-4"><label class="form-label">Couleur<span class="required" v-if="required">*</span>:</label>
         </div>
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"
                 :model-value="value"
                 :options="data"
-                placeholder="Qualité"
+                placeholder="Couleur"
                 track-by="id"
-                label="name"
+                label="reference"
                 :searchable="true"
                 selected-label=""
                 select-label=""
                 deselect-label=""
                 @update:model-value="handleChange($event)"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champs qualité est abligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t("Le champs couleur est abligatoire.") }}</div>
         </div>
     </div>
 </template>
@@ -56,7 +56,7 @@
             },
             async getData() {
                 try {
-                    const res = await axiosInstance.get('/api/qualities');
+                    const res = await axiosInstance.get('/api/color');
                     this.data = res.data.response;
                     
                     if(this.modelValue){

@@ -177,7 +177,7 @@
     const contremarque = ref({});
     const tarifId = ref(0);
     const contact = ref({});
-    const prescriber = ref({});
+    const prescriber = ref(0);
     const error = ref({});
     
     const data = ref({
@@ -240,8 +240,9 @@
             if(contremarque_id){
                 contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
                 selectedCustomer.value = contremarque.value.customer.customer_id;
-                //await getCustomer(contremarque.value.customer.customer_id);
-                const p = contremarque.value.prescriber;
+                prescriber.value = contremarque.value.prescriber.customer_id;
+                console.log("client", selectedCustomer.value);
+                console.log("prescripteur", prescriber.value);
                 data.value = {
                     project_number: contremarque.projectNumber,
                     designation: contremarque.value.designation,
@@ -249,12 +250,11 @@
                     target_date: Helper.FormatDate(contremarque.value.target_date.date,"YYYY-MM-DD"),
                     customer_id: contremarque.value.customer.customer_id,
                     customerDiscount_id: contremarque.value.discount_rule_id,
-                    prescriber_id: p.id,
+                    prescriber_id: prescriber.value,
                     commission: contremarque.value.commission,
                     commission_on_deposit: contremarque.value.commission_on_deposit
                 };
-                prescriber.value = p.id;
-            }
+        }
         }catch(e){
             const msg = "Une contremarque d'id " + contremarque_id + " n'existe pas";
             window.showMessage(msg,'error');

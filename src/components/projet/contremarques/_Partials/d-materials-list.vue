@@ -66,6 +66,7 @@
                     material_id: m.id,
                     rate: parseFloat(m.rate)
                 }));
+                this.$store.commit("setMaterials", this.materials);
             },
             addMaterial(data){
                 this.materials.push(data);
