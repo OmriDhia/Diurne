@@ -65,4 +65,31 @@ export default {
             throw new Error('Échec de récupération des images tapis');
         }
     },
+    async updateCarpetComposition(carpetCompositionId, data){
+        try {
+            const res = await axiosInstance.put(`/api/CarpetComposition/${carpetCompositionId}/update`,data);
+        } catch (error) {
+            console.log(error.message)
+        }
+    },
+    async addCarpetCompositionLayer(carpetCompositionId, data){
+        try {
+            const res = await axiosInstance.post(`/api/CarpetComposition/${carpetCompositionId}/Layer/create`,data);
+            window.showMessage(`Ajout d'un nouveau couche avec succès`);
+            return res.data.response;
+        } catch (error) {
+            window.showMessage('Erreur ajout d\'un nouveau couche', 'error');
+            console.log(error.message)
+        }
+    },
+    async updateCarpetCompositionLayer(carpetCompositionId, layerId, data){
+        try {
+            const res = await axiosInstance.put(`/api/CarpetComposition/${carpetCompositionId}/Layer/${layerId}/update`,data);
+            window.showMessage(`Mise à jour avec succès`);
+            return res.data.response;
+        } catch (error) {
+            window.showMessage('Erreur ajout d\'un mise à jour couche', 'error');
+            console.log(error.message)
+        }
+    },
 };

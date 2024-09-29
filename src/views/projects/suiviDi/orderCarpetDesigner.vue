@@ -275,7 +275,6 @@ const saveCarpetOrder = async () => {
 const saveCarpetOrderSpecifications = async () => {
     try{
         const measurements = store.getters.measurements;
-        console.log(measurements);
         dataSpecification.value.dimensions = measurements.reduce((acc, dimension) => {
             acc[dimension.id] = dimension.unit.map(u => {
                 return {

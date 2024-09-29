@@ -1,17 +1,17 @@
 <template>
-    <div class="row align-items-start p-0 pt-2 bg-white" id="fullscreen" style="overflow-x: auto;">
+    <div class="row align-items-start p-0 pt-2 bg-white" id="fullscreen">
         <div class="col-12 mb-2 mt-3">
-            <d-composition-thread :carpetCompositionId="carpetCompositionId" :carpetSpecificationId="props.carpetSpecificationId" @addThread="addColumn"></d-composition-thread>
+            <d-composition-thread :threadCount="dynamicColumns.length" :layerCount="rows.length" :carpetCompositionId="carpetCompositionId" :carpetSpecificationId="props.carpetSpecificationId" @addThread="addColumn($event)"></d-composition-thread>
         </div>
-        <div class="col-12">
+        <div class="col-12" v-if="dynamicColumns.length" style="overflow-x: auto;">
             <table class="table table-striped">
                 <thead>
                 <tr class="border-top text-black bg-black">
                     <th class="border-start border-end text-white">N° couche</th>
                     <template v-for="(col, index) in dynamicColumns" :key="index">
-                        <th :style="{backgroundColor: col.techColorId}"> Col. N° {{index+1}} </th>
-                        <th :style="{backgroundColor: col.techColorId}"> Matière {{index+1}}A </th>
-                        <th  class="border-end-1" :style="{backgroundColor: col.techColorId}"> %{{index+1}}A </th>
+                        <th :style="{backgroundColor: col.hexCode}"> Col. N° {{index+1}} </th>
+                        <th :style="{backgroundColor: col.hexCode}"> Matière {{index+1}}A </th>
+                        <th  class="border-end-1" :style="{backgroundColor: col.hexCode}"> %{{index+1}}A </th>
                     </template>
                     <th  class="border-end bg-gradient-dark text-white">Remarque</th>
                     <th  class="border-end bg-gradient-dark text-white">Actions</th>
@@ -20,22 +20,25 @@
                 <tbody>
                 <!-- Boucle pour générer les lignes -->
                 <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
-                    <td width="100"  class="border-start border-end">{{ row.layer_number }}</td>
+                    <td width="100"  class="border-start border-end">{{ row.layerNumber }}</td>
                     <template v-for="(detail, detailIndex) in row.layer_details" :key="detailIndex">
-                        <td> {{ detail.threadId }} </td>
-                        <td> {{ detail.color_id }} </td>
-                        <td  class="border-end"> {{ detail.pourcentage }} </td>
+                        <td> <d-colors-dropdown :hideLabel="true" v-model="detail.color_id"></d-colors-dropdown> </td>
+                        <td> <d-materials-dropdown :hideLabel="true" v-model="detail.material_id"> </d-materials-dropdown> </td>
+                        <td class="border-end"> <input class="form-control" type="text" v-model="detail.pourcentage"></td>
                     </template>
-                    <td  class="border-end">{{ row.remarque }}</td>
-                    <td width="50"  class="border-end">delete</td>
+                    <td  class="border-end"><textarea class="form-control" v-model="row.remarque"></textarea></td>
+                    <td width="50"  class="border-end"></td>
                 </tr>
                 </tbody>
             </table>
         </div>
-        <div class="col-12">
+        <div class="col-12" v-if="dynamicColumns.length">
             <div class="row justify-content-end">
                 <div class="col-auto">
-                    <d-btn-outlined icon="plus" label="Ajouter" @click="addRow"></d-btn-outlined>
+                    <button class="btn ms-0 btn-outline-custom" @click.prevent="addRow">
+                        Ajouter
+                        <vue-feather :type="'plus'" size="14"></vue-feather>
+                    </button>
                 </div>
             </div>
         </div>
@@ -44,8 +47,13 @@
 
 <script setup>
     import { ref, watch, onMounted } from 'vue';
+    import VueFeather from 'vue-feather';
     import dCompositionThread from "./_Partials/d-composition-thread.vue";
     import dBtnOutlined from "../../base/d-btn-outlined.vue";
+    import dMaterialsDropdown from "./dropdown/d-materials-dropdown.vue";
+    import dColorsDropdown from "./dropdown/d-colors-dropdown.vue";
+    import dDelete from "../../common/d-delete.vue";
+    import contremarqueService from "../../../Services/contremarque-service";
 
     const props = defineProps({
         carpetSpecificationId: {
@@ -55,64 +63,71 @@
             type: Array,
         },
     });
-
-    const carpetCompositionId = ref(null)
-    const dynamicColumns = ref([
-        { threadNumber: 1, techColorId: "#ffa07a" },
-        { threadNumber: 2, techColorId: "#98fb98" }
-    ]);
-
-    // Lignes de départ avec détails de couche (layerNumber et remarque)
-    const rows = ref([
-        {
-            layerNumber: 1,
-            remarque: "Remarque 1",
-            layer_details: [
-                { threadId: 1, color_id: 101, material_id: 201, pourcentage: 50 },
-                { threadId: 2, color_id: 102, material_id: 202, pourcentage: 50 }
-            ]
-        },
-        {
-            layerNumber: 2,
-            remarque: "Remarque 2",
-            layer_details: [
-                { threadId: 1, color_id: 101, material_id: 201, pourcentage: 60 },
-                { threadId: 2, color_id: 102, material_id: 202, pourcentage: 40 }
-            ]
-        }
-    ]);
-
-    // Fonction pour ajouter une nouvelle colonne
-    const addColumn = () => {
+    
+    const rows = ref([]);
+    const dynamicColumns = ref([]);
+    const carpetCompositionId = ref(null);
+    
+    const addColumn = async ($event) => {
         const newColumnIndex = dynamicColumns.value.length + 1;
-        dynamicColumns.value.push({
-            threadNumber: newColumnIndex,
-            techColorId: 100 + newColumnIndex
-        });
-
-        rows.value.forEach(row => {
+        dynamicColumns.value.push($event);
+        
+        rows.value.forEach( async (row) => {
             row.layer_details.push({
-                threadId: newColumnIndex,
-                color_id: 100 + newColumnIndex,
-                material_id: 200 + newColumnIndex,
+                threadId: $event.id,
+                color_id: 0,
+                material_id: 0,
                 pourcentage: 0
             });
+            const data = await contremarqueService.updateCarpetCompositionLayer(carpetCompositionId.value, row.id, r)
         });
+        if(rows.length === 0){
+            const tmpRow = {
+                layerNumber: rows.length + 1 ,
+                remarque: "",
+                layer_details: [{
+                    threadId: $event.id,
+                    color_id: 0,
+                    material_id: 0,
+                    pourcentage: 0
+                }]
+            };
+            const data = await contremarqueService.addCarpetCompositionLayer( carpetCompositionId.value, tmpRow)
+        }
     };
-
-    // Fonction pour ajouter une nouvelle ligne (couche)
-    const addRow = () => {
+    
+    const addRow = async () => {
         const newRowIndex = rows.value.length + 1;
-        rows.value.push({
-            layerNumber: newRowIndex,
-            remarque: `Remarque ${newRowIndex}`,
-            layer_details: dynamicColumns.value.map((col, index) => ({
-                threadId: index + 1,
-                color_id: 100 + index + 1,
-                material_id: 200 + index + 1,
+        const layerDetails = dynamicColumns.value.map((col, index) => {
+            return {
+                threadId: col.id,
+                color_id: 0,
+                material_id: 0,
                 pourcentage: 0
-            }))
+            };
         });
+        
+        const data = await contremarqueService.addCarpetCompositionLayer(carpetCompositionId.value, {
+            layerNumber: newRowIndex ,
+            remarque: '',
+            layer_details: layerDetails
+        });
+        const layers = data.layer_details.map(l => ({
+            threadId: l.thread.id,
+            color_id: l.color,
+            material_id: l.material,
+            pourcentage: parseFloat(l.percentage)
+        }));
+        const row = ref({
+            id: data.id,
+            layerNumber: data.layer_number,
+            remarque: data.remarque,
+            layer_details: layers
+        });
+        
+        watchRowLayerDetails(row.value);
+        
+        rows.value.push(row.value);
     };
     
     onMounted(() => {
@@ -128,7 +143,26 @@
             });
             carpetCompositionId.value = th[0].carpet_composition;
             dynamicColumns.value = th;
-            rows.value = compositionData;
+            rows.value = compositionData.map(t => {
+                const layerDetails = t.layer_details.map(l => ({
+                    threadId: l.thread.id,
+                    color_id: l.color,
+                    material_id: l.material,
+                    pourcentage: parseFloat(l.percentage)
+                }));
+
+                const row = ref({
+                    id: t.id,
+                    layerNumber: t.layer_number,
+                    remarque: t.remarque,
+                    layer_details: layerDetails
+                });
+
+                // Set up watcher for each row's layer_details
+                watchRowLayerDetails(row.value);
+
+                return row.value;
+            });
         }
     }
 
@@ -139,9 +173,19 @@
         }
     );
     
+    const watchRowLayerDetails = (row) => {
+        watch(
+            () => row,
+            async (newLayerDetails) => {
+                const data = await contremarqueService.updateCarpetCompositionLayer(carpetCompositionId.value, newLayerDetails.id, newLayerDetails)
+            },
+            { deep: true }
+        );
+    };
+    
 </script>
 
-<style type="scss" scoped>
+<style scoped>
     .table > thead > tr > th {
         font-size: 0.6rem;
         vertical-align: middle;
@@ -152,5 +196,10 @@
     }
     .table > thead > tr {
         border-radius-: 10px 0px 0px 10px;
+    }
+    .multiselect >>> .multiselect__input,
+    .multiselect >>> .multiselect__single,
+    input.form-control {
+        font-size: 0.8rem !important;
     }
 </style>

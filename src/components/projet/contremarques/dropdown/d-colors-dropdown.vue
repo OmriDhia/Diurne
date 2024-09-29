@@ -1,8 +1,8 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Couleur<span class="required" v-if="required">*</span>:</label>
+        <div class="col-4" v-if="!hideLabel"><label class="form-label">Couleur<span class="required" v-if="required">*</span>:</label>
         </div>
-        <div class="col-8">
+        <div :class="{'col-8': !hideLabel,'col-12': hideLabel}">
             <multiselect
                 :class="{ 'is-invalid': error}"
                 :model-value="value"
@@ -40,6 +40,10 @@
                 default: ''
             },
             required: {
+                type: Boolean,
+                default: false
+            },
+            hideLabel: {
                 type: Boolean,
                 default: false
             },

@@ -32,6 +32,7 @@
     import dColorsDominantsDropdown from "../dropdown/d-colors-dominants-dropdown.vue"
     import dBaseModal from "../../../base/d-base-modal.vue";
     import dBtnFullscreen from "../../../base/d-btn-fullscreen.vue";
+    import contremarqueService from "../../../../Services/contremarque-service";
     
     const props = defineProps({
         carpetSpecificationId: {
@@ -40,6 +41,12 @@
         carpetCompositionId: {
             type: Number,
         },
+        threadCount: {
+            type: Number,
+        },
+        layerCount: {
+            type: Number,
+        }
     });
     
     const emit = defineEmits(['onClose', 'addThread']);
@@ -48,9 +55,10 @@
     const trame = ref("");
 
     const addThread = async () => {
+        let res = {};
         if(!props.carpetCompositionId){
             try{
-                const res = await axiosInstance.post(`/api/CarpetSpecification/${props.carpetSpecificationId}/CarpetComposition/create`,{
+                 res = await axiosInstance.post(`/api/CarpetSpecification/${props.carpetSpecificationId}/CarpetComposition/create`,{
                     trame: trame.value,
                     threadCount: 1,
                     layerCount: 0
@@ -59,17 +67,23 @@
                 console.log(e.message);
             }
         }
-        if((res && res.data.response)  || props.carpetCompositionId){
+        if((res && res.data && res.data.response)  || props.carpetCompositionId){
             try{
-                const carpetCompositionId = res.data.response.id ? res.data.response.id : props.carpetCompositionId
-                const res = await axiosInstance.post(`/api/CarpetComposition/${carpetCompositionId}/Thread/create`, {
-                    threadNumber: 0,
+                const carpetCompositionId = (res && res.data && res.data.response.id) ? res.data.response.id : props.carpetCompositionId
+                const result = await axiosInstance.post(`/api/CarpetComposition/${carpetCompositionId}/Thread/create`, {
+                    threadNumber: parseInt(props.threadCount) + 1,
                     techColorId: color.value.id
                 });
-                emit('addThread', res.data.response);
-                document.querySelector("#modalCreateDI .btn-close").click();
+                emit('addThread', result.data.response.techColor);
+                if(props.carpetCompositionId && props.threadCount){
+                    contremarqueService.updateCarpetComposition(props.carpetCompositionId,{
+                        threadCount: parseInt(props.threadCount) + 1 ,
+                        layerCount: parseInt(props.layerCount) ,
+                    })
+                }
+                document.querySelector("#modalCompositionThread .btn-close").click();
             }catch(err){
-                console.log(e.message);
+                console.log(err.message);
             }
         }
     };
