@@ -61,10 +61,11 @@
                  res = await axiosInstance.post(`/api/CarpetSpecification/${props.carpetSpecificationId}/CarpetComposition/create`,{
                     trame: trame.value,
                     threadCount: 1,
-                    layerCount: 0
+                    layerCount: 1
                 });
             }catch(e){
-                console.log(e.message);
+                window.showMessage('Erreur au niveau de la création de la première fil','error')
+                throw new Error(e.message);
             }
         }
         if((res && res.data && res.data.response)  || props.carpetCompositionId){
