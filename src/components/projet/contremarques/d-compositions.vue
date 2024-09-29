@@ -91,7 +91,9 @@
                     pourcentage: 0
                 }]
             };
-            const data = await contremarqueService.addCarpetCompositionLayer( carpetCompositionId.value, tmpRow)
+            const data = await contremarqueService.addCarpetCompositionLayer( carpetCompositionId.value, tmpRow);
+            const row = formatDataLayers(data);
+            rows.value.push(row);
         }
     };
     
