@@ -14,21 +14,20 @@
                         <th  class="border-end-1" :style="{backgroundColor: col.hexCode}"> %{{index+1}}A </th>
                     </template>
                     <th  class="border-end bg-gradient-dark text-white">Remarque</th>
-                    <th  class="border-end bg-gradient-dark text-white">Actions</th>
+                    <!--th  class="border-end bg-gradient-dark text-white">Actions</th-->
                 </tr>
                 </thead>
                 <tbody>
-                <!-- Boucle pour générer les lignes -->
-                <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
-                    <td width="100"  class="border-start border-end">{{ row.layerNumber }}</td>
-                    <template v-for="(detail, detailIndex) in row.layer_details" :key="detailIndex">
-                        <td> <d-colors-dropdown :hideLabel="true" v-model="detail.color_id"></d-colors-dropdown> </td>
-                        <td> <d-materials-dropdown :hideLabel="true" v-model="detail.material_id"> </d-materials-dropdown> </td>
-                        <td class="border-end"> <input class="form-control" type="text" v-model="detail.pourcentage"></td>
-                    </template>
-                    <td  class="border-end"><textarea class="form-control" v-model="row.remarque"></textarea></td>
-                    <td width="50"  class="border-end"></td>
-                </tr>
+                    <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
+                        <td width="100"  class="border-start border-end">{{ row.layerNumber }}</td>
+                        <template v-for="(detail, detailIndex) in row.layer_details" :key="detailIndex">
+                            <td><d-colors-dropdown :hideLabel="true" v-model="detail.color_id"></d-colors-dropdown></td>
+                            <td><d-materials-dropdown :hideLabel="true" v-model="detail.material_id"> </d-materials-dropdown> </td>
+                            <td class="border-end"> <input class="form-control w-4" type="text" v-model="detail.pourcentage"></td>
+                        </template>
+                        <td  class="border-end"><textarea class="form-control w-auto" v-model="row.remarque"></textarea></td>
+                        <!--td width="50"  class="border-end"></td-->
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -112,22 +111,8 @@
             remarque: '',
             layer_details: layerDetails
         });
-        const layers = data.layer_details.map(l => ({
-            threadId: l.thread.id,
-            color_id: l.color,
-            material_id: l.material,
-            pourcentage: parseFloat(l.percentage)
-        }));
-        const row = ref({
-            id: data.id,
-            layerNumber: data.layer_number,
-            remarque: data.remarque,
-            layer_details: layers
-        });
-        
-        watchRowLayerDetails(row.value);
-        
-        rows.value.push(row.value);
+        const row = formatDataLayers(data);
+        rows.value.push(row);
     };
     
     onMounted(() => {
@@ -143,29 +128,33 @@
             });
             carpetCompositionId.value = th[0].carpet_composition;
             dynamicColumns.value = th;
-            rows.value = compositionData.map(t => {
-                const layerDetails = t.layer_details.map(l => ({
-                    threadId: l.thread.id,
-                    color_id: l.color,
-                    material_id: l.material,
-                    pourcentage: parseFloat(l.percentage)
-                }));
-
-                const row = ref({
-                    id: t.id,
-                    layerNumber: t.layer_number,
-                    remarque: t.remarque,
-                    layer_details: layerDetails
-                });
-
-                // Set up watcher for each row's layer_details
-                watchRowLayerDetails(row.value);
-
-                return row.value;
+            rows.value = compositionData.map(data => {
+                const row = formatDataLayers(data);
+                return row
             });
         }
-    }
+    };
 
+    const formatDataLayers = (data) => {
+        const layerDetails = data.layer_details.map(l => ({
+            threadId: l.thread.id,
+            color_id: l.color,
+            material_id: l.material,
+            pourcentage: parseFloat(l.percentage)
+        }));
+
+        const row = ref({
+            id: data.id,
+            layerNumber: data.layer_number,
+            remarque: data.remarque,
+            layer_details: layerDetails
+        });
+
+        // Set up watcher for each row's layer_details
+        watchRowLayerDetails(row.value);
+
+        return row.value;
+    }
     watch(
         () => props.compositionData,
         (newValue) => {
@@ -185,7 +174,7 @@
     
 </script>
 
-<style scoped>
+<style>
     .table > thead > tr > th {
         font-size: 0.6rem;
         vertical-align: middle;
@@ -197,9 +186,16 @@
     .table > thead > tr {
         border-radius-: 10px 0px 0px 10px;
     }
-    .multiselect >>> .multiselect__input,
-    .multiselect >>> .multiselect__single,
-    input.form-control {
+    .multiselect,
+    .multiselect__input,
+    .multiselect__single,
+    input.form-control,
+    textarea{
         font-size: 0.8rem !important;
+        color: black;
+    }
+    .w-4{
+        width: 4rem !important;
+        text-align: center;
     }
 </style>
