@@ -144,7 +144,7 @@
                 </div>
                 <div class="row gap-3 ps-2 mt-4">
                     <div class="col-auto">
-                        <d-btn-outlined label="Editer la demande de l'image projet " icon="arrow-right" buttonClass="ps-4"></d-btn-outlined>
+                        <d-btn-outlined data-bs-toggle="modal" data-bs-target="#modalDIManage" label="Editer la demande de l'image projet " icon="arrow-right" buttonClass="ps-4" @click="selectDiId"></d-btn-outlined>
                     </div>
                     <div class="col-auto">
                         <button class="btn btn-custom pe-5 ps-5"  data-bs-toggle="modal" data-bs-target="#modalDIManage">NOUVELLE DI</button>
@@ -155,7 +155,7 @@
                 </div>
             </div>
         </div>
-        <d-modal-manage-di :contremarqueId="contremarque_id" @onClose="getDIS"></d-modal-manage-di>
+        <d-modal-manage-di :diId="selectedDiId" :contremarqueId="contremarque_id" @onClose="getDIS"></d-modal-manage-di>
     </div>
 </template>
 
@@ -195,10 +195,12 @@ const transDate = ref("");
 const carpetDesign = ref([]);
 const deadline = ref(null);
 const commercial = ref(null);
+const selectedDiId = ref(null);
 const getDIS = async () => {
     try{
         const res = await axiosInstance.get(`/api/contremarque/${contremarque_id}/projectDis`);
         datas.value = res.data.response.projectDis;
+        selectedDiId.value = null;
         await handleSelected(0);
     }catch (e){
         console.log("Erreur get data di")
@@ -237,6 +239,9 @@ const handleSelected = async (index) => {
     transDate.value = (selectedData.value.transmition_date && selectedData.value.transmitted_to_studio) ? Helper.FormatDate(selectedData.value.transmition_date.date) : "";
     carpetDesign.value = await contremarqueService.getcarpetDesign(contremarque_id,selectedData.value.project_di)
     deadline.value = (selectedData.value.deadline) ? Helper.FormatDate(selectedData.value.deadline.date) : "";
+};
+const selectDiId =  () => {
+    selectedDiId.value = selectedData.value.project_di;
 };
 const goTocreateOrder =  () => {
     location.href = `/projet/dis/model/${selectedData.value.project_di}/create`;

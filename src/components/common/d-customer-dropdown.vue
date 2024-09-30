@@ -24,7 +24,8 @@
                 selected-label=""
                 select-label=""
                 deselect-label=""
-                @input="handleChange"
+                @tag="addTag"
+                @update:model-value="handleChange($event)"
                 @search-change="handleSearch"
             >
                 <template v-slot:afterList>
@@ -107,6 +108,10 @@
                 } else {
                     this.$emit('update:modelValue', value ? value.id : null);
                 }
+            },
+            addTag(newTag){
+                this.users.push(newTag);
+                this.userId.push(newTag);
             },
             handleSearch(searchQuery) {
                 this.getCustomers(searchQuery);

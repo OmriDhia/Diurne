@@ -38,7 +38,7 @@
                             <d-input :required="true" type="date" label="Deadline" v-model="data.deadline" :error="error.deadline"></d-input>
                         </div>
                     </div>
-                    <div class="row p-1 align-items-center"  v-if="!props.contremarqueId">
+                    <div class="row p-1 align-items-center" v-if="props.diId">
                         <div class="col-sm-6 col-xl-6">
                             <d-input :disabled="true" v-model="data.transmition_date" label="Date trasmission"></d-input>
                         </div>
