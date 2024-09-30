@@ -342,11 +342,17 @@
       if (filter.value.contactMailing) {
           param += "&filter[contactMailing]=" + filter.value.contactMailing
       }
-      if (filter.value.wrongAdd && filter.value.wrongAdd !== 'all') {
+      if (filter.value.wrongAdd === 'true') {
           param += "&filter[hasWrongAddress]=1"
       }
-      if (filter.value.validAdd && filter.value.validAdd !== 'all') {
+      if (filter.value.wrongAdd === 'false') {
+          param += "&filter[hasWrongAddress]=0"
+      }
+      if (filter.value.validAdd  === 'true') {
           param += "&filter[hasValidAddress]=1"
+      }
+      if (filter.value.validAdd === 'false') {
+          param += "&filter[hasValidAddress]=0"
       }
       if (filter.value.active && filter.value.active !== 'all') {
           param += "&filter[active]=1"

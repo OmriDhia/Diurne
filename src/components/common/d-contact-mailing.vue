@@ -27,10 +27,10 @@
                 type: this.modelValue,
                 customerTypes: [],
                 mailings: [
-                    {id: 1, name:"Contacts mailing"},
-                    {id: 2, name:"Uniquement avec colligraphie"},
-                    {id: 3, name:"Uniquement sans colligraphie"},
-                    {id: 4, name:"Tous les contacts"},
+                    {id: 1, name:"Contacts mailing (calli et sans calli)"},
+                    {id: 2, name:"Uniquement calli"},
+                    {id: 3, name:"Uniquement sans calli"},
+                    {id: 4, name:"Tous les contacts (mailing ou non)"},
                 ]
             };
         },
