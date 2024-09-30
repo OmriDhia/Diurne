@@ -27,9 +27,10 @@
                 type: this.modelValue,
                 customerTypes: [],
                 mailings: [
-                    {id: 1, name:"Uniquement avec colligraphie"},
-                    {id: 2, name:"Uniquement sans colligraphie"},
-                    {id: 3, name:"Tous les projets"},
+                    {id: 1, name:"Contacts mailing"},
+                    {id: 2, name:"Uniquement avec colligraphie"},
+                    {id: 3, name:"Uniquement sans colligraphie"},
+                    {id: 4, name:"Tous les contacts"},
                 ]
             };
         },

@@ -39,7 +39,7 @@ export const filterContact = {
     validAdd: null,
     hasInvalidCommercial: null,
     active: null,
-    hasOnlyOneContact: null,
+    hasOnlyOneContact: true,
     mailingLanguageId: null,
     contactMailing: null,
     is_agent: null,

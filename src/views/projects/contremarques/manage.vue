@@ -29,7 +29,7 @@
                         </template>
                         <template v-slot:panel-body>
                             <div class="row pe-2 ps-0">
-                                <d-customer-dropdown :required="true" v-model="selectedCustomer" :error="error.customer_id"></d-customer-dropdown>
+                                <d-customer-dropdown :showCustomer="true" :required="true" v-model="selectedCustomer" :error="error.customer_id"></d-customer-dropdown>
                             </div>
                             <div class="row pe-2 ps-0" v-if="currentCustomer.contactsData">
                                 <d-base-dropdown name="Contact" label="firstname" trackBy="contact_id" :datas="currentCustomer.contactsData" v-model="contact"></d-base-dropdown>
@@ -241,8 +241,6 @@
                 contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
                 selectedCustomer.value = contremarque.value.customer.customer_id;
                 prescriber.value = contremarque.value.prescriber.customer_id;
-                console.log("client", selectedCustomer.value);
-                console.log("prescripteur", prescriber.value);
                 data.value = {
                     project_number: contremarque.projectNumber,
                     designation: contremarque.value.designation,
@@ -263,6 +261,9 @@
     onMounted(() => {
        if(contremarque_id){
            getContremarque();
+       }
+       if(!contremarque_id && route.query.customer_id){
+           selectedCustomer.value = route.query.customer_id; 
        }
     });
 

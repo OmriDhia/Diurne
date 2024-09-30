@@ -34,9 +34,13 @@
                     Ce client ne possède pas des contremarques.
                 </div>
             </div>
+            <div class="row justify-content-end mt-2">
+                <d-btn-outlined class="pe-0" label="Ajouter" icon="plus" @click="goToCreateContremarque"></d-btn-outlined>
+            </div>
         </div>
         <div class="col-xl-6 col-lg-12">
             <div class="row">
+                
             </div>
         </div>
     </div>
@@ -48,6 +52,7 @@
     import VueFeather from 'vue-feather';
     import dBtnOutlined from '../../base/d-btn-outlined.vue'
     import dDelete from "../../common/d-delete.vue";
+
     const props = defineProps({
         customerId: {
             type: Number
@@ -78,6 +83,9 @@
     );
     const gotToContremarque = (id) => {
         location.href = "/projet/contremarques/manage/" + id;
+    };
+    const goToCreateContremarque = () => {
+        location.href = "/projet/contremarques/manage?customer_id=" + props.customerId;
     };
 </script>
 

@@ -20,7 +20,7 @@
             </d-input>
         </div>
         <div class="row p-2" v-if="!isParticular">
-            <d-input required="true" label="CE TVA" v-model="data.tva_ce" :error="error.tva_ce"></d-input>
+            <d-input label="CE TVA" v-model="data.tva_ce" :error="error.tva_ce"></d-input>
         </div>
         <div class="row p-2">
             <d-discount required="true" :error="error.customerGroupId" v-model="data.discountTypeId"></d-discount>

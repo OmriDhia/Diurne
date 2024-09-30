@@ -182,7 +182,7 @@
                     </div>
                     <d-btn-fullscreen></d-btn-fullscreen>
                 </div>
-                <vue3-datatable :rows="rows" :columns="cols" :loading="loading" :isServerMode="true"
+                <vue3-datatable :rows="rows" :columns="cols" :loading="loading" :isServerMode="true" :sortColumn="params.orderBy" :sortDirection="params.orderWay"
                                 :totalRows="total_rows" :page="params.current_page" :pageSize="params.pagesize"
                                 :pageSizeOptions="[10, 25, 50, 75, 100]" noDataContent="Aucun contact trouvé."
                                 paginationInfo="Affichage de {0} à {1} sur {2} entrées" :sortable="true"
@@ -343,16 +343,16 @@
           param += "&filter[contactMailing]=" + filter.value.contactMailing
       }
       if (filter.value.wrongAdd && filter.value.wrongAdd !== 'all') {
-          param += "&filter[hasWrongAddress]=" + filter.value.wrongAdd
+          param += "&filter[hasWrongAddress]=1"
       }
       if (filter.value.validAdd && filter.value.validAdd !== 'all') {
-          param += "&filter[hasValidAddress]=" + filter.value.wrongAdd
+          param += "&filter[hasValidAddress]=1"
       }
       if (filter.value.active && filter.value.active !== 'all') {
-          param += "&filter[active]=" + filter.value.active
+          param += "&filter[active]=1"
       }
       if (filter.value.hasInvalidCommercial) {
-          param += "&filter[hasInvalidCommercial]=" + filter.value.hasInvalidCommercial
+          param += "&filter[hasInvalidCommercial]=1"
       }
       if (filter.value.tva_ce) {
           param += "&filter[tva_ce]=" + filter.value.tva_ce
@@ -367,13 +367,13 @@
           param += "&filter[prescripteur]=" + filter.value.pres
       }
       if (filter.value.hasOnlyOneContact) {
-          param += "&filter[hasOnlyOneContact]=" + filter.value.hasOnlyOneContact
+          param += "&filter[hasOnlyOneContact]=1"
       }
       if (filter.value.is_agent) {
-          param += "&filter[is_agent]=true";
+          param += "&filter[is_agent]=1";
       }
       if (filter.value.is_prescripteur) {
-          param += "&filter[is_prescripteur]=true";
+          param += "&filter[is_prescripteur]=1";
       }
       return param;
   };

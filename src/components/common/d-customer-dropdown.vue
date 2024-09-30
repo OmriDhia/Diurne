@@ -11,7 +11,7 @@
                 <span class="required" v-if="required">*</span> :
             </label>
         </div>
-        <div class="col-8">
+        <div :class="{'col-8': !showCustomer || !customerId,'col-7': showCustomer &&  customerId}">
             <multiselect
                 :class="{ 'is-invalid': error }"
                 v-model="customerId"
@@ -40,10 +40,16 @@
             </multiselect>
             <div v-if="error" class="invalid-feedback">{{ $t("Le champ client est obligatoire.") }}</div>
         </div>
+        <div class="col-1 ps-0" v-if="showCustomer &&  customerId">
+            <router-link alt="Voir contact" :to="'/contacts/manage/' + customerId.id">
+                <vue-feather type="eye"  stroke-width="1" class="cursor-pointer"></vue-feather>
+            </router-link>
+        </div>
     </div>
 </template>
 
 <script>
+    import VueFeather from 'vue-feather';
     import axiosInstance from '../../config/http';
     import Multiselect from 'vue-multiselect';
     import 'vue-multiselect/dist/vue-multiselect.css';
@@ -51,7 +57,8 @@
 
     export default {
         components: {
-            Multiselect
+            Multiselect,
+            VueFeather
         },
         props: {
             modelValue: {
@@ -71,6 +78,10 @@
                 default: false
             },
             isPrescripteur: {
+                type: Boolean,
+                default: false
+            },
+            showCustomer: {
                 type: Boolean,
                 default: false
             }
@@ -106,6 +117,9 @@
 
                     if (customerName) {
                         url += `&filter[customerName]=${customerName}`;
+                    }
+                    if (this.isPrescripteur) {
+                        url += `&filter[hasOnlyOneContact]=true`;
                     }
 
                     const res = await axiosInstance.get(url);

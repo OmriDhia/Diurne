@@ -95,7 +95,7 @@
                             </div>
                             <d-btn-fullscreen></d-btn-fullscreen>
                         </div>
-                        <vue3-datatable :rows="rows" :columns="cols" :loading="loading" :isServerMode="true"
+                        <vue3-datatable :rows="rows" :columns="cols" :loading="loading" :isServerMode="true" :sortColumn="params.orderBy" :sortDirection="params.orderWay"
                                         :totalRows="total_rows" :page="params.current_page" :pageSize="params.pagesize"
                                         :pageSizeOptions="[10, 25, 50, 75, 100]" noDataContent="Aucun contact trouvé."
                                         paginationInfo="Affichage de {0} à {1} sur {2} entrées" :sortable="true"
@@ -104,6 +104,14 @@
                                 <div class="d-flex justify-content-between">
                                     <strong>{{ data.value.designation}}</strong>
                                     <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id"  v-if="$hasPermission('update contremarque')">
+                                        <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    </router-link>
+                                </div>
+                            </template>
+                            <template #customer_name="data">
+                                <div class="d-flex justify-content-between">
+                                    <strong>{{ data.value.customer_name}}</strong>
+                                    <router-link :to="'/contacts/manage/' + data.value.customer.customer_id"  v-if="$hasPermission('update contact')">
                                         <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
                                 </div>
