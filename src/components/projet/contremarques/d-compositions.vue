@@ -124,13 +124,17 @@
     });
     
     const formatData = (compositionData) => {
-        if(compositionData[0] && compositionData[0].layer_details){
-            const th = compositionData[0].layer_details.map(d => {
-                return d.thread
-            });
-            carpetCompositionId.value = th[0].carpet_composition;
-            dynamicColumns.value = th;
-            rows.value = compositionData.map(data => {
+        if(compositionData && compositionData.id){
+            carpetCompositionId.value = compositionData.id;
+            
+            if(compositionData.layers && compositionData.layers[0] && compositionData.layers[0].layer_details){
+                const th = compositionData.layers[0].layer_details.map(d => {
+                    return d.thread
+                });
+                dynamicColumns.value = th;
+            }
+            
+            rows.value = compositionData.layers.map(data => {
                 const row = formatDataLayers(data);
                 return row
             });
