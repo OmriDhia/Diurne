@@ -49,7 +49,7 @@
         }
     });
     
-    const emit = defineEmits(['onClose', 'addThread']);
+    const emit = defineEmits(['onClose', 'addThread', 'newCarpetComposition']);
     
     const color = ref(null);
     const trame = ref("");
@@ -75,6 +75,9 @@
                     threadNumber: parseInt(props.threadCount) + 1,
                     techColorId: color.value.id
                 });
+                if(res && res.data && res.data.response.id){
+                    emit('newCarpetComposition', carpetCompositionId);  
+                }
                 emit('addThread', result.data.response.techColor);
                 if(props.carpetCompositionId && props.threadCount){
                     contremarqueService.updateCarpetComposition(props.carpetCompositionId,{

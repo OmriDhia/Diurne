@@ -1,7 +1,7 @@
 <template>
     <div class="row align-items-start p-0 pt-2 bg-white" id="fullscreen">
         <div class="col-12 mb-2 mt-3">
-            <d-composition-thread :threadCount="dynamicColumns.length" :layerCount="rows.length" :carpetCompositionId="carpetCompositionId" :carpetSpecificationId="props.carpetSpecificationId" @addThread="addColumn($event)"></d-composition-thread>
+            <d-composition-thread @newCarpetComposition="newCarpetComposition($event)" :threadCount="dynamicColumns.length" :layerCount="rows.length" :carpetCompositionId="carpetCompositionId" :carpetSpecificationId="props.carpetSpecificationId" @addThread="addColumn($event)"></d-composition-thread>
         </div>
         <div class="col-12" v-if="dynamicColumns.length" style="overflow-x: auto;">
             <table class="table table-striped">
@@ -70,19 +70,9 @@
     const addColumn = async ($event) => {
         const newColumnIndex = dynamicColumns.value.length + 1;
         dynamicColumns.value.push($event);
-        
-        rows.value.forEach( async (row) => {
-            row.layer_details.push({
-                threadId: $event.id,
-                color_id: 0,
-                material_id: 0,
-                pourcentage: 0
-            });
-            const data = await contremarqueService.updateCarpetCompositionLayer(carpetCompositionId.value, row.id, r)
-        });
         if(rows.length === 0){
             const tmpRow = {
-                layerNumber: rows.length + 1 ,
+                layerNumber: 1 ,
                 remarque: "",
                 layer_details: [{
                     threadId: $event.id,
@@ -91,9 +81,19 @@
                     pourcentage: 0
                 }]
             };
-            const data = await contremarqueService.addCarpetCompositionLayer( carpetCompositionId.value, tmpRow);
+            const data = await contremarqueService.addCarpetCompositionLayer(carpetCompositionId.value, tmpRow);
             const row = formatDataLayers(data);
             rows.value.push(row);
+        }else{
+            rows.value.forEach( async (row) => {
+                row.layer_details.push({
+                    threadId: $event.id,
+                    color_id: 0,
+                    material_id: 0,
+                    pourcentage: 0
+                });
+                const data = await contremarqueService.updateCarpetCompositionLayer(carpetCompositionId.value, row.id, r)
+            });
         }
     };
     
@@ -115,6 +115,10 @@
         });
         const row = formatDataLayers(data);
         rows.value.push(row);
+    }; 
+    
+    const newCarpetComposition = (carpetCompositionId) => {
+        carpetCompositionId.value = parseInt(carpetCompositionId);
     };
     
     onMounted(() => {
