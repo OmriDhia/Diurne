@@ -218,8 +218,8 @@ const getOrderCarpet = async (id) => {
         if(id){
             const res = await axiosInstance.get(`/api/carpet-design-orders/${id}`);
             currentCarpetObject.value = res.data.response;
-            dataCarpetOrder.value.location_id =  currentCarpetObject.value.location.location_id;
-            dataCarpetOrder.value.status_id =  currentCarpetObject.value.status ? currentCarpetObject.value.status.id : 0;
+            dataCarpetOrder.value.location_id =  (currentCarpetObject.value.location && currentCarpetObject.value.location.location_id) ? currentCarpetObject.value.location.location_id : 0;
+            dataCarpetOrder.value.status_id =  (currentCarpetObject.value.status && currentCarpetObject.value.status.id) ? currentCarpetObject.value.status.id : 0;
             const dSP = currentCarpetObject.value.carpetSpecification;
             if(dSP){
                 carpetSpecificationId.value = dSP.id;
