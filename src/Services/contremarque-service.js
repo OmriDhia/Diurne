@@ -92,4 +92,14 @@ export default {
             console.log(error.message)
         }
     },
+    async getDefaultMaterials(){
+        try {
+            const res = await axiosInstance.get(`/api/default-material-composition`);
+            return res.data.response.defaultComposition
+        } catch (error) {
+            const msg = 'Échec de récupération des composition par défaut tapis';
+            window.showMessage(msg, 'error');
+            throw new Error(msg);
+        }
+    },
 };

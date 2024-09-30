@@ -69,7 +69,7 @@
                                    <button class="btn btn-custom text-uppercase">Copie id</button>
                                </div>
                                <div class="col-md-auto col-sm-6">
-                                   <button class="btn btn-custom mb-2 text-uppercase">Générer matière par defaut</button>
+                                   <button class="btn btn-custom mb-2 text-uppercase" @click="applyDefaultMaterials">Générer matière par defaut</button>
                                </div>
                            </div>
                            <div class="row ps-2 mt-4 mb-2"  v-if="carpetDesignOrderId">
@@ -303,6 +303,21 @@ const saveCarpetOrderSpecifications = async () => {
             error.value = formatErrorViolations(e.response.data.violations);
         }
         window.showMessage(e.message,'error')
+    }
+};
+
+const applyDefaultMaterials = async () => {
+    try{
+       const materials = await contremarqueService.getDefaultMaterials();
+       currentMaterials.value = materials.map(m => {
+           return {
+               id: m.materialId,
+               rate: parseFloat(m.percentage)
+           }
+       });
+       window.showMessage('Les matières par défaut sont bien appliquées.')
+    }catch(e){
+        console.log(e)
     }
 }
 
