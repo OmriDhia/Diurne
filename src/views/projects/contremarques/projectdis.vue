@@ -101,10 +101,10 @@
                             <tbody role="rowgroup">
                             <tr v-for="(item, i) in carpetDesign" :key="item.id">
                                 <td aria-colindex="1" role="cell">
-                                    {{item.location.description ? item.location.description : ''}}
+                                    {{(item.location && item.location.description) ? item.location.description : ''}}
                                 </td>
                                 <td aria-colindex="2" role="cell" class="">
-                                    {{item.status.name ? item.status.name : ''}}
+                                    {{(item.status && item.status.name) ? item.status.name : ''}}
                                 </td>
                                 <td aria-colindex="3" role="cell" class="">
                                     {{item.projectDi}}
