@@ -1,12 +1,13 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4" v-if="!hideLabel"><label class="form-label">Couleur<span class="required" v-if="required">*</span>:</label>
+        <div class="col-4" v-if="!hideLabel">
+            <label class="form-label">Couleur<span class="required" v-if="required">*</span>:</label>
         </div>
-        <div :class="{'col-8': !hideLabel,'col-12': hideLabel}">
+        <div :class="{'col-8': !hideLabel, 'col-12': hideLabel}">
             <multiselect
-                :class="{ 'is-invalid': error}"
-                :model-value="value"
-                :options="data"
+                :class="{ 'is-invalid': error }"
+                v-model="value"
+                :options="colors" 
                 placeholder="Couleur"
                 track-by="id"
                 label="reference"
@@ -16,14 +17,14 @@
                 deselect-label=""
                 @update:model-value="handleChange($event)"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champs couleur est abligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t("Le champs couleur est obligatoire.") }}</div>
         </div>
     </div>
 </template>
 
 <script>
-    import axiosInstance from '../../../../config/http';
-    import Multiselect from 'vue-multiselect'
+    import { mapGetters, mapActions } from 'vuex';
+    import Multiselect from 'vue-multiselect';
     import 'vue-multiselect/dist/vue-multiselect.css';
 
     export default {
@@ -46,41 +47,34 @@
             hideLabel: {
                 type: Boolean,
                 default: false
-            },
+            }
         },
         data() {
             return {
-                value: null,
-                data: []
+                value: null
             };
         },
+        computed: {
+            ...mapGetters(['colors'])
+        },
         methods: {
+            ...mapActions(['fetchColors']),
             handleChange(value) {
                 this.$emit('update:modelValue', parseInt(value.id));
             },
-            async getData() {
-                try {
-                    const res = await axiosInstance.get('/api/color');
-                    this.data = res.data.response;
-                    
-                    if(this.modelValue){
-                        this.value = this.data.filter(ad => ad.id === this.modelValue)[0]
-                    }
-                } catch (error) {
-                    console.error('Failed to fetch address types:', error);
+            selectedValue(){
+                if (this.modelValue) {
+                    this.value = this.colors.find(ad => ad.id === this.modelValue);
                 }
-            },
-            goToSettings() {
-
             }
         },
-        mounted() {
-            this.getData();
+        async mounted() {
+            await this.fetchColors();
+            this.selectedValue();
         },
         watch: {
-            modelValue(newValue) {
-                this.value = this.data.filter(ad => ad.id === newValue)[0]
-            }
+            modelValue:'selectedValue',
+            colors:'selectedValue',
         }
     };
 </script>

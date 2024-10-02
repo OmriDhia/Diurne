@@ -1,9 +1,9 @@
 <template>
-    <div class="row align-items-start p-0 pt-2 bg-white" id="fullscreen">
-        <div class="col-12 mb-2 mt-3">
+    <div class="row align-items-start p-2 bg-white" id="fullscreen">
+        <div class="col-12 mb-2 mt-3 p-0">
             <d-composition-thread @newCarpetComposition="newCarpetComposition($event)" :threadCount="dynamicColumns.length" :layerCount="rows.length" :carpetCompositionId="carpetCompositionId" :carpetSpecificationId="props.carpetSpecificationId" @addThread="addColumn($event)"></d-composition-thread>
         </div>
-        <div class="col-12" v-if="dynamicColumns.length" style="overflow-x: auto;">
+        <div class="col-12 ps-0" v-if="dynamicColumns.length" style="overflow-x: auto;">
             <table class="table table-striped">
                 <thead>
                 <tr class="border-top text-black bg-black">
@@ -19,7 +19,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
-                        <td width="100"  class="border-start border-end">{{ row.layerNumber }}</td>
+                        <td class="border-start border-end text-center">{{ row.layerNumber }}</td>
                         <template v-for="(detail, detailIndex) in row.layer_details" :key="detailIndex">
                             <td><d-colors-dropdown :hideLabel="true" v-model="detail.color_id"></d-colors-dropdown></td>
                             <td><d-materials-dropdown :hideLabel="true" v-model="detail.material_id"> </d-materials-dropdown> </td>
@@ -190,6 +190,9 @@
         vertical-align: middle;
         color: #000000;
     }
+    .table > thead > tr > th:first-child {
+        min-width: 82px;
+    }
     .border-top{
         border-top: 1px solid #dee2e6 !important;
     }
@@ -208,4 +211,11 @@
         width: 4rem !important;
         text-align: center;
     }
+    .multiselect{
+        min-width: 115px;
+    }
+    /*.multiselect .multiselect__content-wrapper{
+        position: relative;
+        z-index: 1000;
+    }*/
 </style>

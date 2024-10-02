@@ -1,20 +1,24 @@
 <template>
-        <div class="row justify-content-between pe-0">
-            <template v-for="(measurement, index) in measurements" :key="index">
-                <div class="col-xl-5-1 col-md-12 block-custom-border mt-2 mb-2">
-                    <div class="row align-items-center">
-                        <h6 class="p-0 pb-2 pt-2 m-0 ms-1 title-border-bottom title-width">{{ measurement.name }}</h6>
-                    </div>
-                    <div class="row align-items-center justify-content-between p-0 mt-2 mb-2">
-                        <template v-for="(unit, uIndex) in measurement.unit" :key="uIndex">
-                            <div class="col-md-4">
-                                <d-input :label="unit.abbreviation" v-model="unit.value" class="text-center"></d-input>
-                            </div>
-                        </template>
+    <div class="row align-items-center justify-content-between p-0 pt-2 mt-3">
+        <template v-for="(measurement, index) in measurements" :key="index">
+            <div class="col-xl-5-1 col-md-12 mt-2 mb-2 pe-0">
+                <div class="row align-items-start">
+                    <h6 class="w-100">{{ measurement.name }}</h6>
+                </div>
+                <div class="card p-0">
+                    <div class="card-body ps-2 mt-2">
+                        <div class="row">
+                            <template v-for="(unit, uIndex) in measurement.unit" :key="uIndex">
+                                <div class="col-md-4">
+                                    <d-input :label="unit.abbreviation" v-model="unit.value" class="text-center"></d-input>
+                                </div>
+                            </template>  
+                        </div>
                     </div>
                 </div>
-            </template>
-        </div>
+            </div>
+        </template>
+    </div>
 </template>
 
 <script setup>

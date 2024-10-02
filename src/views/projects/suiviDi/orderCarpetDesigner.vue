@@ -5,7 +5,7 @@
         <div class="row layout-top-spacing mt-3 p-2">
             <div class="panel br-6 p-2 mt-3">
                 <div class="row ms-2 mt-2 mb-2">
-                    <div class="col-xl-2 col-md-4 col-xs-12 d-flex">
+                    <div class="col-xl-auto col-md-12 d-flex">
                         <div class="col-auto pe-1 ps-2 text-black">
                             Format: 
                         </div>
@@ -22,7 +22,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 col xs-12">
+                    <div class="col-xl-auto col-md-12 xs-12">
                         <d-unit-measurements v-model="unitOfMesurements.id" :disabled="true"></d-unit-measurements>
                     </div>
                     <div class="col-md-4 col xs-12">
@@ -94,8 +94,12 @@
                                <d-measurements-di :dimensionsProps="currentDimensions"></d-measurements-di>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
-                               <div class="text-black p-0 pb-2">Description de l'image</div>
-                               <textarea v-model="dataSpecification.description" class="w-100 h-130-forced block-custom-border"></textarea>
+                               <div class="col-12"> 
+                                   <div class="text-black p-0 pb-2">Description de l'image</div>
+                               </div>
+                               <div class="col-12">
+                                   <textarea v-model="dataSpecification.description" class="w-100 h-130-forced block-custom-border"></textarea>
+                               </div>
                            </div>
                            <div class="row justify-content-end"  v-if="carpetDesignOrderId">
                                <div class="col-auto">
@@ -103,13 +107,16 @@
                                </div>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetSpecificationId">
-                                <d-compositions :compositionData="compositionData" :carpetSpecificationId="carpetSpecificationId" v-if="carpetDesignOrderId"></d-compositions>
+                               <div class="col-12">
+                                   <d-compositions :compositionData="compositionData" :carpetSpecificationId="carpetSpecificationId" v-if="carpetDesignOrderId"></d-compositions>
+                               </div>
                            </div>
                        </div>
                    </div>
                     <div class="col-md-12 col-xl-3 ps-1" v-if="carpetDesignOrderId">
                         <d-designer-list :carpetDesignOrderId="carpetDesignOrderId" :designersProps="currentCarpetObject.designers"></d-designer-list>
                         <d-images-list :carpetDesignOrderId="carpetDesignOrderId"></d-images-list>
+                        <d-designer-composition-list :designerComposition="designerComposition" :carpetSpecificationId="carpetSpecificationId" v-if="carpetSpecificationId"></d-designer-composition-list>
                     </div>
                 </div>
                 </div>
@@ -145,6 +152,7 @@ import dDesignerList from "../../../components/projet/contremarques/d-designer-l
 import dImagesList from "../../../components/projet/contremarques/d-images-list.vue";
 import dLocationDropdown from "../../../components/projet/contremarques/dropdown/d-location-dropdown.vue";
 import dCompositions from "../../../components/projet/contremarques/d-compositions.vue";
+import dDesignerCompositionList from "../../../components/projet/contremarques/d-designer-composition-list.vue";
 import dAttachments from "../../../components/projet/contremarques/_Partials/d-attachments.vue";
 
 useMeta({ title: 'Maquette' });
@@ -192,6 +200,7 @@ const dataSpecification = ref({
 });
 const projectDi = ref({});
 const compositionData = ref({});
+const designerComposition = ref({});
 const carpetSpecificationId = ref(0);
 
 const getProjectDI = async () => {
@@ -226,6 +235,7 @@ const getOrderCarpet = async (id) => {
                 currentDimensions.value = dSP.carpetDimensions;
                 currentMaterials.value = dSP.carpetMaterials;
                 compositionData.value = dSP.carpedComposition;
+                designerComposition.value = dSP.designMaterials;
                 dataSpecification.value = {
                     id: dSP.id,
                     reference: "",

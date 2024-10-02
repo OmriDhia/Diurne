@@ -1,11 +1,11 @@
 <template>
-    <div class="row align-items-center">
+    <div class="row align-items-center p-0 pt-2 mt-3">
         <div class="row align-items-start">
-            <h6 class="w-100 p-0">Matière demandés</h6>
+            <h6 class="w-100 p-0">Matières de l'image</h6>
         </div>
         <div class="card p-0">
-            <perfect-scrollbar tag="div" class="h-130-forced p-0"
-                               :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 130, suppressScrollX: true }">
+            <perfect-scrollbar tag="div" class="h-200-forced p-0"
+                               :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 200, suppressScrollX: true }">
 
                 <div class="card-body p-0 ps-2 mt-2">
                     <template v-for="(material,index) in materials">
@@ -13,7 +13,7 @@
                             <div class="col-6">
                                 <d-materials-dropdown :hideLabel="true" v-model="material.material_id"></d-materials-dropdown>
                             </div>
-                            <div class="col-3 text-end font-size-0-7">
+                            <div class="col-3 text-center">
                                 {{ material.rate }}
                             </div>
                             <div class="col-3">
@@ -26,10 +26,10 @@
                 </div>
             </perfect-scrollbar>
         </div>
-        <d-modal-add-material @addMaterial="addMaterial($event)"></d-modal-add-material>
-        <div class="col-12 ps-0 mt-2">
-            <div class="col-auto ps-0">
-                <button class="btn ms-0 btn-outline-custom" data-bs-toggle="modal" data-bs-target="#modalAddMaterials">
+        <d-modal-add-designer-composition :carpetSpecificationId="carpetSpecificationId" @addDesignerComposition="addDesignerComposition($event)"></d-modal-add-designer-composition>
+        <div class="row ps-0 mt-2">
+            <div class="col-auto">
+                <button class="btn ms-0 btn-outline-custom" data-bs-toggle="modal" data-bs-target="#modalAddDesignerComposition">
                     Ajouter
                     <vue-feather type="plus" size="14"></vue-feather>
                 </button>
@@ -39,25 +39,28 @@
 </template>
 
 <script>
-    import axiosInstance from '../../../../config/http';
-    import dModalAddMaterial from "../_Partials/d-modal-add-material.vue";
-    import dDelete from "../../../common/d-delete.vue";
+    import axiosInstance from "../../../config/http";
+    import dModalAddDesignerComposition from "./_Partials/d-modal-add-designer-composition.vue";
+    import dDelete from "../../common/d-delete.vue";
     import VueFeather from 'vue-feather';
-    import DPanelTitle from "../../../common/d-panel-title.vue";
-    import DMaterialsDropdown from "../dropdown/d-materials-dropdown.vue";
+    import DPanelTitle from "../../common/d-panel-title.vue";
+    import DMaterialsDropdown from "./dropdown/d-materials-dropdown.vue";
 
     export default {
         components: {
             DMaterialsDropdown,
             DPanelTitle,
-            dModalAddMaterial,
             VueFeather,
-            dDelete
+            dDelete,
+            dModalAddDesignerComposition
         },
         props: {
-            materielsProps:{
+            designerComposition:{
                 type: Array
-            }  
+            },
+            carpetSpecificationId: {
+                type: Number
+            }
         },
         data() {
             return {
@@ -67,26 +70,23 @@
         },
         methods: {
             formatDataProps(){
-                this.materials = this.materielsProps.map(m => ({
-                    material_id: m.id,
-                    rate: parseFloat(m.rate)
-                }));
-                this.$store.commit("setMaterials", this.materials);
+                this.materials = this.designerComposition.map(m => {
+                    m.rate = parseFloat(m.rate);
+                    return m;
+                })
             },
-            addMaterial(data){
+            addDesignerComposition(data){
                 this.materials.push(data);
-                this.$store.commit("setMaterials", this.materials)
             },
             handleDelete(index){
                 this.materials.splice(index, 1);
-                this.$store.commit("setMaterials", this.materials)
             }
         },
         mounted() {
-           
+            this.formatDataProps()
         },
         watch: {
-            materielsProps(){
+            designerComposition(){
                 this.formatDataProps();
             }
         }
