@@ -11,8 +11,7 @@
         
         <d-base-modal id="modalCompositionThread" title="Composition" @onClose="handleClose">
             <template v-slot:modal-body>
-                <div class="col-8">
-                    <d-input label="trame" v-model="trame" v-if="!props.carpetCompositionId"></d-input>
+                <div class="col-8 h-50">
                     <d-colors-dominants-dropdown v-model="color"></d-colors-dominants-dropdown>
                 </div>
             </template>
@@ -49,7 +48,7 @@
         }
     });
     
-    const emit = defineEmits(['onClose', 'addThread', 'newCarpetComposition']);
+    const emit = defineEmits(['onClose', 'addThread']);
     
     const color = ref(null);
     const trame = ref("");

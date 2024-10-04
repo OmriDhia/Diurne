@@ -68,7 +68,9 @@
                     try {
                         const res = await axiosInstance.get('/api/countries');
                         this.countries = res.data.response.countries;
-                        this.country = this.countries.filter(ad => ad.country_id === this.modelValue || ad.name === this.modelValue)[0];
+                        if(this.modelValue){
+                            this.country = this.countries.filter(ad => ad.country_id === this.modelValue || ad.name === this.modelValue)[0];
+                        }
                         if(this.country){
                             this.$emit('update:modelValue', parseInt(this.country.country_id));  
                         }else{

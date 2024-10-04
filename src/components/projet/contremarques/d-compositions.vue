@@ -1,7 +1,8 @@
 <template>
     <div class="row align-items-start p-2 bg-white" id="fullscreen">
         <div class="col-12 mb-2 mt-3 p-0">
-            <d-composition-thread @newCarpetComposition="newCarpetComposition($event)" :threadCount="dynamicColumns.length" :layerCount="rows.length" :carpetCompositionId="carpetCompositionId" :carpetSpecificationId="props.carpetSpecificationId" @addThread="addColumn($event)"></d-composition-thread>
+            <d-composition-thread v-if="carpetCompositionId" :threadCount="dynamicColumns.length" :layerCount="rows.length" :carpetCompositionId="carpetCompositionId" :carpetSpecificationId="props.carpetSpecificationId" @addThread="addColumn($event)"></d-composition-thread>
+            <d-composition-thread-new v-else :carpetSpecificationId="props.carpetSpecificationId" @newCarpetComposition="newCarpetComposition" @addThreads="addThreads"></d-composition-thread-new>
         </div>
         <div class="col-12 ps-0" v-if="dynamicColumns.length" style="overflow-x: auto;">
             <table class="table table-striped">
@@ -48,6 +49,7 @@
     import { ref, watch, onMounted } from 'vue';
     import VueFeather from 'vue-feather';
     import dCompositionThread from "./_Partials/d-composition-thread.vue";
+    import dCompositionThreadNew from "./_Partials/d-composition-thread-new.vue";
     import dBtnOutlined from "../../base/d-btn-outlined.vue";
     import dMaterialsDropdown from "./dropdown/d-materials-dropdown.vue";
     import dColorsDropdown from "./dropdown/d-colors-dropdown.vue";
@@ -98,27 +100,35 @@
     };
     
     const addRow = async () => {
-        const newRowIndex = rows.value.length + 1;
-        const layerDetails = dynamicColumns.value.map((col, index) => {
-            return {
-                threadId: col.id,
-                color_id: 0,
-                material_id: 0,
-                pourcentage: 0
-            };
-        });
-        
-        const data = await contremarqueService.addCarpetCompositionLayer(carpetCompositionId.value, {
-            layerNumber: newRowIndex ,
-            remarque: '',
-            layer_details: layerDetails
-        });
-        const row = formatDataLayers(data);
-        rows.value.push(row);
+        if(dynamicColumns.value.length > 0){
+            const newRowIndex = rows.value.length + 1;
+            const layerDetails = dynamicColumns.value.map((col, index) => {
+                return {
+                    threadId: col.id,
+                    color_id: 0,
+                    material_id: 0,
+                    pourcentage: 0
+                };
+            });
+
+            const data = await contremarqueService.addCarpetCompositionLayer(carpetCompositionId.value, {
+                layerNumber: newRowIndex ,
+                remarque: '',
+                layer_details: layerDetails
+            });
+            const row = formatDataLayers(data);
+            rows.value.push(row);
+        }
+    }; 
+    const addThreads = async (data) => {
+        dynamicColumns.value = data.threads;
+        for (let i = 0; i < data.layerCount; i++) {
+            await addRow();
+        }
     }; 
     
-    const newCarpetComposition = (carpetCompositionId) => {
-        carpetCompositionId.value = parseInt(carpetCompositionId);
+    const newCarpetComposition = (CompositionId) => {
+        carpetCompositionId.value = parseInt(CompositionId);
     };
     
     onMounted(() => {

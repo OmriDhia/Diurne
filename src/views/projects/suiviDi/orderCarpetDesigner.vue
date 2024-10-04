@@ -52,11 +52,6 @@
                                <div class="col-xl-8 col-md-12 pe-2">
                                    <d-attachments :carpetDesignOrderId="carpetDesignOrderId"></d-attachments>
                                </div>
-                               <div class="row justify-content-end">
-                                   <div class="col-auto">
-                                       <button class="btn btn-custom mb-2 text-uppercase" @click="saveCarpetOrder">Enregistrer</button>  
-                                   </div>
-                               </div>
                            </div>
                            <div class="row align-items-center justify-content-between mt-5" v-if="carpetDesignOrderId">
                                <!--div class="col-md-auto col-sm-6">
@@ -248,7 +243,6 @@ const getOrderCarpet = async (id) => {
                     specialShapeId: dSP.specialShape ? dSP.specialShape.id : 0,
                 };
             }
-            
         }
     }catch (e){
         console.log(e)
@@ -271,8 +265,7 @@ const saveCarpetOrder = async () => {
             setTimeout(() => {
                 const resolvedRoute = router.resolve({ name: 'di_orderDesigner_update', params: { id_di: id_di,carpetDesignOrderId: res.data.response.id}});
                 document.location.href = resolvedRoute.href
-                },2000)
-            console.log(res.data.response.id);
+                },2000);
         }
         
     }catch (e){
@@ -329,6 +322,16 @@ const applyDefaultMaterials = async () => {
     }catch(e){
         console.log(e)
     }
-}
+};
+
+watch(
+    () => JSON.parse(JSON.stringify(dataCarpetOrder.value)),
+    async (newCarpert, oldCarpet) => {
+        if ((oldCarpet?.location_id && carpetDesignOrderId) || !carpetDesignOrderId) {
+            await saveCarpetOrder();
+        }
+    },
+    { deep: true }
+);
 
 </script>

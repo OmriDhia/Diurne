@@ -118,22 +118,22 @@
                             </template>
                             <template #target_date="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ $Helper.FormatDate(data.value.target_date.date)}}
+                                    {{ (data.value.target_date && data.value.target_date.date) ? $Helper.FormatDate(data.value.target_date.date) : ''}}
                                 </div>
                             </template>
                             <template #createdAt="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ $Helper.FormatDate(data.value.createdAt.date)}}
+                                    {{ (data.value.createdAt && data.value.createdAt.date) ? $Helper.FormatDate(data.value.createdAt.date) : ''}}
                                 </div>
                             </template>
                             <template #lastEvent="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ data.value.last_event.subject }}
+                                    {{ (data.value.last_event) ? data.value.last_event.subject : '' }}
                                 </div>
                             </template>
                             <template #lastEventDate="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ $Helper.FormatDate(data.value.last_event.event_date)}}
+                                    {{ (data.value.last_event) ? $Helper.FormatDate(data.value.last_event.event_date) : ''}}
                                 </div>
                             </template>
                             <template #relanceDate="data">
