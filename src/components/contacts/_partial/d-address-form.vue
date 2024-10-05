@@ -139,15 +139,15 @@
         data.value.address1 = address.address1;
         data.value.city = address.city;
         data.value.zip_code = address.postcode;
-        data.value.state = address.state;
+        data.value.state = (address.state) ? address.state : "";
         data.value.is_f_valide = address.is_f_valide;
         data.value.is_l_valide = address.is_l_valide;
         data.value.is_wrong = address.is_wrong;
-        data.value.comment = address.comment;
-        data.value.phone = address.phone;
+        data.value.comment = (address.comment) ? address.comment : "";
+        data.value.phone = (address.phone) ? address.phone : "";
         /*data.value.mobile_phone = address.mobile_phone;*/
         data.value.addressTypeId = address.addressType.addressTypeId;
-        data.value.countryId = address.country;
+        data.value.countryId = address.countryId;
     };
    watch(
         () => props.addressData,

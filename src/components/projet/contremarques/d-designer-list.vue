@@ -19,7 +19,7 @@
                                         {{$Helper.FormatDate(designer.date_from)}}
                                     </div>
                                     <div class="col-md-12 mt-1 font-size-0-8">
-                                        <d-designer-status v-model="designer.status" @change="handleChange(index)"></d-designer-status>
+                                        <d-designer-status :disabled="true" v-model="designer.status" @change="handleChange(index)"></d-designer-status>
                                     </div>
                                 </div>
                             </div>
@@ -47,6 +47,7 @@
     import dDesignerDropdown from "../../common/d-designer-dropdown.vue";
     import dDesignerStatus from "./_Partials/d-designer-status.vue";
     import { designerStatusConst } from "../../../composables/constants";
+    import userService from "../../../Services/user-service"
 
     export default {
         components: {
@@ -79,7 +80,7 @@
                 
             },
             getDesigners(designers) {
-                return designers.map((d) => {
+                return designers?.map((d) => {
                     const inProgress = d.inProgress || false;
                     const stopped = d.stopped || false;
 
@@ -119,17 +120,45 @@
                 }catch{
                     window.showMessage('Erreur mise a jour');
                 }
-            }
+            },
+            updateDesignerStatus(status){
+                const user = userService.getUserInfo();
+                const userId = parseInt(user.id);
+                if(userId){
+                    const designer = this.designers.find(d => d.designer === userId);
+                    if(designer && !designer.done){
+                        const data = {
+                            dateFrom: designer.date_from,
+                            dateTo: designer.date_to,
+                            inProgress: status === 'inProgress' ,
+                            stopped: status === 'stopped',
+                            done: false
+                        };
+                        try{
+                            const res = axiosInstance.put(`/api/designerAssignments/${designer.id}`,data);
+                            console.log('Mise à jour avec succées');
+                        }catch(e){
+                            console.log('Erreur mise a jour',e);
+                        }
+                    }
+                    
+                }
+            },
         },
         mounted() {
             if (this.designersProps && this.designersProps.length > 0) {
                 this.designers = this.getDesigners(this.designersProps);
+                this.updateDesignerStatus('inProgress');
             }
+        },
+        unmounted(){
+            this.updateDesignerStatus('stopped');
         },
         watch: {
             designersProps(newDesigners) {
                 if (newDesigners && newDesigners.length > 0) {
                     this.designers = this.getDesigners(newDesigners);
+                    this.updateDesignerStatus('inProgress');
                 }
             }
         }

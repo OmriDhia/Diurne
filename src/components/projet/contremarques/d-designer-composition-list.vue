@@ -70,10 +70,12 @@
         },
         methods: {
             formatDataProps(){
-                this.materials = this.designerComposition.map(m => {
-                    m.rate = parseFloat(m.rate);
-                    return m;
-                })
+                if(this.designerComposition){
+                    this.materials = this.designerComposition.map(m => {
+                        m.rate = parseFloat(m.rate);
+                        return m;
+                    })  
+                };
             },
             addDesignerComposition(data){
                 this.materials.push(data);

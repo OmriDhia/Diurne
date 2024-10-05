@@ -13,11 +13,11 @@
                             <d-input label="Date d'attribution" type="date" v-model="data.dateFrom" :error="error.dateFrom"></d-input>
                         </div>
                     </div>
-                    <div class="row p-2 align-items-center">
+                    <!--div class="row p-2 align-items-center">
                         <div class="col-sm-12 col-md-8">
                             <d-designer-status v-model="designerStatus"></d-designer-status>
                         </div>
-                    </div>
+                    </div-->
                 </div>
             </template>
             <template v-slot:modal-footer>
@@ -41,13 +41,13 @@
         }
     });
     
-    const designerStatus = ref(1);
+    //const designerStatus = ref(0);
     const error = ref({});
     const data = ref({
         designerId: 0,
         dateFrom: new Date() ,
         dateTo: new Date(),
-        inProgress: true,
+        inProgress: false,
         stopped: false,
         done: false
     });
@@ -58,9 +58,9 @@
                 window.showMessage('Id carpetDesignOrderId undefined', 'error');
                 return ;
             }
-            data.value.inProgress = (designerStatus.value === designerStatusConst[0].id);
+            /*data.value.inProgress = (designerStatus.value === designerStatusConst[0].id);
             data.value.stopped = (designerStatus.value === designerStatusConst[1].id);
-            data.value.done = (designerStatus.value === designerStatusConst[2].id);
+            data.value.done = (designerStatus.value === designerStatusConst[2].id);*/
 
             const res = await axiosInstance.post(`/api/carpetDesignOrders/${props.carpetDesignOrderId}/designerAssignment`,data.value);
             emit('addDesigner', res.data.response);

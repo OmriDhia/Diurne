@@ -67,9 +67,14 @@
                                    <button class="btn btn-custom mb-2 text-uppercase" @click="applyDefaultMaterials">Générer matière par defaut</button>
                                </div>
                            </div>
+                           <div class="row ps-2 mt-4 mb-2"  v-if="carpetDesignOrderId && firstLoad">
+                               <div class="alert alert-light-primary alert-dismissible border-0 mb-4" role="alert">
+                                   <strong>Pour des raisons de performance, la sauvegarde automatique sera bloquée pendant 5 secondes.</strong>
+                               </div>
+                           </div>
                            <div class="row ps-2 mt-4 mb-2"  v-if="carpetDesignOrderId">
                                <div class="col-xl-4 col-md-12">
-                                    <d-materials-list :materielsProps="currentMaterials"></d-materials-list>
+                                    <d-materials-list :firstLoad="firstLoad" @changeMaterials="saveCarpetOrderSpecifications" :materialsProps="currentMaterials"></d-materials-list>
                                </div>
                                <div class="col-xl-8 col-md-12">
                                    <div class="row">
@@ -86,7 +91,7 @@
                                </div>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
-                               <d-measurements-di :dimensionsProps="currentDimensions"></d-measurements-di>
+                               <d-measurements-di :firstLoad="firstLoad" @changeMeasurements="saveCarpetOrderSpecifications" :dimensionsProps="currentDimensions" ></d-measurements-di>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
                                <div class="col-12"> 
@@ -94,11 +99,6 @@
                                </div>
                                <div class="col-12">
                                    <textarea v-model="dataSpecification.description" class="w-100 h-130-forced block-custom-border"></textarea>
-                               </div>
-                           </div>
-                           <div class="row justify-content-end"  v-if="carpetDesignOrderId">
-                               <div class="col-auto">
-                                   <button class="btn btn-custom mb-2 text-uppercase" @click="saveCarpetOrderSpecifications">Enregistrer</button>
                                </div>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetSpecificationId">
@@ -195,8 +195,9 @@ const dataSpecification = ref({
 });
 const projectDi = ref({});
 const compositionData = ref({});
-const designerComposition = ref({});
+const designerComposition = ref([]);
 const carpetSpecificationId = ref(0);
+const firstLoad = ref(true);
 
 const getProjectDI = async () => {
     try{
@@ -247,12 +248,15 @@ const getOrderCarpet = async (id) => {
     }catch (e){
         console.log(e)
     }
-}
+};
 
 onMounted( () => {
     getOrderCarpet(carpetDesignOrderId);
-    getProjectDI()
-})
+    getProjectDI();
+    setTimeout(() => {
+        firstLoad.value = false;
+    },5000);
+});
 
 const saveCarpetOrder = async () => {
     try{
@@ -278,7 +282,8 @@ const saveCarpetOrder = async () => {
 const saveCarpetOrderSpecifications = async () => {
     try{
         const measurements = store.getters.measurements;
-        dataSpecification.value.dimensions = measurements.reduce((acc, dimension) => {
+        const dataRequest = Object.assign({}, dataSpecification.value);
+        dataRequest.dimensions = measurements.reduce((acc, dimension) => {
             acc[dimension.id] = dimension.unit.map(u => {
                 return {
                     dimension_id: u.id,
@@ -287,18 +292,16 @@ const saveCarpetOrderSpecifications = async () => {
             });
             return acc;
         }, {});
+
+        dataRequest.materials = store.getters.materials;
         
-        dataSpecification.value.materials = store.getters.materials;
-        
-        if(dataSpecification.value.id){
-            const res = await axiosInstance.put(`/api/carpetDesignOrder/${carpetDesignOrderId}/updateCarpetSpecification/${dataSpecification.value.id}`, dataSpecification.value);
+        if(dataRequest.id){
+            const res = await axiosInstance.put(`/api/carpetDesignOrder/${carpetDesignOrderId}/updateCarpetSpecification/${dataSpecification.value.id}`, dataRequest);
             window.showMessage("Mise a jour avec succées.");
         }else{
-            const res = await axiosInstance.post(`/api/carpetDesignOrder/${carpetDesignOrderId}/createCarpetSpecification`, dataSpecification.value);
+            const res = await axiosInstance.post(`/api/carpetDesignOrder/${carpetDesignOrderId}/createCarpetSpecification`, dataRequest);
             window.showMessage("Ajout avec succées.");
-            setTimeout(() => {
-                document.location.reload();
-            },1000)
+            carpetSpecificationId.value = res.data.response.id;
         }
         
     }catch (e){
@@ -311,14 +314,14 @@ const saveCarpetOrderSpecifications = async () => {
 
 const applyDefaultMaterials = async () => {
     try{
-       const materials = await contremarqueService.getDefaultMaterials();
-       currentMaterials.value = materials.map(m => {
+        const materials = await contremarqueService.getDefaultMaterials();
+        currentMaterials.value = materials.map(m => {
            return {
-               id: m.materialId,
+               material_id: m.materialId,
                rate: parseFloat(m.percentage)
            }
-       });
-       window.showMessage('Les matières par défaut sont bien appliquées.')
+        });
+        window.showMessage('Les matières par défaut sont bien appliquées.')
     }catch(e){
         console.log(e)
     }
@@ -330,6 +333,16 @@ watch(
         if ((oldCarpet?.location_id && carpetDesignOrderId) || !carpetDesignOrderId) {
             await saveCarpetOrder();
         }
+    },
+    { deep: true }
+);
+
+watch(
+    () => dataSpecification.value,
+    async (newDataSpecification) => {
+        if(!firstLoad.value){
+            await saveCarpetOrderSpecifications(); 
+        };
     },
     { deep: true }
 );

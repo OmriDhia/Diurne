@@ -1,24 +1,32 @@
 <template>
-    <div class="row align-items-center justify-content-between p-0 pt-2 mt-3">
-        <template v-for="(measurement, index) in measurements" :key="index">
-            <div class="col-xl-5-1 col-md-12 mt-2 mb-2 pe-0">
-                <div class="row align-items-start">
-                    <h6 class="w-100">{{ measurement.name }}</h6>
-                </div>
-                <div class="card p-0">
-                    <div class="card-body ps-2 mt-2">
-                        <div class="row">
-                            <template v-for="(unit, uIndex) in measurement.unit" :key="uIndex">
-                                <div class="col-md-4">
-                                    <d-input :label="unit.abbreviation" v-model="unit.value" class="text-center"></d-input>
-                                </div>
-                            </template>  
+    <div>
+        <div class="row align-items-center justify-content-end p-0 pt-2 mt-3">
+            <div class="col-auto">
+                <button class="btn btn-custom mb-2 font-size-0-7" @click="calculateInchesFeet">Calculer</button>
+            </div>
+        </div>
+        <div class="row align-items-center justify-content-between p-0 pt-2">
+            <template v-for="(measurement, index) in measurements" :key="index">
+                <div class="col-xl-5-1 col-md-12 mt-2 mb-2 pe-0">
+                    <div class="row align-items-start">
+                        <h6 class="w-100">{{ measurement.name }}</h6>
+                    </div>
+                    <div class="card p-0">
+                        <div class="card-body ps-2 mt-2">
+                            <div class="row">
+                                <template v-for="(unit, uIndex) in measurement.unit" :key="uIndex">
+                                    <div class="col-md-4">
+                                        <d-input :label="unit.abbreviation" v-model="unit.value" class="text-center"></d-input>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </template>
+            </template>
+        </div>
     </div>
+    
 </template>
 
 <script setup>
@@ -30,10 +38,33 @@
     const props = defineProps({
         dimensionsProps : {
             type: Object
+        },
+        firstLoad : {
+            type: Boolean
         }
     });
+    const emit = defineEmits(['changeMeasurements']);
     const store = useStore();
     const measurements = ref([]);
+
+    const calculateInchesFeet = () => {
+        measurements.value.forEach(async (m, index) => {
+            const cmUnit = m.unit.find(u => u.abbreviation === 'cm');
+            if(cmUnit){
+                try {
+                    const result = await contremarqueService.calculateMesurements({cm: cmUnit.value})
+                    m.unit.map(ut => {
+                        ut.value = result[ut.abbreviation];
+                        return ut;
+                    })
+                } catch (error) {
+                    console.error(`Error creating thread ${index + 1}:`, error);
+                    ths.push(null);
+                } 
+            }
+            
+        });
+    };
 
     const getMeasurements = async () => {
         try {
@@ -63,7 +94,6 @@
                     return m;
                 });
             }
-            console.log(measurements.value)
         } catch (e) {
             console.error(e.message);
         }
@@ -77,7 +107,11 @@
         () => measurements.value,
         (newMeasurements) => {
             store.commit('setMeasurements', newMeasurements);
-        }
+            if(!props.firstLoad){
+                emit('changeMeasurements', newMeasurements);
+            }
+        },
+        { deep: true }
     );
     watch(
         () => props.dimensionsProps,

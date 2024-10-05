@@ -149,7 +149,7 @@
         address1: "",
         city: "",
         zip_code: "",
-        state: 'test',
+        state: "",
         is_f_valide: null,
         is_l_valide: null,
         is_wrong: null,

@@ -102,4 +102,14 @@ export default {
             throw new Error(msg);
         }
     },
+    async calculateMesurements(data){
+        try {
+            const res = await axiosInstance.post(`/api/convert-cm-to-feet-inches`, data);
+            return res.data.response
+        } catch (error) {
+            const msg = 'Échec de calcule des mesures en feet et inches.';
+            window.showMessage(msg, 'error');
+            throw new Error(msg);
+        }
+    },
 };

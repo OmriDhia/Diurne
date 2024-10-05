@@ -174,7 +174,7 @@
         watchRowLayerDetails(row.value);
 
         return row.value;
-    }
+    };
     watch(
         () => props.compositionData,
         (newValue) => {

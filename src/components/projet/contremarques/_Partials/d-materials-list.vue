@@ -55,8 +55,11 @@
             dDelete
         },
         props: {
-            materielsProps:{
+            materialsProps:{
                 type: Array
+            },
+            firstLoad : {
+                type: Boolean
             }  
         },
         data() {
@@ -66,28 +69,33 @@
             };
         },
         methods: {
-            formatDataProps(){
-                this.materials = this.materielsProps.map(m => ({
-                    material_id: m.id,
+            formatDataProps() {
+                this.materials = this.materialsProps.map(m => ({
+                    material_id: m.material_id,
                     rate: parseFloat(m.rate)
                 }));
-                this.$store.commit("setMaterials", this.materials);
+                this.updateMaterialsInStore();
             },
-            addMaterial(data){
+            addMaterial(data) {
                 this.materials.push(data);
-                this.$store.commit("setMaterials", this.materials)
+                this.updateMaterialsInStore();
+                this.$emit('changeMaterials', this.materials);
             },
-            handleDelete(index){
+            handleDelete(index) {
                 this.materials.splice(index, 1);
-                this.$store.commit("setMaterials", this.materials)
+                this.updateMaterialsInStore();
+                this.$emit('changeMaterials', this.materials);
+            },
+            updateMaterialsInStore() {
+                this.$store.commit("setMaterials", this.materials);
             }
         },
-        mounted() {
-           
-        },
         watch: {
-            materielsProps(){
+            materialsProps() {
                 this.formatDataProps();
+                if(!this.firstLoad){
+                    this.$emit('changeMaterials', this.materials);
+                }
             }
         }
     };
