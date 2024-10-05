@@ -54,7 +54,7 @@
                 </div>
             </template>
             <template v-slot:modal-footer>
-                <button class="btn btn-custom pe-2 ps-2" @click.prevent="saveLocation">Enregistrer</button>
+                <button class="btn btn-custom pe-2 ps-2" @click.prevent="saveDI">Enregistrer</button>
             </template>
         </d-base-modal>
     </div>
@@ -102,8 +102,7 @@
                 window.showMessage("Ajout avec succées.");
             }
 
-            document.querySelector("#modalCreateDI .btn-close").click();
-            initData();
+            document.querySelector("#modalDIManage .btn-close").click();
         }catch (e){
             if(e.response.data.violations){
                 error.value = formatErrorViolations(e.response.data.violations);
@@ -130,10 +129,10 @@
     const affectData = (di) =>{
         if(di){
             data.value.format = di.format;
-            data.value.deadline = Helper.FormatDate(di.deadline.date,"YYYY-MM-DD");
+            data.value.deadline = di.deadline ? Helper.FormatDate(di.deadline.date,"YYYY-MM-DD") : '';
             data.value.transmitted_to_studio = di.transmitted_to_studio;
-            data.value.transmition_date = Helper.FormatDate(di.transmition_date.date);
-            data.value.unit_id = di.unit.id;
+            data.value.transmition_date = di.transmition_date ? Helper.FormatDate(di.transmition_date.date) : '';
+            data.value.unit_id = parseInt(di.unit.id);
             data.value.contremarque_id = di.contremarque;
         }
     };

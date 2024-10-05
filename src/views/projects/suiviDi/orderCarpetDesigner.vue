@@ -205,8 +205,8 @@ const getProjectDI = async () => {
         if(projectDi.value){
             unitOfMesurements.value = projectDi.value.unit;
             format.value = projectDi.value.format;
-            deadline.value = Helper.FormatDate(projectDi.value.deadline.date);
-            transDate.value = Helper.FormatDate(projectDi.value.transmition_date.date);
+            deadline.value = projectDi.value.deadline ? Helper.FormatDate(projectDi.value.deadline.date) : '';
+            transDate.value = projectDi.value.transmition_date ? Helper.FormatDate(projectDi.value.transmition_date.date) : '';
             contremarque.value = await contremarqueService.getContremarqueById(projectDi.value.contremarque);
             commercial.value = (contremarque.value.commercials) ? contremarque.value.commercials[0].firstname + " " + contremarque.value.commercials[0].lastname : "";
             customer.value = contremarque.value.customer;

@@ -245,15 +245,16 @@
                     project_number: contremarque.projectNumber,
                     designation: contremarque.value.designation,
                     destination_location: contremarque.value.destination_location,
-                    target_date: Helper.FormatDate(contremarque.value.target_date.date,"YYYY-MM-DD"),
+                    target_date: Helper.FormatDate(contremarque.value.target_date?.date,"YYYY-MM-DD"),
                     customer_id: contremarque.value.customer.customer_id,
                     customerDiscount_id: contremarque.value.discount_rule_id,
                     prescriber_id: prescriber.value,
                     commission: contremarque.value.commission,
                     commission_on_deposit: contremarque.value.commission_on_deposit
                 };
-        }
+            }
         }catch(e){
+            console.log(e);
             const msg = "Une contremarque d'id " + contremarque_id + " n'existe pas";
             window.showMessage(msg,'error');
         }

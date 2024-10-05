@@ -43,7 +43,7 @@
             </div>
             <div class="panel br-6 p-2 mt-3">
                 <div class="row ms-2 mt-2 mb-2">
-                    <div class="col-xl-2 col-md-4 col-xs-12 d-flex">
+                    <div class="col-xl-auto col-md-12 d-flex">
                         <div class="col-auto pe-1 ps-2 text-black">
                             Format: 
                         </div>
@@ -60,7 +60,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 col xs-12">
+                    <div class="col-xl-auto col-md-12">
                         <d-unit-measurements v-model="unitOfMesurements.id" :disabled="true"></d-unit-measurements>
                     </div>
                     <div class="col-xl-3 col-md-4 col xs-12">
