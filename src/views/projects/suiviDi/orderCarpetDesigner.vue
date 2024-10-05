@@ -295,8 +295,8 @@ const saveCarpetOrderSpecifications = async () => {
 
         dataRequest.materials = store.getters.materials;
         
-        if(dataRequest.id){
-            const res = await axiosInstance.put(`/api/carpetDesignOrder/${carpetDesignOrderId}/updateCarpetSpecification/${dataSpecification.value.id}`, dataRequest);
+        if(carpetSpecificationId.value){
+            const res = await axiosInstance.put(`/api/carpetDesignOrder/${carpetDesignOrderId}/updateCarpetSpecification/${carpetSpecificationId.value}`, dataRequest);
             window.showMessage("Mise a jour avec succées.");
         }else{
             const res = await axiosInstance.post(`/api/carpetDesignOrder/${carpetDesignOrderId}/createCarpetSpecification`, dataRequest);

@@ -2,7 +2,7 @@
     <div>
         <div class="row justify-content-between">
             <div class="col-auto">
-                <d-btn-outlined icon="map" label="Nouveau composition" data-bs-toggle="modal" data-bs-target="#modalNewComposition"></d-btn-outlined>
+                <d-btn-outlined icon="map" label="Nouvelle composition" data-bs-toggle="modal" data-bs-target="#modalNewComposition"></d-btn-outlined>
             </div>
             <div class="col-auto">
                 <d-btn-fullscreen></d-btn-fullscreen>
@@ -19,7 +19,7 @@
                     </template>
                     <template v-else>
                        <div class="row" v-for="(thread, index) in threads" :key="index">
-                           <d-colors-dominants-dropdown v-model="thread.techColorId"></d-colors-dominants-dropdown>
+                           <d-colors-dominants-dropdown v-model="thread.techColorId" :index="index + 1"></d-colors-dominants-dropdown>
                        </div>
                     </template>
                 </div>
