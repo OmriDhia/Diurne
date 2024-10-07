@@ -83,6 +83,24 @@ export const routes = [
             requiresAuth: true
         },
     },
+    //users
+    {
+        path: '/settings',
+        name: 'settings',
+        children: [
+            {
+                path: '',
+                name: 'settings_home',
+                component: () => import('../views/settings/settings.vue'),
+               /* meta: {
+                    permission: 'read user'
+                },*/
+            },
+        ],
+        meta: {
+            requiresAuth: true
+        },
+    },
     {
         path: '/contacts',
         name: 'contacts',

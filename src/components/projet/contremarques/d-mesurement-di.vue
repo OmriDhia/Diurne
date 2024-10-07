@@ -16,7 +16,14 @@
                             <div class="row">
                                 <template v-for="(unit, uIndex) in measurement.unit" :key="uIndex">
                                     <div class="col-md-4">
-                                        <d-input :label="unit.abbreviation" v-model="unit.value" class="text-center"></d-input>
+                                        <div class="row align-items-center">
+                                            <div class="col-auto text-black">
+                                                {{ unit.abbreviation }}
+                                            </div>
+                                            <div class="col-auto">
+                                                <input class="form-control text-center" v-model="unit.value">
+                                            </div>
+                                        </div>
                                     </div>
                                 </template>
                             </div>
@@ -52,7 +59,7 @@
             const cmUnit = m.unit.find(u => u.abbreviation === 'cm');
             if(cmUnit){
                 try {
-                    const result = await contremarqueService.calculateMesurements({cm: cmUnit.value})
+                    const result = await contremarqueService.calculateMesurements({cm: parseFloat(cmUnit.value)})
                     m.unit.map(ut => {
                         ut.value = result[ut.abbreviation];
                         return ut;

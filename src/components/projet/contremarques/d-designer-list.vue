@@ -81,12 +81,13 @@
             },
             getDesigners(designers) {
                 return designers?.map((d) => {
-                    const inProgress = d.inProgress || false;
+                    const inProgress = d.in_progress || false;
                     const stopped = d.stopped || false;
+                    const done = d.done || false;
 
                     return {
                         ...d,
-                        status: inProgress ? designerStatusConst[0].id : stopped ? designerStatusConst[1].id : designerStatusConst[2].id,
+                        status: inProgress ? designerStatusConst[0].id : stopped ? designerStatusConst[1].id : done ? designerStatusConst[2].id : 0,
                     };
                 });
             },
@@ -94,7 +95,7 @@
                 const newDesigner = {
                     ...data,
                     designer: data.designerId,
-                    status: data.inProgress ? designerStatusConst[0].id : data.stopped ? designerStatusConst[1].id : designerStatusConst[2].id,
+                    status: data.inProgress ? designerStatusConst[0].id : data.stopped ? designerStatusConst[1].id : data.done ? designerStatusConst[2].id : 0,
                 };
                 this.designers.push(newDesigner);
             },

@@ -27,9 +27,10 @@ export default defineConfig({
                 find: /^~(.*)$/,
                 replacement: "node_modules/$1",
             },
-            /*{
-                "@": path.resolve(__dirname, ".src/"),
-            },*/
+            {
+                find: "@",
+                replacement: path.resolve(__dirname, "./src/"), // Corrected from ".src/" to "./src/"
+            },
         ],
     },
 });

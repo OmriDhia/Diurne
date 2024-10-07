@@ -20,6 +20,11 @@
                             <vue-feather class="feather feather-menu hover-icon" type="bar-chart-2" stroke-width="2" width="24" height="24" fill="none" stroke-linecap="round" stroke="white"></vue-feather>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right m-0" aria-labelledby="ddluser">
+                            <li role="presentation">
+                                <router-link to="/settings" class="dropdown-item"  v-if="$hasPermission('read setting')">
+                                    <vue-feather type="settings" fill="none" stroke-width="1" stroke="white"></vue-feather> Settings
+                                </router-link>
+                            </li>
                             <li role="presentation" v-if="$hasPermission('read profile')">
                                 <router-link to="/users/profiles" class="dropdown-item">
                                     <vue-feather type="user" fill="none" stroke-width="1" stroke="white"></vue-feather> Profile

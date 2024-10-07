@@ -80,7 +80,7 @@ export default {
                     title: 'Suivi des DI',
                     image: 'di.png',
                     color: menuHomeColor.di,
-                    href: '/di',
+                    href: '/projet/dis',
                     permission: "read DI",
                 },
                 {
