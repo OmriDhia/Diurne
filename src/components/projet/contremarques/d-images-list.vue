@@ -11,6 +11,7 @@
                         <img :src="$Helper.getImagePath(item.attachment)" class="card-img-top cursor-pointer" @click="downloadImage(item.attachment)" alt="Image Preview">
                         <div class="card-body p-0 mt-2">
                             <div class="meta-info">
+                                <d-image-type-dropdown v-model="item.imageType.id" :hideLabel="true"></d-image-type-dropdown>
                                 <h6 class="card-title">{{ item.image_reference}}</h6>
                             </div>
                         </div>
@@ -42,7 +43,8 @@
     import attachmentService from "../../../Services/attachment-service";
     import dModalAddImage from "./_Partials/d-modal-add-image.vue";
     import axios from 'axios';
-
+    import dImageTypeDropdown from "./dropdown/d-image-type-dropdown.vue";
+    
     const props = defineProps({
         carpetDesignOrderId : {
             type: Number

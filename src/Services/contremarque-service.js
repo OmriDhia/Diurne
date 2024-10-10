@@ -52,7 +52,7 @@ export default {
     async getLocationsByContremarque(contremarqueId){
         try {
             const res = await axiosInstance.get(`/api/locationsByContremarque/${contremarqueId}`);
-            return res.data.response.locations;;
+            return res.data.response;
         } catch (error) {
             throw new Error('Échec de récupération des emplacements');
         }

@@ -91,8 +91,8 @@
                             <thead>
                             <tr>
                                 <th>Emplacement</th>
+                                <th>Image</th>
                                 <th>Etat tapis</th>
-                                <th>Numéro</th>
                                 <th>Collection</th>
                                 <th>Modèle</th>
                                 <th></th>
@@ -104,10 +104,10 @@
                                     {{(item.location && item.location.description) ? item.location.description : ''}}
                                 </td>
                                 <td aria-colindex="2" role="cell" class="">
-                                    {{(item.status && item.status.name) ? item.status.name : ''}}
+                                    <img :src="$Helper.getImagePathNew(item.vignette_resized)" width="50">
                                 </td>
-                                <td aria-colindex="3" role="cell" class="">
-                                    {{item.projectDi}}
+                                <td aria-colindex="2" role="cell" class="">
+                                    {{(item.status && item.status.name) ? item.status.name : ''}}
                                 </td>
                                 <td aria-colindex="4" role="cell" class="">
                                     {{ (item.carpetSpecification && item.carpetSpecification.collection) ? item.carpetSpecification.collection.reference : ''}}

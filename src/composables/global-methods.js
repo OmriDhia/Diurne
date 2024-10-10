@@ -41,6 +41,13 @@ export const Helper = {
         }
         return "/assets/images/projet/no-image.png";
     },
+    getImagePathNew: (path) => {
+        if(path){
+            const baseUrl = path.replace('/var/www/html/api_diurne/public',FILE_URL)
+            return baseUrl;
+        }
+        return "/assets/images/projet/no-image.png";
+    },
     hasDefinedValue: (obj, excludedKey = "") => {
         for (let key in obj) {
             if (obj[key] !== null && obj[key] !== undefined && obj[key] !== '' && key !== excludedKey) {

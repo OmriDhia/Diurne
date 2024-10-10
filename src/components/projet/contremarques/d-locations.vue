@@ -15,7 +15,7 @@
                 <div class="col-md-12 col-xl-6">
                     <div class="row mt-2 mb-2 align-items-center block-custom-border ms-1">
                         <div class="col-md-4 pe-1">
-                            <img src="/assets/images/projet/location_img.png" class="w-100">
+                            <img :src="$Helper.getImagePathNew(location.vignette)" class="w-100">
                         </div>
                         <div class="col-md-8 ps-1 ">
                             <ul class="list-group">
