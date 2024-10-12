@@ -22,7 +22,7 @@ export default {
             });
             return response.data.response;
         } catch (error) {
-            throw new Error('Failed to upload file: ' + error.message);
+            throw new Error(error.response.data?.error);
         }
     },
     async downloadFile(attachment){

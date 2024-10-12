@@ -45,6 +45,7 @@
     import dImageTypeDropdown from "../dropdown/d-image-type-dropdown.vue";
     import dAttachmentTypeDropdown from "../dropdown/d-attachment-type-dropdown.vue";
     import { useStore } from 'vuex';
+    import i18n from "../../../../i18n";
     
     const props = defineProps({
         carpetDesignOrderId : {
@@ -83,7 +84,7 @@
     };
     
     const submitFile = async () => {
-        if (!file.value) {
+        if (!file.value && defaultTypeImageId === attachmentTypeId.value) {
             window.showMessage('Veuillez selectionner un fichier !','error');
             return;
         }
@@ -114,8 +115,7 @@
             window.showMessage('Upload fichier avec succées')
             document.querySelector("#modalAddAttachment .btn-close").click();
         } catch (error) {
-            console.log(error);
-            window.showMessage('Erreur upload fichier', 'error')
+            window.showMessage(error.message, 'error')
         }
     };
 

@@ -212,7 +212,7 @@
 
     const saveContremarque = async () => {
         try{
-            data.value.customer_id = selectedCustomer.value;
+            data.value.customer_id = parseInt(selectedCustomer.value);
             data.value.prescriber_id = (prescriber.value) ? prescriber.value: 0;
             data.value.customerDiscount_id = (tarifId.value.discount_rule_id) ? tarifId.value.discount_rule_id : 0;
             data.value.commission = parseFloat(data.value.commission);

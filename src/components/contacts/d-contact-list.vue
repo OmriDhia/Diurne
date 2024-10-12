@@ -56,9 +56,9 @@
             </div>
         </div>
         <div class="row align-items-center pe-2 ps-2">
-            <div class="col-md-6 col-sm-12 col-lg-3">
+            <!--div class="col-md-6 col-sm-12 col-lg-3">
                 <d-input label="Prescripteur" v-model="filter.pres" ></d-input>
-            </div>
+            </div-->
             <div class="col-md-6 col-sm-12 col-lg-3">
                 <d-customer-type-dropdown v-model="filter.customerTypeId"></d-customer-type-dropdown>
             </div>
@@ -87,6 +87,31 @@
                 </div>
                 </div>
             </div>
+            <div class="col-md-3 col-sm-12">
+                <div class="row align-items-center">
+                    <div class="col-3 text-black">
+                        {{ $t('Adresse complète')}}:
+                    </div>
+                    <div class="col-auto pe-1 ps-2">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="finiched-add-yes" v-model="filter.validAdd" name="finichedAdd" value="true"/>
+                            <label class="custom-control-label text-black" for="finiched-add-yes"> {{ $t('Oui') }} </label>
+                        </div>
+                    </div>
+                    <div class="col-auto pe-1 ps-1">
+                        <div class="radio-success custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="finiched-add-no" v-model="filter.validAdd" name="finichedgAdd" value="false"/>
+                            <label class="custom-control-label text-black" for="finiched-add-no"> {{ $t('Non') }} </label>
+                        </div>
+                    </div>
+                    <div class="col-auto pe-1 ps-1">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="finiched-add-all" v-model="filter.validAdd" name="finichedAdd" value="all"/>
+                            <label class="custom-control-label text-black" for="finiched-add-all"> {{ $t('Tous') }} </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-6 col-sm-12 col-lg-3">
                 <div class="row justify-content-end">
                     <div class="col-auto">
@@ -100,7 +125,7 @@
         </div>
 
         <div class="row align-items-center pe-2 ps-2">
-            <div class="col-md-6 col-sm-12 p-3">
+            <div class="col-md-12 col-sm-12 p-3">
                 <div class="row align-items-center">
                     <div class="col-auto pe-1 ps-1">
                         <div class="radio-success custom-control custom-radio">
@@ -130,31 +155,6 @@
                         <div class="custom-control custom-radio">
                             <input type="checkbox" class="custom-control-input" id="isPrescripteur" v-model="filter.is_prescripteur"/>
                             <label class="custom-control-label text-black" for="isPrescripteur"> {{ $t('Prescripteur') }} </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-12">
-                <div class="row align-items-center">
-                    <div class="col-3 text-black">
-                        {{ $t('Adresse complète')}}:
-                    </div>
-                    <div class="col-auto pe-1 ps-2">
-                        <div class="custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" id="finiched-add-yes" v-model="filter.validAdd" name="finichedAdd" value="true"/>
-                            <label class="custom-control-label text-black" for="finiched-add-yes"> {{ $t('Oui') }} </label>
-                        </div>
-                    </div>
-                    <div class="col-auto pe-1 ps-1">
-                        <div class="radio-success custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" id="finiched-add-no" v-model="filter.validAdd" name="finichedgAdd" value="false"/>
-                            <label class="custom-control-label text-black" for="finiched-add-no"> {{ $t('Non') }} </label>
-                        </div>
-                    </div>
-                    <div class="col-auto pe-1 ps-1">
-                        <div class="custom-control custom-radio">
-                            <input type="radio" class="custom-control-input" id="finiched-add-all" v-model="filter.validAdd" name="finichedAdd" value="all"/>
-                            <label class="custom-control-label text-black" for="finiched-add-all"> {{ $t('Tous') }} </label>
                         </div>
                     </div>
                 </div>

@@ -19,7 +19,7 @@
             type: String
         },
     });
-    
+    const emit = defineEmits(['isDone']);
     const handleDelete = async () => {
         new window.Swal({
             title: 'Êtes-vous sûr ?',
@@ -33,6 +33,7 @@
             if (result.value) {
                 try{
                     const res = axiosInstance.delete(props.api);
+                    emit('isDone');
                     window.showMessage("L'élément a été supprimé avec succès.")
                 }catch(e){
                     console.error(e.toString())
@@ -40,4 +41,5 @@
             }
         });
     }
+    
 </script>

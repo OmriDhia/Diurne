@@ -123,9 +123,8 @@
                     if (customerName) {
                         url += `&filter[customerName]=${customerName}`;
                     }
-                    if (this.isPrescripteur) {
-                        url += `&filter[hasOnlyOneContact]=true`;
-                    }
+                    
+                    url += `&filter[hasOnlyOneContact]=true`;
 
                     const res = await axiosInstance.get(url);
                     this.customers = res.data.response.customers;

@@ -9,12 +9,12 @@
                 <li class="list-group-item list-group-item-action border-0 border-bottom-1" v-for="(data,index) in attachmentData" :key="index">
                     <div class="checkbox-primary custom-control">
                         <div class="row justify-content-between align-items-center">
-                            <div class="col-md-8">  {{data.attachment.file}} </div>
+                            <div class="col-md-8">  {{ data.attachment.fromDistantServer ? data.attachment.path : data.attachment.file }} </div>
                             <div class="col-md-4 d-flex justify-content-end">
-                                <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDownload(data.attachment)">
+                                <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDownload(data.attachment)" v-if="!data.attachment.fromDistantServer">
                                     <vue-feather type="download" :size="14"></vue-feather>
                                 </button>
-                                <d-delete :api="''"></d-delete> 
+                                <d-delete :api="`/api/attachment/${data.attachment?.id}`" @isDone="getAttachments"></d-delete> 
                             </div>
                         </div>
                     </div>
@@ -96,4 +96,5 @@
     onMounted(async () => {
         await getAttachments();
     });
+    
 </script>
