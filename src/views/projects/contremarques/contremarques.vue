@@ -261,8 +261,8 @@ const getFilterParams = () => {
 };
 const overWeek = (date) => {
     const now = moment();
-    const startOfWeek = now.clone().startOf('Week');
-    const endOfWeek = now.clone().endOf('Week');
+    const startOfWeek = now.clone();
+    const endOfWeek = now.clone().add(7, 'days');
     const inputDate = moment(date);
     
     return inputDate.isBetween(startOfWeek, endOfWeek);
