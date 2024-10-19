@@ -86,6 +86,11 @@
                     </div>
                 </div>
                 <div class="row p-2 mt-3">
+                    <div class="col-md-8">
+                        Veuillez trouver ci-joint les images de la DI n° {{ selectedData.demande_number }}, pour le projet {{ contremarque.designation }} du client {{ customer.customerName }} <span v-if="contremarque.prescriber">, prescrit par {{ contremarque.prescriber.customerName }}</span>.
+                    </div>
+                </div>
+                <div class="row p-2">
                     <div class="table-checkable table-highlight-head table-responsive w-75">
                         <table role="table" aria-busy="false" aria-colcount="5" class="table b-table table-striped">
                             <thead>

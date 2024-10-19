@@ -7,6 +7,11 @@ export const FILTER_CONTACT_STORAGE_NAME = "filterContact";
 export const FILTER_EVENT_STORAGE_NAME = "filterEvent";
 export const FILTER_CONTREMARQUE_STORAGE_NAME = "filterContremarque";
 export const FILTER_SUIVI_DI_STORAGE_NAME = "filterSuiviDi";
+export const DESIGNER_MANAGER_ROLE_NAME = "Designer manager";
+export const DESIGNER_ROLE_NAME = "Designer";
+export const COMMERCIAL_ROLE_NAME = "Commercial";
+export const COMMERCIAL_MANAGER_ROLE_NAME = "Commercial manager";
+export const SUPER_ADMIN_ROLE_NAME = "Super admin";
 
 export const menuHomeColor = {
     contact: '#E3599E',

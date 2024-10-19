@@ -158,6 +158,7 @@ const route = useRoute();
 const router = useRouter();
 const id_di = route.params.id_di;
 const carpetDesignOrderId = route.params.carpetDesignOrderId ?? null ;
+
 const carpetStatusId = ref(null);
 const collectionId = ref(null);
 const datas = ref([]);

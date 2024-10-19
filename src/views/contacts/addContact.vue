@@ -56,6 +56,7 @@
                         <template v-slot:panel-body>
                             <div class="row pe-2 ps-0">
                                 <d-contremarque-histories :customerId="currentCustomer.customer_id"></d-contremarque-histories>
+                                <d-contremarque-prescriptor-histories :customerId="currentCustomer.customer_id"></d-contremarque-prescriptor-histories>
                             </div>
                         </template>
                     </d-panel>
@@ -88,17 +89,18 @@
     import {ref, onMounted} from 'vue';
     import {useMeta} from '/src/composables/use-meta';
     import axiosInstance from "../../config/http";
-    import dBasePage from "../../components/base/d-base-page.vue"
-    import dPageTitle from "../../components/common/d-page-title.vue"
+    import dBasePage from "../../components/base/d-base-page.vue";
+    import dPageTitle from "../../components/common/d-page-title.vue";
     import dPanelTitle from "../../components/common/d-panel-title.vue";
     import dPanel from "../../components/common/d-panel.vue";
-    import dCustomer from "../../components/contacts/d-customer.vue"
-    import dContactTop from "../../components/contacts/d-contact-top.vue"
-    import dAddress from "../../components/contacts/d-address.vue"
-    import dAgent from "../../components/contacts/d-agent.vue"
-    import dCommercial from "../../components/contacts/d-commercial.vue"
-    import dEventHistories from "../../components/contacts/_partial/d-event-histories.vue"
-    import dContremarqueHistories from "../../components/contacts/_partial/d-contremarque-histories.vue"
+    import dCustomer from "../../components/contacts/d-customer.vue";
+    import dContactTop from "../../components/contacts/d-contact-top.vue";
+    import dAddress from "../../components/contacts/d-address.vue";
+    import dAgent from "../../components/contacts/d-agent.vue";
+    import dCommercial from "../../components/contacts/d-commercial.vue";
+    import dEventHistories from "../../components/contacts/_partial/d-event-histories.vue";
+    import dContremarqueHistories from "../../components/contacts/_partial/d-contremarque-histories.vue";
+    import dContremarquePrescriptorHistories from "../../components/contacts/_partial/d-contremarque-prescriptor-histories.vue";
     import { useRoute } from 'vue-router';
 
     useMeta({ title: 'Contacts' });

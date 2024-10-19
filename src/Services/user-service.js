@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_URL } from '../config/config';
-import { TOKEN_STORAGE_NAME, USER_INFO_STORAGE_NAME } from '../composables/constants';
+import { TOKEN_STORAGE_NAME, USER_INFO_STORAGE_NAME, COMMERCIAL_MANAGER_ROLE_NAME, DESIGNER_MANAGER_ROLE_NAME, COMMERCIAL_ROLE_NAME, DESIGNER_ROLE_NAME, SUPER_ADMIN_ROLE_NAME } from '../composables/constants';
 import store from '../store';
 import {jwtDecode} from 'jwt-decode';
 import axiosInstance from '../config/http';
@@ -23,7 +23,14 @@ export default {
     async doLogin(credentials) {
         try {
             const  res = await axios.post(LOGIN_URL, credentials);
-            return res.data.response;
+            const userData = res.data.response;
+            localStorage.setItem(TOKEN_STORAGE_NAME,userData.token);
+            store.commit('setIsAuthenticate',true);
+
+            const info = await this.getUserInfoApi(userData.user_id);
+            this.setUserInfo(info);
+            
+            return userData;
           } catch (error) {
             throw new Error('Échec de la connexion. Veuillez vérifier vos identifiants.');
             //throw new Error(error.response.data.detail);
@@ -37,7 +44,7 @@ export default {
     },
     async getUserInfoApi(userId){
         try {
-            const  res = await axiosInstance.get(`/api/user/${userId}`)
+            const  res = await axiosInstance.get(`/api/user/${userId}`);
             return res.data.response
           } catch (error) {
             throw new Error('Échec de récupération des infos utilisateur');
@@ -82,7 +89,6 @@ export default {
     getUserMenu(){
         const info = this.getUserInfo();
         const menu = (info && info.menus) ? info.menus : [];
-        console.log(menu);
         return menu.map(m => {
             switch (m.name) {
                 case 'Contacts':
@@ -98,10 +104,17 @@ export default {
                     m.icon = '';
                     break;
                 default:
-                    m.icon = null
+                    m.icon = null;
                     break;
             }
             return m;
         });
+    },
+    affectUserRoles(userInfo){
+        store.commit('setIsDesigner',userInfo.profile === DESIGNER_ROLE_NAME);
+        store.commit('setIsDesignerManager',userInfo.profile === DESIGNER_MANAGER_ROLE_NAME);
+        store.commit('setIsCommertial',userInfo.profile === COMMERCIAL_ROLE_NAME);
+        store.commit('setIsCommercialManager',userInfo.profile === COMMERCIAL_MANAGER_ROLE_NAME);
+        store.commit('setIsSuperAdmin',userInfo.profile === SUPER_ADMIN_ROLE_NAME);
     }
 };

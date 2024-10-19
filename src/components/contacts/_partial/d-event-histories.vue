@@ -40,19 +40,16 @@
                 
                     <textarea id="textarea" v-model="comment" class="form-control h-200-forced"></textarea>
                 <div class="position-absolute d-flex bottom-0">
-                    <!--div class="col-auto p-1">
-                        <d-delete :api="''"></d-delete>
-                    </div-->
                     <div class="col-auto p-1 pe-4">
                         <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" data-bs-toggle="modal" data-bs-target="#modalEventManage">
                             <vue-feather type="search" size="14"></vue-feather>
                         </button>
+                        <d-modal-manage-event :eventData="selectedEvent" :customerId="props.customerId"></d-modal-manage-event>
                     </div>
                 </div>
             </perfect-scrollbar>
             </div>
         </div>
-        <d-modal-manage-event :eventData="selectedEvent" :customerId="props.customerId"></d-modal-manage-event>
     </div>
 </template>
 
@@ -84,13 +81,13 @@
               }
               const res = await axiosInstance.get(url);
               datas.value = res.data.response.customerEventsData;
-              await handleComment(0);
+              handleComment(0);
           }
       }catch{
           console.log("Erreur get events customer")
       }
     };
-    const handleComment = async (index) => {
+    const handleComment = (index) => {
         selected.value = index;
         comment.value = datas.value[index].commentaire;
         selectedEvent.value = datas.value[index];

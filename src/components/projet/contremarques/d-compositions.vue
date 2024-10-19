@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-start p-2 bg-white" id="fullscreen">
-        <div class="col-12 mb-2 mt-3 p-0">
+        <div class="col-12 mb-2 mt-3 p-0" v-if="canManageComposition">
             <d-composition-thread v-if="carpetCompositionId" :threadCount="dynamicColumns.length" :layerCount="rows.length" :carpetCompositionId="carpetCompositionId" :carpetSpecificationId="props.carpetSpecificationId" @addThread="addColumn($event)"></d-composition-thread>
             <d-composition-thread-new v-else :carpetSpecificationId="props.carpetSpecificationId" @newCarpetComposition="newCarpetComposition" @addThreads="addThreads"></d-composition-thread-new>
         </div>
@@ -32,7 +32,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-12" v-if="dynamicColumns.length">
+        <div class="col-12" v-if="dynamicColumns.length && canManageComposition">
             <div class="row justify-content-end">
                 <div class="col-auto">
                     <button class="btn ms-0 btn-outline-custom" @click.prevent="addRow">
@@ -47,6 +47,7 @@
 
 <script setup>
     import { ref, watch, onMounted } from 'vue';
+    import { useStore } from "vuex";
     import VueFeather from 'vue-feather';
     import dCompositionThread from "./_Partials/d-composition-thread.vue";
     import dCompositionThreadNew from "./_Partials/d-composition-thread-new.vue";
@@ -64,10 +65,12 @@
             type: Array,
         },
     });
-    
+
+    const store = useStore();
     const rows = ref([]);
     const dynamicColumns = ref([]);
     const carpetCompositionId = ref(null);
+    const canManageComposition = store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isSuperAdmin;
     
     const addColumn = async ($event) => {
         const newColumnIndex = dynamicColumns.value.length + 1;

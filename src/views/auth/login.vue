@@ -80,12 +80,6 @@ const login = async  () => {
           password: password.value
         });
 
-        localStorage.setItem(TOKEN_STORAGE_NAME,userData.token);
-        store.commit('setIsAuthenticate',true);
-
-        const info = await userService.getUserInfoApi(userData.user_id);
-        userService.setUserInfo(info);
-
         window.location.href = '/home';
       } catch (error) {
         loginLoad.value = false;

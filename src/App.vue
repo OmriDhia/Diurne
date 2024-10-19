@@ -16,6 +16,7 @@ useMeta({ title: "Diurne" });
 import appLayout from "./layouts/app-layout.vue";
 import authLayout from "./layouts/auth-layout.vue";
 import homeLayout from "./layouts/home-layout.vue";
+import userService from "./Services/user-service";
 import store from "./store";
 
 export default {
@@ -33,6 +34,10 @@ export default {
                 store.commit('setLayout', layout)
             }
         }
+    },
+    mounted(){
+        const userData = userService.getUserInfo();
+        userService.affectUserRoles(userData);
     }
 }
 </script>

@@ -1,5 +1,10 @@
 <template>
     <div class="row align-items-center p-0 pt-2">
+        <div class="row align-items-center mb-3" v-if="canShowFin">
+            <div class="col-md-12">
+                <button class="btn btn-custom text-center w-100">FIN</button>  
+            </div>
+        </div>
         <div class="row align-items-start">
             <h6 class="w-100 p-0">Suivi de production de l'image</h6>
         </div>
@@ -29,7 +34,7 @@
                 </perfect-scrollbar>
             </div>
         <d-modal-add-designer :carpetDesignOrderId="carpetOrderId" @addDesigner="addDesigner($event)"></d-modal-add-designer>
-        <div class="row ps-0 mt-2">
+        <div class="row ps-0 mt-2" v-if="canAddDesigner">
             <div class="col-auto">
                 <button class="btn ms-0 btn-outline-custom" data-bs-toggle="modal" data-bs-target="#modalAddDesigner">
                     Ajouter
@@ -47,7 +52,7 @@
     import dDesignerDropdown from "../../common/d-designer-dropdown.vue";
     import dDesignerStatus from "./_Partials/d-designer-status.vue";
     import { designerStatusConst } from "../../../composables/constants";
-    import userService from "../../../Services/user-service"
+    import userService from "../../../Services/user-service";
 
     export default {
         components: {
@@ -69,7 +74,9 @@
                 designers: [],
                 selectedLocation: null,
                 carpetOrderId: this.carpetDesignOrderId,
-                error: {}
+                error: {},
+                canAddDesigner: this.$store.getters.isDesignerManager || this.$store.getters.isSuperAdmin,
+                canShowFin: this.$store.getters.isDesigner || this.$store.getters.isDesignerManager || this.$store.getters.isSuperAdmin,
             };
         },
         methods: {
@@ -127,7 +134,10 @@
                 const userId = parseInt(user.id);
                 if(userId){
                     const designer = this.designers.find(d => d.designer === userId);
+                    const indexDesigner = this.designers.findIndex(d => d.designer === userId);
                     if(designer && !designer.done){
+                        this.designers[indexDesigner].inProgress =  status === 'inProgress';
+                        this.designers[indexDesigner].stopped =  status === 'stopped';
                         const data = {
                             dateFrom: designer.date_from,
                             dateTo: designer.date_to,
