@@ -57,16 +57,24 @@
     const calculateInchesFeet = () => {
         measurements.value.forEach(async (m, index) => {
             const cmUnit = m.unit.find(u => u.abbreviation === 'cm');
-            if(cmUnit){
+            const feetUnit = m.unit.find(u => u.abbreviation === 'feet');
+            if(cmUnit || feetUnit){
                 try {
-                    const result = await contremarqueService.calculateMesurements({cm: parseFloat(cmUnit.value)})
+                    if(cmUnit.value){
+                        const result = await contremarqueService.calculateMesurements({cm: parseFloat(cmUnit.value)}); 
+                    }else if(feetUnit.value){
+                        const result = await contremarqueService.calculateMesurements({cm: parseFloat(feetUnit.value)});
+                    }else{
+                        window.showMessage('La valeur en cm ou feet est null', 'error');
+                        return ;
+                    }
+                    
                     m.unit.map(ut => {
                         ut.value = result[ut.abbreviation];
                         return ut;
                     })
                 } catch (error) {
                     console.error(`Error creating thread ${index + 1}:`, error);
-                    ths.push(null);
                 } 
             }
             

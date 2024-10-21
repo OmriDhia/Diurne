@@ -101,10 +101,16 @@
                                    <textarea v-model="dataSpecification.description" class="w-100 h-130-forced block-custom-border"></textarea>
                                </div>
                            </div>
+                           <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
+                               <d-transmis-studio></d-transmis-studio>
+                           </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetSpecificationId">
                                <div class="col-12">
                                    <d-compositions :compositionData="compositionData" :carpetSpecificationId="carpetSpecificationId" v-if="carpetDesignOrderId"></d-compositions>
                                </div>
+                           </div>
+                           <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
+                               <d-transmis-adv></d-transmis-adv>
                            </div>
                        </div>
                    </div>
@@ -149,6 +155,8 @@ import dLocationDropdown from "../../../components/projet/contremarques/dropdown
 import dCompositions from "../../../components/projet/contremarques/d-compositions.vue";
 import dDesignerCompositionList from "../../../components/projet/contremarques/d-designer-composition-list.vue";
 import dAttachments from "../../../components/projet/contremarques/_Partials/d-attachments.vue";
+import dTransmisStudio from "../../../components/projet/contremarques/d-transmis-studio.vue";
+import dTransmisAdv from "../../../components/projet/contremarques/d-transmis-adv.vue";
 
 useMeta({ title: 'Maquette' });
 

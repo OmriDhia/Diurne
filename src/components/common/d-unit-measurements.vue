@@ -54,12 +54,13 @@
             },
             async getUnitOfMesurements() {
                 try {
-                    const res = await axiosInstance.get('/api/unitOfMeasurements');
+                    const url = '/api/unitOfMeasurements?feetInchCombinated=1';
+                    const res = await axiosInstance.get(url);
+                    
                     this.unitOfMesurements = res.data.response.units;
                     if(this.modelValue){
                         this.unit = this.modelValue;
                     }
-                    console.log("unit:",this.modelValue)
                 } catch (error) {
                     console.error('Failed to fetch address types:', error);
                 }
