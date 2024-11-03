@@ -74,18 +74,18 @@
                            </div>
                            <div class="row ps-2 mt-4 mb-2"  v-if="carpetDesignOrderId">
                                <div class="col-xl-4 col-md-12">
-                                    <d-materials-list :firstLoad="firstLoad" @changeMaterials="saveCarpetOrderSpecifications" :materialsProps="currentMaterials"></d-materials-list>
+                                    <d-materials-list  :disabled="disableForDesigner" :firstLoad="firstLoad" @changeMaterials="saveCarpetOrderSpecifications" :materialsProps="currentMaterials"></d-materials-list>
                                </div>
                                <div class="col-xl-8 col-md-12">
                                    <div class="row">
                                        <div class="col-xl-6 col-md-12">
-                                            <d-collections-dropdown v-model="dataSpecification.collectionId" :error="errorCarpetOrdeSpecification.collectionId"></d-collections-dropdown>
+                                            <d-collections-dropdown :disabled="disableForDesigner" v-model="dataSpecification.collectionId" :error="errorCarpetOrdeSpecification.collectionId"></d-collections-dropdown>
                                        </div>
                                        <div class="col-xl-6 col-md-12">
-                                           <d-model-dropdown v-model="dataSpecification.modelId" :error="errorCarpetOrdeSpecification.modelId"></d-model-dropdown>
+                                           <d-model-dropdown :disabled="disableForDesigner" v-model="dataSpecification.modelId" :error="errorCarpetOrdeSpecification.modelId"></d-model-dropdown>
                                        </div>
                                        <div class="col-xl-6 col-md-12">
-                                           <d-qualities-dropdown v-model="dataSpecification.qualityId" :error="errorCarpetOrdeSpecification.qualityId"></d-qualities-dropdown>
+                                           <d-qualities-dropdown :disabled="disableForDesigner" v-model="dataSpecification.qualityId" :error="errorCarpetOrdeSpecification.qualityId"></d-qualities-dropdown>
                                        </div>
                                    </div>
                                </div>
@@ -102,20 +102,20 @@
                                </div>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
-                               <d-transmis-studio></d-transmis-studio>
+                               <d-transmis-studio @transmisStudio="updateCarpetDesignStatus($event)"></d-transmis-studio>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetSpecificationId">
                                <div class="col-12">
-                                   <d-compositions :compositionData="compositionData" :carpetSpecificationId="carpetSpecificationId" v-if="carpetDesignOrderId"></d-compositions>
+                                   <d-compositions  :disabled="disableForCommercial" :compositionData="compositionData" :carpetSpecificationId="carpetSpecificationId" v-if="carpetDesignOrderId"></d-compositions>
                                </div>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
-                               <d-transmis-adv></d-transmis-adv>
+                               <d-transmis-adv @transmisAdv="updateCarpetDesignStatus($event)"></d-transmis-adv>
                            </div>
                        </div>
                    </div>
                     <div class="col-md-12 col-xl-3 ps-1" v-if="carpetDesignOrderId">
-                        <d-designer-list :carpetDesignOrderId="carpetDesignOrderId" :designersProps="currentCarpetObject.designers"></d-designer-list>
+                        <d-designer-list  @endCarpetDesignOrder="updateCarpetDesignStatus($event)" :carpetDesignOrderId="carpetDesignOrderId" :designersProps="currentCarpetObject.designers"></d-designer-list>
                         <d-images-list :carpetDesignOrderId="carpetDesignOrderId"></d-images-list>
                         <d-designer-composition-list :designerComposition="designerComposition" :carpetSpecificationId="carpetSpecificationId" v-if="carpetSpecificationId"></d-designer-composition-list>
                     </div>
@@ -138,7 +138,7 @@ import axiosInstance from '../../../config/http';
 import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { ref, onMounted, watch } from 'vue';
-import { filterContremarque } from '../../../composables/constants';
+import {carpetStatus, filterContremarque} from '../../../composables/constants';
 import contremarqueService from "../../../Services/contremarque-service";
 import dCarpetStatusDropdown from "../../../components/common/d-carpet-status-dropdown.vue"
 import dMeasurementsDi from "../../../components/projet/contremarques/d-mesurement-di.vue"
@@ -208,6 +208,13 @@ const designerComposition = ref([]);
 const carpetSpecificationId = ref(0);
 const firstLoad = ref(true);
 
+const disableForCommercial = computed(() => {
+    return store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isFinStatus;
+});
+const disableForDesigner = computed(() => {
+    return store.getters.isCommertial || store.getters.isCommercialManager || store.getters.isFinStatus;
+});
+
 const getProjectDI = async () => {
     try{
         projectDi.value = await contremarqueService.getProjectDiById(id_di);
@@ -234,6 +241,8 @@ const getOrderCarpet = async (id) => {
             currentCarpetObject.value = res.data.response;
             dataCarpetOrder.value.location_id =  (currentCarpetObject.value.location && currentCarpetObject.value.location.location_id) ? currentCarpetObject.value.location.location_id : 0;
             dataCarpetOrder.value.status_id =  (currentCarpetObject.value.status && currentCarpetObject.value.status.id) ? currentCarpetObject.value.status.id : 0;
+            store.commit('setCarpetDesignOrderStatus', dataCarpetOrder.value.status_id);
+            store.commit('setIsFinStatus', dataCarpetOrder.value.status_id === carpetStatus.finiId);
             const dSP = currentCarpetObject.value.carpetSpecification;
             if(dSP){
                 carpetSpecificationId.value = dSP.id;
@@ -287,7 +296,15 @@ const saveCarpetOrder = async () => {
         }
         window.showMessage(e.message,'error')
     }
+};
+
+const updateCarpetDesignStatus = async (statusId) => {
+    dataCarpetOrder.value.status_id = statusId;
+    store.commit('setCarpetDesignOrderStatus', statusId);
+    store.commit('setIsFinStatus', statusId === carpetStatus.finiId);
+    await saveCarpetOrder();
 }
+
 const saveCarpetOrderSpecifications = async () => {
     try{
         const measurements = store.getters.measurements;

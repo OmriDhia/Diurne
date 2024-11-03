@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div class="col-auto" v-if="canShowTransmisStudio">
-                <button class="btn btn-custom ps-4 pe-4 text-uppercase font-size-0-7">Transmettre la demande au studio</button>
+                <button class="btn btn-custom ps-4 pe-4 text-uppercase font-size-0-7" @click="transmisStudio">Transmettre la demande au studio</button>
             </div>
         </div>
         <div class="row justify-content-between align-items-center mt-3">
@@ -55,6 +55,7 @@
     import { useStore } from "vuex";
     import VueFeather from 'vue-feather';
     import dInput from "../../base/d-input.vue";
+    import {carpetStatus} from "../../../composables/constants";
 
     const props = defineProps({
         carpetSpecificationId: {
@@ -66,7 +67,10 @@
     });
 
     const store = useStore();
+    const emit = defineEmits(['transmisStudio']);
     const canShowTransmisStudio = store.getters.isCommertial || store.getters.isSuperAdmin;
     const canCreateVariation = store.getters.isDesigner || store.getters.isSuperAdmin;
-
+    const transmisStudio = () => {
+        emit('transmisStudio',carpetStatus.transmisId);
+    }
 </script>

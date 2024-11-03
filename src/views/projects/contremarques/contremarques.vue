@@ -129,6 +129,9 @@
                             <template #lastEvent="data">
                                 <div class="d-flex justify-content-between">
                                     {{ (data.value.last_event) ? data.value.last_event.subject : '' }}
+                                    <!--button type="button" class="btn btn-icon p-0"  data-bs-toggle="modal" data-bs-target="#ModalUpdateEventContact" @click="selectCustomer(data.value.customer_id)">
+                                        <vue-feather type="file-text"></vue-feather>
+                                    </button-->
                                 </div>
                             </template>
                             <template #lastEventDate="data">
@@ -145,8 +148,8 @@
                     </div>
                 </div>
             </div>
+            <d-modal-event :customerId="selectedCustomerId" :contramarqueId="selectedContremarqueId"></d-modal-event>
         </div>
-       
     </div>
 </template>
 
@@ -162,6 +165,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { filterContremarque, FILTER_CONTREMARQUE_STORAGE_NAME } from '../../../composables/constants';
 import moment from "moment";
 import { Helper } from "../../../composables/global-methods";
+import dModalEvent from "../../../components/projet/contremarques/_Partials/d-modal-event.vue";
 
 import { useMeta } from '/src/composables/use-meta';
 useMeta({ title: 'Contremarque' });
@@ -180,6 +184,8 @@ const params = reactive({
 const filter = ref(Object.assign({}, filterContremarque));
 const filterActive = ref(false);
 const rows = ref(null);
+const selectedCustomerId = ref(null);
+const selectedContremarqueId = ref(null);
 
 const cols = ref([
     { field: 'contremarque_id', title: '#' },
@@ -278,6 +284,11 @@ const doReset = () => {
     filter.value = Object.assign({}, filterContremarque);
     Helper.setStorage(FILTER_CONTREMARQUE_STORAGE_NAME, filter.value);
     getContremarques();
+};
+
+const selectCustomer = (customerId, contremarqueId) => {
+    selectedCustomerId.value = customerId;
+    selectedContremarqueId.value = contremarqueId;
 };
 
 const goToNewContremarque = () => {

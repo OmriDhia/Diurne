@@ -2,7 +2,7 @@
     <div class="row align-items-center p-0 pt-2">
         <div class="row align-items-center mb-3" v-if="canShowFin">
             <div class="col-md-12">
-                <button class="btn btn-custom text-center w-100">FIN</button>  
+                <button class="btn btn-custom text-center w-100" @click="endCarpetDesigner">FIN</button>  
             </div>
         </div>
         <div class="row align-items-start">
@@ -23,9 +23,9 @@
                                     <div class="col-xl-4 col-md-12 font-size-0-7">
                                         {{$Helper.FormatDate(designer.date_from)}}
                                     </div>
-                                    <div class="col-md-12 mt-1 font-size-0-8">
+                                    <!--div class="col-md-12 mt-1 font-size-0-8">
                                         <d-designer-status :disabled="true" v-model="designer.status" @change="handleChange(index)"></d-designer-status>
-                                    </div>
+                                    </div-->
                                 </div>
                             </div>
                         </div>
@@ -51,7 +51,7 @@
     import VueFeather from 'vue-feather';
     import dDesignerDropdown from "../../common/d-designer-dropdown.vue";
     import dDesignerStatus from "./_Partials/d-designer-status.vue";
-    import { designerStatusConst } from "../../../composables/constants";
+    import { designerStatusConst, carpetStatus } from "../../../composables/constants";
     import userService from "../../../Services/user-service";
 
     export default {
@@ -75,9 +75,15 @@
                 selectedLocation: null,
                 carpetOrderId: this.carpetDesignOrderId,
                 error: {},
-                canAddDesigner: this.$store.getters.isDesignerManager || this.$store.getters.isSuperAdmin,
-                canShowFin: this.$store.getters.isDesigner || this.$store.getters.isDesignerManager || this.$store.getters.isSuperAdmin,
             };
+        },
+        computed: {
+            canShowFin() {
+                return this.$store.getters.isDesigner || this.$store.getters.isDesignerManager || this.$store.getters.isSuperAdmin || !this.$store.getters.isFinStatus;
+            },
+            canAddDesigner(){
+                return this.$store.getters.isDesignerManager || this.$store.getters.isSuperAdmin || !this.$store.getters.isFinStatus;
+            }
         },
         methods: {
             async getLocations() {
@@ -128,6 +134,9 @@
                 }catch{
                     window.showMessage('Erreur mise a jour');
                 }
+            },
+            endCarpetDesigner(){
+                this.$emit('endCarpetDesignOrder', carpetStatus.finiId);
             },
             updateDesignerStatus(status){
                 const user = userService.getUserInfo();

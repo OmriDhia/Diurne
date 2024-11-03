@@ -60,6 +60,7 @@
     import VueFeather from 'vue-feather';
     import dInput from "../../base/d-input.vue";
     import dBtnOutlined from "../../base/d-btn-outlined.vue";
+    import {carpetStatus} from "../../../composables/constants";
 
     const props = defineProps({
         carpetSpecificationId: {
@@ -71,7 +72,10 @@
     });
 
     const store = useStore();
+    const emit = defineEmits(['transmisAdv']);
     const canShowTransmisStudio = store.getters.isCommertial || store.getters.isSuperAdmin;
     const canCreateVariation = store.getters.isDesigner || store.getters.isSuperAdmin;
-
+    const transmisStudio = () => {
+        emit('transmisAdv',carpetStatus.nonTransmisId);
+    }
 </script>

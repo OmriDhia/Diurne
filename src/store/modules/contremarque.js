@@ -15,7 +15,9 @@ export default {
         colors: [],
         imageTypes: [],
         attachmentTypes: [],
-        defaultTypeImageId: 0
+        defaultTypeImageId: 0,
+        isFinStatus: false,
+        carpetDesignOrderStatus: 0,
     },
     mutations: {
         setMeasurements(state, payload) {
@@ -44,6 +46,12 @@ export default {
         },
         setDefaultTypeImageId(state, payload) {
             state.defaultTypeImageId = payload;
+        },
+        setIsFinStatus(state, payload) {
+            state.isFinStatus = payload;
+        },
+        setCarpetDesignOrderStatus(state, payload) {
+            state.carpetDesignOrderStatus = payload;
         },
     },
     actions: {
@@ -146,6 +154,12 @@ export default {
         },
         defaultTypeImageId(state) {
             return state.defaultTypeImageId;
+        },
+        isFinStatus(state) {
+            return state.isFinStatus;
+        },
+        carpetDesignOrderStatus(state) {
+            return state.carpetDesignOrderStatus;
         },
     },
 }

@@ -102,4 +102,15 @@ export const designerStatusConst = [
     {id: 1, label: "Demarrage"},
     {id: 2, label: "Pause"},
     {id: 3, label: "Fin"}
-]
+];
+
+export const carpetStatus = {
+    nonTransmisId: 1,
+    transmisId: 2,
+    attribuId: 3,
+    enCoursId: 4,
+    enPauseId: 5,
+    finiId: 6,
+    annulStudioId: 7,
+    annulCommercialId: 8
+};

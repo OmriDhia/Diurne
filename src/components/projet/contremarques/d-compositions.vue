@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-start p-2 bg-white" id="fullscreen">
-        <div class="col-12 mb-2 mt-3 p-0" v-if="canManageComposition">
+        <div class="col-12 mb-2 mt-3 p-0" v-if="canManageComposition || !props.disabled">
             <d-composition-thread v-if="carpetCompositionId" :threadCount="dynamicColumns.length" :layerCount="rows.length" :carpetCompositionId="carpetCompositionId" :carpetSpecificationId="props.carpetSpecificationId" @addThread="addColumn($event)"></d-composition-thread>
             <d-composition-thread-new v-else :carpetSpecificationId="props.carpetSpecificationId" @newCarpetComposition="newCarpetComposition" @addThreads="addThreads"></d-composition-thread-new>
         </div>
@@ -22,11 +22,11 @@
                     <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
                         <td class="border-start border-end text-center">{{ row.layerNumber }}</td>
                         <template v-for="(detail, detailIndex) in row.layer_details" :key="detailIndex">
-                            <td><d-colors-dropdown :hideLabel="true" v-model="detail.color_id"></d-colors-dropdown></td>
-                            <td><d-materials-dropdown :hideLabel="true" v-model="detail.material_id"> </d-materials-dropdown> </td>
-                            <td class="border-end"> <input class="form-control w-4" type="text" v-model="detail.pourcentage"></td>
+                            <td><d-colors-dropdown :disabled="props.disabled" :hideLabel="true" v-model="detail.color_id"></d-colors-dropdown></td>
+                            <td><d-materials-dropdown :disabled="props.disabled" :hideLabel="true" v-model="detail.material_id"> </d-materials-dropdown> </td>
+                            <td class="border-end"> <input :disabled="props.disabled" class="form-control w-4" type="text" v-model="detail.pourcentage"></td>
                         </template>
-                        <td  class="border-end"><textarea class="form-control w-auto" v-model="row.remarque"></textarea></td>
+                        <td  class="border-end"><textarea :disabled="props.disabled" class="form-control w-auto" v-model="row.remarque"></textarea></td>
                         <!--td width="50"  class="border-end"></td-->
                     </tr>
                 </tbody>
@@ -35,7 +35,7 @@
         <div class="col-12" v-if="dynamicColumns.length && canManageComposition">
             <div class="row justify-content-end">
                 <div class="col-auto">
-                    <button class="btn ms-0 btn-outline-custom" @click.prevent="addRow">
+                    <button :disabled="props.disabled" class="btn ms-0 btn-outline-custom" @click.prevent="addRow">
                         Ajouter
                         <vue-feather :type="'plus'" size="14"></vue-feather>
                     </button>
@@ -64,6 +64,10 @@
         compositionData: {
             type: Array,
         },
+        disabled: {
+            type: Boolean,
+            default: false,
+        }
     });
 
     const store = useStore();
