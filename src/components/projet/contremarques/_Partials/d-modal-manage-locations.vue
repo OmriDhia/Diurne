@@ -83,7 +83,9 @@
         try{
             data.value.price_min = parseFloat(data.value.price_min);
             data.value.price_max = parseFloat(data.value.price_max);
-            data.value.quote_processing_date = data.value.quote_processing_date ? Helper.FormatDate(data.value.quote_processing_date,"YYYY-MM-DD HH:mm:ss") : {};
+            data.value.quote_processing_date = (typeof data.value.quote_processing_date === 'object' && Object.keys(data.value.quote_processing_date).length > 0)
+                ? Helper.FormatDate(data.value.quote_processing_date, "YYYY-MM-DD HH:mm:ss")
+                : {};
             data.value.createdAt = Helper.FormatDate(data.value.createdAt,"YYYY-MM-DD HH:mm:ss");
             data.value.contremarqueId = props.contremarqueId;
             if(data.value.location_id){
