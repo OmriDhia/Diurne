@@ -209,7 +209,7 @@ const carpetSpecificationId = ref(0);
 const firstLoad = ref(true);
 
 const disableForCommercial = computed(() => {
-    return store.getters.isCommertial || store.getters.isCommercialManager || !store.getters.isNonTrasmisStatus;
+    return (store.getters.isCommertial || store.getters.isCommercialManager) && !store.getters.isNonTrasmisStatus;
 });
 const disableForDesigner = computed(() => {
     return store.getters.isDesigner || store.getters.isDesignerManager || !store.getters.isNonTrasmisStatus;
