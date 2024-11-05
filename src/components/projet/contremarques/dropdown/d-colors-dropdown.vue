@@ -15,6 +15,7 @@
                 selected-label=""
                 select-label=""
                 deselect-label=""
+                :disabled="disabled"
                 @update:model-value="handleChange($event)"
             ></multiselect>
             <div v-if="error" class="invalid-feedback">{{ $t("Le champs couleur est obligatoire.") }}</div>
@@ -47,7 +48,11 @@
             hideLabel: {
                 type: Boolean,
                 default: false
-            }
+            },
+            disabled: {
+                type: Boolean,
+                default: false
+            },
         },
         data() {
             return {

@@ -17,6 +17,7 @@
                         selected-label=""
                         select-label=""
                         deselect-label=""
+                        :disabled="disabled"
                         @update:model-value="handleChange($event)"
                     ></multiselect>
                     <div v-if="error" class="invalid-feedback">{{ $t("Le champs collection est abligatoire.") }}
@@ -53,6 +54,10 @@
                 default: ''
             },
             required: {
+                type: Boolean,
+                default: false
+            },
+            disabled: {
                 type: Boolean,
                 default: false
             },

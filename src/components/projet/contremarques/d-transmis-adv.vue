@@ -43,38 +43,37 @@
                 <d-btn-outlined label="Editer la demande de l'image projet" icon="arrow-right" buttonClass="ps-1 font-size-0-8"></d-btn-outlined>
             </div>
             <div class="col-lg-4 col-md-12">
-                <div class="row justify-content-between align-items-start mt-1 pe-2">
+                <div class="row justify-content-between align-items-start mt-1 pe-2" v-if="canShowTransmisAdv">
                     <button class="btn btn-custom w-100 text-uppercase font-size-0-7">Transmettre l'image à l'ADV</button>
                 </div>
                 <div class="row justify-content-between align-items-start mt-1  pe-2" v-if="canCreateVariation">
-                    <button class="btn btn-custom w-100 text-uppercase font-size-0-7">Créer une variation</button>
+                    <button class="btn btn-custom w-100 text-uppercase font-size-0-7"  data-bs-toggle="modal" data-bs-target="#modalCreateVariation">Créer une variation</button>
                 </div>
             </div>
         </div>
+        <d-modal-create-variation :carpetDesignOrderId="props.carpetDesignOrderId"></d-modal-create-variation>
     </div>
 </template>
 
 <script setup>
-    import { ref, watch, onMounted } from 'vue';
+    import { ref, watch, onMounted, computed} from 'vue';
     import { useStore } from "vuex";
     import VueFeather from 'vue-feather';
     import dInput from "../../base/d-input.vue";
     import dBtnOutlined from "../../base/d-btn-outlined.vue";
     import {carpetStatus} from "../../../composables/constants";
+    import dModalCreateVariation from "./_Partials/d-modal-create-variation.vue"
 
     const props = defineProps({
-        carpetSpecificationId: {
+        carpetDesignOrderId: {
             type: Number,
-        },
-        compositionData: {
-            type: Array,
         },
     });
 
     const store = useStore();
     const emit = defineEmits(['transmisAdv']);
-    const canShowTransmisStudio = store.getters.isCommertial || store.getters.isSuperAdmin;
-    const canCreateVariation = store.getters.isDesigner || store.getters.isSuperAdmin;
+    const canShowTransmisAdv = computed(() => (store.getters.isCommertial || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
+    const canCreateVariation = computed(() => (store.getters.isDesigner || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
     const transmisStudio = () => {
         emit('transmisAdv',carpetStatus.nonTransmisId);
     }

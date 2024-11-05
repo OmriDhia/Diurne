@@ -11,13 +11,13 @@
                     <template v-for="(material,index) in materials">
                         <div class="row align-items-center justify-content-between ps-0">
                             <div class="col-6">
-                                <d-materials-dropdown :hideLabel="true" v-model="material.material_id"></d-materials-dropdown>
+                                <d-materials-dropdown :disabled="disabled" :hideLabel="true" v-model="material.material_id"></d-materials-dropdown>
                             </div>
                             <div class="col-3 text-end font-size-0-7">
                                 {{ material.rate }}
                             </div>
                             <div class="col-3">
-                                <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDelete(index)">
+                                <button :disabled="disabled" type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDelete(index)">
                                     <vue-feather type="x" :size="14"></vue-feather>
                                 </button>
                             </div>
@@ -29,7 +29,7 @@
         <d-modal-add-material @addMaterial="addMaterial($event)"></d-modal-add-material>
         <div class="col-12 ps-0 mt-2">
             <div class="col-auto ps-0">
-                <button class="btn ms-0 btn-outline-custom" data-bs-toggle="modal" data-bs-target="#modalAddMaterials">
+                <button :disabled="disabled" class="btn ms-0 btn-outline-custom" data-bs-toggle="modal" data-bs-target="#modalAddMaterials">
                     Ajouter
                     <vue-feather type="plus" size="14"></vue-feather>
                 </button>
@@ -60,7 +60,11 @@
             },
             firstLoad : {
                 type: Boolean
-            }  
+            },
+            disabled: {
+                type: Boolean,
+                default: false
+            },  
         },
         data() {
             return {

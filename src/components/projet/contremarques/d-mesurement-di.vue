@@ -2,7 +2,7 @@
     <div>
         <div class="row align-items-center justify-content-end p-0 pt-2 mt-3">
             <div class="col-auto">
-                <button class="btn btn-custom mb-2 font-size-0-7" @click="calculateInchesFeet">Calculer</button>
+                <button class="btn btn-custom mb-2 font-size-0-7" @click="calculateInchesFeet" :disabled="disabled">Calculer</button>
             </div>
         </div>
         <div class="row align-items-center justify-content-between p-0 pt-2">
@@ -21,7 +21,7 @@
                                                 {{ unit.abbreviation }}
                                             </div>
                                             <div class="col-auto">
-                                                <input class="form-control text-center" v-model="unit.value">
+                                                <input class="form-control text-center" v-model="unit.value" :disabled="disabled">
                                             </div>
                                         </div>
                                     </div>
@@ -48,7 +48,11 @@
         },
         firstLoad : {
             type: Boolean
-        }
+        },
+        disabled: {
+            type: Boolean,
+            default: false
+        },
     });
     const emit = defineEmits(['changeMeasurements']);
     const store = useStore();

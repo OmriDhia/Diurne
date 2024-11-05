@@ -14,6 +14,7 @@
                 selected-label=""
                 select-label=""
                 deselect-label=""
+                :disabled="disabled"
                 :custom-label="customLabel"
                 @update:model-value="handleChange($event)"
                 @open="adjustDropdownPosition('open')"
@@ -52,6 +53,10 @@
             },
             index: {
                 type: Number,
+            },
+            disabled: {
+                type: Boolean,
+                default: false
             },
         },
         data() {

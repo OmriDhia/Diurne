@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-start p-2 bg-white" id="fullscreen">
-        <div class="col-12 mb-2 mt-3 p-0" v-if="canManageComposition || !props.disabled">
+        <div class="col-12 mb-2 mt-3 p-0" v-if="canManageComposition && !props.disabled">
             <d-composition-thread v-if="carpetCompositionId" :threadCount="dynamicColumns.length" :layerCount="rows.length" :carpetCompositionId="carpetCompositionId" :carpetSpecificationId="props.carpetSpecificationId" @addThread="addColumn($event)"></d-composition-thread>
             <d-composition-thread-new v-else :carpetSpecificationId="props.carpetSpecificationId" @newCarpetComposition="newCarpetComposition" @addThreads="addThreads"></d-composition-thread-new>
         </div>

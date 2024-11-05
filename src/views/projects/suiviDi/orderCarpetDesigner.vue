@@ -43,7 +43,7 @@
                                <div class="col-xl-4 col-md-12">
                                    <d-input :disabled="true" v-model="customer.customerName" label="Client"></d-input>
                                    <d-input :disabled="true" v-model="contremarque.designation" label="Contremarque"></d-input>
-                                   <d-location-dropdown :contremarqueId="projectDi.contremarque" v-model="dataCarpetOrder.location_id" :error="errorCarpetOrder.location_id"></d-location-dropdown>
+                                   <d-location-dropdown  :disabled="store.getters.isFinStatus" :contremarqueId="projectDi.contremarque" v-model="dataCarpetOrder.location_id" :error="errorCarpetOrder.location_id"></d-location-dropdown>
                                    <d-input :disabled="true" v-model="transDate" label="Date trasmission"></d-input>
                                    <d-input :disabled="true" v-model="projectDi.demande_number" label="N° de la demande"></d-input>
                                    <d-input :disabled="true" v-model="deadline" label="Deadline"></d-input>
@@ -58,12 +58,12 @@
                                    <d-input></d-input>
                                </div-->
                                <div class="col-md-auto col-sm-6">
-                                   <d-carpet-status-dropdown v-model="dataCarpetOrder.status_id"></d-carpet-status-dropdown>
+                                   <d-carpet-status-dropdown  :disabled="store.getters.isFinStatus" v-model="dataCarpetOrder.status_id"></d-carpet-status-dropdown>
                                </div>
-                               <div class="col-md-auto col-sm-6">
+                               <!--div class="col-md-auto col-sm-6">
                                    <button class="btn btn-custom text-uppercase">Copie id</button>
-                               </div>
-                               <div class="col-md-auto col-sm-6">
+                               </div-->
+                               <div class="col-md-auto col-sm-6" v-if="!disableForDesigner">
                                    <button class="btn btn-custom mb-2 text-uppercase" @click="applyDefaultMaterials">Générer matière par defaut</button>
                                </div>
                            </div>
@@ -91,7 +91,7 @@
                                </div>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
-                               <d-measurements-di :firstLoad="firstLoad" @changeMeasurements="saveCarpetOrderSpecifications" :dimensionsProps="currentDimensions" ></d-measurements-di>
+                               <d-measurements-di  :disabled="disableForDesigner" :firstLoad="firstLoad" @changeMeasurements="saveCarpetOrderSpecifications" :dimensionsProps="currentDimensions" ></d-measurements-di>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
                                <div class="col-12"> 
@@ -110,7 +110,7 @@
                                </div>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
-                               <d-transmis-adv @transmisAdv="updateCarpetDesignStatus($event)"></d-transmis-adv>
+                               <d-transmis-adv :carpetDesignOrderId="carpetDesignOrderId" @transmisAdv="updateCarpetDesignStatus($event)"></d-transmis-adv>
                            </div>
                        </div>
                    </div>
@@ -241,8 +241,7 @@ const getOrderCarpet = async (id) => {
             currentCarpetObject.value = res.data.response;
             dataCarpetOrder.value.location_id =  (currentCarpetObject.value.location && currentCarpetObject.value.location.location_id) ? currentCarpetObject.value.location.location_id : 0;
             dataCarpetOrder.value.status_id =  (currentCarpetObject.value.status && currentCarpetObject.value.status.id) ? currentCarpetObject.value.status.id : 0;
-            store.commit('setCarpetDesignOrderStatus', dataCarpetOrder.value.status_id);
-            store.commit('setIsFinStatus', dataCarpetOrder.value.status_id === carpetStatus.finiId);
+            applyCarpetStatus(dataCarpetOrder.value.status_id);
             const dSP = currentCarpetObject.value.carpetSpecification;
             if(dSP){
                 carpetSpecificationId.value = dSP.id;
@@ -300,10 +299,14 @@ const saveCarpetOrder = async () => {
 
 const updateCarpetDesignStatus = async (statusId) => {
     dataCarpetOrder.value.status_id = statusId;
+    applyCarpetStatus(statusId);
+    await saveCarpetOrder();
+};
+
+const applyCarpetStatus = (statusId) => {
     store.commit('setCarpetDesignOrderStatus', statusId);
     store.commit('setIsFinStatus', statusId === carpetStatus.finiId);
-    await saveCarpetOrder();
-}
+};
 
 const saveCarpetOrderSpecifications = async () => {
     try{

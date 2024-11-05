@@ -79,10 +79,10 @@
         },
         computed: {
             canShowFin() {
-                return this.$store.getters.isDesigner || this.$store.getters.isDesignerManager || this.$store.getters.isSuperAdmin || !this.$store.getters.isFinStatus;
+                return (this.$store.getters.isDesigner || this.$store.getters.isDesignerManager  || this.$store.getters.isSuperAdmin) && !this.$store.getters.isFinStatus;
             },
             canAddDesigner(){
-                return this.$store.getters.isDesignerManager || this.$store.getters.isSuperAdmin || !this.$store.getters.isFinStatus;
+                return (this.$store.getters.isDesignerManager || this.$store.getters.isSuperAdmin ) && !this.$store.getters.isFinStatus;
             }
         },
         methods: {
