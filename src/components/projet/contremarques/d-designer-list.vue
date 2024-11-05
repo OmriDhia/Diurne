@@ -18,7 +18,7 @@
                             <div class="card">
                                 <div class="row align-items-center justify-content-between p-2">
                                     <div class="col-xl-8 col-md-12">
-                                        <d-designer-dropdown class="font-size-0-7" v-model="designer.designer"  :hideLabel="true"  @change="handleChange(index)"></d-designer-dropdown>
+                                        <d-designer-dropdown :disabled="disabled" class="font-size-0-7" v-model="designer.designer"  :hideLabel="true"  @change="handleChange(index)"></d-designer-dropdown>
                                     </div>
                                     <div class="col-xl-4 col-md-12 font-size-0-7">
                                         {{$Helper.FormatDate(designer.date_from)}}
@@ -67,6 +67,10 @@
            },
             carpetDesignOrderId : {
                 type: Number
+            },
+            disabled: {
+                type: Boolean,
+                default: false
             }
         },
         data() {

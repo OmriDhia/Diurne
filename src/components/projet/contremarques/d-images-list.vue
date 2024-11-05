@@ -11,7 +11,7 @@
                         <img :src="$Helper.getImagePath(item.attachment)" class="card-img-top cursor-pointer" @click="downloadImage(item.attachment)" alt="Image Preview">
                         <div class="card-body p-0 mt-2">
                             <div class="meta-info">
-                                <d-image-type-dropdown v-model="item.imageType.id" :hideLabel="true"></d-image-type-dropdown>
+                                <d-image-type-dropdown :disabled="props.disabled" v-model="item.imageType.id" :hideLabel="true"></d-image-type-dropdown>
                                 <h6 class="card-title">{{ item.image_reference}}</h6>
                             </div>
                         </div>
@@ -23,12 +23,12 @@
         <div class="col-md-12">
             <div class="row justify-content-end pe-2">
                 <div class="col-auto p-1">
-                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"  data-bs-toggle="modal" data-bs-target="#modalAddImage">
+                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" :disabled="props.disabled"  data-bs-toggle="modal" data-bs-target="#modalAddImage">
                         <vue-feather type="save" size="14"></vue-feather>
                     </button>
                 </div>
                 <div class="col-auto p-1">
-                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle">
+                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" :disabled="props.disabled">
                         <vue-feather type="x" size="14"></vue-feather>
                     </button>
                 </div>
@@ -48,6 +48,10 @@
     const props = defineProps({
         carpetDesignOrderId : {
             type: Number
+        },
+        disabled : {
+            type: Boolean,
+            default: false
         }
     });
     

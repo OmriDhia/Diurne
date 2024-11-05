@@ -11,13 +11,13 @@
                     <template v-for="(material,index) in materials">
                         <div class="row align-items-center justify-content-between ps-0">
                             <div class="col-6">
-                                <d-materials-dropdown :hideLabel="true" v-model="material.material_id"></d-materials-dropdown>
+                                <d-materials-dropdown :hideLabel="true" v-model="material.material_id"  :disabled="disabled"></d-materials-dropdown>
                             </div>
                             <div class="col-3 text-center">
                                 {{ material.rate }}
                             </div>
                             <div class="col-3">
-                                <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDelete(index)">
+                                <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDelete(index)"  :disabled="disabled">
                                     <vue-feather type="x" :size="14"></vue-feather>
                                 </button>
                             </div>
@@ -29,7 +29,7 @@
         <d-modal-add-designer-composition :carpetSpecificationId="carpetSpecificationId" @addDesignerComposition="addDesignerComposition($event)"></d-modal-add-designer-composition>
         <div class="row ps-0 mt-2">
             <div class="col-auto">
-                <button class="btn ms-0 btn-outline-custom" data-bs-toggle="modal" data-bs-target="#modalAddDesignerComposition">
+                <button class="btn ms-0 btn-outline-custom" data-bs-toggle="modal" data-bs-target="#modalAddDesignerComposition" :disabled="disabled">
                     Ajouter
                     <vue-feather type="plus" size="14"></vue-feather>
                 </button>
@@ -60,6 +60,10 @@
             },
             carpetSpecificationId: {
                 type: Number
+            },
+            disabled: {
+                type: Boolean,
+                default: false
             }
         },
         data() {

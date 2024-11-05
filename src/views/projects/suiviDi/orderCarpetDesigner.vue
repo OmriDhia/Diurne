@@ -115,9 +115,9 @@
                        </div>
                    </div>
                     <div class="col-md-12 col-xl-3 ps-1" v-if="carpetDesignOrderId">
-                        <d-designer-list  @endCarpetDesignOrder="updateCarpetDesignStatus($event)" :carpetDesignOrderId="carpetDesignOrderId" :designersProps="currentCarpetObject.designers"></d-designer-list>
-                        <d-images-list :carpetDesignOrderId="carpetDesignOrderId"></d-images-list>
-                        <d-designer-composition-list :designerComposition="designerComposition" :carpetSpecificationId="carpetSpecificationId" v-if="carpetSpecificationId"></d-designer-composition-list>
+                        <d-designer-list :disabled="disableForCommercial" @endCarpetDesignOrder="updateCarpetDesignStatus($event)" :carpetDesignOrderId="carpetDesignOrderId" :designersProps="currentCarpetObject.designers"></d-designer-list>
+                        <d-images-list :disabled="disableForCommercial" :carpetDesignOrderId="carpetDesignOrderId"></d-images-list>
+                        <d-designer-composition-list :disabled="disableForCommercial" :designerComposition="designerComposition" :carpetSpecificationId="carpetSpecificationId" v-if="carpetSpecificationId"></d-designer-composition-list>
                     </div>
                 </div>
                 </div>
@@ -209,7 +209,7 @@ const carpetSpecificationId = ref(0);
 const firstLoad = ref(true);
 
 const disableForCommercial = computed(() => {
-    return store.getters.isCommertial || store.getters.isCommercialManager || store.getters.isFinStatus;
+    return store.getters.isCommertial || store.getters.isCommercialManager || !store.getters.isNonTrasmisStatus;
 });
 const disableForDesigner = computed(() => {
     return store.getters.isDesigner || store.getters.isDesignerManager || !store.getters.isNonTrasmisStatus;
