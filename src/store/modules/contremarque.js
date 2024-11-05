@@ -17,6 +17,7 @@ export default {
         attachmentTypes: [],
         defaultTypeImageId: 0,
         isFinStatus: false,
+        isNonTrasmisStatus: false,
         carpetDesignOrderStatus: 0,
     },
     mutations: {
@@ -49,6 +50,9 @@ export default {
         },
         setIsFinStatus(state, payload) {
             state.isFinStatus = payload;
+        },
+        setIsNonTrasmisStatus(state, payload) {
+            state.isNonTrasmisStatus = payload;
         },
         setCarpetDesignOrderStatus(state, payload) {
             state.carpetDesignOrderStatus = payload;
@@ -157,6 +161,9 @@ export default {
         },
         isFinStatus(state) {
             return state.isFinStatus;
+        },
+        isNonTrasmisStatus(state) {
+            return state.isNonTrasmisStatus;
         },
         carpetDesignOrderStatus(state) {
             return state.carpetDesignOrderStatus;

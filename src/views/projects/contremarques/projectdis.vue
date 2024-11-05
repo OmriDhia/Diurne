@@ -249,10 +249,19 @@ const selectDiId =  () => {
     selectedDiId.value = selectedData.value.project_di;
 };
 const goTocreateOrder =  () => {
-    location.href = `/projet/dis/model/${selectedData.value.project_di}/create`;
+    if(selectedData.value.project_di){
+        location.href = `/projet/dis/model/${selectedData.value.project_di}/create`;
+    }else{
+        window.showMessage("Auccun demande d'image selectionner", "error")
+    }
+    
 };
 const goToUpdateOrder =  (id) => {
-    location.href = `/projet/dis/model/${selectedData.value.project_di}/update/${id}`;
+    if(selectedData.value.project_di){
+        location.href = `/projet/dis/model/${selectedData.value.project_di}/update/${id}`;
+    }else{
+        window.showMessage("Auccun demande d'image selectionner", "error")
+    }
 };
 onMounted(()=>{
     getProjectDIS();

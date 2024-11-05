@@ -98,10 +98,10 @@
                                    <div class="text-black p-0 pb-2">Description de l'image</div>
                                </div>
                                <div class="col-12">
-                                   <textarea v-model="dataSpecification.description" class="w-100 h-130-forced block-custom-border"></textarea>
+                                   <textarea :disabled="disableForDesigner" v-model="dataSpecification.description" class="w-100 h-130-forced block-custom-border"></textarea>
                                </div>
                            </div>
-                           <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
+                           <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId && store.getters.isNonTrasmisStatus">
                                <d-transmis-studio @transmisStudio="updateCarpetDesignStatus($event)"></d-transmis-studio>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetSpecificationId">
@@ -186,7 +186,7 @@ const currentDimensions = ref({});
 const specification = ref({});
 const dataCarpetOrder = ref({
     location_id: 0,
-    status_id: 0
+    status_id: carpetStatus.nonTransmisId
 });
 const errorCarpetOrder = ref({});
 const errorCarpetOrdeSpecification = ref({});
@@ -212,7 +212,7 @@ const disableForCommercial = computed(() => {
     return store.getters.isCommertial || store.getters.isCommercialManager || store.getters.isFinStatus;
 });
 const disableForDesigner = computed(() => {
-    return store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isFinStatus;
+    return store.getters.isDesigner || store.getters.isDesignerManager || !store.getters.isNonTrasmisStatus;
 });
 
 const getProjectDI = async () => {
@@ -306,6 +306,7 @@ const updateCarpetDesignStatus = async (statusId) => {
 const applyCarpetStatus = (statusId) => {
     store.commit('setCarpetDesignOrderStatus', statusId);
     store.commit('setIsFinStatus', statusId === carpetStatus.finiId);
+    store.commit('setIsNonTrasmisStatus', statusId === carpetStatus.nonTransmisId);
 };
 
 const saveCarpetOrderSpecifications = async () => {
