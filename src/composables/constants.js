@@ -112,5 +112,6 @@ export const carpetStatus = {
     enPauseId: 5,
     finiId: 6,
     annulStudioId: 7,
-    annulCommercialId: 8
+    annulCommercialId: 8,
+    transmisAdvId: 9
 };

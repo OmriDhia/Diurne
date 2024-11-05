@@ -75,6 +75,6 @@
     const canShowTransmisAdv = computed(() => (store.getters.isCommertial || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
     const canCreateVariation = computed(() => (store.getters.isDesigner || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
     const transmisStudio = () => {
-        emit('transmisAdv',carpetStatus.nonTransmisId);
+        emit('transmisAdv',carpetStatus.transmisAdvId);
     }
 </script>
