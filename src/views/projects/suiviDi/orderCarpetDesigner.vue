@@ -91,7 +91,7 @@
                                </div>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
-                               <d-measurements-di  :disabled="disableForDesigner" :firstLoad="firstLoad" @changeMeasurements="saveCarpetOrderSpecifications" :dimensionsProps="currentDimensions" ></d-measurements-di>
+                               <d-measurements-di :disabled="disableForDesigner" :firstLoad="firstLoad" @changeMeasurements="saveCarpetOrderSpecifications" :dimensionsProps="currentDimensions" ></d-measurements-di>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
                                <div class="col-12"> 
@@ -106,7 +106,7 @@
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetSpecificationId">
                                <div class="col-12">
-                                   <d-compositions  :disabled="disableForCommercial" :compositionData="compositionData" :carpetSpecificationId="carpetSpecificationId" v-if="carpetDesignOrderId"></d-compositions>
+                                   <d-compositions :disabled="disableForCommercial" :compositionData="compositionData" :carpetSpecificationId="carpetSpecificationId" v-if="carpetDesignOrderId"></d-compositions>
                                </div>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
@@ -209,10 +209,10 @@ const carpetSpecificationId = ref(0);
 const firstLoad = ref(true);
 
 const disableForCommercial = computed(() => {
-    return store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isFinStatus;
+    return store.getters.isCommertial || store.getters.isCommercialManager || store.getters.isFinStatus;
 });
 const disableForDesigner = computed(() => {
-    return store.getters.isCommertial || store.getters.isCommercialManager || store.getters.isFinStatus;
+    return store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isFinStatus;
 });
 
 const getProjectDI = async () => {

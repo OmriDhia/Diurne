@@ -66,7 +66,7 @@
         carpetTypeId: 0,
         description: "",
         quote_processed: true,
-        quote_processing_date: null,
+        quote_processing_date: {},
         price_min: 0,
         price_max: 0,
         createdAt: new Date(),
@@ -83,7 +83,7 @@
         try{
             data.value.price_min = parseFloat(data.value.price_min);
             data.value.price_max = parseFloat(data.value.price_max);
-            data.value.quote_processing_date = Helper.FormatDate(data.value.quote_processing_date,"YYYY-MM-DD HH:mm:ss");
+            data.value.quote_processing_date = data.value.quote_processing_date ? Helper.FormatDate(data.value.quote_processing_date,"YYYY-MM-DD HH:mm:ss") : {};
             data.value.createdAt = Helper.FormatDate(data.value.createdAt,"YYYY-MM-DD HH:mm:ss");
             data.value.contremarqueId = props.contremarqueId;
             if(data.value.location_id){
@@ -109,7 +109,7 @@
             carpetTypeId: 0,
             description: "",
             quote_processed: true,
-            quote_processing_date: '',
+            quote_processing_date: {},
             price_min: 0,
             price_max: 0,
             createdAt: new Date(),
@@ -123,7 +123,7 @@
                 carpetTypeId: newVal.carpetType_id,
                 description: newVal.description,
                 quote_processed: newVal.quote_processed,
-                quote_processing_date: (newVal.quote_processing_date) ? Helper.FormatDate(newVal.quote_processing_date.date,'YYYY-MM-DD HH:mm:ss') : '',
+                quote_processing_date: (newVal.quote_processing_date) ? Helper.FormatDate(newVal.quote_processing_date.date,'YYYY-MM-DD HH:mm:ss') : {},
                 price_min: newVal.price_min,
                 price_max: newVal.price_max,
                 createdAt: new Date(newVal.created_at.date),
