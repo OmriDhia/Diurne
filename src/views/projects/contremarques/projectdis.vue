@@ -99,6 +99,7 @@
                                 <th>Image</th>
                                 <th>Etat tapis</th>
                                 <th>Collection</th>
+                                <th>Variation</th>
                                 <th>Modèle</th>
                                 <th></th>
                             </tr>
@@ -116,6 +117,9 @@
                                 </td>
                                 <td aria-colindex="4" role="cell" class="">
                                     {{ (item.carpetSpecification && item.carpetSpecification.collection) ? item.carpetSpecification.collection.reference : ''}}
+                                </td>
+                                <td aria-colindex="5" role="cell" class="">
+                                    {{ (item.variation) ? item.variation : ''}}
                                 </td>
                                 <td aria-colindex="5" role="cell" class="">
                                     {{ (item.carpetSpecification && item.carpetSpecification.model) ? item.carpetSpecification.model.code : ''}}

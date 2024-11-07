@@ -58,7 +58,7 @@
                                    <d-input></d-input>
                                </div-->
                                <div class="col-md-auto col-sm-6">
-                                   <d-carpet-status-dropdown  :disabled="store.getters.isFinStatus" v-model="dataCarpetOrder.status_id"></d-carpet-status-dropdown>
+                                   <d-carpet-status-dropdown  :disabled="true" v-model="dataCarpetOrder.status_id"></d-carpet-status-dropdown>
                                </div>
                                <!--div class="col-md-auto col-sm-6">
                                    <button class="btn btn-custom text-uppercase">Copie id</button>
@@ -209,7 +209,7 @@ const carpetSpecificationId = ref(0);
 const firstLoad = ref(true);
 
 const disableForCommercial = computed(() => {
-    return (store.getters.isCommertial || store.getters.isCommercialManager) && !store.getters.isNonTrasmisStatus;
+    return ((store.getters.isCommertial || store.getters.isCommercialManager) && !store.getters.isNonTrasmisStatus) || store.getters.isFinStatus;
 });
 const disableForDesigner = computed(() => {
     return store.getters.isDesigner || store.getters.isDesignerManager || !store.getters.isNonTrasmisStatus;
