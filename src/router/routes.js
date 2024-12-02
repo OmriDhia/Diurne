@@ -178,6 +178,44 @@ export const routes = [
         },
     },
     {
+        path: '/projet/devis',
+        name: 'devis',
+        children: [
+            {
+                path: '',
+                name: 'devisList',
+                component: () => import('../views/projects/devis/devis.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'projects',
+                    permission: "read quote",
+                },
+            },
+            {
+                path: 'manage/:id?',
+                name: 'devisManage',
+                component: () => import('../views/projects/devis/manage.vue'),
+                meta: {
+                    requiresAuth: true,
+                    permission: "create quote",
+                },
+            }/*,
+            {
+                path: 'projectdis/:id',
+                name: 'projectDIS',
+                component: () => import('../views/projects/contremarques/projectdis.vue'),
+                meta: {
+                    requiresAuth: true,
+                    permission: "create contremarque",
+                },
+            },*/
+        ],
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        },
+    },
+    {
         path: '/projet/dis',
         name: 'suiviDI',
         children: [

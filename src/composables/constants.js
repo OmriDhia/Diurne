@@ -6,6 +6,7 @@ export const CONTACT_SELECTION_STORAGE_NAME = "Selected_contact_menu";
 export const FILTER_CONTACT_STORAGE_NAME = "filterContact";
 export const FILTER_EVENT_STORAGE_NAME = "filterEvent";
 export const FILTER_CONTREMARQUE_STORAGE_NAME = "filterContremarque";
+export const FILTER_DEVIS_STORAGE_NAME = "filterDevis";
 export const FILTER_SUIVI_DI_STORAGE_NAME = "filterSuiviDi";
 export const DESIGNER_MANAGER_ROLE_NAME = "Designer manager";
 export const DESIGNER_ROLE_NAME = "Designer";
@@ -86,6 +87,12 @@ export const filterContremarque = {
     projectRelanceX: null,
     projectWithoutRelance: null,
     allProjects: null,
+};
+export const filterDevis = {
+    customer: null,
+    contremarque: null,
+    commercial: null,
+    devis: null,
 };
 
 export const filterSuiviDi = {

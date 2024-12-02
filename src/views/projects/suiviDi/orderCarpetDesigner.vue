@@ -110,7 +110,7 @@
                                </div>
                            </div>
                            <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="carpetDesignOrderId">
-                               <d-transmis-adv :carpetDesignOrderId="carpetDesignOrderId" @transmisAdv="updateCarpetDesignStatus($event)"></d-transmis-adv>
+                               <d-transmis-adv :id_di="id_di" :carpetDesignOrderId="carpetDesignOrderId" @transmisAdv="updateCarpetDesignStatus($event)"></d-transmis-adv>
                            </div>
                        </div>
                    </div>

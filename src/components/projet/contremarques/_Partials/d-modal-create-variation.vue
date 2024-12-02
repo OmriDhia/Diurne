@@ -33,7 +33,10 @@
     const props = defineProps({
         carpetDesignOrderId:{
             type: Number
-        }
+        },
+        id_di:{
+            type: Number
+        },
     });
     
     const data = ref({
@@ -44,12 +47,13 @@
     
     const saveVariation = async () =>{
         try{
-            if(props.carpetDesignOrderId){
+            /*if(props.carpetDesignOrderId){
                 const url = `/api/carpetDesignOrder/${props.carpetDesignOrderId}/createVariation`;
                 const res = await axiosInstance.post(url,data.value);
                 window.showMessage("Ajout avec succées.");
-            }
+            }*/
             document.querySelector("#modalCreateVariation .btn-close").click();
+            location.href = `/projet/contremarques/projectdis/${props.id_di}`;
             initData();
         }catch (e){
             if(e.response.data.violations){

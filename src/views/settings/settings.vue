@@ -62,16 +62,7 @@
                             </p>
                         </div>
                         <div class="tab-pane fade" id="model" role="tabpanel" aria-labelledby="border-home-tab">
-                            <h4 class="mb-4">We move your world!</h4>
-                            <p class="mb-4">
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-                                nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                            </p>
-
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-                                nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                            </p>
+                            <d-model></d-model>
                         </div>
                         <div class="tab-pane fade" id="carrier" role="tabpanel" aria-labelledby="border-profile-tab">
                             <div class="media">
@@ -136,6 +127,7 @@
     import '@/assets/sass/components/tabs-accordian/custom-tabs.scss';
     import dBasePage from "@/components/base/d-base-page.vue";
     import dPageTitle from "@/components/common/d-page-title.vue";
+    import dModel from "@/components/settings/d-model.vue";
     
     useMeta({ title: "Settings" });
 </script>

@@ -51,7 +51,7 @@
                 </div>
             </div>
         </div>
-        <d-modal-create-variation :carpetDesignOrderId="props.carpetDesignOrderId"></d-modal-create-variation>
+        <d-modal-create-variation :id_di="props.id_di" :carpetDesignOrderId="props.carpetDesignOrderId"></d-modal-create-variation>
     </div>
 </template>
 
@@ -67,6 +67,9 @@
     const props = defineProps({
         carpetDesignOrderId: {
             type: Number,
+        },
+        id_di:{
+            type: Number
         },
     });
 
