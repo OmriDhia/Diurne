@@ -199,6 +199,15 @@ export const routes = [
                     requiresAuth: true,
                     permission: "create quote",
                 },
+            },
+            {
+                path: ':qouteId/details/:id?',
+                name: 'devisDetails',
+                component: () => import('../views/projects/devis/devisDetails.vue'),
+                meta: {
+                    requiresAuth: true,
+                    permission: "create quote",
+                },
             }/*,
             {
                 path: 'projectdis/:id',

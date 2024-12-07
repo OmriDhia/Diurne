@@ -1,9 +1,17 @@
 <template>
-    <div class="row">
+    <div class="row align-items-center">
         <div class="col-auto pe-1 ps-2 text-black">
             Unité de mesure<span class="required" v-if="required">*</span>:
         </div>
-        <template v-for="item in unitOfMesurements">
+        
+        <template v-if="selectList">
+            <div class="col pe-0">
+                <select id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="unit" @input="handleChange($event.target.value)">
+                    <option v-for="(prof, key) in unitOfMesurements" :key="key" :value="prof.id">{{ prof.name }}</option>
+                </select>
+            </div>
+        </template>
+        <template v-for="item in unitOfMesurements" v-else>
             <div class="col-auto pe-1 ps-2">
                 <div class="custom-control custom-radio">
                     <input type="radio" class="custom-control-input" :id="computedId+'-'+item.id" v-model="unit"
@@ -38,6 +46,10 @@
                 default: false
             },
             disabled: {
+                type: Boolean,
+                default: false
+            },
+            selectList: {
                 type: Boolean,
                 default: false
             },

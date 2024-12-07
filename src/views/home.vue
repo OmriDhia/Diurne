@@ -45,7 +45,7 @@ export default {
                     title: 'Recherche Devis',
                     image: 'devis.png',
                     color: menuHomeColor.devis,
-                    href: '/devis',
+                    href: '/projet/devis',
                     permission: "read quote",
                 },
                 {

@@ -93,30 +93,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row mt-3 mb-3 pe-0" v-if="quote_id">
-                        <d-quote-details :quoteId="quote_id" :quoteDetails="quoteDetails"></d-quote-details>
+                    <div class="row mt-3 mb-3 pe-0">
+                        <d-quote-details :quoteDetails="quoteDetails"></d-quote-details>
                     </div>
                     <div class="row mt-3 mb-3 pe-0">
                         <div class="col-md-4 col-sm-12">
-                            <d-input label="frais de port" v-model="data.shippingPrice" :error="error.shippingPrice"></d-input>
-                            <d-input label="Poids global (kg)"></d-input>
-                            <d-input type="Date" label="Date commande"></d-input>
-                            <div class="row justify-content-center align-items-center mt-5">
-                                <div class="col-md-6">
-                                    <button class="btn btn-custom font-size-0-7 text-uppercase">Facture proforma</button>
-                                </div>
-                                <div class="col-md-6">
-                                    <button class="btn btn-custom font-size-0-7 text-uppercase">Copie de devis</button>
-                                </div>
-                            </div>
-                            <div class="row justify-content-center align-items-center mt-2">
-                                <div class="col-md-6">
-                                    <button class="btn btn-custom font-size-0-7 text-uppercase">Facture d'acompte</button>
-                                </div>
-                                <div class="col-md-6">
-                                    <button class="btn btn-custom font-size-0-7 text-uppercase">rattacher un règlement</button>
-                                </div>
-                            </div>
+                            
                         </div>
                         <div class="col-md-8 col-sm-12">
                             <div class="card p-0">
@@ -188,10 +170,10 @@
         <template v-slot:footer>
             <div class="row p-2 justify-content-between">
                 <div class="col-auto">
-                    <button class="btn btn-custom pe-5 ps-5" @click="goToDevisList">Retour à la liste</button>
+                    <button class="btn btn-custom pe-5 ps-5" @click="goToDevis">Retour à la page devis</button>
                 </div>
                 <div class="col-auto">
-                    <button class="btn btn-custom pe-5 ps-5" @click="saveDevis">Enregistrer</button>
+                    <button class="btn btn-custom pe-5 ps-5" @click="saveDevisDetails">Enregistrer</button>
                 </div>
             </div>
         </template>
@@ -229,21 +211,15 @@
     import dTransportCondition from "../../../components/common/d-transportCondition.vue";
     import dQuoteDetails from "../../../components/projet/devis/d-quote-details.vue";
     
-    useMeta({ title: 'Gestion Contremarque' });
+    useMeta({ title: 'Gestion Devis' });
 
     const route = useRoute();
     const contremarqueId = ref(0);
-    const quote_id = route.params.id;
-    const selectedCustomer = ref(0);
-    const selectedContact = ref({});
-    const contremarque = ref({});
-    const tarifId = ref(0);
-    const contact = ref({});
+    const quote_id = route.params.qouteId;
+    const detailsQuoteId = route.params.id;
     const quoteNumber = ref("");
     const createdDate = ref(moment().format('YYYY-MM-DD'));
-    const commercial = ref({});
     const quote = ref({});
-    const prescriber = ref(0);
     const quoteDetails = ref([]);
     const error = ref({});
     
@@ -270,30 +246,8 @@
         otherTva: 0,
     });
     const currentCustomer = ref({});
-    
-    watch(selectedCustomer, (customerId) => {
-        getCustomer(customerId)
-    });
-    
-    watch(contremarqueId, (contremarqueId) => {
-        getContremarque(contremarqueId)
-    });
-    
-    const getCustomer = async (customer_id) => {
-        try{
-            if(customer_id){
-                currentCustomer.value =  await contremarqueService.getCustomerById(customer_id);
-                tarifId.value = currentCustomer.value.discountRule;
-                contact.value = currentCustomer.value.contactsData[0];
-                commercial.value = currentCustomer.value.contactCommercialHistoriesData[0];
-            }
-        }catch(e){
-            const msg = "Un client d'id " + customer_id + " n'existe pas";
-            window.showMessage(msg,'error');
-        }
-    };
 
-    const saveDevis = async () => {
+    const saveDevisDetails = async () => {
         try{
             error.value = {};
             if(contremarque){
@@ -341,19 +295,6 @@
         }
     };
 
-    const getContremarque = async (contremarque_id) => {
-        try{
-            if(contremarque_id){
-                contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
-                selectedCustomer.value = contremarque.value.customer.customer_id;
-                prescriber.value = contremarque.value.prescriber.customer_id;
-            }
-        }catch(e){
-            console.log(e);
-            const msg = "Une contremarque d'id " + contremarque_id + " n'existe pas";
-            window.showMessage(msg,'error');
-        }
-    };
     const getQuote = async (quote_id) => {
         try{
             if(quote_id){
@@ -362,28 +303,6 @@
                 quoteNumber.value = quote.value.reference;
                 quoteDetails.value = quote.value.quoteDetails;
                 createdDate.value = moment(quote.value.createdAt).format('YYYY-MM-DD');
-                data.value = {
-                    discountRuleId: 0,
-                    taxRuleId: quote.value?.taxRule.id,
-                    currencyId: quote.value?.currency.id,
-                    languageId: quote.value?.language.id,
-                    unitOfMeasurementId: quote.value?.unitOfMeasurement,
-                    deliveryAddressId: quote.value?.deliveryAddress,
-                    invoiceAddressId: quote.value?.invoiceAddress,
-                    withoutDiscountPrice: quote.value?.withoutDiscountPrice,
-                    additionalDiscount: quote.value?.additionalDiscount,
-                    totalDiscountAmount: quote.value?.totalDiscountAmount,
-                    totalDiscountPercentage: quote.value?.totalDiscountPercentage,
-                    totalTaxExcluded: quote.value?.totalTaxExcluded,
-                    shippingPrice: quote.value?.shippingPrice,
-                    tax: quote.value?.tax,
-                    totalTaxIncluded: quote.value?.totalTaxIncluded,
-                    quoteSentToCustomer: quote.value?.quoteSentToCustomer,
-                    qualificationMessage: quote.value?.qualificationMessage,
-                    cumulatedDiscountAmount: quote.value?.cumulatedDiscountAmount,
-                    otherTva: quote.value?.otherTva,
-                    conversionId: quote.value?.conversion.id
-                };
             }
         }catch(e){
             console.log(e);
@@ -397,8 +316,8 @@
        }
     });
 
-    const goToDevisList = () => {
-        location.href = '/projet/devis'
+    const goToDevis = () => {
+        location.href = `/projet/devis/manage/${quote_id}`;
     };
 </script>
 <style scoped>

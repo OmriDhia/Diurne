@@ -2,10 +2,10 @@
     <div class="row">
         <div class="col-md-12">
             <div class="row align-items-center pt-2">
-                <div class="col-md-4"><label class="form-label">Collection<span class="required"
+                <div class="col-md-4" v-if="!showOnlyDropdown"><label class="form-label">Collection<span class="required"
                                                                                 v-if="required">*</span>:</label>
                 </div>
-                <div class="col-md-8">
+                <div :class="{'col-md-8':!showOnlyDropdown,'col-md-12':showOnlyDropdown}">
                     <multiselect
                         :class="{ 'is-invalid': error}"
                         :model-value="value"
@@ -24,7 +24,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row align-items-center justify-content-end">
+            <div class="row align-items-center justify-content-end" v-if="!showOnlyDropdown">
                 <div class="col-md-8">
                     <button class="btn btn-custom pe-2 ps-2 font-size-0-7 w-100" @click="goToSettings">Céer une
                         collection
@@ -58,6 +58,10 @@
                 default: false
             },
             disabled: {
+                type: Boolean,
+                default: false
+            },
+            showOnlyDropdown: {
                 type: Boolean,
                 default: false
             },
