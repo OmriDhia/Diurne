@@ -7,7 +7,7 @@
         <template v-if="selectList">
             <div class="col pe-0">
                 <select id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="unit" @input="handleChange($event.target.value)">
-                    <option v-for="(prof, key) in unitOfMesurements" :key="key" :value="prof.id">{{ prof.name }}</option>
+                    <option v-for="(mes, key) in unitOfMesurementsSelect" :key="key" :value="mes">{{ mes }}</option>
                 </select>
             </div>
         </template>
@@ -57,7 +57,10 @@
         data() {
             return {
                 unitOfMesurements: null,
-                unit: null
+                unit: null,
+                unitOfMesurementsSelect : [
+                    "Mètres", "feet/inches"
+                ]
             };
         },
         methods: {

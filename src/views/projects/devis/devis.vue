@@ -12,7 +12,7 @@
                 <div class="row d-flex justify-content-center align-items-start p-2">
                     <div class="col-md-6 col-sm-12">
                         <div class="row">
-                            <d-customer-dropdown v-model="filter.customer"></d-customer-dropdown>
+                            <d-input label="Client" v-model="filter.customer"></d-input>
                         </div>
                         <div class="row">
                             <d-input label="Contremarque" v-model="filter.contremarque" ></d-input>
@@ -71,7 +71,7 @@
                                     </router-link>
                                 </div>
                             </template>
-                            <template #designation="data">
+                            <template #contremarque="data">
                                 <div class="d-flex justify-content-between">
                                     <strong>{{ data.value.designation}}</strong>
                                     <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id"  v-if="$hasPermission('update contremarque')">
@@ -130,7 +130,7 @@ const total_rows = ref(0);
 const params = reactive({
     current_page: 1,
     pagesize: 50,
-    orderBy: 'quote_id',
+    orderBy: 'reference',
     orderWay: 'desc'
 });
 
@@ -140,7 +140,7 @@ const rows = ref(null);
 
 const cols = ref([
     { field: 'reference', title: 'Numéro devis' },
-    { field: 'designation', title: 'Contremarque' },
+    { field: 'contremarque', title: 'Contremarque' },
     { field: 'customer', title: 'Client' },
     { field: 'commercial', title: 'Commercial' },
     { field: 'created_at', title: 'Date création'},
@@ -159,7 +159,7 @@ onMounted(() => {
 const getDevis = async () => {
     try {
         loading.value = true;
-        let url = `/api/quotes?page=${params.current_page}&limit=${params.pagesize}&order=${params.orderBy}&orderWay=${params.orderWay}`;
+        let url = `/api/quotes?page=${params.current_page}&limit=${params.pagesize}&orderBy=${params.orderBy}&orderWay=${params.orderWay}`;
         url += getFilterParams();
         const response = await axiosInstance.get(url);
         const data = response.data;
@@ -208,11 +208,6 @@ const doReset = () => {
     filter.value = Object.assign({}, filterDevis);
     Helper.setStorage(FILTER_DEVIS_STORAGE_NAME, filter.value);
     getDevis();
-};
-
-const selectCustomer = (customerId, contremarqueId) => {
-    selectedCustomerId.value = customerId;
-    selectedContremarqueId.value = contremarqueId;
 };
 
 const goToNewDevis = () => {

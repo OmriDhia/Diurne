@@ -14,6 +14,7 @@
                 selected-label=""
                 select-label=""
                 deselect-label=""
+                :disabled="disabled"
                 @tag="addTag"
                 @update:model-value="handleChange($event)"
                 @search-change="handleSearch($event)"
@@ -46,6 +47,10 @@
                 default: ''
             },
             required:{
+                type: Boolean,
+                default: false
+            },
+            disabled:{
                 type: Boolean,
                 default: false
             },

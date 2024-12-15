@@ -23,16 +23,17 @@
                 <tr v-for="(row, rowIndex) in props.quoteDetails" :key="rowIndex">
                     <td class="border-start border-end text-center">{{ row.reference}}</td>
                     <td class="border-start border-end text-center">{{ row.totalPriceRate}}</td>
-                    <td class="border-start border-end text-center"><d-collections-dropdown :showOnlyDropdown="true" v-model="row.carpetSpecification.collection.id"></d-collections-dropdown></td>
-                    <td class="border-start border-end text-center"><d-model-dropdown :showOnlyDropdown="true" v-model="row.carpetSpecification.model.id"></d-model-dropdown></td>
-                    <td class="border-start border-end text-center">{{ row.layerNumber }}</td>
-                    <td class="border-start border-end text-center">{{ row.layerNumber }}</td>
-                    <td class="border-start border-end text-center">{{ row.layerNumber }}</td>
-                    <td class="border-start border-end text-center">{{ row.layerNumber }}</td>
-                    <td class="border-start border-end text-center">{{ row.layerNumber }}</td>
-                    <td class="border-start border-end text-center">{{ row.layerNumber }}</td>
-                    <td class="border-start border-end text-center">{{ row.layerNumber }}</td>
-                    <td class="border-start border-end text-center">{{ row.layerNumber }}</td>
+                    <td class="border-start border-end text-center"><d-collections-dropdown :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.collection.id"></d-collections-dropdown></td>
+                    <td class="border-start border-end text-center"><d-model-dropdown :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.model.id"></d-model-dropdown></td>
+                    <td class="border-start border-end text-center">{{ row.prices.tarif['m²'].price }}</td>
+                    <td class="border-start border-end text-center">{{ row.prices.tarif.sqft.price }}</td>
+                    <td class="border-start border-end text-center">{{ row.prices['prix-propose-avant-remise-complementaire']['m²'].price }}</td>
+                    <td class="border-start border-end text-center">{{ row.prices['prix-propose-avant-remise-complementaire'].sqft.price  }}</td>
+                    <td class="border-start border-end text-center">{{ row.prices['prix-propose-avant-remise-complementaire'].totalttc }}</td>
+                    <td class="border-start border-end text-center">{{ row.isValidated }}</td>
+                    <td class="border-start border-end text-center"></td>
+                    <td class="border-start border-end text-center"><d-location-dropdown :disabled="true" :contremarqueId="props.contremarque.contremarque_id" v-model="row.location.location_id"> </d-location-dropdown> </td>
+                    <td class="border-start border-end text-center"></td>
                     <td class="border-start"></td>
                 </tr>
                 <tr>
@@ -57,10 +58,12 @@
     import { useStore } from "vuex";
     import VueFeather from 'vue-feather';
     import dDelete from "../../common/d-delete.vue";
+    import dInput from "../../base/d-input.vue";
     import contremarqueService from "../../../Services/contremarque-service";
     import dModelDropdown from "../contremarques/dropdown/d-model-dropdown.vue";
     import dCollectionsDropdown from "../contremarques/dropdown/d-collections-dropdown.vue";
-    
+    import dLocationDropdown from "../contremarques/dropdown/d-location-dropdown.vue";
+
     const props = defineProps({
         quoteId: {
             type: Number,
@@ -71,7 +74,10 @@
         disabled: {
             type: Boolean,
             default: false,
-        }
+        },
+        contremarque: {
+            type: Object,
+        },
     });
 
     const store = useStore();

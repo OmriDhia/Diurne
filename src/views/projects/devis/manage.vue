@@ -27,19 +27,19 @@
                         <div class="col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Client de contremarque" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0">
-                                <d-customer-dropdown :showCustomer="true" :required="true" v-model="selectedCustomer" :error="error.customer_id"></d-customer-dropdown>
+                                <d-customer-dropdown :disabled="disbledContremarque" :showCustomer="true" :required="true" v-model="selectedCustomer" :error="error.customer_id"></d-customer-dropdown>
                             </div>
                             <div class="row pe-2 ps-0" v-if="currentCustomer.contactsData">
-                                <d-base-dropdown name="Contact" label="firstname" trackBy="contact_id" :datas="currentCustomer.contactsData" v-model="contact"></d-base-dropdown>
+                                <d-base-dropdown :disabled="disbledContremarque" name="Contact" label="firstname" trackBy="contact_id" :datas="currentCustomer.contactsData" v-model="contact"></d-base-dropdown>
                             </div>
                         </div>
                         <div class="col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Prescripteur" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0">
-                                <d-customer-dropdown :isPrescripteur="true" v-model="prescriber" :error="error.prescriber_id"></d-customer-dropdown>
+                                <d-customer-dropdown :disabled="disbledContremarque" :isPrescripteur="true" v-model="prescriber" :error="error.prescriber_id"></d-customer-dropdown>
                             </div>
                             <div class="row pe-2 ps-0 align-items-center">
-                                <d-input label="Commission (%)" type="Number" v-model="data.commission" :error="null"></d-input>
+                                <d-input :disabled="disbledContremarque" label="Commission (%)" type="Number" v-model="commission" :error="null"></d-input>
                             </div>
                         </div>
                     </div>
@@ -47,10 +47,10 @@
                         <div class="col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Commercial" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0" v-if="currentCustomer.contactCommercialHistoriesData">
-                                <d-base-dropdown name="Commercial" label="firstname" trackBy="commercial_id" :datas="currentCustomer.contactCommercialHistoriesData" v-model="commercial"></d-base-dropdown>
+                                <d-base-dropdown :disabled="disbledContremarque" name="Commercial" label="firstname" trackBy="commercial_id" :datas="currentCustomer.contactCommercialHistoriesData" v-model="commercial"></d-base-dropdown>
                             </div>
                             <div class="row pe-2 ps-0">
-                                <d-input label="Auteur" v-model="data.auteur" :error="error.auteur"></d-input>
+                                <d-input :disabled="disbledContremarque" label="Auteur" v-model="data.auteur" :error="error.auteur"></d-input>
                             </div>
                         </div>
                         <div class="col-md-6 col-sm-12 pe-sm-0">
@@ -72,7 +72,7 @@
                                 </div>
                             </div>
                             <div class="row pt-2">
-                                <d-unit-measurements :selectList="true" v-model="data.unitOfMeasurementId" :error="error.unitOfMeasurementId"></d-unit-measurements>
+                                <d-unit-measurements :selectList="true" v-model="data.unitOfMeasurement" :error="error.unitOfMeasurement"></d-unit-measurements>
                             </div>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
                         </div>
                     </div>
                     <div class="row mt-3 mb-3 pe-0" v-if="quote_id">
-                        <d-quote-details :quoteId="quote_id" :quoteDetails="quoteDetails"></d-quote-details>
+                        <d-quote-details :contremarque="contremarque" :quoteId="quote_id" :quoteDetails="quoteDetails"></d-quote-details>
                     </div>
                     <div class="row mt-3 mb-3 pe-0">
                         <div class="col-md-4 col-sm-12">
@@ -123,18 +123,18 @@
                                 <div class="card-body p-0 mt-2">
                                     <div class="row align-items-center p-2">
                                         <div class="col-md-6 col-sm-12">
-                                            <d-input label="Prix avant remise" v-model="data.withoutDiscountPrice"></d-input>
+                                            <d-input :disabled="disbledPrices" label="Prix avant remise" v-model="data.withoutDiscountPrice"></d-input>
                                         </div>
                                         <div class="col-md-6 col-sm-12">
-                                            <d-input label="Total HT" v-model="data.totalTaxExcluded"></d-input>
+                                            <d-input :disabled="disbledPrices" label="Total HT" v-model="data.totalTaxExcluded"></d-input>
                                         </div>
                                     </div>
                                     <div class="row align-items-center p-2">
                                         <div class="col-md-6 col-sm-12">
-                                            <d-input label="Remise tapis cumulé" v-model="data.cumulatedDiscountAmount"></d-input>
+                                            <d-input :disabled="disbledPrices" label="Remise tapis cumulé" v-model="data.cumulatedDiscountAmount"></d-input>
                                         </div>
                                         <div class="col-md-6 col-sm-12">
-                                            <d-input label="Total versement" v-model="data.totalTaxIncluded"></d-input>
+                                            <d-input :disabled="disbledPrices" label="Total versement" v-model="data.totalTaxIncluded"></d-input>
                                         </div>
                                     </div>
                                     <div class="row align-items-center p-2">
@@ -142,20 +142,20 @@
                                             <d-input label="Remise complémentaire (HT)" v-model="data.additionalDiscount"></d-input>
                                         </div>
                                         <div class="col-md-6 col-sm-12">
-                                            <d-input label="TVA" v-model="data.tax"></d-input>
+                                            <d-input :disabled="disbledPrices" label="TVA" v-model="data.tax"></d-input>
                                         </div>
                                     </div>
                                     <div class="row align-items-center p-2">
                                         <div class="col-md-6 col-sm-12">
-                                            <d-input label="Total remise de devis" v-model="data.totalDiscountAmount"></d-input>
+                                            <d-input :disabled="disbledPrices" label="Total remise de devis" v-model="data.totalDiscountAmount"></d-input>
                                         </div>
                                         <div class="col-md-6 col-sm-12">
-                                            <d-input label="Autre Tva" v-model="data.otherTva"></d-input>
+                                            <d-input :disabled="disbledPrices" label="Autre Tva" v-model="data.otherTva"></d-input>
                                         </div>
                                     </div>
                                     <div class="row align-items-center justify-content-end p-2">
                                         <div class="col-md-6 col-sm-12">
-                                            <d-input label="Total TTC + port" v-model="data.totalTaxIncluded"></d-input>
+                                            <d-input :disabled="disbledPrices" label="Total TTC + port" v-model="data.totalTaxIncluded"></d-input>
                                         </div>
                                     </div>
                                     <div class="row align-items-center justify-content-end p-2">
@@ -244,15 +244,18 @@
     const commercial = ref({});
     const quote = ref({});
     const prescriber = ref(0);
+    const commission = ref("");
     const quoteDetails = ref([]);
     const error = ref({});
+    const disbledContremarque = true;
+    const disbledPrices = true;
     
     const data = ref({
         discountRuleId: 0,
         taxRuleId: 0,
         currencyId: 0,
         languageId: 0,
-        unitOfMeasurementId: 0,
+        unitOfMeasurement: "",
         deliveryAddressId: 0,
         invoiceAddressId: 0,
         withoutDiscountPrice: 0,
@@ -302,22 +305,22 @@
                     taxRuleId: data.value.taxRuleId,
                     currencyId: data.value.currencyId,
                     languageId: data.value.languageId,
-                    unitOfMeasurementId: data.value.unitOfMeasurementId,
+                    unitOfMeasurement: data.value.unitOfMeasurement,
                     deliveryAddressId: data.value.deliveryAddressId.address_id,
                     invoiceAddressId: data.value.invoiceAddressId.address_id,
-                    withoutDiscountPrice: parseFloat(data.value.withoutDiscountPrice),
-                    additionalDiscount: parseFloat(data.value.additionalDiscount),
-                    totalDiscountAmount: parseFloat(data.value.totalDiscountAmount),
-                    totalDiscountPercentage: parseFloat(data.value.totalDiscountPercentage),
-                    totalTaxExcluded: parseFloat(data.value.totalTaxExcluded),
-                    shippingPrice: parseFloat(data.value.shippingPrice),
-                    tax: parseFloat(data.value.tax),
-                    totalTaxIncluded: parseFloat(data.value.totalTaxIncluded),
+                    withoutDiscountPrice: data.value.withoutDiscountPrice,
+                    additionalDiscount: data.value.additionalDiscount,
+                    totalDiscountAmount: data.value.totalDiscountAmount,
+                    totalDiscountPercentage: data.value.totalDiscountPercentage,
+                    totalTaxExcluded: data.value.totalTaxExcluded,
+                    shippingPrice: data.value.shippingPrice,
+                    tax: data.value.tax,
+                    totalTaxIncluded: data.value.totalTaxIncluded,
                     quoteSentToCustomer: data.value.quoteSentToCustomer,
                     qualificationMessage: data.value.qualificationMessage,
                     conversionId: data.value.conversionId,
-                    cumulatedDiscountAmount: parseFloat(data.value.cumulatedDiscountAmount),
-                    otherTva: parseFloat(data.value.otherTva),
+                    cumulatedDiscountAmount: data.value.cumulatedDiscountAmount,
+                    otherTva: data.value.otherTva,
                 }
                 if(quote_id){
                     const res = await axiosInstance.put(`/api/contremarque/${contremarqueId.value}/quote/${quote_id}`,dataTosend);
@@ -358,16 +361,17 @@
         try{
             if(quote_id){
                 quote.value = await quoteService.getQuoteById(quote_id);
-                contremarqueId.value = quote.value.contremarques[0]?.contremarque_id;
+                contremarqueId.value = quote.value?.contremarques[0]?.contremarque_id;
                 quoteNumber.value = quote.value.reference;
-                quoteDetails.value = quote.value.quoteDetails;
+                quoteDetails.value = quote.value?.quoteDetails;
                 createdDate.value = moment(quote.value.createdAt).format('YYYY-MM-DD');
+                commission.value = quote.value?.contremarques[0]?.commission;
                 data.value = {
                     discountRuleId: 0,
                     taxRuleId: quote.value?.taxRule.id,
                     currencyId: quote.value?.currency.id,
                     languageId: quote.value?.language.id,
-                    unitOfMeasurementId: quote.value?.unitOfMeasurement,
+                    unitOfMeasurement: quote.value?.unitOfMeasurement,
                     deliveryAddressId: quote.value?.deliveryAddress,
                     invoiceAddressId: quote.value?.invoiceAddress,
                     withoutDiscountPrice: quote.value?.withoutDiscountPrice,
@@ -387,7 +391,7 @@
             }
         }catch(e){
             console.log(e);
-            const msg = "le devis d'id " + quote_id + " n'existe pas";
+            const msg = "Echec de récupération des données devis";
             window.showMessage(msg,'error');
         }
     };

@@ -1,8 +1,8 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Emplacement<span class="required" v-if="required">*</span>:</label>
+        <div class="col-4" v-if="!showOnlyDropdown"><label class="form-label">Emplacement<span class="required" v-if="required">*</span>:</label>
         </div>
-        <div class="col-8">
+        <div :class="{'col-md-8':!showOnlyDropdown,'col-md-12':showOnlyDropdown}">
             <multiselect
                 :class="{ 'is-invalid': error}"
                 :model-value="value"
@@ -49,6 +49,10 @@
                 default: false
             },
             disabled: {
+                type: Boolean,
+                default: false
+            },
+            showOnlyDropdown: {
                 type: Boolean,
                 default: false
             },
