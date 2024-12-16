@@ -71,6 +71,14 @@
             type: Boolean,
             default: false
         },
+        calculateHt: {
+            type: Boolean,
+            default: false
+        },
+        totalHt: {
+            type: Number,
+            default: 0
+        },
     });
     const emit = defineEmits(['changePrices']);
     const store = useStore();
@@ -122,6 +130,9 @@
     };
     const calculateInchesFeet = async () => {
         data.value.quoteDetailId = parseInt(props.quoteDetailId);
+        if(props.calculateHt){
+            data.value.totalPriceHt = parseFloat(props.totalHt);
+        }
         const larg = measurements.value.find(m => m.name === 'Largeur');
         const long = measurements.value.find(m => m.name === 'Longueur');
         if (larg) {

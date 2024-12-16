@@ -85,13 +85,25 @@
                                 <d-materials-list :showTitle="false" :materialsProps="quoteDetail?.carpetSpecification?.carpetMaterials"></d-materials-list>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0">
-                            <div class="row ps-2 pt-4">
-                                <div class="custom-control custom-radio">
+                        <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0" v-if="quoteDetailId">
+                            <div class="row ps-2">
+                                <d-panel-title title="Traitement particulier" className="ps-2"></d-panel-title>
+                                <div class="custom-control custom-radio pb-2 ps-4">
                                     <input type="checkbox" class="custom-control-input" id="specialTreatment"
-                                           name="specialTreatment" v-model="specialTreatment"/>
+                                           name="specialTreatment" v-model="specialTreatment.trait"/>
                                     <label class="custom-control-label text-black" for="specialTreatment">
                                         Traitement particulier </label>
+                                </div>
+                                <d-special-treatment v-model="specialTreatment.treatmentId"></d-special-treatment>
+                                <d-input label="Prix/unité" v-model="specialTreatment.unitPrice"></d-input>
+                                <d-input label="Prix total" v-model="specialTreatment.totalPrice"></d-input>
+                                <div class="row justify-content-end pt-2">
+                                    <div class="col-auto">
+                                        <button :disabled="disabled" class="btn ms-0 btn-outline-custom" @click="SaveTraitement">
+                                            Ajouter
+                                            <vue-feather type="plus" size="14"></vue-feather>
+                                        </button>   
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -99,8 +111,8 @@
                     <div class="row mt-3 mb-3 pe-0 align-items-center">
                         <div class="col-md-8 col-sm-12">
                             <d-panel-title title="Dimensions" className="ps-2"></d-panel-title>
-                            <d-mesurement-quote :dimensionsProps="quoteDetail?.carpetSpecification?.carpetDimensions"
-                                                :quoteDetailId="quoteDetailId" @changePrices="changePrices"></d-mesurement-quote>
+                            <d-mesurement-quote :dimensionsProps="quoteDetail?.carpetSpecification?.carpetDimensions" :totalHt="prices.tarif_avant_remise_complementaire.total_ht"
+                                                :calculateHt="data.quoteDetail.calculateFromTotalExcludingTax" :quoteDetailId="quoteDetailId" @changePrices="changePrices"></d-mesurement-quote>
                         </div>
                         <div class="col-md-4 col-sm-12 p-4">
                             <d-input label="Quantité de tapis" v-model="data.quoteDetail.wantedQuantity"></d-input>
@@ -197,7 +209,7 @@
                                             <d-input label="TTC/m²" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.ht_per_meter"></d-input>
                                         </div>
                                         <div class="col-md-3 col-sm-12">
-                                            <d-input label="Total HT" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.total_ht"></d-input>
+                                            <d-input label="Total HT" :disabled="!data.quoteDetail.calculateFromTotalExcludingTax" v-model="prices.tarif_avant_remise_complementaire.total_ht"></d-input>
                                         </div>
                                         <div class="col-md-3 col-sm-12">
                                             <d-input label="Total TTC" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.total_ttc"></d-input>
@@ -377,6 +389,7 @@
     import dSpecialShapes from "../../../components/common/d-special-shapes.vue";
     import dMesurementQuote from "../../../components/projet/devis/d-mesurement-quote.vue";
     import {useStore} from "vuex";
+    import dSpecialTreatment from "../../../components/common/d-specialTreatment.vue";
     
     useMeta({ title: 'Gestion Devis' });
 
@@ -390,9 +403,14 @@
     const createdDate = ref(moment().format('YYYY-MM-DD'));
     const quote = ref({});
     const quoteDetail = ref([]);
-    const specialTreatment = ref(false);
     const useSpecialShape = ref(false);
     const error = ref({});
+    const specialTreatment = ref({
+        treatmentId: 0,
+        unitPrice: "",
+        totalPrice: "",
+        trait: false
+    });
     const data = ref({
         quoteDetail: {
             locationId: 0,
@@ -603,6 +621,20 @@
        }
     });
 
+    const SaveTraitement = async () => {
+        try{
+            error.value = {};
+                if(quoteDetailId){
+                    const res = await axiosInstance.post(`/api/quote-detail/${quoteDetailId}/carpet-specific-treatment/create`,specialTreatment.value);
+                    window.showMessage("Ajout avec succées.")
+                }
+        }catch(e){
+            if(e.response.data.violations){
+                error.value = formatErrorViolations(e.response.data.violations)
+            }
+            window.showMessage(e.message,'error')
+        }
+    };
     const goToDevis = () => {
         location.href = `/projet/devis/manage/${quote_id}`;
     };
