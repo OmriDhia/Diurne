@@ -39,7 +39,7 @@
                                 <d-customer-dropdown :disabled="disbledContremarque" :isPrescripteur="true" v-model="prescriber" :error="error.prescriber_id"></d-customer-dropdown>
                             </div>
                             <div class="row pe-2 ps-0 align-items-center">
-                                <d-input :disabled="disbledContremarque" label="Commission (%)" type="Number" v-model="commission" :error="null"></d-input>
+                                <d-input :disabled="disbledContremarque" label="Commission (%)" v-model="commission" :error="null"></d-input>
                             </div>
                         </div>
                     </div>
@@ -350,6 +350,7 @@
                 contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
                 selectedCustomer.value = contremarque.value.customer.customer_id;
                 prescriber.value = contremarque.value.prescriber.customer_id;
+                commission.value = contremarque.value.commission;
             }
         }catch(e){
             console.log(e);
@@ -365,7 +366,6 @@
                 quoteNumber.value = quote.value.reference;
                 quoteDetails.value = quote.value?.quoteDetails;
                 createdDate.value = moment(quote.value.createdAt).format('YYYY-MM-DD');
-                commission.value = quote.value?.contremarques[0]?.commission;
                 data.value = {
                     discountRuleId: 0,
                     taxRuleId: quote.value?.taxRule.id,

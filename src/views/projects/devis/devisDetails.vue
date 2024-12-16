@@ -260,7 +260,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <d-currency v-model="data.quoteDetail.currencyId"></d-currency>
+                                    <d-currency v-model="data.quoteDetail.currencyId" @change="handleChangeCalculate"></d-currency>
                                     <div class="row align-items-center justify-content-center pt-1">
                                         <div class="col-auto">
                                             <button class="btn btn-custom ps-4 pe-4 font-size-0-6">Calculer</button>
@@ -637,6 +637,9 @@
     };
     const goToDevis = () => {
         location.href = `/projet/devis/manage/${quote_id}`;
+    };
+    const handleChangeCalculate = (event) => {
+        console.log(event);
     };
 </script>
 <style scoped>
