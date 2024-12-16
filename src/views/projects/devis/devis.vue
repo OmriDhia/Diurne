@@ -87,12 +87,12 @@
                                     </router-link>
                                 </div>
                             </template>
-                            <template #created_at="data">
+                            <template #creationDate="data">
                                 <div class="d-flex justify-content-between">
                                     {{ (data.value.created_at) ? $Helper.FormatDate(data.value.created_at) : ''}}
                                 </div>
                             </template>
-                            <template #validated_at="data">
+                            <template #validationDate="data">
                                 <div class="d-flex justify-content-between">
                                     {{ data.value.validated_at ? $Helper.FormatDate(data.value.validated_at) : ''}}
                                 </div>
@@ -143,8 +143,8 @@ const cols = ref([
     { field: 'contremarque', title: 'Contremarque' },
     { field: 'customer', title: 'Client' },
     { field: 'commercial', title: 'Commercial' },
-    { field: 'created_at', title: 'Date création'},
-    { field: 'validated_at', title: 'Date validation' },
+    { field: 'creationDate', title: 'Date création'},
+    { field: 'validationDate', title: 'Date validation' },
 ]) || [];
 
 onMounted(() => {

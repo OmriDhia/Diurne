@@ -14,151 +14,310 @@
                           <d-input type="date" label="Date de création" v-model="createdDate" :disabled="true"></d-input>
                       </div>
                       <div class="col-md-4 col-sm-12">
-                          <d-contremarque-dropdown v-model="contremarqueId"></d-contremarque-dropdown>
+                          <d-contremarque-dropdown v-model="contremarqueId" :disabled="true"></d-contremarque-dropdown>
                       </div>
                   </div>
               </template>
           </d-panel>
         </template>
         <template v-slot:body>
-            <d-panel v-if="contremarqueId">
+            <d-panel>
                 <template v-slot:panel-body>
                     <div class="row mt-3 mb-3 pe-0">
-                        <div class="col-md-6 col-sm-12 pe-sm-0">
-                            <d-panel-title title="Client de contremarque" className="ps-2"></d-panel-title>
-                            <div class="row pe-2 ps-0">
-                                <d-customer-dropdown :showCustomer="true" :required="true" v-model="selectedCustomer" :error="error.customer_id"></d-customer-dropdown>
+                        <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0">
+                            <d-panel-title title="Image" className="ps-2"></d-panel-title>
+                            <div class="row">
+                                <d-collections-dropdown :required="true" :hideBtn="true" v-model="data.carpetSpecification.collectionId" :error="error.collection"></d-collections-dropdown>
                             </div>
-                            <div class="row pe-2 ps-0" v-if="currentCustomer.contactsData">
-                                <d-base-dropdown name="Contact" label="firstname" trackBy="contact_id" :datas="currentCustomer.contactsData" v-model="contact"></d-base-dropdown>
+                            <div class="row">
+                                <d-model-dropdown :required="true" :hideBtn="true" v-model="data.carpetSpecification.modelId" :error="error.modelId"></d-model-dropdown>
                             </div>
                         </div>
-                        <div class="col-md-6 col-sm-12 pe-sm-0">
-                            <d-panel-title title="Prescripteur" className="ps-2"></d-panel-title>
+                        <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0">
+                            <d-panel-title title="Tapis de projet" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0">
-                                <d-customer-dropdown :isPrescripteur="true" v-model="prescriber" :error="error.prescriber_id"></d-customer-dropdown>
+                               
                             </div>
                             <div class="row pe-2 ps-0 align-items-center">
-                                <d-input label="Commission (%)" type="Number" v-model="data.commission" :error="null"></d-input>
+                                
                             </div>
                         </div>
-                    </div>
-                    <div class="row mt-3 mb-3 pe-0">
-                        <div class="col-md-6 col-sm-12 pe-sm-0">
-                            <d-panel-title title="Commercial" className="ps-2"></d-panel-title>
-                            <div class="row pe-2 ps-0" v-if="currentCustomer.contactCommercialHistoriesData">
-                                <d-base-dropdown name="Commercial" label="firstname" trackBy="commercial_id" :datas="currentCustomer.contactCommercialHistoriesData" v-model="commercial"></d-base-dropdown>
-                            </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0">
+                            <d-panel-title title="Information complémentaire" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0">
-                                <d-input label="Auteur" v-model="data.auteur" :error="error.auteur"></d-input>
+                                <d-location-dropdown :contremarqueId="contremarqueId" v-model="data.quoteDetail.locationId"></d-location-dropdown>
                             </div>
-                        </div>
-                        <div class="col-md-6 col-sm-12 pe-sm-0">
-                            <d-panel-title title="Cractéristique tarif" className="ps-2"></d-panel-title>
-                            <div class="row pe-4 align-items-center">
-                                <div class="col-md-6 col-sm-12 pe-sm-0">
-                                    <d-tarifs v-model="data.taxRuleId" :error="error.taxRuleId"></d-tarifs>
-                                </div>
-                                <div class="col-md-6 col-sm-12 pe-sm-0">
-                                    <d-conversions v-model="data.conversionId" :error="error.conversionId"></d-conversions>
+                            <div class="row pe-2 ps-0 align-items-center">
+                                <div class="row align-items-center pt-2">
+                                    <div class="col-8"><label class="form-label" for="shippingDelay">Délais livraison (semaine):</label></div>
+                                    <div class="col-4"><input type="number" id="shippingDelay" v-model="data.quoteDetail.estimatedDeliveryTime"  class="form-control"/></div>
                                 </div>
                             </div>
-                            <div class="row pe-4 align-items-center">
-                                <div class="col-md-6 col-sm-12 pe-sm-0">
-                                    <d-currency v-model="data.currencyId" :error="error.currencyId"></d-currency>
-                                </div>
-                                <div class="col-md-6 col-sm-12 pe-sm-0">
-                                    <d-langages v-model="data.languageId" :error="error.languageId"></d-langages>
-                                </div>
-                            </div>
-                            <div class="row pt-2">
-                                <d-unit-measurements :selectList="true" v-model="data.unitOfMeasurementId" :error="error.unitOfMeasurementId"></d-unit-measurements>
+                            <div class="row pe-2 ps-0 align-items-center">
+                                <d-input label="N° Tapis dans le devis" v-model="carpetNumber"></d-input>
                             </div>
                         </div>
                     </div>
                     <div class="row mt-3 mb-3 pe-0">
-                        <div class="col-md-6 col-sm-12 pe-sm-0">
-                            <d-panel-title title="Autres informations" className="ps-2"></d-panel-title>
-                            <div class="row pe-2 ps-0">
-                                <d-transport-condition v-model="data.transportCond" :error="error.customer_id"></d-transport-condition>
+                        <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0">
+                            <d-panel-title title="Prix" className="ps-2"></d-panel-title>
+                            <div class="row">
+                                <d-tarifs :required="true" v-model="data.quoteDetail.TarifId" :error="error.tarifId"></d-tarifs>
+                            </div>
+                            <div class="row">
+                                <d-qualities-dropdown :required="true" v-model="data.carpetSpecification.qualityId" :error="error.qualityId"></d-qualities-dropdown>
+                            </div>
+                            <div class="row">
+                                <d-special-shapes v-model="data.carpetSpecification.specialShapeId"></d-special-shapes>
+                            </div>
+                            <div class="row ps-2 pt-2">
+                                <div class="custom-control custom-radio">
+                                    <input type="checkbox" class="custom-control-input" id="useSpecialShape" 
+                                           name="useSpecialShape" v-model="data.carpetSpecification.hasSpecialShape"/>
+                                    <label class="custom-control-label text-black" for="useSpecialShape">
+                                        Forme spéciale </label>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6 col-sm-12 pe-sm-0">
-                            <d-panel-title title="Adresses" className="ps-2"></d-panel-title>
-                            <div class="row pe-2 ps-0" v-if="currentCustomer.addressesData">
-                                <d-base-dropdown name="Adresse de livraison" label="address1" trackBy="address_id" :datas="currentCustomer.addressesData" v-model="data.deliveryAddressId"></d-base-dropdown>
+                        <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0">
+                            <d-panel-title title="Matières" className="ps-2"></d-panel-title>
+                            <div class="row pe-2 ps-2 align-items-center align-items-center">
+                                <d-materials-list :showTitle="false" :materialsProps="quoteDetail?.carpetSpecification?.carpetMaterials"></d-materials-list>
                             </div>
-                            <div class="row pe-2 ps-0 align-items-center" v-if="currentCustomer.addressesData">
-                                <d-base-dropdown name="Adresse de facturation" label="address1" trackBy="address_id" :datas="currentCustomer.addressesData" v-model="data.invoiceAddressId"></d-base-dropdown>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0">
+                            <div class="row ps-2 pt-4">
+                                <div class="custom-control custom-radio">
+                                    <input type="checkbox" class="custom-control-input" id="specialTreatment"
+                                           name="specialTreatment" v-model="specialTreatment"/>
+                                    <label class="custom-control-label text-black" for="specialTreatment">
+                                        Traitement particulier </label>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row mt-3 mb-3 pe-0">
-                        <d-quote-details :quoteDetails="quoteDetails"></d-quote-details>
+                    <div class="row mt-3 mb-3 pe-0 align-items-center">
+                        <div class="col-md-8 col-sm-12">
+                            <d-panel-title title="Dimensions" className="ps-2"></d-panel-title>
+                            <d-mesurement-quote :dimensionsProps="quoteDetail?.carpetSpecification?.carpetDimensions"
+                                                :quoteDetailId="quoteDetailId" @changePrices="changePrices"></d-mesurement-quote>
+                        </div>
+                        <div class="col-md-4 col-sm-12 p-4">
+                            <d-input label="Quantité de tapis" v-model="data.quoteDetail.wantedQuantity"></d-input>
+                            <d-input label="RN"></d-input>
+                        </div>
+                    </div>
+                    <div class="row mt-3 mb-3 pe-0 align-items-center">
+                        <div class="col-md-6 col-sm-12">
+                            <d-panel-title title="Tarif" className="ps-2"></d-panel-title>
+                            <div class="row pe-4">
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="HT/m²" :disabled="true" v-model="prices.tarif.ht_per_meter"></d-input>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="Total HT" :disabled="true" v-model="prices.tarif.total_ht"></d-input>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="Net/sqft" :disabled="true" v-model="prices.tarif.ht_per_sqft"></d-input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <d-panel-title title="Tarif grand projet" className="ps-2">
+                                <template v-slot:extraBtn>
+                                    <div class="custom-control custom-radio">
+                                        <input type="checkbox" class="custom-control-input" id="applyLargeProjectRate"
+                                               name="tarifBigProject" v-model="data.quoteDetail.applyLargeProjectRate"/>
+                                        <label class="custom-control-label text-black" for="applyLargeProjectRate">
+                                            Appliquer tarif grand projet </label>
+                                    </div>
+                                </template>
+                            </d-panel-title>
+                            <div class="row pe-4">
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="HT/m²" :disabled="true" v-model="prices.grand_public.ht_per_meter"></d-input>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="Total HT" :disabled="true" v-model="prices.grand_public.total_ht"></d-input>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="Net/sqft" :disabled="true" v-model="prices.grand_public.ht_per_sqft"></d-input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3 mb-3 pe-0 align-items-center">
+                        <div class="col-md-12">
+                            <d-panel-title title="Remise proposée" className="ps-2"></d-panel-title>
+                            <div class="row pe-4 align-items-center">
+                                <div class="col-md-9">
+                                    <div class="row">
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="HT/m²" :disabled="true" v-model="prices.remise.ht_per_meter"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="TTC/m²" :disabled="true" v-model="prices.remise.ht_per_meter"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="Total HT" :disabled="true" v-model="prices.remise.total_ht"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="Total TTC" :disabled="true" v-model="prices.remise.total_ttc"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="Net/sqft" :disabled="true" v-model="prices.remise.ht_per_sqft"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="IAT/sqft" :disabled="true" v-model="prices.remise.ht_per_sqft"></d-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="custom-control custom-radio">
+                                        <input type="checkbox" class="custom-control-input" id="applyProposedDiscount"
+                                               name="applyProposedDiscount" v-model="data.quoteDetail.applyProposedDiscount" value="true"/>
+                                        <label class="custom-control-label text-black" for="applyProposedDiscount">
+                                            Appliquer remise proposée </label>
+                                    </div>
+                                    <d-input v-model="data.quoteDetail.proposedDiscountRate" :disabled="!data.quoteDetail.applyProposedDiscount"></d-input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3 mb-3 pe-0 align-items-center">
+                        <div class="col-md-12">
+                            <d-panel-title title="Prix proposée avant remise complémentaire" className="ps-2"></d-panel-title>
+                            <div class="row pe-4 align-items-center">
+                                <div class="col-md-9">
+                                    <div class="row">
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="HT/m²" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.ht_per_meter"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="TTC/m²" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.ht_per_meter"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="Total HT" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.total_ht"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="Total TTC" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.total_ttc"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="Net/sqft" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.ht_per_sqft"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="IAT/sqft" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.ht_per_sqft"></d-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="custom-control custom-radio">
+                                        <input type="checkbox" class="custom-control-input" id="calculateFromTotalExcludingTax"
+                                               name="calculateFromTotalExcludingTax" v-model="data.quoteDetail.calculateFromTotalExcludingTax" value="true"/>
+                                        <label class="custom-control-label text-black" for="calculateFromTotalExcludingTax">
+                                            Calculer a partir de total HT </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3 mb-3 pe-0 align-items-center">
+                        <div class="col-md-12">
+                            <d-panel-title title="Prix proposée" className="ps-2"></d-panel-title>
+                            <div class="row pe-4 align-items-center">
+                                <div class="col-md-9">
+                                    <div class="row">
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="HT/m²" :disabled="true" v-model="prices.tarif_propose.ht_per_meter"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="TTC/m²" :disabled="true" v-model="prices.tarif_propose.ht_per_meter"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="Total HT" :disabled="true" v-model="prices.tarif_propose.total_ht"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="Total TTC" :disabled="true" v-model="prices.tarif_propose.total_ttc"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="Net/sqft" :disabled="true" v-model="prices.tarif_propose.ht_per_sqft"></d-input>
+                                        </div>
+                                        <div class="col-md-3 col-sm-12">
+                                            <d-input label="IAT/sqft" :disabled="true" v-model="prices.tarif_propose.ht_per_sqft"></d-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <d-currency v-model="data.quoteDetail.currencyId"></d-currency>
+                                    <div class="row align-items-center justify-content-center pt-1">
+                                        <div class="col-auto">
+                                            <button class="btn btn-custom ps-4 pe-4 font-size-0-6">Calculer</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="row mt-3 mb-3 pe-0">
                         <div class="col-md-4 col-sm-12">
-                            
+                            <div class="row align-items-center p-2">
+                                <div class="col-md-12">
+                                    <d-input label="% prix total" v-model="data.quoteDetail.totalPriceRate"></d-input>
+                                </div>
+                            </div>
+                            <div class="row align-items-center p-2">
+                                <div class="col-sm-12 col-md-4 text-black"> Commentaire: </div>
+                                <div class="col-sm-12 col-md-8">
+                                    <textarea v-model="data.quoteDetail.comment" class="block-custom-border w-100 h-200-forced"></textarea>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-8 col-sm-12">
-                            <div class="card p-0">
-                                <div class="card-body p-0 mt-2">
-                                    <div class="row align-items-center p-2">
-                                        <div class="col-md-6 col-sm-12">
-                                            <d-input label="Prix avant remise" v-model="data.withoutDiscountPrice"></d-input>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12">
-                                            <d-input label="Total HT" v-model="data.totalTaxExcluded"></d-input>
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center p-2">
-                                        <div class="col-md-6 col-sm-12">
-                                            <d-input label="Remise tapis cumulé" v-model="data.cumulatedDiscountAmount"></d-input>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12">
-                                            <d-input label="Total versement" v-model="data.totalTaxIncluded"></d-input>
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center p-2">
-                                        <div class="col-md-6 col-sm-12">
-                                            <d-input label="Remise complémentaire (HT)" v-model="data.additionalDiscount"></d-input>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12">
-                                            <d-input label="TVA" v-model="data.tax"></d-input>
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center p-2">
-                                        <div class="col-md-6 col-sm-12">
-                                            <d-input label="Total remise de devis" v-model="data.totalDiscountAmount"></d-input>
-                                        </div>
-                                        <div class="col-md-6 col-sm-12">
-                                            <d-input label="Autre Tva" v-model="data.otherTva"></d-input>
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center justify-content-end p-2">
-                                        <div class="col-md-6 col-sm-12">
-                                            <d-input label="Total TTC + port" v-model="data.totalTaxIncluded"></d-input>
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center justify-content-end p-2">
-                                        <div class="col-md-6 col-sm-12">
-                                            <button class="btn btn-custom pe-5 ps-5">Calculer</button>
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center justify-content-end p-2">
-                                        <div class="col-md-6 col-sm-12">
-                                            <div class="custom-control custom-radio">
-                                                <input type="radio" class="custom-control-input" id="quoteSentToCustomer" v-model="data.quoteSentToCustomer"
-                                                       name="quoteSentToCustomer"/>
-                                                <label class="custom-control-label text-black" for="quoteSentToCustomer">
-                                                    Devis expédié au client </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row align-items-center justify-content-end p-2">
-                                        <div class="col-md-8 col-sm-12">
-                                            <d-input label="Expédition devis" v-model="data.qualificationMessage"></d-input>
-                                        </div>
+                            <d-panel-title title="Acompte" className="ps-2"></d-panel-title>
+                            <div class="row align-items-center p-2">
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="N° tapis dans la commande" v-model="data.withoutDiscountPrice"></d-input>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="RN" v-model="data.totalTaxExcluded"></d-input>
+                                </div>
+                            </div>
+                            <div class="row align-items-center p-2">
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="N° tapis dans la commande" v-model="data.cumulatedDiscountAmount"></d-input>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="Délai SUP (modifie client)" v-model="data.totalTaxIncluded"></d-input>
+                                </div>
+                            </div>
+                            <div class="row align-items-center p-2">
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="Date de livraison prévu" v-model="data.additionalDiscount"></d-input>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="Acompte réçu HT" v-model="data.tax"></d-input>
+                                </div>
+                            </div>
+                            <div class="row align-items-center p-2">
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="Date de l'acompte" v-model="data.totalDiscountAmount"></d-input>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input label="Comp.prescr. acompte" v-model="data.otherTva"></d-input>
+                                </div>
+                            </div>
+                            <div class="row align-items-center justify-content-end p-2">
+                                <div class="col-md-12">
+                                    <d-input label="Solde" v-model="data.totalTaxIncluded"></d-input>
+                                </div>
+                            </div>
+                            <div class="row align-items-center justify-content-end p-2">
+                                <div class="col-md-12">
+                                    <div class="custom-control custom-radio">
+                                        <input type="checkbox" class="custom-control-input" id="quoteSentToCustomer" v-model="data.quoteSentToCustomer"
+                                               name="quoteSentToCustomer"/>
+                                        <label class="custom-control-label text-black" for="quoteSentToCustomer">
+                                            commande sans acompte </label>
                                     </div>
                                 </div>
                             </div>
@@ -210,74 +369,117 @@
     import dTarifs from "../../../components/common/d-tarifs.vue";
     import dTransportCondition from "../../../components/common/d-transportCondition.vue";
     import dQuoteDetails from "../../../components/projet/devis/d-quote-details.vue";
+    import dCollectionsDropdown from "../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue";
+    import dModelDropdown from "../../../components/projet/contremarques/dropdown/d-model-dropdown.vue";
+    import dLocationDropdown from "../../../components/projet/contremarques/dropdown/d-location-dropdown.vue";
+    import dQualitiesDropdown from "../../../components/projet/contremarques/dropdown/d-qualities-dropdown.vue";
+    import dMaterialsList from "../../../components/projet/contremarques/_Partials/d-materials-list.vue";
+    import dSpecialShapes from "../../../components/common/d-special-shapes.vue";
+    import dMesurementQuote from "../../../components/projet/devis/d-mesurement-quote.vue";
+    import {useStore} from "vuex";
     
     useMeta({ title: 'Gestion Devis' });
 
     const route = useRoute();
+    const store = useStore();
     const contremarqueId = ref(0);
     const quote_id = route.params.qouteId;
-    const detailsQuoteId = route.params.id;
+    const quoteDetailId = route.params.id;
     const quoteNumber = ref("");
+    const carpetNumber = ref("");
     const createdDate = ref(moment().format('YYYY-MM-DD'));
     const quote = ref({});
-    const quoteDetails = ref([]);
+    const quoteDetail = ref([]);
+    const specialTreatment = ref(false);
+    const useSpecialShape = ref(false);
     const error = ref({});
-    
     const data = ref({
-        discountRuleId: 0,
-        taxRuleId: 0,
-        currencyId: 0,
-        languageId: 0,
-        unitOfMeasurementId: 0,
-        deliveryAddressId: 0,
-        invoiceAddressId: 0,
-        withoutDiscountPrice: 0,
-        additionalDiscount: 0,
-        totalDiscountAmount: 0,
-        totalDiscountPercentage: 0,
-        totalTaxExcluded: 0,
-        shippingPrice: 0,
-        tax: 0,
-        totalTaxIncluded: 0,
-        quoteSentToCustomer: true,
-        qualificationMessage: "",
-        conversionId: 0,
-        cumulatedDiscountAmount: 0,
-        otherTva: 0,
+        quoteDetail: {
+            locationId: 0,
+            reference: "",
+            TarifId: 0,
+            currencyId: 0,
+            totalPriceRate: "",
+            isValidated: true,
+            validatedAt: null,
+            wantedQuantity: 0,
+            estimatedDeliveryTime: 0,
+            applyLargeProjectRate: null,
+            applyProposedDiscount: null,
+            proposedDiscountRate: null,
+            calculateFromTotalExcludingTax: null,
+            inStockCarpet: null,
+            comment: null,
+            specificTreatmentIds: null
+        },
+        carpetSpecification: {
+            reference: "",
+            description: "",
+            collectionId: 0,
+            modelId: 0,
+            qualityId: 0,
+            hasSpecialShape: true,
+            isOversized: false,
+            specialShapeId: 0,
+            dimensions: [],
+            materials: []
+        }
     });
     const currentCustomer = ref({});
-
+    const prices = ref({
+        tarif: {
+            ht_per_meter: 0,
+            total_ht: 0,
+            ht_per_sqft: 0,
+            total_ttc: 0
+        },
+        grand_public: {
+            total_ht: 0,
+            total_ttc: 0,
+            ht_per_meter: 0,
+            ht_per_sqft: 0
+        },
+        remise: {
+            ht_per_meter: 0,
+            ht_per_sqft: 0,
+            total_ht: 0,
+            total_ttc: 0
+        },
+        tarif_avant_remise_complementaire: {
+            ht_per_meter: 0,
+            ht_per_sqft: 0,
+            total_ht: 0,
+            total_ttc: 0
+        },
+        tarif_propose: {
+            ht_per_meter: 0,
+            ht_per_sqft: 0,
+            total_ht: 0,
+            total_ttc: 0
+        },
+    });
     const saveDevisDetails = async () => {
         try{
             error.value = {};
-            if(contremarque){
-                const dataTosend = {
-                    discountRuleId: data.value.discountRuleId,
-                    taxRuleId: data.value.taxRuleId,
-                    currencyId: data.value.currencyId,
-                    languageId: data.value.languageId,
-                    unitOfMeasurementId: data.value.unitOfMeasurementId,
-                    deliveryAddressId: data.value.deliveryAddressId.address_id,
-                    invoiceAddressId: data.value.invoiceAddressId.address_id,
-                    withoutDiscountPrice: parseFloat(data.value.withoutDiscountPrice),
-                    additionalDiscount: parseFloat(data.value.additionalDiscount),
-                    totalDiscountAmount: parseFloat(data.value.totalDiscountAmount),
-                    totalDiscountPercentage: parseFloat(data.value.totalDiscountPercentage),
-                    totalTaxExcluded: parseFloat(data.value.totalTaxExcluded),
-                    shippingPrice: parseFloat(data.value.shippingPrice),
-                    tax: parseFloat(data.value.tax),
-                    totalTaxIncluded: parseFloat(data.value.totalTaxIncluded),
-                    quoteSentToCustomer: data.value.quoteSentToCustomer,
-                    qualificationMessage: data.value.qualificationMessage,
-                    conversionId: data.value.conversionId,
-                    cumulatedDiscountAmount: parseFloat(data.value.cumulatedDiscountAmount),
-                    otherTva: parseFloat(data.value.otherTva),
-                }
-                if(quote_id){
-                    const res = await axiosInstance.put(`/api/contremarque/${contremarqueId.value}/quote/${quote_id}`,dataTosend);
+            if(quote_id){
+                const measurements = store.getters.measurements;
+                const dataToSent = Object.assign({}, data.value);
+                dataToSent.carpetSpecification.dimensions = measurements.reduce((acc, dimension) => {
+                    acc[dimension.id] = dimension.unit.map(u => {
+                        return {
+                            dimension_id: u.id,
+                            value: u.value ? parseFloat(u.value) : 0
+                        }
+                    });
+                    return acc;
+                }, {});
+
+                dataToSent.carpetSpecification.materials = store.getters.materials;
+                if(quoteDetailId){
+                    const res = await axiosInstance.put(`/api/Quote/${quote_id}/updateQuoteDetail/${quoteDetailId}`,dataToSent);
                     window.showMessage("Mise a jour avec succées.")
                 }else{
-                    const respn = await axiosInstance.post(`/api/contremarque/${contremarqueId.value}/createQuote`,dataTosend);
+                    const respn = await axiosInstance.post(`/api/Quote/${quote_id}/createQuoteDetail`,dataToSent);
                     window.showMessage("Ajout avec succées.")
                 } 
                 setTimeout(()=>{
@@ -301,7 +503,6 @@
                 quote.value = await quoteService.getQuoteById(quote_id);
                 contremarqueId.value = quote.value.contremarques[0]?.contremarque_id;
                 quoteNumber.value = quote.value.reference;
-                quoteDetails.value = quote.value.quoteDetails;
                 createdDate.value = moment(quote.value.createdAt).format('YYYY-MM-DD');
             }
         }catch(e){
@@ -310,9 +511,95 @@
             window.showMessage(msg,'error');
         }
     };
+    const changePrices = async (price) => {
+       prices.value = price
+    };
+    const getQuoteDetails = async (quoteDetailId) => {
+        try{
+            if(quoteDetailId){
+                quoteDetail.value = await quoteService.getQuoteDetailsById(quoteDetailId);
+                carpetNumber.value = quoteDetail.value.reference;
+                formatPrices(quoteDetail.value.prices);
+                data.value = {
+                    quoteDetail: {
+                        locationId: quoteDetail.value.location?.location_id,
+                        reference: quoteDetail.value.reference,
+                        TarifId: quoteDetail.value?.tarif.id,
+                        currencyId: quoteDetail.value?.currency.id,
+                        totalPriceRate: quoteDetail.value.totalPriceRate,
+                        isValidated: quoteDetail.value.isValidated,
+                        validatedAt: null,
+                        wantedQuantity: quoteDetail.value.wantedQuantity,
+                        estimatedDeliveryTime: parseInt(quoteDetail.value.estimatedDeliveryTime),
+                        applyLargeProjectRate: quoteDetail.value.applyLargeProjectRate,
+                        applyProposedDiscount: quoteDetail.value.applyProposedDiscount,
+                        proposedDiscountRate: quoteDetail.value.proposedDiscountRate,
+                        calculateFromTotalExcludingTax: quoteDetail.value.calculateFromTotalExcludingTax,
+                        inStockCarpet: quoteDetail.value.inStockCarpet,
+                        comment: quoteDetail.value.comment,
+                        specificTreatmentIds: null
+                    },
+                    carpetSpecification: {
+                        reference: "",
+                        description: quoteDetail.value.carpetSpecification.description,
+                        collectionId: quoteDetail.value.carpetSpecification.collection?.id,
+                        modelId: quoteDetail.value.carpetSpecification.model?.id,
+                        qualityId: quoteDetail.value.carpetSpecification.quality?.id,
+                        hasSpecialShape: quoteDetail.value.carpetSpecification.has_special_shape,
+                        isOversized: quoteDetail.value.carpetSpecification.is_oversized,
+                        specialShapeId: quoteDetail.value.carpetSpecification.specialShape,
+                        dimensions: [],
+                        materials: []
+                    }
+                }
+            }
+        }catch(e){
+            console.log(e);
+            const msg = e;
+            window.showMessage(msg,'error');
+        }
+    }
+    
+    const formatPrices = (price) => {
+        prices.value = {
+            tarif: {
+                ht_per_meter: price.tarif['m²'].price,
+                total_ht: price.tarif.totalPriceHt,
+                ht_per_sqft: price.tarif.sqft.price,
+                total_ttc: price.tarif.totalPriceTtc
+            },
+            grand_public: {
+                total_ht: price['tarif-grand-projet'].totalPriceHt,
+                total_ttc: price['tarif-grand-projet'].totalPriceTtc,
+                ht_per_meter: price['tarif-grand-projet']['m²'].price,
+                ht_per_sqft: price['tarif-grand-projet'].sqft.price
+            },
+            remise: {
+                total_ht: price['remise-proposee']?.totalPriceHt,
+                total_ttc: price['remise-proposee']?.totalPriceTtc,
+                ht_per_meter: price['remise-proposee']['m²'].price,
+                ht_per_sqft: price['remise-proposee']?.sqft.price
+            },
+            tarif_propose: {
+                total_ht: price['prix-propose']?.totalPriceHt,
+                total_ttc: price['prix-propose']?.totalPriceTtc,
+                ht_per_meter: price['prix-propose'] ? price['prix-propose']['m²'].price : 0,
+                ht_per_sqft: price['prix-propose']?.sqft.price
+            },
+            tarif_avant_remise_complementaire: {
+                total_ht: price['prix-propose-avant-remise-complementaire'].totalPriceHt,
+                total_ttc: price['prix-propose-avant-remise-complementaire'].totalPriceTtc,
+                ht_per_meter: price['prix-propose-avant-remise-complementaire']['m²'].price,
+                ht_per_sqft: price['prix-propose-avant-remise-complementaire'].sqft.price
+            },
+        };
+    }
     onMounted(() => {
        if(quote_id){
            getQuote(quote_id);
+       }
+       if(quoteDetailId){
+           getQuoteDetails(quoteDetailId);
        }
     });
 

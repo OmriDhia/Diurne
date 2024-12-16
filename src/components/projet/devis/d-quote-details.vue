@@ -16,7 +16,7 @@
                 <th  class="border-end bg-gradient-dark text-white">RN</th>
                 <th  class="border-end bg-gradient-dark text-white">Emplacement</th>
                 <th  class="border-end bg-gradient-dark text-white">Versement</th>
-                <th  class="border-end bg-gradient-dark text-white"></th>
+                <th  class="border-end bg-gradient-dark text-white">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -32,9 +32,20 @@
                     <td class="border-start border-end text-center">{{ row.prices['prix-propose-avant-remise-complementaire'].totalttc }}</td>
                     <td class="border-start border-end text-center">{{ row.isValidated }}</td>
                     <td class="border-start border-end text-center"></td>
-                    <td class="border-start border-end text-center"><d-location-dropdown :disabled="true" :contremarqueId="props.contremarque.contremarque_id" v-model="row.location.location_id"> </d-location-dropdown> </td>
+                    <td class="border-start border-end text-center"><d-location-dropdown :showOnlyDropdown="true" :disabled="true" :contremarqueId="props.contremarque.contremarque_id" v-model="row.location.location_id"> </d-location-dropdown> </td>
                     <td class="border-start border-end text-center"></td>
-                    <td class="border-start"></td>
+                    <td class="border-start">
+                        <div class="row ps-4 align-items-center">
+                            <div class="col-auto p-1">
+                                <d-delete :api="''"></d-delete>
+                            </div>
+                            <div class="col-auto p-1">
+                                <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"  @click="goToQuoteDetails(row.id)">
+                                    <vue-feather type="search" size="14"></vue-feather>
+                                </button>
+                            </div>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                   <td colspan="14">
@@ -84,6 +95,9 @@
     
     const goToDetails = () => {
         location.href = `/projet/devis/${props.quoteId}/details`
+    };
+    const goToQuoteDetails = (id) => {
+        location.href = `/projet/devis/${props.quoteId}/details/${id}`
     };
 </script>
 

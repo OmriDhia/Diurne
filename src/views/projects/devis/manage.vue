@@ -57,7 +57,7 @@
                             <d-panel-title title="Cractéristique tarif" className="ps-2"></d-panel-title>
                             <div class="row pe-4 align-items-center">
                                 <div class="col-md-6 col-sm-12 pe-sm-0">
-                                    <d-tarifs v-model="data.taxRuleId" :error="error.taxRuleId"></d-tarifs>
+                                    <d-taxRules v-model="data.taxRuleId" :error="error.taxRuleId"></d-taxRules>
                                 </div>
                                 <div class="col-md-6 col-sm-12 pe-sm-0">
                                     <d-conversions v-model="data.conversionId" :error="error.conversionId"></d-conversions>
@@ -225,7 +225,7 @@
     import dCurrency from "../../../components/common/d-currency.vue";
     import dLangages from "../../../components/common/d-langages.vue";
     import dUnitMeasurements from "../../../components/common/d-unit-measurements.vue";
-    import dTarifs from "../../../components/common/d-tarifs.vue";
+    import dTaxRules from "../../../components/common/d-taxRules.vue";
     import dTransportCondition from "../../../components/common/d-transportCondition.vue";
     import dQuoteDetails from "../../../components/projet/devis/d-quote-details.vue";
     

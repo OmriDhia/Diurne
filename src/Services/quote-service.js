@@ -9,4 +9,12 @@ export default {
             throw new Error('Échec de récupération de devis');
           }
     },
+    async getQuoteDetailsById(id){
+        try {
+            const res = await axiosInstance.get(`/api/quoteDetail/${id}`);
+            return res.data.response.quoteDetailData
+          } catch (error) {
+            throw new Error('Échec de récupération de détail devis');
+          }
+    },
 };

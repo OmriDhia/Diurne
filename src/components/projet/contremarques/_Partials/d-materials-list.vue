@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-center">
-        <div class="row align-items-start">
+        <div class="row align-items-start" v-if="showTitle">
             <h6 class="w-100 p-0">Matière demandés</h6>
         </div>
         <div class="card p-0">
@@ -64,6 +64,10 @@
             disabled: {
                 type: Boolean,
                 default: false
+            },
+            showTitle: {
+                type: Boolean,
+                default: true
             },  
         },
         data() {

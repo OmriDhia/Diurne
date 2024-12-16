@@ -6,8 +6,17 @@
     'pe-4': true,
     [className]: true
     }">
-        <h6 class="panel-title w-auto">{{ title }}</h6>
-        <router-link v-if="link" :to="link" class="w-auto d-flex align-items-center"><vue-feather type="arrow-left" size="26"></vue-feather>Retour</router-link>
+        <div class="col-auto ps-0">
+            <h6 class="panel-title w-auto">{{ title }}</h6>
+        </div>
+        <div class="col-auto pe-0">
+            <slot name="extraBtn"></slot>
+        </div>
+        <div class="col-auto" v-if="link">
+            <router-link v-if="link" :to="link" class="w-auto d-flex align-items-center"><vue-feather type="arrow-left" size="26"></vue-feather>Retour</router-link>
+        </div>
+        
+        
     </div>
     <div :class="{'row': true,
     'pe-4': true,

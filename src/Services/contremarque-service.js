@@ -112,4 +112,14 @@ export default {
             throw new Error(msg);
         }
     },
+    async calculateMesurementsNew(data){
+        try {
+            const res = await axiosInstance.post(`/api/convert-and-calculate`, data);
+            return res.data.response
+        } catch (error) {
+            const msg = 'Échec de calcule des mesures.';
+            window.showMessage(msg, 'error');
+            throw new Error(msg);
+        }
+    },
 };

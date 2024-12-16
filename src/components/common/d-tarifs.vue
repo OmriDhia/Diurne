@@ -1,11 +1,11 @@
 <template>
     <div class="row align-items-center">
-        <div class="col-4"><label for="droit" class="form-label">TVA<span class="required" v-if="required">*</span>:</label></div>
+        <div class="col-4"><label for="droit" class="form-label">Choix tarif<span class="required" v-if="required">*</span>:</label></div>
         <div class="col-8">
             <select id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="discount" @input="handleChange($event.target.value)">
-                <option v-for="(prof, key) in discounts" :key="key" :value="prof.id">{{ prof.taxRate }}</option>
+                <option v-for="(prof, key) in discounts" :key="key" :value="prof.id">{{ prof.label }}</option>
             </select>
-            <div v-if="error" class="invalid-feedback">{{ $t('TVA est abligatoire.') }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t('tarif est abligatoire.') }}</div>
         </div>
     </div>
 </template>
@@ -41,7 +41,7 @@
             },
             async getDiscounts() {
                 try {
-                    const res = await axiosInstance.get('/api/taxRules');
+                    const res = await axiosInstance.get('/api/tarifs');
                     this.discounts = res.data.response;
                 } catch (error) {
                     console.error('Failed to fetch taxRules:', error);

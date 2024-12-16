@@ -1,39 +1,53 @@
 <template>
-    <div>
-        <div class="row align-items-center justify-content-end p-0 pt-2 mt-3">
-            <div class="col-auto">
-                <button class="btn btn-custom mb-2 font-size-0-7" @click="calculateInchesFeet" :disabled="disabled">Calculer</button>
-            </div>
-        </div>
+    <div class="pe-3">
         <div class="row align-items-center justify-content-between p-0 pt-2">
             <template v-for="(measurement, index) in measurements" :key="index">
-                <div class="col-xl-5-1 col-md-12 mt-2 mb-2 pe-0">
-                    <div class="row align-items-start">
-                        <h6 class="w-100">{{ measurement.name }}</h6>
-                    </div>
-                    <div class="card p-0">
-                        <div class="card-body ps-2 mt-2">
-                            <div class="row">
-                                <template v-for="(unit, uIndex) in measurement.unit" :key="uIndex">
-                                    <div class="col-md-4">
-                                        <div class="row align-items-center">
-                                            <div class="col-auto text-black">
-                                                {{ unit.abbreviation }}
-                                            </div>
-                                            <div class="col-auto">
-                                                <input class="form-control text-center" v-model="unit.value" :disabled="disabled" @change="handleChange(unit.abbreviation)">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
+                <div class="col-md-4">
+                    <template v-for="(unit, uIndex) in measurement.unit" :key="uIndex">
+                        <div class="row align-items-center">
+                            <div class="col-md-6 text-black">
+                                {{ measurement.name }} en {{ unit.abbreviation }}:
+                            </div>
+                            <div class="col-md-6">
+                                <input class="form-control text-center" v-model="unit.value" :disabled="disabled" @change="handleChange(unit.abbreviation)">
                             </div>
                         </div>
-                    </div>
+                    </template>
                 </div>
             </template>
+            <div class="col-md-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-black">
+                        Surface en m²:
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control text-center" v-model="sufaceM2" :disabled="true">
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-black">
+                        Surface en sqft:
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control text-center" v-model="sufaceSqft" :disabled="true">
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-black">
+                        Poids (kg):
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control text-center" v-model="poids" :disabled="true">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center pt-4">
+            <div class="col-auto">
+                <button class="btn btn-custom ps-4 pe-4" @click="calculateInchesFeet">Calculer et Convertir</button>
+            </div>
         </div>
     </div>
-    
 </template>
 
 <script setup>
@@ -46,6 +60,10 @@
         dimensionsProps : {
             type: Object
         },
+        quoteDetailId : {
+            type: Number,
+            default: 0
+        },
         firstLoad : {
             type: Boolean
         },
@@ -54,10 +72,12 @@
             default: false
         },
     });
-    const emit = defineEmits(['changeMeasurements']);
+    const emit = defineEmits(['changePrices']);
     const store = useStore();
     const measurements = ref([]);
-
+    const sufaceM2 = ref("");
+    const sufaceSqft = ref("");
+    const poids = ref("");
     const data = ref({
         largCm: 0,
         lngCm: 0,
@@ -101,6 +121,7 @@
         }
     };
     const calculateInchesFeet = async () => {
+        data.value.quoteDetailId = parseInt(props.quoteDetailId);
         const larg = measurements.value.find(m => m.name === 'Largeur');
         const long = measurements.value.find(m => m.name === 'Longueur');
         if (larg) {
@@ -109,13 +130,17 @@
         if (long) {
             setMeasurements(long.unit, 'lng');
         }
-
+        
         try {
             const result = await contremarqueService.calculateMesurementsNew(data.value);
             const dimension = result.dimension
+            sufaceM2.value = dimension.surface['m²'];
+            sufaceSqft.value = dimension.surface.sqft;
             setMeasurementResults(larg.unit,dimension.larg);
             setMeasurementResults(long.unit,dimension.lng);
-            store.commit('setMeasurements', measurements);
+            store.commit('setMeasurements', measurements.value);
+            emit('changePrices', result.price);
+            window.showMessage("Le calcul s'est terminé avec succès")
         } catch (error) {
             console.error(`Error calculation mesurements:`, error);
         }
@@ -136,6 +161,7 @@
                 }
                 return m;
             });
+            store.commit('setMeasurements', measurements.value);
         }
     };
     const getMeasurements = async () => {
@@ -147,7 +173,7 @@
                 ...m,
                 unit: unitOfMeasurements.map(u => ({
                     ...u,
-                    value: ""
+                    value: null
                 }))
             }));
 
@@ -156,25 +182,11 @@
             console.error(e.message);
         }
     };
-    
-    const handleChange = (abb) => {
-        data.value.InputUnit = abb;
-    };
-    
+
     onMounted(() => {
         getMeasurements();
     });
-
-    watch(
-        () => measurements.value,
-        (newMeasurements) => {
-            store.commit('setMeasurements', newMeasurements);
-            if(!props.firstLoad){
-                emit('changeMeasurements', newMeasurements);
-            }
-        },
-        { deep: true }
-    );
+    
     watch(
         () => props.dimensionsProps,
         (dimensions) => {
@@ -182,4 +194,7 @@
         }
     );
     
+    const handleChange = (abb) => {
+        data.value.InputUnit = abb;
+    }
 </script>

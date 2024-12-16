@@ -13,6 +13,7 @@
                 selected-label=""
                 select-label=""
                 deselect-label=""
+                :disabled="disabled"
                 @update:model-value="handleChange($event)"
                 @search-change="handleSearch($event)"
             ></multiselect>
@@ -48,6 +49,10 @@
                 default: ''
             },
             required:{
+                type: Boolean,
+                default: false
+            },
+            disabled:{
                 type: Boolean,
                 default: false
             }
