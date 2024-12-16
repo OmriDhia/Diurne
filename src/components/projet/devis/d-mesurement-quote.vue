@@ -44,7 +44,7 @@
         </div>
         <div class="row align-items-center pt-4">
             <div class="col-auto">
-                <button class="btn btn-custom ps-4 pe-4" @click="calculateInchesFeet">Calculer et Convertir</button>
+                <button id="clickConvertCalculation" class="btn btn-custom ps-4 pe-4" @click="calculateInchesFeet">Calculer et Convertir</button>
             </div>
         </div>
     </div>

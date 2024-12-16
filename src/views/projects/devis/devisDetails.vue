@@ -260,7 +260,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3">
-                                    <d-currency v-model="data.quoteDetail.currencyId" @change="handleChangeCalculate"></d-currency>
+                                    <d-currency v-model="data.quoteDetail.currencyId"></d-currency>
                                     <div class="row align-items-center justify-content-center pt-1">
                                         <div class="col-auto">
                                             <button class="btn btn-custom ps-4 pe-4 font-size-0-6">Calculer</button>
@@ -499,10 +499,10 @@
                 }else{
                     const respn = await axiosInstance.post(`/api/Quote/${quote_id}/createQuoteDetail`,dataToSent);
                     window.showMessage("Ajout avec succées.")
-                } 
-                setTimeout(()=>{
-                    goToDevisList();
-                }, 2000);
+                    setTimeout(()=>{
+                        location.href = `/projet/devis/${quote_id}/details/${respn.data.response.quoteDetail.id}`
+                    }, 2000);
+                }
             }else{
                 window.showMessage("Veuillez sélectionner une contremarque valide.","error")
             }
@@ -537,7 +537,9 @@
             if(quoteDetailId){
                 quoteDetail.value = await quoteService.getQuoteDetailsById(quoteDetailId);
                 carpetNumber.value = quoteDetail.value.reference;
-                formatPrices(quoteDetail.value.prices);
+                if(quoteDetail.value.prices){
+                    formatPrices(quoteDetail.value.prices);
+                }
                 data.value = {
                     quoteDetail: {
                         locationId: quoteDetail.value.location?.location_id,
@@ -638,9 +640,26 @@
     const goToDevis = () => {
         location.href = `/projet/devis/manage/${quote_id}`;
     };
-    const handleChangeCalculate = (event) => {
-        console.log(event);
-    };
+
+    watch(
+        () => [ 
+                data.value.quoteDetail.applyLargeProjectRate,
+                data.value.quoteDetail.applyProposedDiscount,
+                data.value.quoteDetail.TarifId,
+                data.value.quoteDetail.calculateFromTotalExcludingTax,
+                data.value.carpetSpecification.collectionId,
+                data.value.carpetSpecification.modelId,
+                data.value.carpetSpecification.specialShapeId,
+                data.value.carpetSpecification.qualityId,
+              ],
+        async (newCarpert, oldCarpet) => {
+            if(quoteDetailId){
+                await saveDevisDetails();
+                document.getElementById("clickConvertCalculation").click();
+            }
+        },
+        { deep: true }
+    );
 </script>
 <style scoped>
     .row {
