@@ -565,7 +565,7 @@
                         qualityId: quoteDetail.value.carpetSpecification.quality?.id,
                         hasSpecialShape: quoteDetail.value.carpetSpecification.has_special_shape,
                         isOversized: quoteDetail.value.carpetSpecification.is_oversized,
-                        specialShapeId: quoteDetail.value.carpetSpecification.specialShape,
+                        specialShapeId: quoteDetail.value.carpetSpecification?.specialShape?.id,
                         dimensions: [],
                         materials: []
                     }

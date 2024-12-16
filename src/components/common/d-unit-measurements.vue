@@ -65,7 +65,12 @@
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', parseInt(value));
+                if(this.selectList){
+                    this.$emit('update:modelValue', value);
+                }else{
+                    this.$emit('update:modelValue', parseInt(value));
+                }
+                
             },
             async getUnitOfMesurements() {
                 try {
