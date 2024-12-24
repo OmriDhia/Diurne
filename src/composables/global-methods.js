@@ -27,6 +27,14 @@ export const Helper = {
         const dateToFormat = moment(date);
         return dateToFormat.format(format);
     },
+    FormatNumber: (number) => {
+        let nb = 0;
+        if(number){
+            nb = number
+        }
+        const numberToFormat = Math.round(parseFloat(nb),2);
+        return numberToFormat.toFixed(2);
+    },
     FormatPrice: (price) => {
         const formatter = new Intl.NumberFormat('fr-FR', {
             style: 'currency',

@@ -2,7 +2,7 @@
     <div class="row align-items-center">
         <div class="col-4"><label for="droit" class="form-label">Conditions de transports<span class="required" v-if="required">*</span>:</label></div>
         <div class="col-8">
-            <select id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="discount" @input="handleChange($event.target.value)">
+            <select id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="discount" @input="handleChange($event.target.value)" @change="exportTrait">
                 <option v-for="(prof, key) in discounts" :key="key" :value="prof.id">{{ prof.label }}</option>
             </select>
             <div v-if="error" class="invalid-feedback">{{ $t('Conditions de transports est abligatoire.') }}</div>
@@ -37,7 +37,8 @@
         methods: {
             handleChange(newValue) {
                 this.discount = parseInt(newValue);
-                this.$emit('update:modelValue', parseInt(newValue));
+                this.$emit('update:modelValue', this.discount);
+                this.$emit('exportTrait',this.discounts.find(e=>e.id === this.discount));
             },
             async getDiscounts() {
                 try {

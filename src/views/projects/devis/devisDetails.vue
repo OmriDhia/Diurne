@@ -261,11 +261,11 @@
                                 </div>
                                 <div class="col-md-3">
                                     <d-currency v-model="data.quoteDetail.currencyId"></d-currency>
-                                    <div class="row align-items-center justify-content-center pt-1">
+                                    <!--div class="row align-items-center justify-content-center pt-1">
                                         <div class="col-auto">
                                             <button class="btn btn-custom ps-4 pe-4 font-size-0-6">Calculer</button>
                                         </div>
-                                    </div>
+                                    </div-->
                                 </div>
                             </div>
                         </div>
@@ -284,7 +284,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-8 col-sm-12">
+                        <!--div class="col-md-8 col-sm-12">
                             <d-panel-title title="Acompte" className="ps-2"></d-panel-title>
                             <div class="row align-items-center p-2">
                                 <div class="col-md-6 col-sm-12">
@@ -333,7 +333,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div-->
                     </div>
                 </template>
             </d-panel>
@@ -476,6 +476,8 @@
             total_ttc: 0
         },
     });
+    
+    let disableAutoSave = true;
     const saveDevisDetails = async () => {
         try{
             error.value = {};
@@ -530,10 +532,12 @@
         }
     };
     const changePrices = async (price) => {
-       prices.value = price
+        applyStopAutoSave();
+        prices.value = price
     };
     const getQuoteDetails = async (quoteDetailId) => {
         try{
+            applyStopAutoSave();
             if(quoteDetailId){
                 quoteDetail.value = await quoteService.getQuoteDetailsById(quoteDetailId);
                 carpetNumber.value = quoteDetail.value.reference;
@@ -571,48 +575,54 @@
                         dimensions: [],
                         materials: []
                     }
-                }
+                };
             }
         }catch(e){
             console.log(e);
             const msg = e;
             window.showMessage(msg,'error');
         }
-    }
+    };
     
     const formatPrices = (price) => {
         prices.value = {
             tarif: {
-                ht_per_meter: price.tarif['m²'].price,
-                total_ht: price.tarif.totalPriceHt,
-                ht_per_sqft: price.tarif.sqft.price,
-                total_ttc: price.tarif.totalPriceTtc
+                ht_per_meter: Helper.FormatNumber(price.tarif['m²'].price),
+                total_ht: Helper.FormatNumber(price.tarif.totalPriceHt),
+                ht_per_sqft: Helper.FormatNumber(price.tarif.sqft.price),
+                total_ttc: Helper.FormatNumber(price.tarif.totalPriceTtc)
             },
             grand_public: {
-                total_ht: price['tarif-grand-projet'].totalPriceHt,
-                total_ttc: price['tarif-grand-projet'].totalPriceTtc,
-                ht_per_meter: price['tarif-grand-projet']['m²'].price,
-                ht_per_sqft: price['tarif-grand-projet'].sqft.price
+                total_ht: Helper.FormatNumber(price['tarif-grand-projet'].totalPriceHt),
+                total_ttc: Helper.FormatNumber(price['tarif-grand-projet'].totalPriceTtc),
+                ht_per_meter: Helper.FormatNumber(price['tarif-grand-projet']['m²'].price),
+                ht_per_sqft: Helper.FormatNumber(price['tarif-grand-projet'].sqft.price)
             },
             remise: {
-                total_ht: price['remise-proposee']?.totalPriceHt,
-                total_ttc: price['remise-proposee']?.totalPriceTtc,
-                ht_per_meter: price['remise-proposee']['m²'].price,
-                ht_per_sqft: price['remise-proposee']?.sqft.price
+                total_ht: Helper.FormatNumber(price['remise-proposee']?.totalPriceHt),
+                total_ttc: Helper.FormatNumber(price['remise-proposee']?.totalPriceTtc),
+                ht_per_meter: Helper.FormatNumber(price['remise-proposee']['m²'].price),
+                ht_per_sqft: Helper.FormatNumber(price['remise-proposee']?.sqft.price)
             },
             tarif_propose: {
-                total_ht: price['prix-propose']?.totalPriceHt,
-                total_ttc: price['prix-propose']?.totalPriceTtc,
-                ht_per_meter: price['prix-propose'] ? price['prix-propose']['m²'].price : 0,
-                ht_per_sqft: price['prix-propose']?.sqft.price
+                total_ht: Helper.FormatNumber(price['prix-propose']?.totalPriceHt),
+                total_ttc: Helper.FormatNumber(price['prix-propose']?.totalPriceTtc),
+                ht_per_meter: Helper.FormatNumber(price['prix-propose']) ? Helper.FormatNumber(price['prix-propose']['m²'].price) : 0,
+                ht_per_sqft: Helper.FormatNumber(price['prix-propose']?.sqft.price)
             },
             tarif_avant_remise_complementaire: {
-                total_ht: price['prix-propose-avant-remise-complementaire'].totalPriceHt,
-                total_ttc: price['prix-propose-avant-remise-complementaire'].totalPriceTtc,
-                ht_per_meter: price['prix-propose-avant-remise-complementaire']['m²'].price,
-                ht_per_sqft: price['prix-propose-avant-remise-complementaire'].sqft.price
+                total_ht: Helper.FormatNumber(price['prix-propose-avant-remise-complementaire'].totalPriceHt),
+                total_ttc: Helper.FormatNumber(price['prix-propose-avant-remise-complementaire'].totalPriceTtc),
+                ht_per_meter: Helper.FormatNumber(price['prix-propose-avant-remise-complementaire']['m²'].price),
+                ht_per_sqft: Helper.FormatNumber(price['prix-propose-avant-remise-complementaire'].sqft.price)
             },
         };
+    };
+    const applyStopAutoSave = () => {
+        disableAutoSave = true
+        setTimeout(()=>{
+            disableAutoSave = false;
+        },5000);
     }
     onMounted(() => {
        if(quote_id){
@@ -651,9 +661,13 @@
                 data.value.carpetSpecification.modelId,
                 data.value.carpetSpecification.specialShapeId,
                 data.value.carpetSpecification.qualityId,
+                data.value.carpetSpecification.hasSpecialShape,
+                data.value.quoteDetail.currencyId,
+                data.value.quoteDetail.proposedDiscountRate,
+                prices.value.tarif_avant_remise_complementaire.total_ht
               ],
         async (newCarpert, oldCarpet) => {
-            if(quoteDetailId){
+            if(quoteDetailId && !disableAutoSave){
                 await saveDevisDetails();
                 document.getElementById("clickConvertCalculation").click();
             }

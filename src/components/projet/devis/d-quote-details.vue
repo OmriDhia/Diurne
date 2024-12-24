@@ -16,6 +16,7 @@
                 <th  class="border-end bg-gradient-dark text-white">RN</th>
                 <th  class="border-end bg-gradient-dark text-white">Emplacement</th>
                 <th  class="border-end bg-gradient-dark text-white">Versement</th>
+                <th  class="border-end bg-gradient-dark text-white">Status</th>
                 <th  class="border-end bg-gradient-dark text-white">Actions</th>
             </tr>
             </thead>
@@ -25,15 +26,21 @@
                     <td class="border-start border-end text-center">{{ row.totalPriceRate}}</td>
                     <td class="border-start border-end text-center"><d-collections-dropdown :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.collection.id"></d-collections-dropdown></td>
                     <td class="border-start border-end text-center"><d-model-dropdown :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.model.id"></d-model-dropdown></td>
-                    <td class="border-start border-end text-center">{{ row.prices.tarif['m²'].price }}</td>
-                    <td class="border-start border-end text-center">{{ row.prices.tarif.sqft.price }}</td>
-                    <td class="border-start border-end text-center">{{ row.prices['prix-propose-avant-remise-complementaire']['m²'].price }}</td>
-                    <td class="border-start border-end text-center">{{ row.prices['prix-propose-avant-remise-complementaire'].sqft.price  }}</td>
-                    <td class="border-start border-end text-center">{{ row.prices['prix-propose-avant-remise-complementaire'].totalttc }}</td>
+                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.prices.tarif['m²'].price) }}</td>
+                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.prices.tarif.sqft.price) }}</td>
+                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.prices['prix-propose-avant-remise-complementaire']['m²'].price) }}</td>
+                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.prices['prix-propose-avant-remise-complementaire'].sqft.price)  }}</td>
+                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.prices['prix-propose-avant-remise-complementaire'].totalPriceTtc) }}</td>
                     <td class="border-start border-end text-center">{{ row.isValidated }}</td>
                     <td class="border-start border-end text-center"></td>
                     <td class="border-start border-end text-center"><d-location-dropdown :showOnlyDropdown="true" :disabled="true" :contremarqueId="props.contremarque.contremarque_id" v-model="row.location.location_id"> </d-location-dropdown> </td>
                     <td class="border-start border-end text-center"></td>
+                    <td class="border-start border-end text-center">
+                        <label class="switch s-outline s-outline-success mb-4 me-2">
+                            <input type="checkbox" v-model="row.active" @change="changeStatus(row.id,rowIndex,row.active)"/>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
                     <td class="border-start">
                         <div class="row ps-4 align-items-center">
                             <div class="col-auto p-1">
@@ -74,6 +81,7 @@
     import dModelDropdown from "../contremarques/dropdown/d-model-dropdown.vue";
     import dCollectionsDropdown from "../contremarques/dropdown/d-collections-dropdown.vue";
     import dLocationDropdown from "../contremarques/dropdown/d-location-dropdown.vue";
+    import axiosInstance from "../../../config/http";
 
     const props = defineProps({
         quoteId: {
@@ -92,7 +100,23 @@
     });
 
     const store = useStore();
-    
+    const emit = defineEmits(['changeStatus']);
+    const changeStatus = async (id,rowIndex,status) => {
+        try{
+            if(id){
+                const res = await axiosInstance.put(`/api/triggerStatus`,
+                    {
+                        quoteDetailId: id,
+                        newStatus: status
+                    });
+                emit('changeStatus');
+                window.showMessage("Mise a jour status avec succées.")
+            }
+        }catch(e){
+            props.quoteDetails[rowIndex].active = !status;
+            window.showMessage(e.message,'error')
+        }
+    }
     const goToDetails = () => {
         location.href = `/projet/devis/${props.quoteId}/details`
     };
@@ -102,6 +126,14 @@
 </script>
 
 <style>
+    .switch.s-outline.s-outline-success .slider{
+        border: 2px solid #e7515a;
+    }
+    .switch.s-outline.s-outline-success .slider:before{
+        border: 2px solid #e7515a;
+        background-color: #e7515a;
+        box-shadow: 0 1px 15px 1px rgba(52,40,104,.34)
+    }
     .table > thead > tr > th {
         font-size: 0.6rem;
         vertical-align: middle;

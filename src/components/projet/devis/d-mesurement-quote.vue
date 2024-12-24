@@ -37,7 +37,7 @@
                         Poids (kg):
                     </div>
                     <div class="col-md-6">
-                        <input class="form-control text-center" v-model="poids" :disabled="true">
+                        <input class="form-control text-center" v-model="weight" @change="handleWeight">
                     </div>
                 </div>
             </div>
@@ -79,13 +79,21 @@
             type: Number,
             default: 0
         },
+        globalWeight: {
+            type: String,
+            default: ""
+        },
+        currencyId: {
+            type: Number,
+            default: 0
+        }
     });
-    const emit = defineEmits(['changePrices']);
+    const emit = defineEmits(['changePrices','changeWeight']);
     const store = useStore();
     const measurements = ref([]);
     const sufaceM2 = ref("");
     const sufaceSqft = ref("");
-    const poids = ref("");
+    const weight = ref("");
     const data = ref({
         largCm: 0,
         lngCm: 0,
@@ -94,7 +102,8 @@
         largInches: 0,
         lngInches: 0,
         InputUnit: "cm",
-        quoteDetailId: 0
+        quoteDetailId: 0,
+        currencyId: 0
     });
     const setMeasurements = (units, prefix) => {
         for (const u of units) {
@@ -133,6 +142,9 @@
         if(props.calculateHt){
             data.value.totalPriceHt = parseFloat(props.totalHt);
         }
+        if(props.currencyId){
+            data.value.currencyId = parseInt(props.currencyId);
+        }
         const larg = measurements.value.find(m => m.name === 'Largeur');
         const long = measurements.value.find(m => m.name === 'Longueur');
         if (larg) {
@@ -151,6 +163,7 @@
             setMeasurementResults(long.unit,dimension.lng);
             store.commit('setMeasurements', measurements.value);
             emit('changePrices', result.price);
+            
             window.showMessage("Le calcul s'est terminé avec succès")
         } catch (error) {
             console.error(`Error calculation mesurements:`, error);
@@ -195,13 +208,24 @@
     };
 
     onMounted(() => {
+        weight.value = props.globalWeight;
         getMeasurements();
     });
     
+    const handleWeight = () =>{
+        emit('changeWeight',weight.value)
+    };
+    
     watch(
         () => props.dimensionsProps,
-        (dimensions) => {
+        () => {
             formatDataValue();
+        }
+    );
+    watch(
+        () => props.globalWeight,
+        () => {
+            weight.value = props.globalWeight;
         }
     );
     

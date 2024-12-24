@@ -3,6 +3,7 @@
         <div class="col-4"><label for="droit" class="form-label">Forme spéciale<span class="required" v-if="required">*</span>:</label></div>
         <div class="col-8">
             <select id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="discount" @input="handleChange($event.target.value)">
+                <option value="0">Auccun forme</option>
                 <option v-for="(prof, key) in discounts" :key="key" :value="prof.id">{{ prof.name }}</option>
             </select>
             <div v-if="error" class="invalid-feedback">{{ $t('Forme spéciale est abligatoire.') }}</div>

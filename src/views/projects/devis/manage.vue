@@ -49,30 +49,27 @@
                             <div class="row pe-2 ps-0" v-if="currentCustomer.contactCommercialHistoriesData">
                                 <d-base-dropdown :disabled="disbledContremarque" name="Commercial" label="firstname" trackBy="commercial_id" :datas="currentCustomer.contactCommercialHistoriesData" v-model="commercial"></d-base-dropdown>
                             </div>
-                            <div class="row pe-2 ps-0">
-                                <d-input :disabled="disbledContremarque" label="Auteur" v-model="data.auteur" :error="error.auteur"></d-input>
-                            </div>
                         </div>
                         <div class="col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Cractéristique tarif" className="ps-2"></d-panel-title>
                             <div class="row pe-4 align-items-center">
                                 <div class="col-md-6 col-sm-12 pe-sm-0">
-                                    <d-taxRules v-model="data.taxRuleId" :error="error.taxRuleId"></d-taxRules>
+                                    <d-taxRules :required="true" v-model="data.taxRuleId" :error="error.taxRuleId"></d-taxRules>
                                 </div>
                                 <div class="col-md-6 col-sm-12 pe-sm-0">
-                                    <d-conversions v-model="data.conversionId" :error="error.conversionId"></d-conversions>
+                                    <d-conversions :required="true" v-model="data.conversionId" :error="error.conversionId"></d-conversions>
                                 </div>
                             </div>
                             <div class="row pe-4 align-items-center">
                                 <div class="col-md-6 col-sm-12 pe-sm-0">
-                                    <d-currency v-model="data.currencyId" :error="error.currencyId"></d-currency>
+                                    <d-currency :required="true" v-model="data.currencyId" :error="error.currencyId"></d-currency>
                                 </div>
                                 <div class="col-md-6 col-sm-12 pe-sm-0">
-                                    <d-langages v-model="data.languageId" :error="error.languageId"></d-langages>
+                                    <d-langages :required="true" v-model="data.languageId" :error="error.languageId"></d-langages>
                                 </div>
                             </div>
                             <div class="row pt-2">
-                                <d-unit-measurements :selectList="true" v-model="data.unitOfMeasurement" :error="error.unitOfMeasurement"></d-unit-measurements>
+                                <d-unit-measurements :required="true" :selectList="true" v-model="data.unitOfMeasurement" :error="error.unitOfMeasurement"></d-unit-measurements>
                             </div>
                         </div>
                     </div>
@@ -80,30 +77,31 @@
                         <div class="col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Autres informations" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0">
-                                <d-transport-condition v-model="data.transportCond" :error="error.customer_id"></d-transport-condition>
+                                <d-transport-condition :required="true" v-model="data.transportConditionId" :error="error.transportConditionId"></d-transport-condition>
                             </div>
                         </div>
                         <div class="col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Adresses" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0" v-if="currentCustomer.addressesData">
-                                <d-base-dropdown name="Adresse de livraison" label="address1" trackBy="address_id" :datas="currentCustomer.addressesData" v-model="data.deliveryAddressId"></d-base-dropdown>
+                                <d-base-dropdown  :required="true" name="Adresse de livraison" label="address1" trackBy="address_id" :datas="currentCustomer.addressesData" v-model="data.deliveryAddressId" :error="error.deliveryAddressId"></d-base-dropdown>
                             </div>
                             <div class="row pe-2 ps-0 align-items-center" v-if="currentCustomer.addressesData">
-                                <d-base-dropdown name="Adresse de facturation" label="address1" trackBy="address_id" :datas="currentCustomer.addressesData" v-model="data.invoiceAddressId"></d-base-dropdown>
+                                <d-base-dropdown  :required="true" name="Adresse de facturation" label="address1" trackBy="address_id" :datas="currentCustomer.addressesData" v-model="data.invoiceAddressId" :error="error.invoiceAddressId"></d-base-dropdown>
                             </div>
                         </div>
                     </div>
                     <div class="row mt-3 mb-3 pe-0" v-if="quote_id">
-                        <d-quote-details :contremarque="contremarque" :quoteId="quote_id" :quoteDetails="quoteDetails"></d-quote-details>
+                        <d-quote-details @changeStatus="changeStatusDetails" :contremarque="contremarque" :quoteId="quote_id" :quoteDetails="quoteDetails"></d-quote-details>
                     </div>
                     <div class="row mt-3 mb-3 pe-0">
                         <div class="col-md-4 col-sm-12">
                             <d-input label="frais de port" v-model="data.shippingPrice" :error="error.shippingPrice"></d-input>
-                            <d-input label="Poids global (kg)"></d-input>
+                            <d-input label="Poids global (kg)" v-model="data.weight" :error="error.weight"></d-input>
                             <d-input type="Date" label="Date commande"></d-input>
                             <div class="row justify-content-center align-items-center mt-5">
                                 <div class="col-md-6">
-                                    <button class="btn btn-custom font-size-0-7 text-uppercase">Facture proforma</button>
+                                    <button class="btn btn-custom font-size-0-7 text-uppercase" data-bs-toggle="modal" data-bs-target="#downloadFacture">Facture proforma</button>
+                                    <d-modal-facture-devis :quoteId="quote_id"></d-modal-facture-devis>
                                 </div>
                                 <div class="col-md-6">
                                     <button class="btn btn-custom font-size-0-7 text-uppercase">Copie de devis</button>
@@ -158,11 +156,11 @@
                                             <d-input :disabled="disbledPrices" label="Total TTC + port" v-model="data.totalTaxIncluded"></d-input>
                                         </div>
                                     </div>
-                                    <div class="row align-items-center justify-content-end p-2">
+                                    <!--div class="row align-items-center justify-content-end p-2">
                                         <div class="col-md-6 col-sm-12">
                                             <button class="btn btn-custom pe-5 ps-5">Calculer</button>
                                         </div>
-                                    </div>
+                                    </div-->
                                     <div class="row align-items-center justify-content-end p-2">
                                         <div class="col-md-6 col-sm-12">
                                             <div class="custom-control custom-radio">
@@ -228,6 +226,7 @@
     import dTaxRules from "../../../components/common/d-taxRules.vue";
     import dTransportCondition from "../../../components/common/d-transportCondition.vue";
     import dQuoteDetails from "../../../components/projet/devis/d-quote-details.vue";
+    import dModalFactureDevis from "../../../components/projet/devis/d-modal-facture-devis.vue";
     
     useMeta({ title: 'Gestion Contremarque' });
 
@@ -271,6 +270,8 @@
         conversionId: 0,
         cumulatedDiscountAmount: "",
         otherTva: "",
+        transportConditionId: 0,
+        weight: 0,
     });
     const currentCustomer = ref({});
     
@@ -308,20 +309,22 @@
                     unitOfMeasurement: data.value.unitOfMeasurement,
                     deliveryAddressId: data.value.deliveryAddressId.address_id,
                     invoiceAddressId: data.value.invoiceAddressId.address_id,
-                    withoutDiscountPrice: data.value.withoutDiscountPrice,
-                    additionalDiscount: data.value.additionalDiscount,
-                    totalDiscountAmount: data.value.totalDiscountAmount,
-                    totalDiscountPercentage: data.value.totalDiscountPercentage,
-                    totalTaxExcluded: data.value.totalTaxExcluded,
-                    shippingPrice: data.value.shippingPrice,
-                    tax: data.value.tax,
-                    totalTaxIncluded: data.value.totalTaxIncluded,
+                    withoutDiscountPrice: parseFloat(data.value.withoutDiscountPrice),
+                    additionalDiscount: parseFloat(data.value.additionalDiscount),
+                    totalDiscountAmount: parseFloat(data.value.totalDiscountAmount),
+                    totalDiscountPercentage: parseFloat(data.value.totalDiscountPercentage),
+                    totalTaxExcluded: parseFloat(data.value.totalTaxExcluded),
+                    shippingPrice: parseFloat(data.value.shippingPrice),
+                    tax: parseFloat(data.value.tax),
+                    totalTaxIncluded: parseFloat(data.value.totalTaxIncluded),
                     quoteSentToCustomer: data.value.quoteSentToCustomer,
                     qualificationMessage: data.value.qualificationMessage,
                     conversionId: data.value.conversionId,
                     cumulatedDiscountAmount: data.value.cumulatedDiscountAmount,
                     otherTva: data.value.otherTva,
-                }
+                    transportConditionId: data.value.transportConditionId,
+                    weight: parseFloat(data.value.weight),
+                };
                 if(quote_id){
                     const res = await axiosInstance.put(`/api/contremarque/${contremarqueId.value}/quote/${quote_id}`,dataTosend);
                     window.showMessage("Mise a jour avec succées.")
@@ -374,25 +377,31 @@
                     unitOfMeasurement: quote.value?.unitOfMeasurement,
                     deliveryAddressId: quote.value?.deliveryAddress,
                     invoiceAddressId: quote.value?.invoiceAddress,
-                    withoutDiscountPrice: quote.value?.withoutDiscountPrice,
-                    additionalDiscount: quote.value?.additionalDiscount,
-                    totalDiscountAmount: quote.value?.totalDiscountAmount,
-                    totalDiscountPercentage: quote.value?.totalDiscountPercentage,
-                    totalTaxExcluded: quote.value?.totalTaxExcluded,
-                    shippingPrice: quote.value?.shippingPrice,
-                    tax: quote.value?.tax,
-                    totalTaxIncluded: quote.value?.totalTaxIncluded,
+                    withoutDiscountPrice: Helper.FormatNumber(quote.value?.withoutDiscountPrice),
+                    additionalDiscount: Helper.FormatNumber(quote.value?.additionalDiscount),
+                    totalDiscountAmount: Helper.FormatNumber(quote.value?.totalDiscountAmount),
+                    totalDiscountPercentage: Helper.FormatNumber(quote.value?.totalDiscountPercentage),
+                    totalTaxExcluded: Helper.FormatNumber(quote.value?.totalTaxExcluded),
+                    shippingPrice: Helper.FormatNumber(quote.value?.shippingPrice),
+                    tax: Helper.FormatNumber(quote.value?.tax),
+                    totalTaxIncluded: Helper.FormatNumber(quote.value?.totalTaxIncluded),
                     quoteSentToCustomer: quote.value?.quoteSentToCustomer,
                     qualificationMessage: quote.value?.qualificationMessage,
-                    cumulatedDiscountAmount: quote.value?.cumulatedDiscountAmount,
+                    cumulatedDiscountAmount: Helper.FormatNumber(quote.value?.cumulatedDiscountAmount),
                     otherTva: quote.value?.otherTva,
-                    conversionId: quote.value?.conversion.id
+                    conversionId: quote.value?.conversion.id,
+                    weight: quote.value?.weight,
                 };
             }
         }catch(e){
             console.log(e);
             const msg = "Echec de récupération des données devis";
             window.showMessage(msg,'error');
+        }
+    };
+    const changeStatusDetails = () => {
+        if(quote_id){
+            getQuote(quote_id);
         }
     };
     onMounted(() => {

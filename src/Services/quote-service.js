@@ -17,4 +17,12 @@ export default {
             throw new Error('Échec de récupération de détail devis');
           }
     },
+    async getQuoteHtml(id){
+        try {
+            const res = await axiosInstance.get(`/api/quote/download/${id}`);
+            return res.data.html;
+        } catch (error) {
+            throw new Error('Échec de récupération de html devis');
+        }
+    },
 };

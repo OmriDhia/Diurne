@@ -44,7 +44,7 @@
                             </div>
                             <div class="row pe-2 ps-0 justify-content-center  mt-2"  v-if="contremarque_id">
                                 <div class="col-auto">
-                                    <button class="btn btn-custom ps-5 pe-5 text-uppercase">Voir les devis</button>
+                                    <button class="btn btn-custom ps-5 pe-5 text-uppercase" @click="goToContremarques()">Voir les devis</button>
                                 </div>
                                 <div class="col-auto">
                                     <button class="btn btn-custom ps-4 pe-4 text-uppercase">Voir les commandes</button>
@@ -273,6 +273,9 @@
     };
     const goToDIProjet = () => {
         location.href = '/projet/contremarques/projectdis/' + contremarque_id
+    };
+    const goToContremarques = () => {
+        location.href = '/projet/devis?contremarqueId=' + contremarque_id
     };
     const goToListSUiviDI = () => {
         location.href = "/projet/dis"

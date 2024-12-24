@@ -73,16 +73,22 @@
             async getContremarques (designation = ""){
                 try{
                     let url = '/api/contremarques?page=1&limit=200&order=designation&orderWay=asc';
-                    
+                    let localString = "contremarqueList";
                     if(this.customerId){
                         url += '&customerId=' + this.customerId;
+                        localString += this.customerId;
                     }
                     if(designation){
                         url += '&designation=' + designation;
+                        localString += designation;
                     }
 
-                    const res = await axiosInstance.get(url);
-                    this.contremarques = res.data.contremarques;
+                    if(!localStorage.getItem(localString)){
+                        const res = await axiosInstance.get(url);
+                        localStorage.setItem(localString,JSON.stringify(res.data.contremarques))
+                    }
+                    
+                    this.contremarques = JSON.parse(localStorage.getItem(localString));
                     if(this.modelValue){
                         this.contremarqueId = this.contremarques.filter(ad => ad.contremarque_id === this.modelValue)[0];
                     }

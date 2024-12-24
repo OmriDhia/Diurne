@@ -115,6 +115,7 @@ import VueFeather from 'vue-feather';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
 import axiosInstance from '../../../config/http';
 import { ref, reactive, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { filterDevis, FILTER_DEVIS_STORAGE_NAME } from '../../../composables/constants';
 import moment from "moment";
 import { Helper } from "../../../composables/global-methods";
@@ -126,6 +127,7 @@ useMeta({ title: 'Devis' });
 const loading = ref(true);
 const loadingAttribution = ref(false);
 const total_rows = ref(0);
+const route = useRoute();
 
 const params = reactive({
     current_page: 1,
@@ -160,6 +162,9 @@ const getDevis = async () => {
     try {
         loading.value = true;
         let url = `/api/quotes?page=${params.current_page}&limit=${params.pagesize}&orderBy=${params.orderBy}&orderWay=${params.orderWay}`;
+        if(route.query.contremarqueId){
+            url += `&contremarqueId=${route.query.contremarqueId}`; 
+        }
         url += getFilterParams();
         const response = await axiosInstance.get(url);
         const data = response.data;
