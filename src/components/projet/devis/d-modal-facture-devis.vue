@@ -117,7 +117,7 @@
         }
     });
    const exportToDOCX = async () => {
-        const contentToExport =  await quoteService.getQuoteHtml(props.quoteId);
+        const contentToExport =  editor.value.getHTML();//await quoteService.getQuoteHtml(props.quoteId);
 
        asBlob(contentToExport).then(blobData => {
            saveAs(blobData, `Facture_devis_${props.quoteId}.docx`) // save as docx document
