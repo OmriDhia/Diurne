@@ -48,7 +48,7 @@ export const routes = [
         children: [
             {
                 path: '', 
-                name: 'users',
+                name: 'users-manage',
                 component: () => import('../views/users/users.vue'),
                 meta: {
                     permission: 'read user'

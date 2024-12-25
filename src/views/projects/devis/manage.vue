@@ -354,6 +354,7 @@
                 selectedCustomer.value = contremarque.value.customer.customer_id;
                 prescriber.value = contremarque.value.prescriber.customer_id;
                 commission.value = contremarque.value.commission;
+                data.value.discountRuleId =  contremarque.value?.customerDiscount?.discount_rule_id
             }
         }catch(e){
             console.log(e);
@@ -390,7 +391,8 @@
                     cumulatedDiscountAmount: Helper.FormatNumber(quote.value?.cumulatedDiscountAmount),
                     otherTva: quote.value?.otherTva,
                     conversionId: quote.value?.conversion.id,
-                    weight: quote.value?.weight,
+                    weight: Helper.FormatNumber(quote.value?.weight),
+                    transportConditionId: quote.value?.transportCondition?.id
                 };
             }
         }catch(e){
