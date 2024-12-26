@@ -112,7 +112,7 @@
                         <div class="col-md-8 col-sm-12">
                             <d-panel-title title="Dimensions" className="ps-2"></d-panel-title>
                             <d-mesurement-quote :dimensionsProps="quoteDetail?.carpetSpecification?.carpetDimensions" :totalHt="prices.tarif_avant_remise_complementaire.total_ht"
-                                                :calculateHt="data.quoteDetail.calculateFromTotalExcludingTax" :quoteDetailId="quoteDetailId" @changePrices="changePrices"></d-mesurement-quote>
+                                                :currencyId="data.quoteDetail.currencyId" :calculateHt="data.quoteDetail.calculateFromTotalExcludingTax" :quoteDetailId="quoteDetailId" @changePrices="changePrices"></d-mesurement-quote>
                         </div>
                         <div class="col-md-4 col-sm-12 p-4">
                             <d-input label="Quantité de tapis" v-model="data.quoteDetail.wantedQuantity"></d-input>
@@ -417,7 +417,7 @@
             reference: "",
             TarifId: 0,
             currencyId: 0,
-            totalPriceRate: "",
+            totalPriceRate: 0,
             isValidated: true,
             validatedAt: null,
             wantedQuantity: 0,
@@ -550,7 +550,7 @@
                         reference: quoteDetail.value.reference,
                         TarifId: quoteDetail.value?.tarif.id,
                         currencyId: quoteDetail.value?.currency.id,
-                        totalPriceRate: quoteDetail.value.totalPriceRate,
+                        totalPriceRate: Helper.FormatNumber(quoteDetail.value.totalPriceRate),
                         isValidated: quoteDetail.value.isValidated,
                         validatedAt: null,
                         wantedQuantity: quoteDetail.value.wantedQuantity,

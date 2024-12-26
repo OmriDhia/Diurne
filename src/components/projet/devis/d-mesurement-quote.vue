@@ -139,8 +139,11 @@
     };
     const calculateInchesFeet = async () => {
         data.value.quoteDetailId = parseInt(props.quoteDetailId);
+        console.log(props.calculateHt);
         if(props.calculateHt){
             data.value.totalPriceHt = parseFloat(props.totalHt);
+        }else{
+            delete data.value.totalPriceHt
         }
         if(props.currencyId){
             data.value.currencyId = parseInt(props.currencyId);
