@@ -9,7 +9,7 @@
                 :options="data"
                 placeholder="Modèle"
                 track-by="id"
-                label="reference"
+                label="code"
                 :searchable="true"
                 selected-label=""
                 select-label=""
@@ -75,7 +75,7 @@
             },
             async getData() {
                 try {
-                    const res = await axiosInstance.get('/api/collections');
+                    const res = await axiosInstance.get('/api/models');
                     this.data = res.data.response;
 
                     if(this.modelValue){

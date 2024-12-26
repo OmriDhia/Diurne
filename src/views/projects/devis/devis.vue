@@ -132,8 +132,8 @@ const route = useRoute();
 const params = reactive({
     current_page: 1,
     pagesize: 50,
-    orderBy: 'reference',
-    orderWay: 'desc'
+    orderBy: '',
+    orderWay: ''
 });
 
 const filter = ref(Object.assign({}, filterDevis));
@@ -161,7 +161,13 @@ onMounted(() => {
 const getDevis = async () => {
     try {
         loading.value = true;
-        let url = `/api/quotes?page=${params.current_page}&limit=${params.pagesize}&orderBy=${params.orderBy}&orderWay=${params.orderWay}`;
+        let url = `/api/quotes?page=${params.current_page}&limit=${params.pagesize}`;
+        if(params.orderBy){
+            url += `&orderBy=${params.orderBy}`;
+        }
+        if(params.orderWay){
+            url += `&orderWay=${params.orderWay}`;
+        }
         if(route.query.contremarqueId){
             url += `&contremarqueId=${route.query.contremarqueId}`; 
         }
