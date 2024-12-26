@@ -139,7 +139,6 @@
     };
     const calculateInchesFeet = async () => {
         data.value.quoteDetailId = parseInt(props.quoteDetailId);
-        console.log(props.calculateHt);
         if(props.calculateHt){
             data.value.totalPriceHt = parseFloat(props.totalHt);
         }else{
@@ -147,6 +146,8 @@
         }
         if(props.currencyId){
             data.value.currencyId = parseInt(props.currencyId);
+        }else{
+            data.value.currencyId = 0;
         }
         const larg = measurements.value.find(m => m.name === 'Largeur');
         const long = measurements.value.find(m => m.name === 'Longueur');
