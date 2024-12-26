@@ -27,6 +27,9 @@ export const Helper = {
         const dateToFormat = moment(date);
         return dateToFormat.format(format);
     },
+    getPrice: (obj, path) => { 
+        return path.split('.').reduce((o, p) => o?.[p] ?? 0, obj); 
+    },
     FormatNumber: (number) => {
         let nb = 0;
         if(number){

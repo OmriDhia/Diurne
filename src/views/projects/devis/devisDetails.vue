@@ -549,7 +549,7 @@
                         locationId: quoteDetail.value.location?.location_id,
                         reference: quoteDetail.value.reference,
                         TarifId: quoteDetail.value?.tarif.id,
-                        currencyId: quoteDetail.value?.currency.id,
+                        currencyId: quoteDetail.value.currency ? quoteDetail.value.currency.id : 0,
                         totalPriceRate: quoteDetail.value.totalPriceRate,
                         isValidated: quoteDetail.value.isValidated,
                         validatedAt: null,
@@ -566,9 +566,9 @@
                     carpetSpecification: {
                         reference: "",
                         description: quoteDetail.value.carpetSpecification.description,
-                        collectionId: quoteDetail.value.carpetSpecification.collection?.id,
-                        modelId: quoteDetail.value.carpetSpecification.model?.id,
-                        qualityId: quoteDetail.value.carpetSpecification.quality?.id,
+                        collectionId: quoteDetail.value.carpetSpecification?.collection?.id,
+                        modelId: quoteDetail.value.carpetSpecification?.model?.id,
+                        qualityId: quoteDetail.value.carpetSpecification?.quality?.id,
                         hasSpecialShape: quoteDetail.value.carpetSpecification.has_special_shape,
                         isOversized: quoteDetail.value.carpetSpecification.is_oversized,
                         specialShapeId: quoteDetail.value.carpetSpecification?.specialShape?.id,
@@ -583,40 +583,27 @@
             window.showMessage(msg,'error');
         }
     };
-    
+    const formatPrice = (priceCategory, price) => {
+        return { 
+            total_ht: Helper.FormatNumber(price[priceCategory] ? price[priceCategory].totalPriceHt : 0), 
+            total_ttc: Helper.FormatNumber(price[priceCategory] ? price[priceCategory].totalPriceTtc : 0), 
+            ht_per_meter: Helper.FormatNumber(price[priceCategory] ? price[priceCategory]['m²']?.price : 0), 
+            ht_per_sqft: Helper.FormatNumber(price[priceCategory] ? price[priceCategory].sqft?.price : 0) 
+        }; 
+    }
     const formatPrices = (price) => {
-        prices.value = {
-            tarif: {
-                ht_per_meter: Helper.FormatNumber(price.tarif['m²'].price),
-                total_ht: Helper.FormatNumber(price.tarif.totalPriceHt),
-                ht_per_sqft: Helper.FormatNumber(price.tarif.sqft.price),
-                total_ttc: Helper.FormatNumber(price.tarif.totalPriceTtc)
-            },
-            grand_public: {
-                total_ht: Helper.FormatNumber(price['tarif-grand-projet'].totalPriceHt),
-                total_ttc: Helper.FormatNumber(price['tarif-grand-projet'].totalPriceTtc),
-                ht_per_meter: Helper.FormatNumber(price['tarif-grand-projet']['m²'].price),
-                ht_per_sqft: Helper.FormatNumber(price['tarif-grand-projet'].sqft.price)
-            },
-            remise: {
-                total_ht: Helper.FormatNumber(price['remise-proposee']?.totalPriceHt),
-                total_ttc: Helper.FormatNumber(price['remise-proposee']?.totalPriceTtc),
-                ht_per_meter: Helper.FormatNumber(price['remise-proposee']['m²'].price),
-                ht_per_sqft: Helper.FormatNumber(price['remise-proposee']?.sqft.price)
-            },
-            tarif_propose: {
-                total_ht: Helper.FormatNumber(price['prix-propose']?.totalPriceHt),
-                total_ttc: Helper.FormatNumber(price['prix-propose']?.totalPriceTtc),
-                ht_per_meter: Helper.FormatNumber(price['prix-propose']) ? Helper.FormatNumber(price['prix-propose']['m²'].price) : 0,
-                ht_per_sqft: Helper.FormatNumber(price['prix-propose']?.sqft.price)
-            },
-            tarif_avant_remise_complementaire: {
-                total_ht: Helper.FormatNumber(price['prix-propose-avant-remise-complementaire'].totalPriceHt),
-                total_ttc: Helper.FormatNumber(price['prix-propose-avant-remise-complementaire'].totalPriceTtc),
-                ht_per_meter: Helper.FormatNumber(price['prix-propose-avant-remise-complementaire']['m²'].price),
-                ht_per_sqft: Helper.FormatNumber(price['prix-propose-avant-remise-complementaire'].sqft.price)
-            },
-        };
+        prices.value = { 
+            tarif: formatPrice('tarif', price), 
+            grand_public: formatPrice('tarif-grand-projet', price), 
+            remise: formatPrice('remise-proposee', price), 
+            tarif_propose: { 
+                total_ht: Helper.FormatNumber(price['prix-propose']?.totalPriceHt), 
+                total_ttc: Helper.FormatNumber(price['prix-propose']?.totalPriceTtc), 
+                ht_per_meter: Helper.FormatNumber(price['prix-propose'] ? price['prix-propose']['m²']?.price : 0), 
+                ht_per_sqft: Helper.FormatNumber(price['prix-propose']?.sqft?.price) 
+            }, 
+            tarif_avant_remise_complementaire: formatPrice('prix-propose-avant-remise-complementaire', price) 
+        }
     };
     const applyStopAutoSave = () => {
         disableAutoSave = true

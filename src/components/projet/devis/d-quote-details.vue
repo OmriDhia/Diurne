@@ -26,12 +26,12 @@
                     <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.impactOnTheQuotePricerow)}}</td>
                     <td class="border-start border-end text-center"><d-collections-dropdown v-if="row.carpetSpecification.collection" :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.collection.id"></d-collections-dropdown></td>
                     <td class="border-start border-end text-center"><d-model-dropdown v-if="row.carpetSpecification.model" :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.model.id"></d-model-dropdown></td>
-                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.prices.tarif['m²'].price) }}</td>
-                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.prices.tarif.sqft.price) }}</td>
-                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.prices['prix-propose-avant-remise-complementaire']['m²'].price) }}</td>
-                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.prices['prix-propose-avant-remise-complementaire'].sqft.price)  }}</td>
-                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.prices['prix-propose-avant-remise-complementaire'].totalPriceTtc) }}</td>
-                    <td class="border-start border-end text-center">{{ row.isValidated }}</td>
+                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'tarif.m².price')) }}</td> 
+                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'tarif.sqft.price')) }}</td> 
+                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'prix-propose-avant-remise-complementaire.m².price')) }}</td> 
+                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'prix-propose-avant-remise-complementaire.sqft.price')) }}</td> 
+                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc')) }}</td> 
+                    <td class="border-start border-end text-center">{{ row.isValidated }}</td> 
                     <td class="border-start border-end text-center"></td>
                     <td class="border-start border-end text-center"><d-location-dropdown v-if="row.location" :showOnlyDropdown="true" :disabled="true" :contremarqueId="props.contremarque.contremarque_id" v-model="row.location.location_id"> </d-location-dropdown> </td>
                     <td class="border-start border-end text-center"></td>
@@ -44,9 +44,9 @@
                     <td class="border-start">
                         <div class="row ps-4 align-items-center">
                             <div class="col-auto p-1">
-                                <d-delete :api="''"></d-delete>
+                                <d-delete :api="''" class="btn-small"></d-delete>
                             </div>
-                            <div class="col-auto p-1">
+                            <div class="col-auto p-1 btn-small">
                                 <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"  @click="goToQuoteDetails(row.id)">
                                     <vue-feather type="search" size="14"></vue-feather>
                                 </button>
@@ -55,7 +55,7 @@
                     </td>
                 </tr>
                 <tr>
-                  <td colspan="14">
+                  <td colspan="15">
                       <div class="row justify-content-end align-items-start mt-1 pe-2">
                           <div class="col-auto">
                               <button class="btn w-100 btn-custom text-uppercase" @click="goToDetails">Nouveau</button>

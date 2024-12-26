@@ -168,6 +168,13 @@ label, .text-black{
             background-position:right bottom;
         }
     }
+    .btn-small .btn.rounded-circle{
+        height: 20px;
+        width: 20px;
+        svg{
+            width: 12px;
+        }
+    }
     .btn.rounded-circle{
         background-color: $color !important;
         border-color: $color !important;
