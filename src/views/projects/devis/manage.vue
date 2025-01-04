@@ -372,6 +372,13 @@
             window.showMessage(msg,'error');
         }
     };
+    let disableAutoSave = true;
+    const applyStopAutoSave = () => {
+        disableAutoSave = true;
+        setTimeout(()=>{
+            disableAutoSave = false;
+        },3000);
+    };
     const getQuote = async (quote_id) => {
         try{
             if(quote_id){
@@ -380,6 +387,7 @@
                 quoteNumber.value = quote.value.reference;
                 quoteDetails.value = quote.value?.quoteDetails;
                 createdDate.value = moment(quote.value.createdAt).format('YYYY-MM-DD');
+                applyStopAutoSave();
                 data.value = {
                     discountRuleId: 0,
                     taxRuleId: quote.value?.taxRule.id,
@@ -430,11 +438,24 @@
         () => [
             data.value.weight,
             data.value.quoteSentToCustomer,
-            data.value.qualificationMessage
+            data.value.qualificationMessage,
+            data.value.shippingPrice,
+            data.value.additionalDiscount
         ],
-        () => {
-            if(quote_id){
-                saveDevis(false)  
+        async () => {
+            if(quote_id && !disableAutoSave){
+                saveDevis(false);
+                try {
+                    const res = await quoteService.calculateQuote(quote_id,{
+                        additionalDiscount: parseFloat(data.value.shippingPrice),
+                        shippingPrice: parseFloat(data.value.additionalDiscount)
+                    })
+                }catch(e){
+                    console.log(e);
+                    const msg = "Echec dans le calcule des données devis";
+                    window.showMessage(msg,'error');
+                }
+                getQuote(quote_id);
             }
         }
     );

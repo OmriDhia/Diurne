@@ -35,7 +35,7 @@ export const Helper = {
         if(number){
             nb = number
         }
-        const numberToFormat = Math.round(parseFloat(nb),2);
+        const numberToFormat = parseFloat(nb);
         return numberToFormat.toFixed(2);
     },
     FormatPrice: (price) => {

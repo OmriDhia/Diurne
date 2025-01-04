@@ -108,242 +108,244 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row mt-3 mb-3 pe-0 align-items-center">
-                        <div class="col-md-8 col-sm-12">
-                            <d-panel-title title="Dimensions" className="ps-2"></d-panel-title>
-                            <d-mesurement-quote :areaSquareFeet="quoteDetail?.areaSquareFeet"
-                                                :areaSquareMeter="quoteDetail?.areaSquareMeter"
-                                                :dimensionsProps="quoteDetail?.carpetSpecification?.carpetDimensions" 
-                                                :totalHt="prices?.tarif_avant_remise_complementaire?.total_ht"
-                                                :currencyId="data.quoteDetail.currencyId" 
-                                                :calculateHt="data.quoteDetail.calculateFromTotalExcludingTax" 
-                                                :quoteDetailId="quoteDetailId" 
-                                                :globalWeight="quoteDetail?.carpetSpecification?.weight"
-                                                @changePrices="changePrices"
-                                                @changeWeight="changeWeight"
-                            ></d-mesurement-quote>
-                        </div>
-                        <div class="col-md-4 col-sm-12 p-4">
-                            <d-input label="Quantité de tapis" v-model="data.quoteDetail.wantedQuantity"></d-input>
-                            <d-input label="RN"  v-model="data.quoteDetail.rn"></d-input>
-                        </div>
-                    </div>
-                    <div class="row mt-3 mb-3 pe-0 align-items-center">
-                        <div class="col-md-6 col-sm-12">
-                            <d-panel-title title="Tarif" className="ps-2"></d-panel-title>
-                            <div class="row pe-4">
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input label="HT/m²" :disabled="true" v-model="prices.tarif.ht_per_meter"></d-input>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input label="Total HT" :disabled="true" v-model="prices.tarif.total_ht"></d-input>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input label="Net/sqft" :disabled="true" v-model="prices.tarif.ht_per_sqft"></d-input>
-                                </div>
+                    <template v-if="quoteDetailId">
+                        <div class="row mt-3 mb-3 pe-0 align-items-center">
+                            <div class="col-md-8 col-sm-12">
+                                <d-panel-title title="Dimensions" className="ps-2"></d-panel-title>
+                                <d-mesurement-quote :areaSquareFeet="quoteDetail?.areaSquareFeet"
+                                                    :areaSquareMeter="quoteDetail?.areaSquareMeter"
+                                                    :dimensionsProps="quoteDetail?.carpetSpecification?.carpetDimensions" 
+                                                    :totalHt="prices?.tarif_avant_remise_complementaire?.total_ht"
+                                                    :currencyId="data.quoteDetail.currencyId" 
+                                                    :calculateHt="data.quoteDetail.calculateFromTotalExcludingTax" 
+                                                    :quoteDetailId="quoteDetailId" 
+                                                    :globalWeight="quoteDetail?.carpetSpecification?.weight"
+                                                    @changePrices="changePrices"
+                                                    @changeWeight="changeWeight"
+                                ></d-mesurement-quote>
+                            </div>
+                            <div class="col-md-4 col-sm-12 p-4">
+                                <d-input label="Quantité de tapis" v-model="data.quoteDetail.wantedQuantity"></d-input>
+                                <d-input label="RN"  v-model="data.quoteDetail.rn"></d-input>
                             </div>
                         </div>
-                        <div class="col-md-6 col-sm-12">
-                            <d-panel-title title="Tarif grand projet" className="ps-2">
-                                <template v-slot:extraBtn>
-                                    <div class="custom-control custom-radio">
-                                        <input type="checkbox" class="custom-control-input" id="applyLargeProjectRate"
-                                               name="tarifBigProject" v-model="data.quoteDetail.applyLargeProjectRate"/>
-                                        <label class="custom-control-label text-black" for="applyLargeProjectRate">
-                                            Appliquer tarif grand projet </label>
+                        <div class="row mt-3 mb-3 pe-0 align-items-center">
+                            <div class="col-md-6 col-sm-12">
+                                <d-panel-title title="Tarif" className="ps-2"></d-panel-title>
+                                <div class="row pe-4">
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input label="HT/m²" :disabled="true" v-model="prices.tarif.ht_per_meter"></d-input>
                                     </div>
-                                </template>
-                            </d-panel-title>
-                            <div class="row pe-4">
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input label="HT/m²" :disabled="true" v-model="prices.grand_public.ht_per_meter"></d-input>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input label="Total HT" :disabled="true" v-model="prices.grand_public.total_ht"></d-input>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input label="Net/sqft" :disabled="true" v-model="prices.grand_public.ht_per_sqft"></d-input>
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input label="Total HT" :disabled="true" v-model="prices.tarif.total_ht"></d-input>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input label="Net/sqft" :disabled="true" v-model="prices.tarif.ht_per_sqft"></d-input>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row mt-3 mb-3 pe-0 align-items-center">
-                        <div class="col-md-12">
-                            <d-panel-title title="Remise proposée" className="ps-2"></d-panel-title>
-                            <div class="row pe-4 align-items-center">
-                                <div class="col-md-9">
-                                    <div class="row">
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="HT/m²" :disabled="true" v-model="prices.remise.ht_per_meter"></d-input>
+                            <div class="col-md-6 col-sm-12">
+                                <d-panel-title title="Tarif grand projet" className="ps-2">
+                                    <template v-slot:extraBtn>
+                                        <div class="custom-control custom-radio">
+                                            <input type="checkbox" class="custom-control-input" id="applyLargeProjectRate"
+                                                   name="tarifBigProject" v-model="data.quoteDetail.applyLargeProjectRate"/>
+                                            <label class="custom-control-label text-black" for="applyLargeProjectRate">
+                                                Appliquer tarif grand projet </label>
                                         </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="TTC/m²" :disabled="true" v-model="prices.remise.ht_per_meter"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="Total HT" :disabled="true" v-model="prices.remise.total_ht"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="Total TTC" :disabled="true" v-model="prices.remise.total_ttc"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="Net/sqft" :disabled="true" v-model="prices.remise.ht_per_sqft"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="IAT/sqft" :disabled="true" v-model="prices.remise.ht_per_sqft"></d-input>
-                                        </div>
+                                    </template>
+                                </d-panel-title>
+                                <div class="row pe-4">
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input label="HT/m²" :disabled="true" v-model="prices.grand_public.ht_per_meter"></d-input>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="custom-control custom-radio">
-                                        <input type="checkbox" class="custom-control-input" id="applyProposedDiscount"
-                                               name="applyProposedDiscount" v-model="data.quoteDetail.applyProposedDiscount" value="true"/>
-                                        <label class="custom-control-label text-black" for="applyProposedDiscount">
-                                            Appliquer remise proposée </label>
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input label="Total HT" :disabled="true" v-model="prices.grand_public.total_ht"></d-input>
                                     </div>
-                                    <d-input v-model="data.quoteDetail.proposedDiscountRate" :disabled="!data.quoteDetail.applyProposedDiscount"></d-input>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mt-3 mb-3 pe-0 align-items-center">
-                        <div class="col-md-12">
-                            <d-panel-title title="Prix proposée avant remise complémentaire" className="ps-2"></d-panel-title>
-                            <div class="row pe-4 align-items-center">
-                                <div class="col-md-9">
-                                    <div class="row">
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="HT/m²" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.ht_per_meter"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="TTC/m²" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.ht_per_meter"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="Total HT" :disabled="!data.quoteDetail.calculateFromTotalExcludingTax" v-model="prices.tarif_avant_remise_complementaire.total_ht"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="Total TTC" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.total_ttc"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="Net/sqft" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.ht_per_sqft"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="IAT/sqft" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.ht_per_sqft"></d-input>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="custom-control custom-radio">
-                                        <input type="checkbox" class="custom-control-input" id="calculateFromTotalExcludingTax"
-                                               name="calculateFromTotalExcludingTax" v-model="data.quoteDetail.calculateFromTotalExcludingTax" value="true"/>
-                                        <label class="custom-control-label text-black" for="calculateFromTotalExcludingTax">
-                                            Calculer a partir de total HT </label>
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input label="Net/sqft" :disabled="true" v-model="prices.grand_public.ht_per_sqft"></d-input>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row mt-3 mb-3 pe-0 align-items-center">
-                        <div class="col-md-12">
-                            <d-panel-title title="Prix proposée" className="ps-2"></d-panel-title>
-                            <div class="row pe-4 align-items-center">
-                                <div class="col-md-9">
-                                    <div class="row">
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="HT/m²" :disabled="true" v-model="prices.tarif_propose.ht_per_meter"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="TTC/m²" :disabled="true" v-model="prices.tarif_propose.ht_per_meter"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="Total HT" :disabled="true" v-model="prices.tarif_propose.total_ht"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="Total TTC" :disabled="true" v-model="prices.tarif_propose.total_ttc"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="Net/sqft" :disabled="true" v-model="prices.tarif_propose.ht_per_sqft"></d-input>
-                                        </div>
-                                        <div class="col-md-3 col-sm-12">
-                                            <d-input label="IAT/sqft" :disabled="true" v-model="prices.tarif_propose.ht_per_sqft"></d-input>
+                        <div class="row mt-3 mb-3 pe-0 align-items-center">
+                            <div class="col-md-12">
+                                <d-panel-title title="Remise proposée" className="ps-2"></d-panel-title>
+                                <div class="row pe-4 align-items-center">
+                                    <div class="col-md-9">
+                                        <div class="row">
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="HT/m²" :disabled="true" v-model="prices.remise.ht_per_meter"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="TTC/m²" :disabled="true" v-model="prices.remise.ht_per_meter"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="Total HT" :disabled="true" v-model="prices.remise.total_ht"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="Total TTC" :disabled="true" v-model="prices.remise.total_ttc"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="Net/sqft" :disabled="true" v-model="prices.remise.ht_per_sqft"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="IAT/sqft" :disabled="true" v-model="prices.remise.ht_per_sqft"></d-input>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <d-currency v-model="data.quoteDetail.currencyId"></d-currency>
-                                    <!--div class="row align-items-center justify-content-center pt-1">
-                                        <div class="col-auto">
-                                            <button class="btn btn-custom ps-4 pe-4 font-size-0-6">Calculer</button>
+                                    <div class="col-md-3">
+                                        <div class="custom-control custom-radio">
+                                            <input type="checkbox" class="custom-control-input" id="applyProposedDiscount"
+                                                   name="applyProposedDiscount" v-model="data.quoteDetail.applyProposedDiscount" value="true"/>
+                                            <label class="custom-control-label text-black" for="applyProposedDiscount">
+                                                Appliquer remise proposée </label>
                                         </div>
-                                    </div-->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mt-3 mb-3 pe-0">
-                        <div class="col-md-4 col-sm-12">
-                            <div class="row align-items-center p-2">
-                                <div class="col-md-12">
-                                    <d-input label="% prix total" v-model="data.quoteDetail.totalPriceRate"></d-input>
-                                </div>
-                            </div>
-                            <div class="row align-items-center p-2">
-                                <div class="col-sm-12 col-md-4 text-black"> Commentaire: </div>
-                                <div class="col-sm-12 col-md-8">
-                                    <textarea v-model="data.quoteDetail.comment" class="block-custom-border w-100 h-200-forced"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-8 col-sm-12">
-                            <d-panel-title title="Acompte" className="ps-2"></d-panel-title>
-                            <div class="row align-items-center p-2">
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input :disabled="true" label="N° tapis dans la commande" v-model="data.withoutDiscountPrice"></d-input>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input :disabled="true" label="RN" v-model="data.totalTaxExcluded"></d-input>
-                                </div>
-                            </div>
-                            <div class="row align-items-center p-2">
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input :disabled="true" label="N° tapis dans la commande" v-model="data.cumulatedDiscountAmount"></d-input>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input :disabled="true" label="Délai SUP (modifie client)" v-model="data.totalTaxIncluded"></d-input>
-                                </div>
-                            </div>
-                            <div class="row align-items-center p-2">
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input :disabled="true" label="Date de livraison prévu" v-model="data.additionalDiscount"></d-input>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input :disabled="true" label="Acompte réçu HT" v-model="data.tax"></d-input>
-                                </div>
-                            </div>
-                            <div class="row align-items-center p-2">
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input :disabled="true" label="Date de l'acompte" v-model="data.totalDiscountAmount"></d-input>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input :disabled="true" label="Comp.prescr. acompte" v-model="data.otherTva"></d-input>
-                                </div>
-                            </div>
-                            <div class="row align-items-center justify-content-end p-2">
-                                <div class="col-md-12">
-                                    <d-input :disabled="true" label="Solde" v-model="data.totalTaxIncluded"></d-input>
-                                </div>
-                            </div>
-                            <div class="row align-items-center justify-content-end p-2">
-                                <div class="col-md-12">
-                                    <div class="custom-control custom-radio">
-                                        <input disabled type="checkbox" class="custom-control-input" id="quoteSentToCustomer" v-model="data.quoteSentToCustomer"
-                                               name="quoteSentToCustomer"/>
-                                        <label class="custom-control-label text-black" for="quoteSentToCustomer">
-                                            commande sans acompte </label>
+                                        <d-input v-model="data.quoteDetail.proposedDiscountRate" :disabled="!data.quoteDetail.applyProposedDiscount"></d-input>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        <div class="row mt-3 mb-3 pe-0 align-items-center">
+                            <div class="col-md-12">
+                                <d-panel-title title="Prix proposée avant remise complémentaire" className="ps-2"></d-panel-title>
+                                <div class="row pe-4 align-items-center">
+                                    <div class="col-md-9">
+                                        <div class="row">
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="HT/m²" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.ht_per_meter"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="TTC/m²" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.ht_per_meter"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="Total HT" :disabled="!data.quoteDetail.calculateFromTotalExcludingTax" v-model="prices.tarif_avant_remise_complementaire.total_ht"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="Total TTC" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.total_ttc"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="Net/sqft" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.ht_per_sqft"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="IAT/sqft" :disabled="true" v-model="prices.tarif_avant_remise_complementaire.ht_per_sqft"></d-input>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="custom-control custom-radio">
+                                            <input type="checkbox" class="custom-control-input" id="calculateFromTotalExcludingTax"
+                                                   name="calculateFromTotalExcludingTax" v-model="data.quoteDetail.calculateFromTotalExcludingTax" value="true"/>
+                                            <label class="custom-control-label text-black" for="calculateFromTotalExcludingTax">
+                                                Calculer a partir de total HT </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3 mb-3 pe-0 align-items-center">
+                            <div class="col-md-12">
+                                <d-panel-title title="Prix proposée" className="ps-2"></d-panel-title>
+                                <div class="row pe-4 align-items-center">
+                                    <div class="col-md-9">
+                                        <div class="row">
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="HT/m²" :disabled="true" v-model="prices.tarif_propose.ht_per_meter"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="TTC/m²" :disabled="true" v-model="prices.tarif_propose.ht_per_meter"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="Total HT" :disabled="true" v-model="prices.tarif_propose.total_ht"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="Total TTC" :disabled="true" v-model="prices.tarif_propose.total_ttc"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="Net/sqft" :disabled="true" v-model="prices.tarif_propose.ht_per_sqft"></d-input>
+                                            </div>
+                                            <div class="col-md-3 col-sm-12">
+                                                <d-input label="IAT/sqft" :disabled="true" v-model="prices.tarif_propose.ht_per_sqft"></d-input>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <d-currency v-model="data.quoteDetail.currencyId"></d-currency>
+                                        <!--div class="row align-items-center justify-content-center pt-1">
+                                            <div class="col-auto">
+                                                <button class="btn btn-custom ps-4 pe-4 font-size-0-6">Calculer</button>
+                                            </div>
+                                        </div-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3 mb-3 pe-0">
+                            <div class="col-md-4 col-sm-12">
+                                <div class="row align-items-center p-2">
+                                    <div class="col-md-12">
+                                        <d-input label="% prix total" v-model="data.quoteDetail.totalPriceRate"></d-input>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center p-2">
+                                    <div class="col-sm-12 col-md-4 text-black"> Commentaire: </div>
+                                    <div class="col-sm-12 col-md-8">
+                                        <textarea v-model="data.quoteDetail.comment" class="block-custom-border w-100 h-200-forced"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8 col-sm-12">
+                                <d-panel-title title="Acompte" className="ps-2"></d-panel-title>
+                                <div class="row align-items-center p-2">
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input :disabled="true" label="N° tapis dans la commande" v-model="data.withoutDiscountPrice"></d-input>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input :disabled="true" label="RN" v-model="data.totalTaxExcluded"></d-input>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center p-2">
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input :disabled="true" label="N° tapis dans la commande" v-model="data.cumulatedDiscountAmount"></d-input>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input :disabled="true" label="Délai SUP (modifie client)" v-model="data.totalTaxIncluded"></d-input>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center p-2">
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input :disabled="true" label="Date de livraison prévu" v-model="data.additionalDiscount"></d-input>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input :disabled="true" label="Acompte réçu HT" v-model="data.tax"></d-input>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center p-2">
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input :disabled="true" label="Date de l'acompte" v-model="data.totalDiscountAmount"></d-input>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
+                                        <d-input :disabled="true" label="Comp.prescr. acompte" v-model="data.otherTva"></d-input>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center justify-content-end p-2">
+                                    <div class="col-md-12">
+                                        <d-input :disabled="true" label="Solde" v-model="data.totalTaxIncluded"></d-input>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center justify-content-end p-2">
+                                    <div class="col-md-12">
+                                        <div class="custom-control custom-radio">
+                                            <input disabled type="checkbox" class="custom-control-input" id="quoteSentToCustomer" v-model="data.quoteSentToCustomer"
+                                                   name="quoteSentToCustomer"/>
+                                            <label class="custom-control-label text-black" for="quoteSentToCustomer">
+                                                commande sans acompte </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
                 </template>
             </d-panel>
         </template>
