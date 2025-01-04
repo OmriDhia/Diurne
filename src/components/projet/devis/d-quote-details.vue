@@ -23,7 +23,7 @@
             <tbody>
                 <tr v-for="(row, rowIndex) in props.quoteDetails" :key="rowIndex">
                     <td class="border-start border-end text-center">{{ row.reference}}</td>
-                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.impactOnTheQuotePricerow)}}</td>
+                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.impactOnTheQuotePrice)}}</td>
                     <td class="border-start border-end text-center"><d-collections-dropdown v-if="row.carpetSpecification.collection" :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.collection.id"></d-collections-dropdown></td>
                     <td class="border-start border-end text-center"><d-model-dropdown v-if="row.carpetSpecification.model" :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.model.id"></d-model-dropdown></td>
                     <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'tarif.m².price')) }}</td> 
@@ -32,7 +32,7 @@
                     <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'prix-propose-avant-remise-complementaire.sqft.price')) }}</td> 
                     <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc')) }}</td> 
                     <td class="border-start border-end text-center">{{ row.isValidated }}</td> 
-                    <td class="border-start border-end text-center"></td>
+                    <td class="border-start border-end text-center">{{ row.rn }}</td>
                     <td class="border-start border-end text-center"><d-location-dropdown v-if="row.location" :showOnlyDropdown="true" :disabled="true" :contremarqueId="props.contremarque.contremarque_id" v-model="row.location.location_id"> </d-location-dropdown> </td>
                     <td class="border-start border-end text-center"></td>
                     <td class="border-start border-end text-center">

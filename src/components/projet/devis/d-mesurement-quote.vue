@@ -55,6 +55,7 @@
     import {computed, onMounted, ref, watch} from "vue";
     import contremarqueService from "../../../Services/contremarque-service";
     import dInput from "../../base/d-input.vue";
+    import {Helper} from "../../../composables/global-methods";
 
     const props = defineProps({
         dimensionsProps : {
@@ -86,6 +87,12 @@
         currencyId: {
             type: Number,
             default: 0
+        },
+        areaSquareFeet: {
+            type: Number
+        },
+        areaSquareMeter: {
+            type: Number
         }
     });
     const emit = defineEmits(['changePrices','changeWeight']);
@@ -212,12 +219,24 @@
     };
 
     onMounted(() => {
-        weight.value = props.globalWeight;
+        affectAreaSquareWeight();
         getMeasurements();
     });
     
     const handleWeight = () =>{
         emit('changeWeight',weight.value)
+    };
+    
+    const affectAreaSquareWeight = () =>{
+        if(props.globalWeight){
+            weight.value = Helper.FormatNumber(props.globalWeight);
+        } 
+        if(props.areaSquareMeter){
+            sufaceM2.value = Helper.FormatNumber(props.areaSquareMeter);
+        }
+        if(props.areaSquareFeet){
+            sufaceSqft.value = Helper.FormatNumber(props.areaSquareFeet);
+        }
     };
     
     watch(
@@ -227,9 +246,9 @@
         }
     );
     watch(
-        () => props.globalWeight,
+        () => [props.areaSquareMeter,props.areaSquareFeet,props.globalWeight],
         () => {
-            weight.value = props.globalWeight;
+            affectAreaSquareWeight();
         }
     );
     

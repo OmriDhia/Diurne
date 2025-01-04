@@ -186,7 +186,6 @@ const changeServer = (data) => {
     params.pagesize = data.pagesize;
     params.orderBy = data.sort_column;
     params.orderWay = data.sort_direction;
-
     getDevis();
 };
 

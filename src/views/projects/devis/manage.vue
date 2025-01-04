@@ -164,7 +164,7 @@
                                     <div class="row align-items-center justify-content-end p-2">
                                         <div class="col-md-6 col-sm-12">
                                             <div class="custom-control custom-radio">
-                                                <input type="radio" class="custom-control-input" id="quoteSentToCustomer" v-model="data.quoteSentToCustomer"
+                                                <input type="checkbox" class="custom-control-input" id="quoteSentToCustomer" v-model="data.quoteSentToCustomer"
                                                        name="quoteSentToCustomer"/>
                                                 <label class="custom-control-label text-black" for="quoteSentToCustomer">
                                                     Devis expédié au client </label>
@@ -189,7 +189,14 @@
                     <button class="btn btn-custom pe-5 ps-5" @click="goToDevisList">Retour à la liste</button>
                 </div>
                 <div class="col-auto">
-                    <button class="btn btn-custom pe-5 ps-5" @click="saveDevis">Enregistrer</button>
+                    <div class="row">
+                        <div class="col-auto" v-if="quote_id">
+                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevis(false)">Enregistrer & Rester</button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevis(true)">Enregistrer</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </template>
@@ -265,13 +272,13 @@
         shippingPrice: "",
         tax: "",
         totalTaxIncluded: "",
-        quoteSentToCustomer: true,
+        quoteSentToCustomer: false,
         qualificationMessage: "",
         conversionId: 0,
         cumulatedDiscountAmount: "",
         otherTva: "",
         transportConditionId: 0,
-        weight: 0,
+        weight: "",
     });
     const currentCustomer = ref({});
     
@@ -297,7 +304,7 @@
         }
     };
 
-    const saveDevis = async () => {
+    const saveDevis = async (leave) => {
         try{
             error.value = {};
             if(contremarque){
@@ -307,8 +314,8 @@
                     currencyId: data.value.currencyId,
                     languageId: data.value.languageId,
                     unitOfMeasurement: data.value.unitOfMeasurement,
-                    deliveryAddressId: data.value.deliveryAddressId.address_id,
-                    invoiceAddressId: data.value.invoiceAddressId.address_id,
+                    deliveryAddressId: data.value.deliveryAddressId ? data.value.deliveryAddressId.address_id : 0,
+                    invoiceAddressId: data.value.invoiceAddressId ? data.value.invoiceAddressId.address_id : 0,
                     withoutDiscountPrice: parseFloat(data.value.withoutDiscountPrice),
                     additionalDiscount: parseFloat(data.value.additionalDiscount),
                     totalDiscountAmount: parseFloat(data.value.totalDiscountAmount),
@@ -330,11 +337,14 @@
                     window.showMessage("Mise a jour avec succées.")
                 }else{
                     const respn = await axiosInstance.post(`/api/contremarque/${contremarqueId.value}/createQuote`,dataTosend);
+                    location.href = `/projet/devis/manage/${respn.data.response.id}`
                     window.showMessage("Ajout avec succées.")
                 } 
-                setTimeout(()=>{
-                    goToDevisList();
-                }, 2000);
+               if(leave){
+                    setTimeout(()=>{
+                        goToDevisList();
+                    }, 2000); 
+                }
             }else{
                 window.showMessage("Veuillez sélectionner une contremarque valide.","error")
             }
@@ -415,6 +425,19 @@
     const goToDevisList = () => {
         location.href = '/projet/devis'
     };
+
+    watch(
+        () => [
+            data.value.weight,
+            data.value.quoteSentToCustomer,
+            data.value.qualificationMessage
+        ],
+        () => {
+            if(quote_id){
+                saveDevis(false)  
+            }
+        }
+    );
 </script>
 <style scoped>
     .row {

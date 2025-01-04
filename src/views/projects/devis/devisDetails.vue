@@ -111,12 +111,21 @@
                     <div class="row mt-3 mb-3 pe-0 align-items-center">
                         <div class="col-md-8 col-sm-12">
                             <d-panel-title title="Dimensions" className="ps-2"></d-panel-title>
-                            <d-mesurement-quote :dimensionsProps="quoteDetail?.carpetSpecification?.carpetDimensions" :totalHt="prices.tarif_avant_remise_complementaire.total_ht"
-                                                :currencyId="data.quoteDetail.currencyId" :calculateHt="data.quoteDetail.calculateFromTotalExcludingTax" :quoteDetailId="quoteDetailId" @changePrices="changePrices"></d-mesurement-quote>
+                            <d-mesurement-quote :areaSquareFeet="quoteDetail?.areaSquareFeet"
+                                                :areaSquareMeter="quoteDetail?.areaSquareMeter"
+                                                :dimensionsProps="quoteDetail?.carpetSpecification?.carpetDimensions" 
+                                                :totalHt="prices.tarif_avant_remise_complementaire.total_ht"
+                                                :currencyId="data.quoteDetail.currencyId" 
+                                                :calculateHt="data.quoteDetail.calculateFromTotalExcludingTax" 
+                                                :quoteDetailId="quoteDetailId" 
+                                                :globalWeight="quoteDetail?.carpetSpecification?.weight"
+                                                @changePrices="changePrices"
+                                                @changeWeight="changeWeight"
+                            ></d-mesurement-quote>
                         </div>
                         <div class="col-md-4 col-sm-12 p-4">
                             <d-input label="Quantité de tapis" v-model="data.quoteDetail.wantedQuantity"></d-input>
-                            <d-input label="RN"></d-input>
+                            <d-input label="RN"  v-model="data.quoteDetail.rn"></d-input>
                         </div>
                     </div>
                     <div class="row mt-3 mb-3 pe-0 align-items-center">
@@ -284,56 +293,56 @@
                                 </div>
                             </div>
                         </div>
-                        <!--div class="col-md-8 col-sm-12">
+                        <div class="col-md-8 col-sm-12">
                             <d-panel-title title="Acompte" className="ps-2"></d-panel-title>
                             <div class="row align-items-center p-2">
                                 <div class="col-md-6 col-sm-12">
-                                    <d-input label="N° tapis dans la commande" v-model="data.withoutDiscountPrice"></d-input>
+                                    <d-input :disabled="true" label="N° tapis dans la commande" v-model="data.withoutDiscountPrice"></d-input>
                                 </div>
                                 <div class="col-md-6 col-sm-12">
-                                    <d-input label="RN" v-model="data.totalTaxExcluded"></d-input>
-                                </div>
-                            </div>
-                            <div class="row align-items-center p-2">
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input label="N° tapis dans la commande" v-model="data.cumulatedDiscountAmount"></d-input>
-                                </div>
-                                <div class="col-md-6 col-sm-12">
-                                    <d-input label="Délai SUP (modifie client)" v-model="data.totalTaxIncluded"></d-input>
+                                    <d-input :disabled="true" label="RN" v-model="data.totalTaxExcluded"></d-input>
                                 </div>
                             </div>
                             <div class="row align-items-center p-2">
                                 <div class="col-md-6 col-sm-12">
-                                    <d-input label="Date de livraison prévu" v-model="data.additionalDiscount"></d-input>
+                                    <d-input :disabled="true" label="N° tapis dans la commande" v-model="data.cumulatedDiscountAmount"></d-input>
                                 </div>
                                 <div class="col-md-6 col-sm-12">
-                                    <d-input label="Acompte réçu HT" v-model="data.tax"></d-input>
+                                    <d-input :disabled="true" label="Délai SUP (modifie client)" v-model="data.totalTaxIncluded"></d-input>
                                 </div>
                             </div>
                             <div class="row align-items-center p-2">
                                 <div class="col-md-6 col-sm-12">
-                                    <d-input label="Date de l'acompte" v-model="data.totalDiscountAmount"></d-input>
+                                    <d-input :disabled="true" label="Date de livraison prévu" v-model="data.additionalDiscount"></d-input>
                                 </div>
                                 <div class="col-md-6 col-sm-12">
-                                    <d-input label="Comp.prescr. acompte" v-model="data.otherTva"></d-input>
+                                    <d-input :disabled="true" label="Acompte réçu HT" v-model="data.tax"></d-input>
+                                </div>
+                            </div>
+                            <div class="row align-items-center p-2">
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input :disabled="true" label="Date de l'acompte" v-model="data.totalDiscountAmount"></d-input>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <d-input :disabled="true" label="Comp.prescr. acompte" v-model="data.otherTva"></d-input>
                                 </div>
                             </div>
                             <div class="row align-items-center justify-content-end p-2">
                                 <div class="col-md-12">
-                                    <d-input label="Solde" v-model="data.totalTaxIncluded"></d-input>
+                                    <d-input :disabled="true" label="Solde" v-model="data.totalTaxIncluded"></d-input>
                                 </div>
                             </div>
                             <div class="row align-items-center justify-content-end p-2">
                                 <div class="col-md-12">
                                     <div class="custom-control custom-radio">
-                                        <input type="checkbox" class="custom-control-input" id="quoteSentToCustomer" v-model="data.quoteSentToCustomer"
+                                        <input disabled type="checkbox" class="custom-control-input" id="quoteSentToCustomer" v-model="data.quoteSentToCustomer"
                                                name="quoteSentToCustomer"/>
                                         <label class="custom-control-label text-black" for="quoteSentToCustomer">
                                             commande sans acompte </label>
                                     </div>
                                 </div>
                             </div>
-                        </div-->
+                        </div>
                     </div>
                 </template>
             </d-panel>
@@ -428,6 +437,7 @@
             calculateFromTotalExcludingTax: null,
             inStockCarpet: null,
             comment: null,
+            rn: "",
             specificTreatmentIds: null
         },
         carpetSpecification: {
@@ -436,11 +446,12 @@
             collectionId: 0,
             modelId: 0,
             qualityId: 0,
-            hasSpecialShape: true,
+            hasSpecialShape: false,
             isOversized: false,
             specialShapeId: 0,
             dimensions: [],
-            materials: []
+            materials: [],
+            randomWeight: 0
         }
     });
     const currentCustomer = ref({});
@@ -495,6 +506,8 @@
                 }, {});
 
                 dataToSent.carpetSpecification.materials = store.getters.materials;
+                dataToSent.quoteDetail.wantedQuantity = parseInt(dataToSent.quoteDetail.wantedQuantity);
+                dataToSent.quoteDetail.proposedDiscountRate = parseFloat(dataToSent.quoteDetail.proposedDiscountRate);
                 if(quoteDetailId){
                     const res = await axiosInstance.put(`/api/Quote/${quote_id}/updateQuoteDetail/${quoteDetailId}`,dataToSent);
                     window.showMessage("Mise a jour avec succées.")
@@ -557,11 +570,12 @@
                         estimatedDeliveryTime: parseInt(quoteDetail.value.estimatedDeliveryTime),
                         applyLargeProjectRate: quoteDetail.value.applyLargeProjectRate,
                         applyProposedDiscount: quoteDetail.value.applyProposedDiscount,
-                        proposedDiscountRate: quoteDetail.value.proposedDiscountRate,
+                        proposedDiscountRate: Helper.FormatNumber(quoteDetail.value.proposedDiscountRate),
                         calculateFromTotalExcludingTax: quoteDetail.value.calculateFromTotalExcludingTax,
                         inStockCarpet: quoteDetail.value.inStockCarpet,
                         comment: quoteDetail.value.comment,
-                        specificTreatmentIds: null
+                        rn: quoteDetail.value.rn,
+                        specificTreatmentIds: quoteDetail.value.specificTreatmentIds
                     },
                     carpetSpecification: {
                         reference: "",
@@ -573,7 +587,8 @@
                         isOversized: quoteDetail.value.carpetSpecification.is_oversized,
                         specialShapeId: quoteDetail.value.carpetSpecification?.specialShape?.id,
                         dimensions: [],
-                        materials: []
+                        materials: [],
+                        randomWeight: quoteDetail.value.carpetSpecification?.randomWeight
                     }
                 };
             }
@@ -637,6 +652,16 @@
     const goToDevis = () => {
         location.href = `/projet/devis/manage/${quote_id}`;
     };
+    const changeWeight = async (weight) => {
+        data.value.carpetSpecification.randomWeight = parseFloat(weight);
+        await saveAndCalculate();
+    };
+    const saveAndCalculate = async () => {
+        if(quoteDetailId && !disableAutoSave){
+            await saveDevisDetails();
+            document.getElementById("clickConvertCalculation").click();
+        }
+    };
 
     watch(
         () => [ 
@@ -654,9 +679,29 @@
                 prices.value.tarif_avant_remise_complementaire.total_ht
               ],
         async (newCarpert, oldCarpet) => {
-            if(quoteDetailId && !disableAutoSave){
-                await saveDevisDetails();
-                document.getElementById("clickConvertCalculation").click();
+            await saveAndCalculate();
+        },
+        { deep: true }
+    );
+    watch(
+        () => data.value.carpetSpecification.hasSpecialShape,
+        (specialShape) => {
+            if (!specialShape) {
+                data.value.carpetSpecification.specialShapeId = 0;
+            }else {
+                data.value.carpetSpecification.specialShapeId = 1;   
+            }
+        },
+        { deep: true }
+    );
+
+    watch(
+        () => data.value.carpetSpecification.specialShapeId,
+        (specialShapeId) => {
+            if (specialShapeId === 0) {
+                data.value.carpetSpecification.hasSpecialShape = false;
+            }else{
+                data.value.carpetSpecification.hasSpecialShape = true;
             }
         },
         { deep: true }
