@@ -114,7 +114,7 @@
                             <d-mesurement-quote :areaSquareFeet="quoteDetail?.areaSquareFeet"
                                                 :areaSquareMeter="quoteDetail?.areaSquareMeter"
                                                 :dimensionsProps="quoteDetail?.carpetSpecification?.carpetDimensions" 
-                                                :totalHt="prices.tarif_avant_remise_complementaire.total_ht"
+                                                :totalHt="prices?.tarif_avant_remise_complementaire?.total_ht"
                                                 :currencyId="data.quoteDetail.currencyId" 
                                                 :calculateHt="data.quoteDetail.calculateFromTotalExcludingTax" 
                                                 :quoteDetailId="quoteDetailId" 
@@ -546,7 +546,9 @@
     };
     const changePrices = async (price) => {
         applyStopAutoSave();
-        prices.value = price
+        if(price.tarif && price.grand_public){
+            prices.value = price
+        }
     };
     const getQuoteDetails = async (quoteDetailId) => {
         try{
@@ -602,8 +604,8 @@
         return { 
             total_ht: Helper.FormatNumber(price[priceCategory] ? price[priceCategory].totalPriceHt : 0), 
             total_ttc: Helper.FormatNumber(price[priceCategory] ? price[priceCategory].totalPriceTtc : 0), 
-            ht_per_meter: Helper.FormatNumber(price[priceCategory] ? price[priceCategory]['m²']?.price : 0), 
-            ht_per_sqft: Helper.FormatNumber(price[priceCategory] ? price[priceCategory].sqft?.price : 0) 
+            ht_per_meter: Helper.FormatNumber(price[priceCategory] && price[priceCategory]['m²'] ? price[priceCategory]['m²']?.price : 0), 
+            ht_per_sqft: Helper.FormatNumber(price[priceCategory] && price[priceCategory].sqft ? price[priceCategory].sqft?.price : 0) 
         }; 
     }
     const formatPrices = (price) => {
@@ -676,7 +678,7 @@
                 data.value.carpetSpecification.hasSpecialShape,
                 data.value.quoteDetail.currencyId,
                 data.value.quoteDetail.proposedDiscountRate,
-                prices.value.tarif_avant_remise_complementaire.total_ht
+                prices.value?.tarif_avant_remise_complementaire?.total_ht
               ],
         async (newCarpert, oldCarpet) => {
             await saveAndCalculate();
