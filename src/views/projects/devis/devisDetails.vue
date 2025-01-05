@@ -85,26 +85,19 @@
                                 <d-materials-list :showTitle="false" :materialsProps="quoteDetail?.carpetSpecification?.carpetMaterials"></d-materials-list>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0" v-if="quoteDetailId">
-                            <div class="row ps-2">
-                                <d-panel-title title="Traitement particulier" className="ps-2"></d-panel-title>
+                        <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0 mt-sm-4" v-if="quoteDetailId">
+                            <div class="row ps-2 pe-4">
                                 <div class="custom-control custom-radio pb-2 ps-4">
                                     <input type="checkbox" class="custom-control-input" id="specialTreatment"
                                            name="specialTreatment" v-model="specialTreatment.trait"/>
                                     <label class="custom-control-label text-black" for="specialTreatment">
                                         Traitement particulier </label>
                                 </div>
-                                <d-special-treatment v-model="specialTreatment.treatmentId"></d-special-treatment>
-                                <d-input label="Prix/unité" v-model="specialTreatment.unitPrice"></d-input>
-                                <d-input label="Prix total" v-model="specialTreatment.totalPrice"></d-input>
-                                <div class="row justify-content-end pt-2">
-                                    <div class="col-auto">
-                                        <button :disabled="disabled" class="btn ms-0 btn-outline-custom" @click="SaveTraitement">
-                                            Ajouter
-                                            <vue-feather type="plus" size="14"></vue-feather>
-                                        </button>   
-                                    </div>
-                                </div>
+                                <d-specific-treatment-form 
+                                    :treatments="quoteDetail?.carpetSpecificTreatments" 
+                                    :quoteDetailId="quoteDetailId"
+                                    @addTreatment="UpdateTreatments"
+                                ></d-specific-treatment-form>
                             </div>
                         </div>
                     </div>
@@ -363,9 +356,10 @@
 </template>
 
 <script setup>
+    import moment from "moment";
+    import {useStore} from "vuex";
     import VueFeather from 'vue-feather';
     import { useRoute } from 'vue-router';
-    import moment from "moment";
     import {ref, onMounted, watch} from 'vue';
     import {useMeta} from '/src/composables/use-meta';
     import { Helper, formatErrorViolations } from "../../../composables/global-methods";
@@ -399,8 +393,8 @@
     import dMaterialsList from "../../../components/projet/contremarques/_Partials/d-materials-list.vue";
     import dSpecialShapes from "../../../components/common/d-special-shapes.vue";
     import dMesurementQuote from "../../../components/projet/devis/d-mesurement-quote.vue";
-    import {useStore} from "vuex";
     import dSpecialTreatment from "../../../components/common/d-specialTreatment.vue";
+    import dSpecificTreatmentForm from "../../../components/projet/devis/d-specific-treatment-form.vue";
     
     useMeta({ title: 'Gestion Devis' });
 
@@ -625,11 +619,11 @@
         }
     };
     const applyStopAutoSave = () => {
-        disableAutoSave = true
+        disableAutoSave = true;
         setTimeout(()=>{
             disableAutoSave = false;
         },5000);
-    }
+    };
     onMounted(() => {
        if(quote_id){
            getQuote(quote_id);
@@ -658,6 +652,9 @@
     };
     const changeWeight = async (weight) => {
         data.value.carpetSpecification.randomWeight = parseFloat(weight);
+        await saveAndCalculate();
+    };
+    const UpdateTreatments = async () => {
         await saveAndCalculate();
     };
     const saveAndCalculate = async () => {

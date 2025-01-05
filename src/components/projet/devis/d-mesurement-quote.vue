@@ -149,6 +149,7 @@
         if(props.calculateHt){
             data.value.totalPriceHt = parseFloat(props.totalHt);
         }else{
+            data.value.totalPriceHt = null;
             delete data.value.totalPriceHt
         }
         if(props.currencyId){
