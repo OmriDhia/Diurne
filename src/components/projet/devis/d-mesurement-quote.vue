@@ -44,7 +44,9 @@
         </div>
         <div class="row align-items-center pt-4">
             <div class="col-auto">
-                <button id="clickConvertCalculation" class="btn btn-custom ps-4 pe-4" @click="calculateInchesFeet">Calculer et Convertir</button>
+                <button id="clickConvertCalculation" :disabled="calculationLoader" class="btn btn-custom ps-4 pe-4" @click="calculateInchesFeet">
+                    <vue-feather type="sun" animation="spin" v-if="calculationLoader" class="me-2"></vue-feather> Calculer et Convertir
+                </button>
             </div>
         </div>
     </div>
@@ -52,10 +54,11 @@
 
 <script setup>
     import {useStore} from "vuex";
-    import {computed, onMounted, ref, watch} from "vue";
-    import contremarqueService from "../../../Services/contremarque-service";
+    import VueFeather from 'vue-feather';
     import dInput from "../../base/d-input.vue";
+    import {computed, onMounted, ref, watch} from "vue";
     import {Helper} from "../../../composables/global-methods";
+    import contremarqueService from "../../../Services/contremarque-service";
 
     const props = defineProps({
         dimensionsProps : {
@@ -101,6 +104,7 @@
     const sufaceM2 = ref("");
     const sufaceSqft = ref("");
     const weight = ref("");
+    const calculationLoader = ref(false);
     const data = ref({
         largCm: 0,
         lngCm: 0,
@@ -145,6 +149,7 @@
         }
     };
     const calculateInchesFeet = async () => {
+        calculationLoader.value = true;
         data.value.quoteDetailId = parseInt(props.quoteDetailId);
         if(props.calculateHt){
             data.value.totalPriceHt = parseFloat(props.totalHt);
@@ -175,10 +180,11 @@
             setMeasurementResults(long.unit,dimension.lng);
             store.commit('setMeasurements', measurements.value);
             emit('changePrices', result.price);
-            
             window.showMessage("Le calcul s'est terminé avec succès")
         } catch (error) {
             console.error(`Error calculation mesurements:`, error);
+        }finally {
+            calculationLoader.value = false;
         }
     };
 

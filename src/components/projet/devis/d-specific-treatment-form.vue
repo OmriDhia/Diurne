@@ -49,6 +49,10 @@
             type: Number,
             required: true,
         },
+        quantity: {
+            type: Number,
+            default: 1,
+        },
         treatments: {
             type: Array,
             default: () => [],
@@ -78,7 +82,7 @@
     const changeTrait = (trait, i) => {
         console.log(trait);
         specialTreatments.value[i].unitPrice =  Helper.FormatNumber(trait.price);
-        specialTreatments.value[i].totalPrice =  Helper.FormatNumber(trait.price);
+        specialTreatments.value[i].totalPrice =  Helper.FormatNumber(trait.price) * (props.quantity ? parseInt(props.quantity) : 1);
     };
 
     const saveLastTreatment = async () => {

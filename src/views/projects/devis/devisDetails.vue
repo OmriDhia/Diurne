@@ -96,6 +96,7 @@
                                 <d-specific-treatment-form 
                                     :treatments="quoteDetail?.carpetSpecificTreatments" 
                                     :quoteDetailId="quoteDetailId"
+                                    :quantity="data.quoteDetail.wantedQuantity"
                                     @addTreatment="UpdateTreatments"
                                 ></d-specific-treatment-form>
                             </div>
@@ -277,7 +278,7 @@
                             <div class="col-md-4 col-sm-12">
                                 <div class="row align-items-center p-2">
                                     <div class="col-md-12">
-                                        <d-input label="% prix total" v-model="data.quoteDetail.totalPriceRate"></d-input>
+                                        <d-input label="% prix total" v-model="data.quoteDetail.impactOnTheQuotePrice"></d-input>
                                     </div>
                                 </div>
                                 <div class="row align-items-center p-2">
@@ -434,7 +435,8 @@
             inStockCarpet: null,
             comment: null,
             rn: "",
-            specificTreatmentIds: null
+            specificTreatmentIds: null,
+            impactOnTheQuotePrice: ""
         },
         carpetSpecification: {
             reference: "",
@@ -532,6 +534,7 @@
                 quote.value = await quoteService.getQuoteById(quote_id);
                 contremarqueId.value = quote.value.contremarques[0]?.contremarque_id;
                 quoteNumber.value = quote.value.reference;
+                data.value.quoteDetail.currencyId = quote.value?.currency.id;
                 createdDate.value = moment(quote.value.createdAt).format('YYYY-MM-DD');
             }
         }catch(e){
@@ -560,7 +563,7 @@
                         locationId: quoteDetail.value.location?.location_id,
                         reference: quoteDetail.value.reference,
                         TarifId: quoteDetail.value?.tarif.id,
-                        currencyId: quoteDetail.value.currency ? quoteDetail.value.currency.id : 0,
+                        currencyId: quoteDetail.value.currency ? quoteDetail.value.currency.id : quote.value?.currency.id,
                         totalPriceRate: quoteDetail.value.totalPriceRate,
                         isValidated: quoteDetail.value.isValidated,
                         validatedAt: null,
@@ -573,7 +576,8 @@
                         inStockCarpet: quoteDetail.value.inStockCarpet,
                         comment: quoteDetail.value.comment,
                         rn: quoteDetail.value.rn,
-                        specificTreatmentIds: quoteDetail.value.specificTreatmentIds
+                        specificTreatmentIds: quoteDetail.value.specificTreatmentIds,
+                        impactOnTheQuotePrice: Helper.FormatNumber(quoteDetail.value.impactOnTheQuotePrice),
                     },
                     carpetSpecification: {
                         reference: "",

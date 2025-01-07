@@ -421,6 +421,7 @@
     };
     const changeStatusDetails = () => {
         if(quote_id){
+            calculateTotal(quote_id);
             getQuote(quote_id);
         }
     };
@@ -433,29 +434,41 @@
     const goToDevisList = () => {
         location.href = '/projet/devis'
     };
+    const calculateTotal = async (quote_id) => {
+        try {
+            const res = await quoteService.calculateQuote(quote_id,{
+                additionalDiscount: parseFloat(data.value.shippingPrice),
+                shippingPrice: parseFloat(data.value.additionalDiscount)
+            })
+        }catch(e){
+            console.log(e);
+            const msg = "Echec dans le calcule des données devis";
+            window.showMessage(msg,'error');
+        }
+    };
 
     watch(
         () => [
             data.value.weight,
-            data.value.quoteSentToCustomer,
-            data.value.qualificationMessage,
             data.value.shippingPrice,
             data.value.additionalDiscount
         ],
         async () => {
             if(quote_id && !disableAutoSave){
                 saveDevis(false);
-                try {
-                    const res = await quoteService.calculateQuote(quote_id,{
-                        additionalDiscount: parseFloat(data.value.shippingPrice),
-                        shippingPrice: parseFloat(data.value.additionalDiscount)
-                    })
-                }catch(e){
-                    console.log(e);
-                    const msg = "Echec dans le calcule des données devis";
-                    window.showMessage(msg,'error');
-                }
+                calculateTotal(quote_id);
                 getQuote(quote_id);
+            }
+        }
+    ); 
+    watch(
+        () => [
+            data.value.quoteSentToCustomer,
+            data.value.qualificationMessage,
+        ],
+        async () => {
+            if(quote_id && !disableAutoSave){
+                saveDevis(false);
             }
         }
     );
