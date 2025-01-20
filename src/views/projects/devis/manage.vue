@@ -383,7 +383,7 @@
         try{
             if(quote_id){
                 quote.value = await quoteService.getQuoteById(quote_id);
-                contremarqueId.value = quote.value?.contremarques[0]?.contremarque_id;
+                contremarqueId.value = quote.value?.contremarqueId;
                 quoteNumber.value = quote.value.reference;
                 quoteDetails.value = quote.value?.quoteDetails;
                 createdDate.value = moment(quote.value.createdAt).format('YYYY-MM-DD');

@@ -7,15 +7,17 @@
                         <d-input label="N° de la commande"></d-input>
                     </div>
                     <div class="col-lg-4 col-md-12">
-                        <d-btn-outlined label="Contraintes et remarque" icon="arrow-right" buttonClass="ps-1 font-size-0-6"></d-btn-outlined>
+                        <d-btn-outlined data-bs-toggle="modal" data-bs-target="#modalManageConstraint" label="Contraintes et remarque" icon="arrow-right" buttonClass="ps-1 font-size-0-6"></d-btn-outlined>
                     </div>
+                    <d-modal-constraint ></d-modal-constraint>
                 </div>
                 <div class="row justify-content-between align-items-center mt-3">
                     <div class="col-lg-8 col-md-12">
                         <d-input label="Transmi. ADV"></d-input>
                     </div>
                     <div class="col-lg-4 col-md-12">
-                        <d-btn-outlined label="Ech. Validée de ref" icon="arrow-right" buttonClass="ps-1 font-size-0-6"></d-btn-outlined>
+                        <d-btn-outlined data-bs-toggle="modal" data-bs-target="#modalManageValidatedSimple" label="Ech. Validée de ref" icon="arrow-right" buttonClass="ps-1 font-size-0-6"></d-btn-outlined>
+                        <d-modal-validated-sample></d-modal-validated-sample>
                     </div>
                 </div>
                 <div class="row justify-content-between align-items-center mt-3">
@@ -23,8 +25,9 @@
                         <d-input type="date" label="Validation client"></d-input>
                     </div>
                     <div class="col-lg-4 col-md-12">
-                        <d-btn-outlined label="Finition" icon="arrow-right" buttonClass="ps-1 font-size-0-8"></d-btn-outlined>
+                        <d-btn-outlined data-bs-toggle="modal" data-bs-target="#modalManageFinishing" label="Finition" icon="arrow-right" buttonClass="ps-1 font-size-0-8"></d-btn-outlined>
                     </div>
+                    <d-modal-finishing></d-modal-finishing>
                 </div>
             </div>
             <div class="col-lg-4 col-md-12">
@@ -63,6 +66,9 @@
     import dBtnOutlined from "../../base/d-btn-outlined.vue";
     import {carpetStatus} from "../../../composables/constants";
     import dModalCreateVariation from "./_Partials/d-modal-create-variation.vue"
+    import dModalConstraint from "./_Partials/d-modal-constraint.vue"
+    import dModalFinishing from "./_Partials/d-modal-finishing.vue"
+    import dModalValidatedSample from "./_Partials/d-modal-validated-sample.vue"
 
     const props = defineProps({
         carpetDesignOrderId: {

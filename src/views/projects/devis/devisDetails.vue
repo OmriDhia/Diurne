@@ -532,7 +532,7 @@
         try{
             if(quote_id){
                 quote.value = await quoteService.getQuoteById(quote_id);
-                contremarqueId.value = quote.value.contremarques[0]?.contremarque_id;
+                contremarqueId.value = quote.value.contremarqueId;
                 quoteNumber.value = quote.value.reference;
                 data.value.quoteDetail.currencyId = quote.value?.currency.id;
                 createdDate.value = moment(quote.value.createdAt).format('YYYY-MM-DD');
@@ -545,8 +545,11 @@
     };
     const changePrices = async (price) => {
         applyStopAutoSave();
-        if(price.tarif && price.grand_public){
+        /*if(price.tarif && price.grand_public){
             prices.value = price
+        }*/
+        if(quoteDetailId){
+            getQuoteDetails(quoteDetailId);
         }
     };
     const getQuoteDetails = async (quoteDetailId) => {
@@ -681,6 +684,7 @@
                 data.value.carpetSpecification.hasSpecialShape,
                 data.value.quoteDetail.currencyId,
                 data.value.quoteDetail.proposedDiscountRate,
+                data.value.quoteDetail.wantedQuantity,
                 prices.value?.tarif_avant_remise_complementaire?.total_ht
               ],
         async (newCarpert, oldCarpet) => {

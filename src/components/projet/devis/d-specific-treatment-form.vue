@@ -17,7 +17,7 @@
                         <div class="card-body">
                             <d-special-treatment v-model="treatment.treatmentId" :error="error.treatmentId" @exportTrait="changeTrait($event,index)"></d-special-treatment>
                             <d-input :disabled="true" label="Prix/unité" v-model="treatment.unitPrice" :error="error.unitPrice"></d-input>
-                            <d-input :disabled="true" label="Prix total" v-model="treatment.totalPrice" :error="error.totalPrice"></d-input>
+                            <d-input v-if="treatment.totalPrice" :disabled="true" label="Prix total" v-model="treatment.totalPrice" :error="error.totalPrice"></d-input>
                         </div>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
     const changeTrait = (trait, i) => {
         console.log(trait);
         specialTreatments.value[i].unitPrice =  Helper.FormatNumber(trait.price);
-        specialTreatments.value[i].totalPrice =  Helper.FormatNumber(trait.price) * (props.quantity ? parseInt(props.quantity) : 1);
+        //specialTreatments.value[i].totalPrice =  Helper.FormatNumber(trait.price) * (props.quantity ? parseInt(props.quantity) : 1);
     };
 
     const saveLastTreatment = async () => {
@@ -94,10 +94,16 @@
                 const lastTreatment =
                     specialTreatments.value[specialTreatments.value.length - 1];
 
-                await axiosInstance.post(
+                const res = await axiosInstance.post(
                     `/api/quote-detail/${props.quoteDetailId}/carpet-specific-treatment/create`,
                     lastTreatment
                 );
+                const t = res.data.response;
+                specialTreatments.value[specialTreatments.value.length - 1] = {
+                    treatmentId: t.treatment?.id,
+                    unitPrice: Helper.FormatNumber(t.unitPrice),
+                    totalPrice:  Helper.FormatNumber(t.totalPrice),
+                };
                 addTreatment();
                 emit('addTreatment',true);
                 window.showMessage("Le traitement a été ajouté avec succès.");
