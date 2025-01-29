@@ -115,7 +115,7 @@ import VueFeather from 'vue-feather';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
 import axiosInstance from '../../../config/http';
 import { ref, reactive, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { filterDevis, FILTER_DEVIS_STORAGE_NAME } from '../../../composables/constants';
 import moment from "moment";
 import { Helper } from "../../../composables/global-methods";
@@ -128,6 +128,7 @@ const loading = ref(true);
 const loadingAttribution = ref(false);
 const total_rows = ref(0);
 const route = useRoute();
+const router = useRouter();
 
 const params = reactive({
     current_page: 1,
@@ -221,7 +222,7 @@ const doReset = () => {
 };
 
 const goToNewDevis = () => {
-    location.href = "/projet/devis/manage"
+    router.push({name: 'devisManage'});
 };
     
 </script>

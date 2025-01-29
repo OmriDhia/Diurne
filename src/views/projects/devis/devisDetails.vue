@@ -360,7 +360,7 @@
     import moment from "moment";
     import {useStore} from "vuex";
     import VueFeather from 'vue-feather';
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import {ref, onMounted, watch} from 'vue';
     import {useMeta} from '/src/composables/use-meta';
     import { Helper, formatErrorViolations } from "../../../composables/global-methods";
@@ -400,6 +400,7 @@
     useMeta({ title: 'Gestion Devis' });
 
     const route = useRoute();
+    const router = useRouter();
     const store = useStore();
     const contremarqueId = ref(0);
     const quote_id = route.params.qouteId;
@@ -545,12 +546,9 @@
     };
     const changePrices = async (price) => {
         applyStopAutoSave();
-        /*if(price.tarif && price.grand_public){
+        if(price.tarif && price.grand_public){
             prices.value = price
-        }*/
-        if(quoteDetailId){
-            getQuoteDetails(quoteDetailId);
-        }
+        };
     };
     const getQuoteDetails = async (quoteDetailId) => {
         try{
@@ -610,7 +608,7 @@
             ht_per_meter: Helper.FormatNumber(price[priceCategory] && price[priceCategory]['m²'] ? price[priceCategory]['m²']?.price : 0), 
             ht_per_sqft: Helper.FormatNumber(price[priceCategory] && price[priceCategory].sqft ? price[priceCategory].sqft?.price : 0) 
         }; 
-    }
+    };
     const formatPrices = (price) => {
         prices.value = { 
             tarif: formatPrice('tarif', price), 
@@ -655,7 +653,7 @@
         }
     };
     const goToDevis = () => {
-        location.href = `/projet/devis/manage/${quote_id}`;
+        router.push({name: 'devisManage', params:{ id: quote_id } });
     };
     const changeWeight = async (weight) => {
         data.value.carpetSpecification.randomWeight = parseFloat(weight);

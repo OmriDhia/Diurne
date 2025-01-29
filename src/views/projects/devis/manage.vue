@@ -205,7 +205,7 @@
 
 <script setup>
     import VueFeather from 'vue-feather';
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import moment from "moment";
     import {ref, onMounted, watch} from 'vue';
     import {useMeta} from '/src/composables/use-meta';
@@ -238,6 +238,7 @@
     useMeta({ title: 'Gestion Contremarque' });
 
     const route = useRoute();
+    const router = useRouter();
     const contremarqueId = ref(0);
     const quote_id = route.params.id;
     const selectedCustomer = ref(0);
@@ -432,7 +433,7 @@
     });
 
     const goToDevisList = () => {
-        location.href = '/projet/devis'
+        router.push({name: 'devisList'});
     };
     const calculateTotal = async (quote_id) => {
         try {

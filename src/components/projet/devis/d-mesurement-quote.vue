@@ -173,7 +173,7 @@
         
         try {
             const result = await contremarqueService.calculateMesurementsNew(data.value);
-            const dimension = result.dimension
+            const dimension = result.dimension;
             sufaceM2.value = dimension.surface['m²'];
             sufaceSqft.value = dimension.surface.sqft;
             setMeasurementResults(larg.unit,dimension.larg);

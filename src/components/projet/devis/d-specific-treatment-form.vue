@@ -80,7 +80,6 @@
     };
     
     const changeTrait = (trait, i) => {
-        console.log(trait);
         specialTreatments.value[i].unitPrice =  Helper.FormatNumber(trait.price);
         //specialTreatments.value[i].totalPrice =  Helper.FormatNumber(trait.price) * (props.quantity ? parseInt(props.quantity) : 1);
     };

@@ -12,6 +12,9 @@
 <script setup>
 import "../../assets/sass/components/cards/card.scss";
 import emptyPicture from "../common/svg/empty-picture.vue";
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const props = defineProps({
     title: {
@@ -32,6 +35,6 @@ const props = defineProps({
 });
 
 const goTo = (href) => {
-    location.href = href;
+    router.push(href) ;
 }
 </script>

@@ -3,7 +3,6 @@
     <div class="sidebar-wrapper sidebar-theme">
         <nav ref="menu" id="sidebar">
             <div class="shadow-bottom"></div>
-
             <perfect-scrollbar class="list-unstyled menu-categories mt-5" tag="ul"
                 :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 300, suppressScrollX: true }">
                 <li class="menu" v-for="menu in menus" :key="menu.id">
@@ -62,13 +61,11 @@ const getPathByName = (name) => {
         return '/error/404';
     }
 };
-const route = useRoute()
+const route = useRoute();
 watch(route, (to) => {
     subMenuActive(false)
 });
 onMounted(() => {
-    /*const selector = document.querySelector('#sidebar a[href="' + window.location.pathname + '"]');
-    applyMenuActive(selector, true)*/
     subMenuActive()
 });
 const clickH = ()=>{
@@ -98,10 +95,10 @@ const subMenuActive = (click = true) => {
             setTimeout(() => {
                 e.classList.add('active', 'router-link-active');
                 applyMenuActive(e, click)
-            });
+            },200);
         }
     })
-}
+};
 
 const applyMenuActive = (selector, active) => {
     if (selector) {
@@ -118,11 +115,16 @@ const applyMenuActive = (selector, active) => {
                     }
                 });
             }
+            document.querySelectorAll('#sidebar .dropdown-toggle').forEach( e => {
+                if(e !== ele){
+                    e.dataset.active = false;
+                }
+            });
         } else {
             active ? selector.click() : '';
         }
     }
-}
+};
 const toggleMobileMenu = () => {
     if (window.innerWidth < 991) {
         store.commit('toggleSideBar', !store.state.is_show_sidebar);

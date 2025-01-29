@@ -122,3 +122,90 @@ export const carpetStatus = {
     annulCommercialId: 8,
     transmisAdvId: 9
 };
+
+export const devisDocxStyle = 'body{' +
+    '            margin: auto;' +
+    '            width: 90%;' +
+    '          }' +
+    '          h2 {' +
+    '            color: #585858;' +
+    '            font-family: Garamond, serif;' +
+    '            font-style: normal;' +
+    '            font-weight: bold;' +
+    '            text-decoration: none;' +
+    '            font-size: 11pt;' +
+    '         }' +
+    '        .p, p {' +
+    '            color: #585858;' +
+    '            font-family: Garamond, serif;' +
+    '            font-style: normal;' +
+    '            font-weight: normal;' +
+    '            text-decoration: none;' +
+    '            font-size: 11pt;' +
+    '            margin: 0pt;' +
+    '        }' +
+    '        .h1 {' +
+    '            color: #585858;' +
+    '            font-family: Garamond, serif;' +
+    '            font-style: normal;' +
+    '            font-weight: bold;' +
+    '            text-decoration: underline;' +
+    '            font-size: 11.5pt;' +
+    '        }' +
+
+    '        .s1 {' +
+    '            color: #585858;' +
+    '            font-family: Garamond, serif;' +
+    '            font-style: normal;' +
+    '            font-weight: normal;' +
+    '            text-decoration: none;' +
+    '            font-size: 9pt;' +
+    '        }' +
+    '        .s2 {' +
+    '            color: #585858;' +
+    '            font-family: Garamond, serif;' +
+    '            font-style: italic;' +
+    '            font-weight: normal;' +
+    '            text-decoration: underline;' +
+    '            font-size: 12pt;' +
+    '        }' +
+    '        .s3 {' +
+    '            color: #585858;' +
+    '            font-family: Garamond, serif;' +
+    '            font-style: normal;' +
+    '            font-weight: bold;' +
+    '            text-decoration: none;' +
+    '            font-size: 9pt;' +
+    '        }' +
+
+    '        .s4 {' +
+    '            color: #585858;' +
+    '            font-family: Garamond, serif;' +
+    '            font-style: normal;' +
+    '            font-weight: bold;' +
+    '            text-decoration: none;' +
+    '            font-size: 12pt;' +
+    '        }' +
+
+    '        .s5 {' +
+    '            color: #585858;' +
+    '            font-family: Garamond, serif;' +
+    '            font-style: italic;' +
+    '            font-weight: normal;' +
+    '            text-decoration: none;' +
+    '            font-size: 12pt;' +
+    '        }' +
+
+    '        .s6 {' +
+    '            color: #585858;' +
+    '            font-family: Garamond, serif;' +
+    '            font-style: normal;' +
+    '            font-weight: normal;' +
+    '            text-decoration: underline;' +
+    '            font-size: 11pt;' +
+    '        }' +
+    '        table, tbody {' +
+    '            width: 100%;' +
+    '            vertical-align: top;' +
+    '            overflow: visible;' +
+    '        }';
