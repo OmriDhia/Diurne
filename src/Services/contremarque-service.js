@@ -122,4 +122,19 @@ export default {
             throw new Error(msg);
         }
     },
+    async addUpdatecustomerInstruction(carpetDesignOrderId,data,customerInstructionId = null){
+        try {
+            let res = null;
+            if(customerInstructionId){
+                res = await axiosInstance.put(`/api/carpetDesignOrder/${carpetDesignOrderId}/update-customer-instruction/${customerInstructionId}`, data);
+            }else{
+                res = await axiosInstance.post(`/api/carpetDesignOrder/${carpetDesignOrderId}/create-customer-instruction`, data);
+            }
+            return res.data.response
+        } catch (error) {
+            const msg = 'Échec de creation ou mise a jour customer instruction.';
+            window.showMessage(msg, 'error');
+            throw new Error(msg);
+        }
+    },
 };
