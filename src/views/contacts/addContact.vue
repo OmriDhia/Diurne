@@ -101,11 +101,12 @@
     import dEventHistories from "../../components/contacts/_partial/d-event-histories.vue";
     import dContremarqueHistories from "../../components/contacts/_partial/d-contremarque-histories.vue";
     import dContremarquePrescriptorHistories from "../../components/contacts/_partial/d-contremarque-prescriptor-histories.vue";
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
 
     useMeta({ title: 'Contacts' });
 
     const route = useRoute();
+    const router = useRouter();
     const customer_id = route.params.id;
     
     const currentCustomer = ref({});
@@ -131,7 +132,7 @@
     });
 
     const goToListCustomers = () => {
-        location.href = '/contacts'
+        router.push({name: 'contactsList'});
     }
     
 </script>
