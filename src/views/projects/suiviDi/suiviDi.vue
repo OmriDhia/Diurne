@@ -114,9 +114,11 @@ import { ref, reactive, onMounted } from 'vue';
 import {FILTER_SUIVI_DI_STORAGE_NAME, filterSuiviDi} from '../../../composables/constants';
 import { useMeta } from '/src/composables/use-meta';
 import { Helper } from "../../../composables/global-methods";
+import { useRouter } from 'vue-router';
 
 useMeta({ title: 'Contremarque' });
 
+const router = useRouter();
 const loading = ref(true);
 const loadingAttribution = ref(false);
 const total_rows = ref(0);
@@ -215,15 +217,17 @@ const doReset = () => {
 const handleUpdateDI = async (diId) => {
     selectedDiId.value = diId;
 };
+
 const goTodetails = (id_di,carperOrderId = 0) => {
-    location.href = `/projet/dis/model/${id_di}/update/${carperOrderId}`;
-}
+    router.push({name: 'di_orderDesigner_update', params:{ id_di: id_di, carpetDesignOrderId: carperOrderId } });
+};
+
 const handleClose = () => {
     //selectedDiId.value = null;
 };
 
 const goToNewContremarque = () => {
-    location.href = "/projet/contremarques/manage"
+    router.push({name: 'projectsListManage'});
 };
     
 </script>

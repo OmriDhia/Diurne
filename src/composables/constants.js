@@ -102,6 +102,19 @@ export const filterSuiviDi = {
     carpetStatus: null,
 };
 
+export const customerInstructionObject = {
+    orderNumber: "",
+    transmi_adv: "",
+    customerComment: "",
+    customerValidationDate: "",
+    hasConstraints: false,
+    hasValidateSample: false,
+    hasFinitionInstruction: false,
+    validatedSampleId: 0,
+    finitionInstructionId: 0,
+    constraintInstructionId: 0
+};
+
 export const particularCustomerGroupId = 1;
 export const publicDiscountTypeId = 1;
 

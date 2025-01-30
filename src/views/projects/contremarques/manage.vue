@@ -149,7 +149,7 @@
 
 <script setup>
     import VueFeather from 'vue-feather';
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import {ref, onMounted, watch} from 'vue';
     import {useMeta} from '/src/composables/use-meta';
     import { Helper, formatErrorViolations } from "../../../composables/global-methods";
@@ -171,6 +171,7 @@
     useMeta({ title: 'Gestion Contremarque' });
 
     const route = useRoute();
+    const router = useRouter();
     const contremarque_id = route.params.id;
     const selectedCustomer = ref(0);
     const selectedContact = ref({});
@@ -269,16 +270,16 @@
     });
 
     const goToContremarqueList = () => {
-        location.href = '/projet/contremarques'
+        router.push({name: 'projectsList'})
     };
     const goToDIProjet = () => {
-        location.href = '/projet/contremarques/projectdis/' + contremarque_id
+        router.push({name: 'projectDIS', params:{ id: contremarque_id }})
     };
     const goToContremarques = () => {
-        location.href = '/projet/devis?contremarqueId=' + contremarque_id
+        router.push({ name: 'devisList', query: { contremarqueId: contremarque_id } });
     };
     const goToListSUiviDI = () => {
-        location.href = "/projet/dis"
+        router.push({name: 'di_list'})
     };
 </script>
 <style scoped>
