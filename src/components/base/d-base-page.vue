@@ -7,13 +7,23 @@
         </div>
 
         <div class="row layout-top-spacing mt-3">
-            <slot name="body"></slot>
+            <d-animated-skeleton :loading="loading" :marginTop="1" :width="95"/>
+            <slot name="body" v-if="!loading"></slot>
         </div>
-        
-        <slot name="footer"></slot>
+
+        <div class="row mt-3">
+            <slot name="footer"></slot>
+        </div>
     </div>
 </template>
 
 <script setup>
-    
+    import dAnimatedSkeleton from './d-animated-skeleton.vue';
+
+    const props = defineProps({
+        loading: {
+            type: Boolean,
+            default: false
+        }
+    });
 </script>
