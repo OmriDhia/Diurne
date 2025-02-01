@@ -33,7 +33,7 @@
                 Ce client ne possède pas des contremarques.
             </div>
         </div>
-        <div class="row justify-content-end mt-2">
+        <div class="row justify-content-end mt-2" v-if="props.canAdd">
             <d-btn-outlined class="pe-0" label="Ajouter" icon="plus" @click="goToCreateContremarque"></d-btn-outlined>
         </div>
     </div>
@@ -49,6 +49,10 @@
     const props = defineProps({
         customerId: {
             type: Number
+        },
+        canAdd: {
+            type: Boolean,
+            default: false
         }
     });
     

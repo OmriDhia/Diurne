@@ -55,7 +55,7 @@
                         </template>
                         <template v-slot:panel-body>
                             <div class="row pe-2 ps-0">
-                                <d-contremarque-histories :customerId="currentCustomer.customer_id"></d-contremarque-histories>
+                                <d-contremarque-histories :canAdd="currentCustomer?.contactsData.length > 0" :customerId="currentCustomer.customer_id"></d-contremarque-histories>
                                 <d-contremarque-prescriptor-histories :customerId="currentCustomer.customer_id"></d-contremarque-prescriptor-histories>
                             </div>
                         </template>

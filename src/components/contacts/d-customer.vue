@@ -12,13 +12,13 @@
         <div class="row p-2" v-if="isParticular">
             <d-input label="Prénom" :error="error.firstname" v-model="data.firstname"></d-input>
         </div>
-        <div class="row p-2">
+        <!--div class="row p-2">
             <d-input  :button="data.customer_id === 0" required="true" label="Code contact" v-model="data.code" :error="error.code">
                 <template v-slot:input-button>
                     <button class="btn btn-success" @click.prevent="incrimentSuffix" v-if="data.customer_id === 0">Générer</button>
                 </template>
             </d-input>
-        </div>
+        </div-->
         <div class="row p-2" v-if="!isParticular">
             <d-input label="CE TVA" v-model="data.tva_ce" :error="error.tva_ce"></d-input>
         </div>
