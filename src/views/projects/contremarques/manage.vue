@@ -1,5 +1,5 @@
 <template>
-    <d-base-page>
+    <d-base-page :loading="loading">
         <template v-slot:title>
             <d-page-title title="Contremarque"></d-page-title>
         </template>
@@ -113,10 +113,10 @@
                 <div class="col-md-6 col-sm-12 ps-sm-2 pe-sm-0"  v-if="contremarque_id">
                     <d-panel>
                         <template v-slot:panel-header>
-                            <d-panel-title title="Liste des enplacements de la contremarque"></d-panel-title>
+                            <d-panel-title title="Liste des emplacements de la contremarque"></d-panel-title>
                         </template>
                         <template v-slot:panel-body>
-                            <d-locations :contremarqueId="contremarque.contremarque_id"> </d-locations>
+                            <d-locations :locationOptions="locationOptions" :contremarqueId="contremarque.contremarque_id"> </d-locations>
                         </template>
                     </d-panel>
                 </div>
@@ -176,10 +176,12 @@
     const selectedCustomer = ref(0);
     const selectedContact = ref({});
     const contremarque = ref({});
+    const locationOptions = ref({});
     const tarifId = ref(0);
     const contact = ref({});
     const prescriber = ref(0);
     const error = ref({});
+    const loading = ref(false);
     
     const data = ref({
         project_number: "",
@@ -208,6 +210,8 @@
         }catch(e){
             const msg = "Un client d'id " + customer_id + " n'existe pas";
             window.showMessage(msg,'error');
+        }finally {
+            loading.value = false;
         }
     };
 
@@ -244,11 +248,17 @@
     const getContremarque = async () => {
         try{
             if(contremarque_id){
+                loading.value = true;
                 contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
                 selectedCustomer.value = contremarque.value.customer.customer_id;
                 prescriber.value = contremarque.value.prescriber.customer_id;
+                locationOptions.value = {
+                    min_price: contremarque.value.min_price ?? 0,
+                    max_price: contremarque.value.max_price ?? 0,
+                    last_quote_date: contremarque.value.last_quote_date ?? ''
+                };
                 data.value = {
-                    project_number: contremarque.projectNumber,
+                    project_number: contremarque.value.projectNumber,
                     designation: contremarque.value.designation,
                     destination_location: contremarque.value.destination_location,
                     target_date: Helper.FormatDate(contremarque.value.target_date?.date,"YYYY-MM-DD"),
@@ -263,6 +273,8 @@
             console.log(e);
             const msg = "Une contremarque d'id " + contremarque_id + " n'existe pas";
             window.showMessage(msg,'error');
+        }finally {
+            //loading.value = false;
         }
     };
     onMounted(() => {

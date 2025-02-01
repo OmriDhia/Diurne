@@ -1,6 +1,11 @@
 <template>
     <div class="row align-items-center">
-        <d-modal-manage-locations :locationData="selectedLocation" :contremarqueId="contremarqueId" @onClose="handleClose"></d-modal-manage-locations>
+        <d-modal-manage-locations 
+            :locationData="selectedLocation" 
+            :contremarqueId="contremarqueId"
+            :options="props.locationOptions"
+            @onClose="handleClose"
+        ></d-modal-manage-locations>
         <div class="row pe-2 ps-2">
             <div class="col-auto">
                 <button class="btn btn-custom pe-5 ps-5" data-bs-toggle="modal" data-bs-target="#modalLocationManage">
@@ -23,11 +28,9 @@
                                 <li class="text-black">Date de création: {{
                                     $Helper.FormatDate(location.created_at.date,"DD/MM/YYYY") }}
                                 </li>
-                                <li class="text-black">Prix Min: {{ $Helper.FormatPrice(location.price_min,"DD/MM/YYYY")
-                                    }}
+                                <li class="text-black">Prix Min: {{ $Helper.FormatPrice(location.price_min,"DD/MM/YYYY") }}
                                 </li>
-                                <li class="text-black">Prix Max: {{ $Helper.FormatPrice(location.price_max,"DD/MM/YYYY")
-                                    }}
+                                <li class="text-black">Prix Max: {{ $Helper.FormatPrice(location.price_max,"DD/MM/YYYY") }}
                                 </li>
                                 <li class="pt-1"><d-btn-outlined label="Commande" icon="arrow-right" buttonClass="ps-2"></d-btn-outlined></li>
                                 <li class="pt-1 d-flex">
@@ -40,7 +43,6 @@
                                             <vue-feather type="save" size="14"></vue-feather>
                                         </button>
                                     </div>
-                                    
                                 </li>
                             </ul>
                         </div>
@@ -59,59 +61,51 @@
     </div>
 </template>
 
-<script>
+<script setup>
+    import { ref, onMounted, watch } from 'vue';
     import VueFeather from 'vue-feather';
     import dDelete from "../../common/d-delete.vue";
     import dBtnOutlined from "../../base/d-btn-outlined.vue";
     import contremarqueService from "../../../Services/contremarque-service";
     import dModalManageLocations from "./_Partials/d-modal-manage-locations.vue";
+
+    const props = defineProps({
+        contremarqueId: {
+            type: [Number, null],
+            required: true
+        },
+        locationOptions:{
+            type: Object,
+        }
+    });
     
-    export default {
-        components: {
-            dModalManageLocations,
-            dBtnOutlined,
-            VueFeather,
-            dDelete
-        },
-        props: {
-            contremarqueId: {
-                type: [Number, null],
-                required: true
-            }
-        },
-        data() {
-            return {
-                locations: [],
-                selectedLocation: null
-            };
-        },
-        methods: {
-            async getLocations() {
-                try {
-                    this.locations = await contremarqueService.getLocationsByContremarque(this.contremarqueId)
-                } catch (error) {
-                    console.error('Failed to fetch profiles:', error);
-                }
-            },
-            updateLocation(location){
-                this.selectedLocation = location;
-            },
-            handleClose(){
-                this.selectedLocation = null
-                this.getLocations();
-            }
-        },
-        mounted() {
-            if (this.contremarqueId) {
-                this.getLocations();
-            }
-        },
-        watch: {
-            contremarqueId(newVal){
-                this.getLocations();
-            }
+    const locations = ref([]);
+    const selectedLocation = ref(null);
+
+    const getLocations = async () => {
+        try {
+            locations.value = await contremarqueService.getLocationsByContremarque(props.contremarqueId);
+        } catch (error) {
+            console.error('Failed to fetch profiles:', error);
         }
     };
+
+    const updateLocation = (location) => {
+        selectedLocation.value = location;
+    };
+
+    const handleClose = () => {
+        selectedLocation.value = null;
+        getLocations();
+    };
+
+    onMounted(() => {
+        if (props.contremarqueId) {
+            getLocations();
+        }
+    });
+
+    watch(() => props.contremarqueId, getLocations);
 </script>
 <style scoped>
     ul {
