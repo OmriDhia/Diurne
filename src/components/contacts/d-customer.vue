@@ -156,7 +156,9 @@
                 data.value.discountTypeId = particularCustomerGroupId;
             }else{
                 isParticular.value = false;
-                data.value.discountTypeId = 0;
+                if(!props.customerData.customer_id) {
+                    data.value.discountTypeId = 0;
+                }
             }
         }
     );

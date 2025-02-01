@@ -1,5 +1,5 @@
 <template>
-    <d-base-page>
+    <d-base-page :loading="loading">
         <template v-slot:title>
             <d-page-title title="Contacts"></d-page-title>
         </template>
@@ -110,9 +110,11 @@
     const customer_id = route.params.id;
     
     const currentCustomer = ref({});
+    const loading = ref(false);
 
     const getCustomer = async () => {
         try{
+            loading.value = true;
             if(customer_id){
                 const res = await axiosInstance.get("api/customer/" + customer_id);
                 currentCustomer.value = res.data.response.customerData;
@@ -125,6 +127,8 @@
                 msg = e.message;
             }
             window.showMessage(msg,'error');
+        }finally {
+            loading.value = false;
         }
     };
     onMounted(() => {

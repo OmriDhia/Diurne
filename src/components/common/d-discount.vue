@@ -44,6 +44,9 @@
                 try {
                     const res = await axiosInstance.get('api/discountRules');
                     this.discounts = res.data.response.discountRules;
+                    if(this.modelValue){
+                        this.discount = parseInt(this.modelValue);
+                    }
                 } catch (error) {
                     console.error('Failed to fetch discounts:', error);
                 }

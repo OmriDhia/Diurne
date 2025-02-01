@@ -257,6 +257,7 @@
     const error = ref({});
     const disbledContremarque = true;
     const disbledPrices = true;
+    let statusUpdate = true;
     
     const data = ref({
         discountRuleId: 0,
@@ -423,18 +424,23 @@
             const msg = "Echec de récupération des données devis";
             window.showMessage(msg,'error');
         }finally {
-            //loading.value = false;
+            if(statusUpdate){
+                statusUpdate = false;
+                loading.value = false;
+            }
         }
     };
-    const changeStatusDetails = () => {
+    const changeStatusDetails = async () => {
         if(quote_id){
-            calculateTotal(quote_id);
-            getQuote(quote_id);
+            statusUpdate = true;
+            loading.value = true;
+            await calculateTotal(quote_id);
+            await getQuote(quote_id);
         }
     };
-    onMounted(() => {
+    onMounted(async () => {
        if(quote_id){
-           getQuote(quote_id);
+           await getQuote(quote_id);
        }
     });
 
@@ -462,9 +468,9 @@
         ],
         async () => {
             if(quote_id && !disableAutoSave){
-                saveDevis(false);
-                calculateTotal(quote_id);
-                getQuote(quote_id);
+                await saveDevis(false);
+                await calculateTotal(quote_id);
+                await getQuote(quote_id);
             }
         }
     ); 
