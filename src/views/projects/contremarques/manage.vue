@@ -190,7 +190,7 @@
         customerDiscount_id: 0,
         prescriber_id: 0,
         commission: 0,
-        commission_on_deposit: true
+        commission_on_deposit: false
     });
     const currentCustomer = ref({});
     
@@ -221,13 +221,18 @@
             if(contremarque_id){
                 const res = await axiosInstance.put("/api/updateContremarque/" + contremarque_id,data.value);
                 window.showMessage("Mise a jour avec succées.")
+                setTimeout(()=>{
+                    goToContremarqueList();
+                }, 2000);
             }else{
                 const respn = await axiosInstance.post("/api/createContremarque",data.value);
-                window.showMessage("Ajout avec succées.")
+                window.showMessage("Ajout avec succées.");
+                const ctm = respn.data.response;
+                setTimeout(()=>{
+                    goToContremarqueEdit(ctm.contremarque_id);
+                }, 2000);
             }
-            setTimeout(()=>{
-                goToContremarqueList();
-            }, 2000);
+            
         }catch(e){
             if(e.response.data.violations){
                 error.value = formatErrorViolations(e.response.data.violations)
@@ -271,6 +276,9 @@
 
     const goToContremarqueList = () => {
         router.push({name: 'projectsList'})
+    };
+    const goToContremarqueEdit = (id) => {
+        router.push({name: 'projectsListManage', params:{ id: id }})
     };
     const goToDIProjet = () => {
         router.push({name: 'projectDIS', params:{ id: contremarque_id }})

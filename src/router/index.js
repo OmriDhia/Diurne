@@ -1,43 +1,42 @@
 import store from '../store';
-import {routes} from './routes';
+import { routes } from './routes';
 import { createRouter, createWebHistory } from 'vue-router';
-import NProgress from 'nprogress'
+import NProgress from 'nprogress';
 
-
-const router = new createRouter({
-    // mode: 'history',
+const router = createRouter({  // ❌ Remove `new`
     history: createWebHistory(),
     linkExactActiveClass: 'active',
     routes,
 });
 
 router.beforeEach((to, from, next) => {
-
-    NProgress.configure();
+    NProgress.configure({ showSpinner: false });
     NProgress.start();
-    if (to.matched.length === 0) {
-        // Redirect to the NotFound component
-        next({ path: '/error/404' });
-    }else{
 
-        const permission = to.matched.filter(record => record.meta.permission).map(record => record.meta.permission);
+    if (to.matched.length === 0) {
+        next({ path: '/error/404' }); // Redirect to NotFound
+    } else {
+        const permission = to.matched
+            .filter(record => record.meta.permission)
+            .map(record => record.meta.permission);
+
         if (permission.length > 0 && !window.$hasPermission(permission[0])) {
-            next({ path: '/error/401' });
-        }else{
-            // affect layout 
+            next({ path: '/error/401' }); // Redirect to 401 (Unauthorized)
+        } else {
+            // Set layout
             if (to.meta && to.meta.layout) {
                 store.commit('setLayout', to.meta.layout);
             } else {
-                if(store.getters.layout !== 'app')
-                    store.commit('setLayout', 'app');
+                if (store.getters.layout !== 'app') store.commit('setLayout', 'app');
             }
 
-            store.commit('setPageClass', "");
+            // Set page class
+            store.commit('setPageClass', '');
             if (to.meta && to.meta.class) {
                 store.commit('setPageClass', to.meta.class);
             }
 
-            // check for authentication
+            // Check authentication
             const isAuthenticated = store.getters.isAuthenticated;
             if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
                 next('/');
@@ -46,8 +45,10 @@ router.beforeEach((to, from, next) => {
             }
         }
     }
+});
 
-    NProgress.done();
+router.afterEach(() => {
+    NProgress.done(); 
 });
 
 export default router;

@@ -1,5 +1,5 @@
 <template>
-    <d-base-page>
+    <d-base-page :loading="loading">
         <template v-slot:title>
             <d-page-title title="Devis"></d-page-title>
         </template>
@@ -253,6 +253,7 @@
     const prescriber = ref(0);
     const commission = ref("");
     const quoteDetails = ref([]);
+    const loading = ref(false);
     const error = ref({});
     const disbledContremarque = true;
     const disbledPrices = true;
@@ -371,6 +372,8 @@
             console.log(e);
             const msg = "Une contremarque d'id " + contremarque_id + " n'existe pas";
             window.showMessage(msg,'error');
+        }finally {
+            loading.value = false;
         }
     };
     let disableAutoSave = true;
@@ -383,6 +386,7 @@
     const getQuote = async (quote_id) => {
         try{
             if(quote_id){
+                loading.value = true; 
                 quote.value = await quoteService.getQuoteById(quote_id);
                 contremarqueId.value = quote.value?.contremarqueId;
                 quoteNumber.value = quote.value.reference;
@@ -418,6 +422,8 @@
             console.log(e);
             const msg = "Echec de récupération des données devis";
             window.showMessage(msg,'error');
+        }finally {
+            //loading.value = false;
         }
     };
     const changeStatusDetails = () => {
