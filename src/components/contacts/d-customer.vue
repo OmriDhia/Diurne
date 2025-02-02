@@ -12,13 +12,13 @@
         <div class="row p-2" v-if="isParticular">
             <d-input label="Prénom" :error="error.firstname" v-model="data.firstname"></d-input>
         </div>
-        <div class="row p-2">
+        <!--div class="row p-2">
             <d-input  :button="data.customer_id === 0" required="true" label="Code contact" v-model="data.code" :error="error.code">
                 <template v-slot:input-button>
                     <button class="btn btn-success" @click.prevent="incrimentSuffix" v-if="data.customer_id === 0">Générer</button>
                 </template>
             </d-input>
-        </div>
+        </div-->
         <div class="row p-2" v-if="!isParticular">
             <d-input label="CE TVA" v-model="data.tva_ce" :error="error.tva_ce"></d-input>
         </div>
@@ -65,14 +65,16 @@
     import dDelete from "../common/d-delete.vue";
     import {formatErrorViolations} from "../../composables/global-methods";
     import {particularCustomerGroupId, publicDiscountTypeId} from "../../composables/constants";
-
+    import { useRouter } from 'vue-router';
+    
     const props = defineProps({
         customerData: {
             type: Object,
             default: {}
         }
     });
-    
+
+    const router = useRouter();
     const data = ref({
         customer_id: 0,
         customerGroupId: 0,
@@ -101,7 +103,7 @@
                 window.showMessage("Mise a jour avec succées.")
             }else{
                 const res = await axiosInstance.post("/api/createCustomer",data.value);
-                location.href = "/contacts/manage/" + res.data.response.customer_id
+                router.push({name: "addContact", params:{id: res.data.response.customer_id}})
             }
         }catch(e){
             if(e.response.data.violations){
@@ -118,7 +120,7 @@
         data.value.website = newVal.website;
         data.value.code = newVal.code;
         data.value.tva_ce = newVal.tva_ce;
-        data.value.mailingLanguageId = newVal.mailingLanguageId;
+        data.value.mailingLanguageId = newVal.mailingLanguage;
         data.value.is_agent =  newVal.is_agent;
         data.value.firstname =  newVal.firstname;
         data.value.lastname =  newVal.lastname;
@@ -156,7 +158,9 @@
                 data.value.discountTypeId = particularCustomerGroupId;
             }else{
                 isParticular.value = false;
-                data.value.discountTypeId = 0;
+                if(!props.customerData.customer_id) {
+                    data.value.discountTypeId = 0;
+                }
             }
         }
     );

@@ -46,7 +46,7 @@
                 branding: false,
                 forced_root_block: '',
                 fontsize_formats: "8px 9px 10px 11px 12px 13px 14px 15px 16px 17px 18px 19px 20px 24px 25px 26px 27px 28px 29px 30px 32px 34px 36px 38px 40px 51px 61px 71px",
-                plugins: 'autoresize advlist autolink lists link image charmap print preview searchreplace visualblocks code insertdatetime media table paste code wordcount',
+                plugins: 'autoresize advlist autolink lists link image charmap preview searchreplace visualblocks code insertdatetime media table code wordcount',
                 toolbar: 'undo redo | code | bold italic backcolor forecolor | alignleft aligncenter alignright alignjustify \ ' +
                     'formatselect | fontselect | fontsizeselect | lineheight',
                 file_picker_types: 'image',
@@ -108,7 +108,6 @@
             if (id) {
                 const fetchedHtml = await quoteService.getQuoteHtml(id);
                 editorData.value = fetchedHtml;
-                editor.value.commands.setContent(editorData.value); // Set content in the editor
             }
         } catch (e) {
             console.error("Error fetching quote HTML:", e.message);

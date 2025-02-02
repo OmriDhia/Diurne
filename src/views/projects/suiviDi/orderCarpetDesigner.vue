@@ -284,9 +284,8 @@ const saveCarpetOrder = async () => {
             const res = await axiosInstance.post(`/api/projectDi/${id_di}/carpet-design-order`,dataCarpetOrder.value);
             window.showMessage("Ajout avec succées.");
             setTimeout(() => {
-                const resolvedRoute = router.resolve({ name: 'di_orderDesigner_update', params: { id_di: id_di,carpetDesignOrderId: res.data.response.id}});
-                document.location.href = resolvedRoute.href
-                },2000);
+                router.push({ name: 'di_orderDesigner_update', params: { id_di: id_di,carpetDesignOrderId: res.data.response.id}});
+            },2000);
         }
         
     }catch (e){

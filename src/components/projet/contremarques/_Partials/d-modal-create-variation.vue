@@ -29,7 +29,8 @@
     import dBaseModal from "../../../../components/base/d-base-modal.vue";
     import dPanelTitle from "../../../../components/common/d-panel-title.vue";
     import {formatErrorViolations, Helper} from "../../../../composables/global-methods";
-  
+    import { useRouter } from 'vue-router';
+    
     const props = defineProps({
         carpetDesignOrderId:{
             type: Number
@@ -38,7 +39,8 @@
             type: Number
         },
     });
-    
+
+    const router = useRouter();
     const data = ref({
         variation_image_reference: "",
         variation: ""
@@ -47,13 +49,13 @@
     
     const saveVariation = async () =>{
         try{
-            /*if(props.carpetDesignOrderId){
+            if(props.carpetDesignOrderId){
                 const url = `/api/carpetDesignOrder/${props.carpetDesignOrderId}/createVariation`;
                 const res = await axiosInstance.post(url,data.value);
                 window.showMessage("Ajout avec succées.");
-            }*/
+            }
             document.querySelector("#modalCreateVariation .btn-close").click();
-            location.href = `/projet/contremarques/projectdis/${props.id_di}`;
+            router.push({name: "projectdis", params:{id: props.id_di}})
             initData();
         }catch (e){
             if(e.response.data.violations){

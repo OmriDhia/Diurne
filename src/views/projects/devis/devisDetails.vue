@@ -514,7 +514,7 @@
                     const respn = await axiosInstance.post(`/api/Quote/${quote_id}/createQuoteDetail`,dataToSent);
                     window.showMessage("Ajout avec succées.")
                     setTimeout(()=>{
-                        location.href = `/projet/devis/${quote_id}/details/${respn.data.response.quoteDetail.id}`
+                        router.push({name: "devisDetails", params:{qouteId: quote_id,id: respn.data.response.quoteDetail.id}})
                     }, 2000);
                 }
             }else{

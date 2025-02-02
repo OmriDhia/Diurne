@@ -7,7 +7,7 @@
         </div>
 
         <div class="row layout-top-spacing mt-3">
-            <d-animated-skeleton :loading="loading" :marginTop="1" :width="95"/>
+            <d-animated-skeleton :loading="loading" :marginTop="0" :width="100"/>
             <slot name="body" v-if="!loading"></slot>
         </div>
 

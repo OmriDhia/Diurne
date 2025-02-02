@@ -16,9 +16,8 @@
                     <div class="row p-1 align-items-center" v-if="attachmentTypeId === defaultTypeImageId">
                         <div class="col-sm-12 col-md-8">
                             <div class="row">
-                                <div class="col-sm-12 col-md-4 text-black"> Image: </div>
-                                <div class="col-sm-12 col-md-8">
-                                    <input type="file" class="form-control" @change="onFileChange" accept="image/*" />
+                                <div class="col-md-12">
+                                    <d-upload-file @file-selected="slectedFile($event)"></d-upload-file>
                                     <div class="pt-3" v-if="uploadProgress">
                                         <div class="progress">
                                             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" :style="{width: uploadProgress+'%'}"></div>
@@ -39,8 +38,9 @@
 <script setup>
     import { ref, computed } from 'vue';
     import attachmentService from '../../../../Services/attachment-service';
-    import dInput from "../../../../components/base/d-input.vue";
-    import dBaseModal from "../../../../components/base/d-base-modal.vue";
+    import dInput from "../../../base/d-input.vue";
+    import dBaseModal from "../../../base/d-base-modal.vue";
+    import dUploadFile from "../../../common/d-upload-file.vue";
     import axiosInstance from "../../../../config/http";
     import dImageTypeDropdown from "../dropdown/d-image-type-dropdown.vue";
     import dAttachmentTypeDropdown from "../dropdown/d-attachment-type-dropdown.vue";
@@ -78,9 +78,9 @@
     });
 
     // Handle file selection
-    const onFileChange = (event) => {
+    const slectedFile = (event) => {
         uploadProgress.value = 0;
-        file.value = event.target.files[0];
+        file.value = event;
     };
     
     const submitFile = async () => {

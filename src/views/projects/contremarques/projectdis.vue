@@ -178,7 +178,7 @@ import dDelete from "../../../components/common/d-delete.vue"
 import dModalManageDi from "../../../components/projet/contremarques/_Partials/d-modal-manage-di.vue"
 import VueFeather from 'vue-feather';
 import axiosInstance from '../../../config/http';
-import { useRoute } from 'vue-router';
+import { useRoute,useRouter } from 'vue-router';
 import { ref, onMounted, watch } from 'vue';
 import { filterContremarque } from '../../../composables/constants';
 import contremarqueService from "../../../Services/contremarque-service";
@@ -190,6 +190,7 @@ import { useMeta } from '/src/composables/use-meta';
 import {Helper} from "../../../composables/global-methods";
 useMeta({ title: 'Demande Image' });
 
+const router = useRouter();
 const route = useRoute();
 const contremarque_id = route.params.id;
 const datas = ref([]);
@@ -254,7 +255,7 @@ const selectDiId =  () => {
 };
 const goTocreateOrder =  () => {
     if(selectedData.value.project_di){
-        location.href = `/projet/dis/model/${selectedData.value.project_di}/create`;
+        router.push({name: "di_orderDesigner_create", params:{id_di: selectedData.value.project_di}});
     }else{
         window.showMessage("Auccun demande d'image selectionner", "error")
     }
@@ -262,7 +263,7 @@ const goTocreateOrder =  () => {
 };
 const goToUpdateOrder =  (id) => {
     if(selectedData.value.project_di){
-        location.href = `/projet/dis/model/${selectedData.value.project_di}/update/${id}`;
+        router.push({name: "di_orderDesigner_update", params:{id_di: selectedData.value.project_di,carpetDesignOrderId: id}});
     }else{
         window.showMessage("Auccun demande d'image selectionner", "error")
     }
