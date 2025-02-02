@@ -496,7 +496,9 @@ import VueFeather from 'vue-feather';
 import { useI18n } from 'vue-i18n';
 import { useStore } from 'vuex';
 const store = useStore();
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const selectedLang = ref(null);
 const countryList = ref(store.state.countryList);
 
@@ -522,7 +524,7 @@ const logout = async () => {
 }
 
 const goToHome = () => {
-    location.href = '/home';
+    router.push({name: 'home'});
 }
 
 const userInfo = userService.getUserInfo();

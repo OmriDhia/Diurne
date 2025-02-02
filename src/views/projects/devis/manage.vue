@@ -340,8 +340,8 @@
                     window.showMessage("Mise a jour avec succées.")
                 }else{
                     const respn = await axiosInstance.post(`/api/contremarque/${contremarqueId.value}/createQuote`,dataTosend);
-                    location.href = `/projet/devis/manage/${respn.data.response.id}`
-                    window.showMessage("Ajout avec succées.")
+                    window.showMessage("Ajout avec succées.");
+                    router.push({name: "devisManage", params:{id: respn.data.response.id}});
                 } 
                if(leave){
                     setTimeout(()=>{

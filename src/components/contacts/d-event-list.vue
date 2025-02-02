@@ -218,7 +218,9 @@
     import dBtnFullscreen from '../base/d-btn-fullscreen.vue';
     import dCustomerTypeDropdown from "../common/d-customer-type-dropdown.vue";
     import { Helper } from "../../composables/global-methods";
-
+    import { useRouter } from 'vue-router';
+    
+    const router = useRouter();
     const loading = ref(true);
     const total_rows = ref(0);
     const isOpen = ref(false);
@@ -354,7 +356,7 @@
         selectedCustomerId.value = customerId;
     };
     const goToNewContact = () => {
-        location.href = '/contacts/manage'
+        router.push({name: 'addContact'});
     };
 </script>
 

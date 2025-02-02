@@ -65,14 +65,16 @@
     import dDelete from "../common/d-delete.vue";
     import {formatErrorViolations} from "../../composables/global-methods";
     import {particularCustomerGroupId, publicDiscountTypeId} from "../../composables/constants";
-
+    import { useRouter } from 'vue-router';
+    
     const props = defineProps({
         customerData: {
             type: Object,
             default: {}
         }
     });
-    
+
+    const router = useRouter();
     const data = ref({
         customer_id: 0,
         customerGroupId: 0,
@@ -101,7 +103,7 @@
                 window.showMessage("Mise a jour avec succées.")
             }else{
                 const res = await axiosInstance.post("/api/createCustomer",data.value);
-                location.href = "/contacts/manage/" + res.data.response.customer_id
+                router.push({name: "addContact", params:{id: res.data.response.customer_id}})
             }
         }catch(e){
             if(e.response.data.violations){
@@ -118,7 +120,7 @@
         data.value.website = newVal.website;
         data.value.code = newVal.code;
         data.value.tva_ce = newVal.tva_ce;
-        data.value.mailingLanguageId = newVal.mailingLanguageId;
+        data.value.mailingLanguageId = newVal.mailingLanguage;
         data.value.is_agent =  newVal.is_agent;
         data.value.firstname =  newVal.firstname;
         data.value.lastname =  newVal.lastname;

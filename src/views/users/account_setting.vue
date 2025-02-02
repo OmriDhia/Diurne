@@ -67,7 +67,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import dProfile from "../../components/common/d-profile.vue";
 import dPassword from "../../components/base/d-password.vue";
 import "/src/assets/sass/scrollspyNav.scss";
@@ -84,6 +84,7 @@ useMeta({ title: "Account Setting" });
 
 const route = useRoute();
 const { id } = route.params;
+const router = useRouter();
 
 if (id) {
     onMounted(() => {
@@ -124,7 +125,7 @@ const save = async () => {
         })
 
         window.showMessage("L'utilisateur a été enregistré avec succès.");
-        location.href = "/users"
+        router.push({name: "users"}); 
     } catch (error) {
         window.showMessage("Quelque chose s'est mal passé.", 'error');
     }

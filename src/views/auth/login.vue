@@ -61,11 +61,13 @@ import userService from "../../Services/user-service";
 import { TOKEN_STORAGE_NAME } from "../../composables/constants";
 import { ref } from 'vue';
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
 import { useMeta } from "/src/composables/use-meta";
 useMeta({ title: "Login" });
 
 const store = useStore();
+const router = useRouter();
 
 const email = ref(null);
 const password = ref(null);
@@ -80,7 +82,7 @@ const login = async  () => {
           password: password.value
         });
 
-        window.location.href = '/home';
+        router.push({name: 'home'});
       } catch (error) {
         loginLoad.value = false;
         errorMessage.value = error.message;

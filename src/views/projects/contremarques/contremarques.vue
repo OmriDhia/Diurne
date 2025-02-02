@@ -166,10 +166,12 @@ import { filterContremarque, FILTER_CONTREMARQUE_STORAGE_NAME } from '../../../c
 import moment from "moment";
 import { Helper } from "../../../composables/global-methods";
 import dModalEvent from "../../../components/projet/contremarques/_Partials/d-modal-event.vue";
+import { useRouter } from 'vue-router';
 
 import { useMeta } from '/src/composables/use-meta';
 useMeta({ title: 'Contremarque' });
 
+const router = useRouter();
 const loading = ref(true);
 const loadingAttribution = ref(false);
 const total_rows = ref(0);
@@ -292,7 +294,7 @@ const selectCustomer = (customerId, contremarqueId) => {
 };
 
 const goToNewContremarque = () => {
-    location.href = "/projet/contremarques/manage"
+    router.push({name: 'projectsListManage'});
 };
     
 </script>
