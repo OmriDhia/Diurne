@@ -4,7 +4,11 @@
             <label for="droit" class="form-label">Type client<span class="required" v-if="required">*</span>:</label>
         </div>
         <div class="col-8">
-            <select id="droit"  :class="{ 'is-invalid': error, 'form-select': true }" :value="type" @input="handleChange($event.target.value)">
+            <select 
+                id="droit"  
+                :class="{ 'is-invalid': error, 'form-select': true }" 
+                :value="type" 
+                @input="handleChange($event.target.value)">
                 <option value="0" selected disabled>Type de client</option>
                 <option v-for="(prof, key) in customerTypes" :key="key" :value="prof.customerGroup_id">{{ prof.name }}</option>
                 <option value="9">Autre</option>

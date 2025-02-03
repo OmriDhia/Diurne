@@ -107,7 +107,7 @@
         discountTypeId: 0,
         mailingLanguageId: 0,
         is_agent: false,
-        originContactLabel: "",
+        contact_origin_label: "",
         contact_origin_id: null,  // Updated from OriginContactId
         commentaire: "",          // Updated from Commentaire
     });
@@ -120,10 +120,10 @@
     const isAutreSelectedOriginType = ref(false);
     let codeSuffix = ref(1);
     const createCustomer = async () => {
-        if (data.value.originContactLabel === "") {
+        if (data.value.contact_origin_label === "") {
             errorContactOrigin.value = "Le type d'origine est obligatoire.";
         }
-        if (data.value.originContactLabel === "Autres" && data.value.commentaire === "") {
+        if (data.value.contact_origin_label === "Autre" && data.value.commentaire === "") {
             errorCommentaire.value = "Commentaire est Obligatoire Pour Autre.";
         } else {
             errorCommentaire.value = "";
@@ -158,6 +158,7 @@
         data.value.lastname =  newVal.lastname;
         data.value.contact_origin_id = newVal.contact_origin_id;
         data.value.commentaire = newVal.commentaire;
+        data.value.contact_origin_label = newVal.contact_origin_label;
     };
     
     const changeCode = (Rs) => {
@@ -198,10 +199,10 @@
         }
     );
 
-    watch(() => data.value.originContactLabel, (newLabel) => {
-        console.log(newLabel);  // Debug to check if value is changing
+    watch(() => data.value.contact_origin_label, (newLabel) => {
+        console.log("new label " + newLabel);  // Debug to check if value is changing
         errorContactOrigin.value = "";
-        isAutreSelectedOriginType.value = newLabel === "Autres";  // Check if it's "Autre"
+        isAutreSelectedOriginType.value = newLabel === "Autre";  // Check if it's "Autre"
         
         // Reset commentaire if it's not "Autre"
         if (!isAutreSelectedOriginType.value) {
