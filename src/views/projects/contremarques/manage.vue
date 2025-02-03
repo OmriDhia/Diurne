@@ -285,7 +285,7 @@
         router.push({ name: 'devisList', query: { contremarqueId: contremarque_id } });
     };
     const goToListSUiviDI = () => {
-        router.push({name: 'di_list'})
+        router.push({name: 'di_list' , query: { contremarqueId: contremarque_id } });
     };
     
     const goToCreateDevis = () => {

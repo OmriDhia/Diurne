@@ -240,7 +240,6 @@
 
     const route = useRoute();
     const router = useRouter();
-    const contremarqueId = ref(0);
     const quote_id = route.params.id;
     const selectedCustomer = ref(0);
     const selectedContact = ref({});
@@ -432,21 +431,14 @@
             }
         }
     };
-    const changeStatusDetails = async () => {
-        if(quote_id){
-            statusUpdate = true;
-            loading.value = true;
-            await calculateTotal(quote_id);
-            await getQuote(quote_id);
-        }
-    };
+
     onMounted( async () => {
        if(quote_id){
            getQuote(quote_id);
        }
        if (contremarqueId.value){
             console.log("Detected contremarqueId from URL:", contremarqueId.value);
-            getContremarque(contremarqueId.value)
+            getContremarque(contremarqueId.value);
         }
     });
     const changeStatusDetails = async () => {
