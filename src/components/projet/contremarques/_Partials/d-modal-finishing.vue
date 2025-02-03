@@ -83,17 +83,24 @@
     import dInput from "../../../../components/base/d-input.vue";
     import dBaseModal from "../../../../components/base/d-base-modal.vue";
     import dPanelTitle from "../../../../components/common/d-panel-title.vue";
-    import {formatErrorViolations, Helper} from "../../../../composables/global-methods";
-  
+    import {formatErrorViolations} from "../../../../composables/global-methods";
+    import { customerInstructionObject } from "../../../../composables/constants";
+    import contremarqueService from "../../../../Services/contremarque-service";
+
     const props = defineProps({
         carpetDesignOrderId:{
             type: Number
         },
-        id_di:{
+        customerInstructionId:{
             type: Number
+        },
+        finishingData:{
+            type: Object
         },
     });
     
+    const emit = defineEmits(['onClose','updateCustomerInstructionId']);
+    const finishingId = ref(null);
     const data = ref({
         fabricColor: "",
         fringe: true,
@@ -108,33 +115,38 @@
     
     const saveFinishing = async () =>{
         try{
-            /*if(props.carpetDesignOrderId){
-                const url = `/api/carpetDesignOrder/${props.carpetDesignOrderId}/createVariation`;
-                const res = await axiosInstance.post(url,data.value);
-                window.showMessage("Ajout avec succées.");
-            }*/
-            document.querySelector("#modalCreateVariation .btn-close").click();
-            location.href = `/projet/contremarques/projectdis/${props.id_di}`;
-            initData();
+            let customerInstructionId = props.customerInstructionId;
+            let customerInstruction = Object.assign({}, customerInstructionObject);
+            if(!customerInstructionId && props.carpetDesignOrderId){
+                const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, customerInstruction);
+                customerInstructionId = parseInt(res.id);
+                emit('updateCustomerInstructionId',customerInstructionId)
+            }
+
+            if(customerInstructionId){
+                if(finishingId.value){
+                    const res = await axiosInstance.put(`/api/customerInstruction/${customerInstructionId}/finishing/${finishingId.value}/update`,data.value);
+                    window.showMessage("Mise a jour avec succées.");
+                }else{
+                    const res = await axiosInstance.post(`/api/customerInstruction/${customerInstructionId}/finishing/create`,data.value);
+                    window.showMessage("Ajout avec succées.");
+                    customerInstruction.finitionInstructionId = res.data.response.id;
+                    if(props.carpetDesignOrderId){
+                        const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, customerInstruction, customerInstructionId);
+                    }
+                }
+            }
+            document.querySelector("#modalManageValidatedSimple .btn-close").click();
         }catch (e){
-            if(e.response.data.violations){
+            console.log(e);
+            if(e.response?.data?.violations){
                 error.value = formatErrorViolations(e.response.data.violations);
             }
             window.showMessage(e.message,'error')
         }
     };
     
-    const initData = () => {
-        data.value = {
-            variation_image_reference: "",
-            variation: ""
-        };
-    };
-    
-    const emit = defineEmits(['onClose']);
-
     const handleClose = () => {
-        initData();
         error.value = {};
         emit('onClose')
     }

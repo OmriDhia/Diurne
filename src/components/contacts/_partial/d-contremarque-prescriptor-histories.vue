@@ -42,13 +42,15 @@
     import VueFeather from 'vue-feather';
     import dBtnOutlined from '../../base/d-btn-outlined.vue'
     import dDelete from "../../common/d-delete.vue";
-
+    import { useRouter } from 'vue-router';
+    
     const props = defineProps({
         customerId: {
             type: Number
         }
     });
     
+    const router = useRouter();
     const datas = ref([]);
     const getContremarqueHistories = async (customerId) => {
       try{
@@ -71,7 +73,7 @@
         }
     );
     const gotToContremarque = (id) => {
-        location.href = "/projet/contremarques/manage/" + id;
+        router.push({name: "projectsListManage", params:{id: id}})
     };
 </script>
 

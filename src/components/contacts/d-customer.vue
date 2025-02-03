@@ -1,8 +1,7 @@
 <template>
     <div class="col-sm-12 col-md-6">
         <div class="row p-2">
-            <!-- :error="error.customerGroupId" -->
-            <d-customer-type :required="true"  v-model="data.customerGroupId"></d-customer-type>
+            <d-customer-type :required="true" :error="error.customerGroupId" v-model="data.customerGroupId"></d-customer-type>
         </div>
         <div class="row p-2" v-if="!isParticular">
             <d-input required="true" label="Raison social" :error="error.social_reason" v-model="data.social_reason"></d-input>
@@ -84,6 +83,8 @@
     import dTextarea from '../../components/base/d-textarea.vue';
 
 
+    import { useRouter } from 'vue-router';
+    
     const props = defineProps({
         customerData: {
             type: Object,
@@ -120,6 +121,7 @@
     );
 
 
+    const router = useRouter();
     const data = ref({
         customer_id: 0,
         customerGroupId: 0,
@@ -159,7 +161,7 @@
                 window.showMessage("Mise a jour avec succées.")
             }else{
                 const res = await axiosInstance.post("/api/createCustomer",data.value);
-                location.href = "/contacts/manage/" + res.data.response.customer_id
+                router.push({name: "addContact", params:{id: res.data.response.customer_id}})
             }
         }catch(e){
             if(e.response.data.violations){
@@ -176,7 +178,7 @@
         data.value.website = newVal.website;
         data.value.code = newVal.code;
         data.value.tva_ce = newVal.tva_ce;
-        data.value.mailingLanguageId = newVal.mailingLanguageId;
+        data.value.mailingLanguageId = newVal.mailingLanguage;
         data.value.is_agent =  newVal.is_agent;
         data.value.firstname =  newVal.firstname;
         data.value.lastname =  newVal.lastname;

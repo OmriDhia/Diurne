@@ -86,6 +86,8 @@ import axiosInstance from '../../config/http';
 import dProfile from '../../components/common/d-profile.vue';
 import VueFeather from 'vue-feather';
 import dPageTitle from '../../components/common/d-page-title.vue';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 import { useMeta } from '/src/composables/use-meta';
 useMeta({ title: 'Users list' });
@@ -164,9 +166,9 @@ const doReset = () => {
     search.lastname = null;
     search.profile = null;
     getUsers();
-}
+};
 const goToNewUser = () => {
-    location.href = '/users/account-setting'
+    router.push({name: 'account-setting'});
 }
 </script>
 <style>

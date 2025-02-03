@@ -7,19 +7,19 @@
         <!--  BEGIN MAIN CONTAINER  -->
         <div class="main-container" id="container" :class="[!$store.state.is_show_sidebar ? 'sidebar-closed sbar-open' : '', $store.state.menu_style === 'collapsible-vertical' ? 'collapsible-vertical-mobile' : '']">
             <!--  BEGIN OVERLAY  -->
-            <div class="overlay" :class="{ show: !$store.state.is_show_sidebar }" @click="$store.commit('toggleSideBar', !$store.state.is_show_sidebar)"></div>
+            <!--div class="overlay" :class="{ show: !$store.state.is_show_sidebar }" @click="$store.commit('toggleSideBar', !$store.state.is_show_sidebar)"></.div>
             <div class="search-overlay" :class="{ show: $store.state.is_show_search }" @click="$store.commit('toggleSearch', !$store.state.is_show_search)"></div>
-            <!-- END OVERLAY -->
+            < END OVERLAY -->
 
             <!--  BEGIN SIDEBAR  -->
             <Sidebar></Sidebar>
-            <!--  END SIDEBAR  -->
-            <div id="content-loader" class="main-content mt-5" v-if="loading">
-                <div class="loader multi-loader mx-auto"></div>
-            </div>
+
             <!--  BEGIN CONTENT AREA  -->
-            <div id="content" class="main-content  mt-5" v-else>
-                <router-view></router-view>
+            <div id="content" class="main-content  mt-5">
+                <d-loading-skeleton @loading="isLoading = $event" />
+                <div v-if="!isLoading">
+                    <router-view />
+                </div>
 
                 <!-- BEGIN FOOTER -->
                 <Footer></Footer>
@@ -38,6 +38,7 @@
     import Footer from "../components/layout/footer.vue";
     import { ref } from "vue";
     import Store from "../store/index";
+    import dLoadingSkeleton from '../components/base/d-loading-skeleton.vue';
 
-    const loading = ref(Store.getters.loading);
+    const isLoading = ref(false);
 </script>

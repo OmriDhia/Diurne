@@ -1,5 +1,5 @@
 <template>
-    <d-base-page>
+    <d-base-page :loading="loading">
         <template v-slot:title>
             <d-page-title title="Devis"></d-page-title>
         </template>
@@ -14,7 +14,7 @@
                           <d-input type="date" label="Date de création" v-model="createdDate" :disabled="true"></d-input>
                       </div>
                       <div class="col-md-4 col-sm-12">
-                          <d-contremarque-dropdown v-model="contremarqueId" :customerId="selectedCustomer"></d-contremarque-dropdown>
+                          <d-contremarque-dropdown v-model="contremarqueId"></d-contremarque-dropdown>
                       </div>
                   </div>
               </template>
@@ -235,10 +235,12 @@
     import dQuoteDetails from "../../../components/projet/devis/d-quote-details.vue";
     import dModalFactureDevis from "../../../components/projet/devis/d-modal-facture-devis.vue";
 
+    
     useMeta({ title: 'Gestion Contremarque' });
 
     const route = useRoute();
     const router = useRouter();
+    const contremarqueId = ref(0);
     const quote_id = route.params.id;
     const selectedCustomer = ref(0);
     const selectedContact = ref({});
@@ -252,9 +254,11 @@
     const prescriber = ref(0);
     const commission = ref("");
     const quoteDetails = ref([]);
+    const loading = ref(false);
     const error = ref({});
     const disbledContremarque = true;
     const disbledPrices = true;
+    let statusUpdate = true;
     
     const data = ref({
         discountRuleId: 0,
@@ -338,8 +342,8 @@
                     window.showMessage("Mise a jour avec succées.")
                 }else{
                     const respn = await axiosInstance.post(`/api/contremarque/${contremarqueId.value}/createQuote`,dataTosend);
-                    location.href = `/projet/devis/manage/${respn.data.response.id}`
-                    window.showMessage("Ajout avec succées.")
+                    window.showMessage("Ajout avec succées.");
+                    router.push({name: "devisManage", params:{id: respn.data.response.id}});
                 } 
                if(leave){
                     setTimeout(()=>{
@@ -371,6 +375,8 @@
             console.log(e);
             const msg = "Une contremarque d'id " + contremarque_id + " n'existe pas";
             window.showMessage(msg,'error');
+        }finally {
+            loading.value = false;
         }
     };
     let disableAutoSave = true;
@@ -383,6 +389,7 @@
     const getQuote = async (quote_id) => {
         try{
             if(quote_id){
+                loading.value = true; 
                 quote.value = await quoteService.getQuoteById(quote_id);
                 contremarqueId.value = quote.value?.contremarqueId;
                 quoteNumber.value = quote.value.reference;
@@ -418,21 +425,41 @@
             console.log(e);
             const msg = "Echec de récupération des données devis";
             window.showMessage(msg,'error');
+        }finally {
+            if(statusUpdate){
+                statusUpdate = false;
+                loading.value = false;
+            }
         }
     };
-    const changeStatusDetails = () => {
+    const changeStatusDetails = async () => {
         if(quote_id){
-            calculateTotal(quote_id);
-            getQuote(quote_id);
+            statusUpdate = true;
+            loading.value = true;
+            await calculateTotal(quote_id);
+            await getQuote(quote_id);
         }
     };
-    onMounted(() => {
+    onMounted( async () => {
        if(quote_id){
            getQuote(quote_id);
        }
        if (contremarqueId.value){
             console.log("Detected contremarqueId from URL:", contremarqueId.value);
             getContremarque(contremarqueId.value)
+        }
+    });
+    const changeStatusDetails = async () => {
+        if(quote_id){
+            statusUpdate = true;
+            loading.value = true;
+            await calculateTotal(quote_id);
+            await getQuote(quote_id);
+        }
+    };
+    onMounted(async () => {
+       if(quote_id){
+           await getQuote(quote_id);
        }
     });
 
@@ -460,9 +487,9 @@
         ],
         async () => {
             if(quote_id && !disableAutoSave){
-                saveDevis(false);
-                calculateTotal(quote_id);
-                getQuote(quote_id);
+                await saveDevis(false);
+                await calculateTotal(quote_id);
+                await getQuote(quote_id);
             }
         }
     ); 

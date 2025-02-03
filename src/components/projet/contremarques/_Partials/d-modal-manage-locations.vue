@@ -23,7 +23,7 @@
                             <d-input required="true" label="Prix max" v-model="data.price_max" :error="error.price_max"></d-input>
                         </div>
                     </div>
-                    <div class="row p-1 align-items-center">
+                    <!--div class="row p-1 align-items-center">
                         <div class="col-sm-12 col-md-6">
                             <d-input type="datetime-local" label="Date devis" v-model="data.quote_processing_date" :error="error.quote_processing_date"></d-input>
                         </div>
@@ -33,7 +33,7 @@
                                 <label class="custom-control-label text-black" for="quote_processed"> {{ $t('Devis traité') }} </label>
                             </div>
                         </div>
-                    </div>
+                    </div-->
                 </div>
             </template>
             <template v-slot:modal-footer>
@@ -58,6 +58,14 @@
         },
         contremarqueId:{
             type: Number
+        },
+        options:{
+            type: Object,
+            default: {
+                min_price: 0,
+                max_price: 0,
+                last_quote_date: ''
+            }
         }
     });
     
@@ -77,6 +85,7 @@
         if(props.locationData){
             affectData(props.locationData);  
         }
+        setOptions();
     });
     
     const saveLocation = async () =>{
@@ -106,37 +115,48 @@
     };
     
     const initData = () => {
-        data.value = {
-            contremarqueId: 0,
-            carpetTypeId: 0,
-            description: "",
-            quote_processed: true,
-            quote_processing_date: {},
-            price_min: 0,
-            price_max: 0,
-            createdAt: new Date(),
-        };
+        data.value.contremarqueId = 0;
+        data.value.carpetTypeId = 0;
+        data.value.description = "";
+        data.value.quote_processed = true;
+        data.value.quote_processing_date = {};
+        setOptions();
     };
 
-    const affectData = (newVal) => {
-        if(newVal){
+    const affectData = (loc) => {
+        if(loc){
             data.value = {
-                contremarqueId: newVal.contremarque_id,
-                carpetTypeId: newVal.carpetType_id,
-                description: newVal.description,
-                quote_processed: newVal.quote_processed,
-                quote_processing_date: (newVal.quote_processing_date) ? Helper.FormatDate(newVal.quote_processing_date.date,'YYYY-MM-DD HH:mm:ss') : {},
-                price_min: newVal.price_min,
-                price_max: newVal.price_max,
-                createdAt: new Date(newVal.created_at.date),
+                contremarqueId: loc.contremarque_id,
+                carpetTypeId: loc.carpetType_id,
+                description: loc.description,
+                quote_processed: loc.quote_processed,
+                quote_processing_date: (loc.quote_processing_date) ? Helper.FormatDate(loc.quote_processing_date.date,'YYYY-MM-DD HH:mm:ss') : {},
+                price_min: Helper.FormatNumber(loc.price_min),
+                price_max: Helper.FormatNumber(loc.price_max),
+                createdAt: new Date(loc.created_at.date),
             };
+        }
+    };
+    
+    const setOptions = () => {
+        if(props.options){
+            data.value.price_min = Helper.FormatNumber(props.options?.min_price);
+            data.value.price_max = Helper.FormatNumber(props.options?.max_price);
+            data.value.createdAt = new Date(props.options?.last_quote_date);
         }
     };
     watch(
         () => props.locationData,
-        (newVal) => {
-            affectData(newVal)
+        (loc) => {
+            affectData(loc)
         }
+    ); 
+    watch(
+        () => props.options,
+        (ops) => {
+            setOptions(); 
+        },
+        { deep: true }
     );
     const emit = defineEmits(['onClose']);
 

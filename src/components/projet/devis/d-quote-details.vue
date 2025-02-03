@@ -74,6 +74,7 @@
 <script setup>
     import { ref, watch, onMounted } from 'vue';
     import { useStore } from "vuex";
+    import { useRouter } from 'vue-router';
     import VueFeather from 'vue-feather';
     import dDelete from "../../common/d-delete.vue";
     import dInput from "../../base/d-input.vue";
@@ -100,6 +101,7 @@
     });
 
     const store = useStore();
+    const router = useRouter();
     const emit = defineEmits(['changeStatus']);
     const changeStatus = async (id,rowIndex,status) => {
         try{
@@ -118,10 +120,10 @@
         }
     }
     const goToDetails = () => {
-        location.href = `/projet/devis/${props.quoteId}/details`
+        router.push({name: 'devisDetails', params: { qouteId: props.quoteId }});
     };
     const goToQuoteDetails = (id) => {
-        location.href = `/projet/devis/${props.quoteId}/details/${id}`
+        router.push({name: 'devisDetails', params: { qouteId: props.quoteId, id: id }});
     };
 </script>
 

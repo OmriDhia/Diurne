@@ -13,7 +13,11 @@
                         </div>
                         <d-btn-outlined data-bs-toggle="modal" data-bs-target="#modalManageConstraint" label="Contraintes et remarque" icon="arrow-right" buttonClass="ps-1 font-size-0-6"></d-btn-outlined>
                     </div>
-                    <d-modal-constraint ></d-modal-constraint>
+                    <d-modal-constraint
+                        :customerInstructionId="customerInstructionId"
+                        :carpetDesignOrderId="props.carpetDesignOrderId"
+                        @updateCustomerInstructionId="updateCustomerInstructionId"
+                    ></d-modal-constraint>
                 </div>
                 <div class="row justify-content-between align-items-center mt-3">
                     <div class="col-lg-7 col-md-12">
@@ -25,7 +29,11 @@
                             <label class="custom-control-label" for="hasValidateSample"></label>
                         </div>
                         <d-btn-outlined data-bs-toggle="modal" data-bs-target="#modalManageValidatedSimple" label="Ech. Validée de ref" icon="arrow-right" buttonClass="ps-1 font-size-0-6"></d-btn-outlined>
-                        <d-modal-validated-sample></d-modal-validated-sample>
+                        <d-modal-validated-sample
+                            :customerInstructionId="customerInstructionId"
+                            :carpetDesignOrderId="props.carpetDesignOrderId"
+                            @updateCustomerInstructionId="updateCustomerInstructionId"
+                        ></d-modal-validated-sample>
                     </div>
                 </div>
                 <div class="row justify-content-between align-items-center mt-3">
@@ -39,7 +47,11 @@
                         </div>
                         <d-btn-outlined data-bs-toggle="modal" data-bs-target="#modalManageFinishing" label="Finition" icon="arrow-right" buttonClass="ps-1 font-size-0-8"></d-btn-outlined>
                     </div>
-                    <d-modal-finishing></d-modal-finishing>
+                    <d-modal-finishing 
+                        :customerInstructionId="customerInstructionId" 
+                        :carpetDesignOrderId="props.carpetDesignOrderId"
+                        @updateCustomerInstructionId="updateCustomerInstructionId"
+                    ></d-modal-finishing>
                 </div>
             </div>
             <div class="col-lg-4 col-md-12">
@@ -48,7 +60,7 @@
                         <div class="text-black p-0 pb-2">Commentaire client</div>
                     </div>
                     <div class="col-12">
-                        <textarea class="w-100 h-130-forced block-custom-border"></textarea>
+                        <textarea class="w-100 h-130-forced block-custom-border" v-model="data.customerComment"></textarea>
                     </div>
                 </div>
             </div>
@@ -82,6 +94,7 @@
     import dModalFinishing from "./_Partials/d-modal-finishing.vue"
     import dModalValidatedSample from "./_Partials/d-modal-validated-sample.vue"
     import contremarqueService from "../../../Services/contremarque-service";
+    import { customerInstructionObject } from "../../../composables/constants";
 
     const props = defineProps({
         carpetDesignOrderId: {
@@ -91,21 +104,10 @@
             type: Object
         },
     });
-    const data = ref({
-        orderNumber: "",
-        transmi_adv: "",
-        customerComment: "",
-        customerValidationDate: "",
-        hasConstraints: false,
-        hasValidateSample: false,
-        hasFinitionInstruction: false,
-        validatedSampleId: 0,
-        finitionInstructionId: 0,
-        constraintInstructionId: 0
-    });
+    const data = ref(Object.assign({}, customerInstructionObject));
     
     const store = useStore();
-    let customerInstructionId = null;
+    const customerInstructionId = ref(null);
     const emit = defineEmits(['transmisAdv']);
     const canShowTransmisAdv = computed(() => (store.getters.isCommertial || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
     const canCreateVariation = computed(() => (store.getters.isDesigner || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
@@ -114,9 +116,12 @@
     };
     onMounted(() => {
         if(props.customerInstruction){
-            customerInstructionId = props.customerInstruction.id;
+            updateCustomerInstructionId(props.customerInstruction.id);
         }
     });
+    const updateCustomerInstructionId = (id) => {
+        customerInstructionId.value = id;
+    };
     watch(
         () => [
             data.value.orderNumber,
@@ -135,12 +140,11 @@
                 try{
                     const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, data.value, customerInstructionId);
                     if(!customerInstructionId){
-                        customerInstructionId = res.id;
+                        updateCustomerInstructionId(res.id);
                     }
                 }catch(e){
                     
                 }
-                
             }
         },
         { deep: true }
@@ -149,7 +153,7 @@
         () => props.customerInstruction,
         (customerInstruction) => {
             if(customerInstruction){
-                customerInstructionId = props.customerInstruction.id;
+                updateCustomerInstructionId(props.customerInstruction.id);
             }
         },
         { deep: true }

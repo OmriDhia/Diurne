@@ -69,6 +69,10 @@
     display: flex !important;
     font-size: 10px;
 }
+.header-container .navbar .navbar-item .dropdown-menu a.dropdown-item.active,
+.header-container .navbar .navbar-item .dropdown-menu a.dropdown-item:hover{
+    color: rgba(255, 255, 255, 0.8);
+}
 div.dropdown.user-profile-dropdown:hover, a.sidebarCollapse[aria-expanded=true] {
     .hover-icon {
         display: block;

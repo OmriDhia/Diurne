@@ -33,7 +33,7 @@
                 Ce client ne possède pas des contremarques.
             </div>
         </div>
-        <div class="row justify-content-end mt-2">
+        <div class="row justify-content-end mt-2" v-if="props.canAdd">
             <d-btn-outlined class="pe-0" label="Ajouter" icon="plus" @click="goToCreateContremarque"></d-btn-outlined>
         </div>
     </div>
@@ -45,13 +45,19 @@
     import VueFeather from 'vue-feather';
     import dBtnOutlined from '../../base/d-btn-outlined.vue'
     import dDelete from "../../common/d-delete.vue";
-
+    import { useRouter } from 'vue-router';
+    
     const props = defineProps({
         customerId: {
             type: Number
+        },
+        canAdd: {
+            type: Boolean,
+            default: false
         }
     });
-    
+
+    const router = useRouter();
     const datas = ref([]);
     const getContremarqueHistories = async (customerId) => {
       try{
@@ -75,10 +81,10 @@
         }
     );
     const gotToContremarque = (id) => {
-        location.href = "/projet/contremarques/manage/" + id;
+        router.push({name: "projectsListManage", params:{id: id}})
     };
     const goToCreateContremarque = () => {
-        location.href = "/projet/contremarques/manage?customer_id=" + props.customerId;
+        router.push({name: "projectsListManage", query:{customer_id: props.customerId}})
     };
 </script>
 

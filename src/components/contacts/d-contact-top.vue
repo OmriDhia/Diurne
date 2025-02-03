@@ -149,7 +149,6 @@
         try{
             if(props.customerId){
                 error.value = {};
-                console.log("CONTACT: "+  data.value)
                 const res = await axiosInstance.post("api/createContact/" + props.customerId,data.value);
                 window.showMessage("Ajout avec succées.")
                 window.location.reload();

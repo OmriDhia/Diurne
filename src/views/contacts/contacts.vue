@@ -57,7 +57,6 @@ const affectTitle = (type) => {
     }else{
         title.value = 'évènement';
     }
-    console.log("contact");
 };
 
 onMounted(()=>{
