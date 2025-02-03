@@ -69,17 +69,6 @@ export default {
             }
         }
     },
-    watch: {
-        modelValue: {
-            handler(newValue, oldValue) {
-                if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
-                    this.localOriginContact = { ...newValue };
-                }
-            },
-            deep: true,
-            immediate: true
-        }
-    },
     mounted() {
         this.getcontactOriginTypes();
     }
