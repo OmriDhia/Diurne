@@ -76,10 +76,6 @@
         index:{
             type: Number,
             default: 0
-        },
-        originContact: {
-            type: Object,
-            required: true
         }
     });
 
@@ -96,16 +92,9 @@
         fax: null,
         user_id: null,
         customerId: props.customerId,
-        contact_origin_id: "",  // Add contact_origin_id
-        commentaire: ""  // Add commentaire
     });
 
-    watch(() => props.originContact, (newOriginContact) => {
-        if (newOriginContact) {
-            data.value.contact_origin_id = newOriginContact.OriginContactId;
-            data.value.commentaire = newOriginContact.Commentaire;
-        }
-    }, { deep: true, immediate: true });
+
 
 
     const error = ref({});
@@ -140,9 +129,6 @@
         data.value.fax = contact.fax;
         data.value.user_id = contact.user_id;
         data.value.customerId = props.customerId
-        // Ensure origin contact data is included
-        data.value.contact_origin_id = props.originContact.OriginContactId;
-        data.value.commentaire = props.originContact.Commentaire;
     };
    watch(
         () => props.contactData,

@@ -42,10 +42,6 @@
                 required: false,
                 default: ''
             },
-            type: {
-                type: String,
-                default: 'text'
-            },
             id: {
                 type: String,
                 required: false,
@@ -64,6 +60,10 @@
             button: {
                 type: Boolean,
                 default: false
+            },
+            rows: {
+                type: Number,
+                default: 5 
             }
         },
         computed: {
@@ -75,7 +75,7 @@
             updateValue(event) {
                 const newValue = event.target.value;
                 if (newValue !== this.modelValue) {
-                    this.$emit('update:modelValue', newValue);
+                    this.$emit("update:modelValue", newValue);
                 }
             }
         }

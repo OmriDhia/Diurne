@@ -38,18 +38,16 @@
                     <label class="custom-control-label" for="isAgent"> Agent </label>
                 </div>
             </div>
-        </div>  
+        </div>
     </div>
     <div class="col-sm-12 col-md-6 d-flex flex-column">
         <div class="row p-2">
-            <!-- <d-customer-origin :required="true" :error="errorContactOrigin" v-model="data.contact_origin_id" /> -->
-            <d-customer-origin :required="true" :error="errorContactOrigin" v-model="localOriginContact"  />
+            <d-customer-origin :required="true" :error="errorContactOrigin" v-model="data"  />
         </div>
         <div class="row p-2" v-if="isAutreSelectedOriginType">
-            <!-- <d-input required="true" label="Commentaire" :error="error.commentaire" v-model="data.commentaire" type="textarea" rows="4"  /> -->
             <d-textarea
                 label="Commentaire"
-                v-model="localOriginContact.Commentaire"
+                v-model="data.commentaire"
                 :error="errorCommentaire"
                 :required="true"
                 :rows="5"
@@ -89,37 +87,8 @@
         customerData: {
             type: Object,
             default: {}
-        },
-        OriginContact: {
-            type: Object,
-            required: true
         }
     });
-    const localOriginContact = ref({ ...props.OriginContact });
-    const emit = defineEmits(['update:OriginContact']);
-    // Sync localOriginContact with props without triggering infinite loops
-    watchEffect(() => {
-        localOriginContact.value = { ...props.OriginContact };
-    });
-
-    // Emit changes only when localOriginContact changes
-    watch(localOriginContact, (newValue, oldValue) => {
-        if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
-            // console.log("Emitting from Child:", newValue);
-            emit('update:OriginContact', newValue);
-        }
-    }, { deep: true });
-
-    watch(
-        () => localOriginContact.value.Commentaire,
-        (newValue, oldValue) => {
-            if (newValue !== oldValue) {
-                // console.log("Updating Commentaire in Child:", newValue);
-                emit('update:OriginContact', { ...localOriginContact.value, Commentaire: newValue });
-            }
-        }
-    );
-
 
     const router = useRouter();
     const data = ref({
@@ -138,7 +107,12 @@
         discountTypeId: 0,
         mailingLanguageId: 0,
         is_agent: false,
+        originContactLabel: "",
+        contact_origin_id: null,  // Updated from OriginContactId
+        commentaire: "",          // Updated from Commentaire
     });
+
+
     const errorCommentaire = ref("");
     const errorContactOrigin = ref("");
     const error = ref({});
@@ -146,13 +120,13 @@
     const isAutreSelectedOriginType = ref(false);
     let codeSuffix = ref(1);
     const createCustomer = async () => {
-        if ( localOriginContact.value.originContactLabel === "") {
-            errorContactOrigin.value = 'Le type d\'origine est obligatoire.';
+        if (data.value.originContactLabel === "") {
+            errorContactOrigin.value = "Le type d'origine est obligatoire.";
         }
-        if ( localOriginContact.value.originContactLabel === "Autre" && localOriginContact.value.Commentaire === ""){
-            errorCommentaire.value = 'Commentaire est Obligatoire Pour Autre.';
-        }else{
-            errorCommentaire.value = '';
+        if (data.value.originContactLabel === "Autres" && data.value.commentaire === "") {
+            errorCommentaire.value = "Commentaire est Obligatoire Pour Autre.";
+        } else {
+            errorCommentaire.value = "";
         }
         try{
             if(props.customerData.customer_id){
@@ -182,7 +156,10 @@
         data.value.is_agent =  newVal.is_agent;
         data.value.firstname =  newVal.firstname;
         data.value.lastname =  newVal.lastname;
+        data.value.contact_origin_id = newVal.contact_origin_id;
+        data.value.commentaire = newVal.commentaire;
     };
+    
     const changeCode = (Rs) => {
         if(Rs){
             data.value.code = Rs.substr(0,4) + codeSuffix.value.toString().padStart(2, '0'); 
@@ -220,17 +197,18 @@
             }
         }
     );
-    // ✅ Handle 'Autre' selection
-    watch(() => localOriginContact.value.originContactLabel, (newLabel) => {
-        errorContactOrigin.value = '';
-        if (newLabel === "Autre") {
-            isAutreSelectedOriginType.value = true;
-        } else {
-            isAutreSelectedOriginType.value = false;
-            localOriginContact.value.Commentaire = "";
+
+    watch(() => data.value.originContactLabel, (newLabel) => {
+        console.log(newLabel);  // Debug to check if value is changing
+        errorContactOrigin.value = "";
+        isAutreSelectedOriginType.value = newLabel === "Autres";  // Check if it's "Autre"
+        
+        // Reset commentaire if it's not "Autre"
+        if (!isAutreSelectedOriginType.value) {
+            data.value.commentaire = "";
         }
-        // console.log("Origin type:", newLabel);
     });
+
   
 </script>
 <style>

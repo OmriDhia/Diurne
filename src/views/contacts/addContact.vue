@@ -10,15 +10,10 @@
               </template>
               <template v-slot:panel-body>
                   <div class="row">
-                    <p>Selected Contact: {{ OriginContact.originContactLabel }} (ID: {{ OriginContact.OriginContactId }}) 
-                        (Commentaire : {{ OriginContact.Commentaire }})
-                    </p>
-
-                      <d-customer v-model:OriginContact="OriginContact" :customerData="currentCustomer" ></d-customer>
+                      <d-customer :customerData="currentCustomer" ></d-customer>
                       <d-contact-top  v-if="currentCustomer.customer_id" 
                       :contactData="currentCustomer.contactsData" 
                       :customerId="currentCustomer.customer_id"
-                      :originContact="OriginContact"
                       ></d-contact-top>
                   </div>
               </template>
@@ -118,34 +113,6 @@
     
     const currentCustomer = ref({});
     const loading = ref(false);
-
-    const OriginContact = ref({
-        originContactLabel: '',
-        OriginContactId: null,
-        Commentaire: ''
-    });
-
-    // Watch for changes in OriginContact and log to console
-    watch(OriginContact, (newValue) => {
-        console.log("Logged in Parent:", newValue);
-    }, { deep: true });
-
-    // Load data from localStorage when the parent component is mounted
-    onMounted(() => {
-        const storedOriginContact = localStorage.getItem('OriginContact');
-        if (storedOriginContact) {
-            OriginContact.value = JSON.parse(storedOriginContact);
-        }
-    });
-
-    // Watch for changes and update localStorage, but only if there's an actual change
-    watch(OriginContact, (newValue, oldValue) => {
-        if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
-            console.log("Updating Local Storage:", newValue);
-            localStorage.setItem('OriginContact', JSON.stringify(newValue));
-        }
-    }, { deep: true });
-
 
     const getCustomer = async () => {
         try{

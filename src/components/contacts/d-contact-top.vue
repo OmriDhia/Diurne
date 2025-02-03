@@ -83,7 +83,7 @@
                         </header>
                         <div :id="'contact'+index" class="collapse" :aria-labelledby="'contact'+index"  data-bs-parent="#toggleAccordion">
                             <div class="card-body">
-                                <d-contact-form :contactData="item" :customerId="props.customerId" :index="index" :originContact="originContact"></d-contact-form>
+                                <d-contact-form :contactData="item" :customerId="props.customerId" :index="index" ></d-contact-form>
                             </div>
                         </div>
                     </div>
@@ -115,10 +115,6 @@
         customerId: {
             type: Number
         },
-        originContact: {
-            type: Object,
-            required: true
-        }
     });
 
     const data = ref({
@@ -132,16 +128,7 @@
         mobile_phone: "",
         fax: "",
         customerId: props.customerId,
-        contact_origin_id: "",
-        commentaire: ""
     });
-
-    watch(() => props.originContact, (newOriginContact) => {
-        if (newOriginContact) {
-            data.value.contact_origin_id = newOriginContact.OriginContactId;
-            data.value.commentaire = newOriginContact.Commentaire;
-        }
-    }, { deep: true, immediate: true });
 
     const error = ref({});
 

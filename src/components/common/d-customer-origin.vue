@@ -9,7 +9,7 @@
             <select 
                 id="droit"  
                 :class="{ 'is-invalid': error, 'form-select': true }" 
-                :value="localOriginContact.OriginContactId" 
+                v-model="modelValue.origin_contact_id"
                 @change="updateOriginContact"
             >
                 <option value="0" selected disabled>Type d'origine</option>
@@ -44,7 +44,6 @@ export default {
     data() {
         return {
             contactOriginTypes: [],
-            localOriginContact: { ...this.modelValue }
         };
     },
     methods: {
@@ -61,12 +60,10 @@ export default {
 
             if (selectedOption) {
                 const updatedValue = {
-                    ...this.modelValue,
-                    originContactLabel: selectedOption.label,
-                    OriginContactId: selectedOption.id
+                    ...this.modelValue,  // Keep existing properties
+                    originContactLabel: selectedOption.label, 
+                    contact_origin_id: selectedOption.id  // Use correct key
                 };
-
-                // console.log("Emitting from Grandchild:", updatedValue); // ✅ Debugging
 
                 this.$emit('update:modelValue', updatedValue);
             }
