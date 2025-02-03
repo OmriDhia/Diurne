@@ -1,0 +1,329 @@
+#sidebar ul.menu-categories li.menu {
+    > a.active,
+    > .dropdown-toggle[data-active=true][aria-expanded=true] {
+        .d-menu-item span.menu-img {
+            display: block;
+        }
+    }
+
+    .d-menu-item span.menu-img {
+        display: none;
+    }
+}
+.t-dot {
+    height: 11px;
+    width: 11px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 0 auto;
+}
+.user-profile-dropdown{
+    .base-icon{
+        transition: all 0.5s ease;
+        opacity: 1;
+        display: block;
+    }
+    .hover-icon{
+        transition: all 0.5s ease;
+        opacity: 1;
+        display: none;
+        transform: rotate(-90deg);
+    }
+}
+
+.multiselect{
+    font-size: 12px !important;
+
+    .multiselect__select{
+        height: 35px;
+        right: 0px;
+        top: 0px;
+        padding: 0px 8px;
+    }
+    .multiselect__tags{
+        min-height: 35px;
+        padding: 0px 40px 0 8px;
+    }
+    .multiselect__single,.multiselect__placeholder{
+        padding-top: 6px;
+        margin-bottom: 8px;
+    }
+    .multiselect__option{
+        padding: 8px !important;
+        min-height: 35px;
+    }
+}
+.h-250{
+    max-height: 272px !important;
+}
+.h-200{
+    max-height: 200px !important;
+}
+.h-100{
+    height: 111px !important;
+}
+.custom-control-label{
+    padding: 4px 0px;
+}
+.invalid-feedback{
+    display: flex !important;
+    font-size: 10px;
+}
+div.dropdown.user-profile-dropdown:hover, a.sidebarCollapse[aria-expanded=true] {
+    .hover-icon {
+        display: block;
+    }
+
+    .base-icon {
+        display: none;
+    }
+}
+.required{
+    color: red !important;
+}
+label, .text-black{
+    color: black !important; 
+}
+.btn-icon{
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+
+@mixin menuCategoryStyles($color) {
+    .header-container {
+        border-bottom: 1px solid $color;
+
+        .navbar {
+            background: $color !important;
+        }
+    }
+    .histories-event-table > tbody > tr{
+        cursor: pointer;
+    }
+    .histories-event-table > tbody > tr.selected > td {
+        color: $color;
+        i{
+            width: 12px;
+            svg{
+                fill : $color;
+                stroke: $color;
+            }
+        }
+    }
+    .histories-event-table > tbody > tr.selectedDi > td:first-child {
+        color: black;
+        font-weight: bold;
+        i{
+            width: 16px;
+        }
+    }
+    .multiselect__option--highlight, .multiselect__option:hover{
+        background-color: $color !important;
+    }
+    .multiselect__tag{
+        background: $color;
+        margin-bottom: 0px;
+    }
+    #sidebar ul.menu-categories li.menu {
+        > a.active,
+        > .dropdown-toggle[data-active=true][aria-expanded=true] {
+            &:hover,
+            span {
+                color: $color !important;
+            }
+            i > svg{
+                stroke: $color !important;
+            }
+        }
+
+        
+    }
+    .btn-custom{
+        background-color: $color !important;
+        border-color: $color !important;
+        color: white;
+        text-transform: uppercase;
+    }
+    .btn-outline-custom{
+        background-color: white;
+        border-color: $color !important;
+        color: $color;
+        text-transform: capitalize;
+        padding: 0px 0px 0px 20px;
+        background: linear-gradient(to right,  white 50%, $color 50%);
+        background-size: 200% 100%;
+        background-position:left bottom;
+        margin-left:10px;
+        transition:all 1s ease;
+        i{
+            background-color: $color;
+            padding: 5px 3px;
+            color: white;
+            margin-left: 5px;
+        }
+        &:hover{
+            color: white;
+            background-color: $color;
+            background-position:right bottom;
+        }
+    }
+    .btn-small .btn.rounded-circle{
+        height: 20px;
+        width: 20px;
+        svg{
+            width: 12px;
+        }
+    }
+    .btn.rounded-circle{
+        background-color: $color !important;
+        border-color: $color !important;
+        box-shadow: none !important;
+        height: 30px;
+        width: 30px;
+        padding: 0px 0px;
+        svg{
+            width: 18px;
+        }
+    }
+    .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: $color !important;
+        border-color: $color !important;
+    }
+    .custom-control-input:checked ~ .custom-control-label {
+        color: $color !important;
+    }
+    ::selection {
+        color: $color !important;
+    }
+    .vue3-datatable .bh-pagination .bh-page-item:hover, .vue3-datatable .bh-pagination .bh-page-item.bh-active{
+        background-color: $color !important;
+        color: #fff;
+    }
+
+    .header-container .navbar .navbar-item .nav-item.dropdown .dropdown-menu.show {
+        background-color: $color !important;
+    }
+}
+
+.contacts {
+    @include menuCategoryStyles($contact-color);
+}
+
+.projects {
+    @include menuCategoryStyles($project-color);
+}
+
+.tapis {
+    @include menuCategoryStyles($tapis-color);
+}
+
+.treasure {
+    @include menuCategoryStyles($treasure-color);
+}
+
+@media (max-width: 1024px) {
+    .navbar .navbar-item .nav-item.user-profile-dropdown {
+        margin: 0 2rem  0 16px;
+    }
+}
+@media (max-width: 425px) {
+    .navbar-expand-sm .navbar-item{
+        margin-left: 5%;
+    }
+    .navbar .navbar-item .nav-item.user-profile-dropdown {
+        margin: 0 2rem  0 16px;
+    }
+    header > div > div:nth-child(1){
+       max-width: 90px;
+        font-size: 10px !important;
+    }
+}
+#sidebar ul.menu-categories ul.submenu > li {
+    a{
+        margin-left: 10px;
+        &.active, &:hover{
+            color: black !important;
+            margin-left: 20px;
+            &:before{
+                content: none !important;
+            }
+        }
+        &:before{
+            content: none !important;
+        }
+    }
+    
+}
+@media (max-width: 576px) {
+    .mt-sm-3 {
+        margin-top: 2rem !important;
+    }
+    .pe-sm-0 {
+        padding-right: 0 !important;
+    }
+    .ps-sm-2 {
+        padding-left: 0.5rem !important;
+    }
+}
+
+.block-custom-border{
+    border: 1px solid #E0E6ED;
+    border-radius: 4px;
+}
+
+.font-size-6 {
+    font-size: 0.6rem;
+}
+.h-300{
+    min-height: 300px;
+}
+.h-300-forced{
+    height: 300px !important;
+}
+.h-200-forced{
+    height: 200px !important;
+}
+.h-400-forced {
+    height: 400px !important;
+}
+.h-130-forced{
+    height: 130px !important;
+}
+.bg-theme{
+    background-color: #D4EFF8 !important;
+}
+.font-size-0-6{
+    font-size: 0.6rem;
+}
+.font-size-0-7{
+    font-size: 0.7rem;
+    span{
+        font-size: 0.7rem;
+    }
+}
+.font-size-0-8{
+    font-size: 0.8rem;
+    span{
+        font-size: 0.8rem; 
+    }
+}
+.font-size-0-9{
+    font-size: 0.9rem;
+}
+.title-border-bottom{
+    border-bottom: 2px solid #f1f2f3;
+}
+.title-width{
+    width: calc( 100% - 1rem);
+}
+
+@media (min-width: 1200px) {
+    .col-xl-5-1 {
+        flex: 0 0 auto;
+        width: 45%;
+    }
+}
+.multiselect--disabled{
+    min-height: 35px !important;
+}
