@@ -121,7 +121,20 @@
     });
     const updateCustomerInstructionId = (id) => {
         customerInstructionId.value = id;
+        setData();
     };
+    const setData = () => {
+        data.value.orderNumber = props.customerInstruction?.orderNumber;
+        data.value.transmi_adv = props.customerInstruction?.transmi_adv;
+        data.value.customerComment = props.customerInstruction?.customerComment;
+        data.value.customerValidationDate = props.customerInstruction?.customerValidationDate;
+        data.value.hasConstraints = props.customerInstruction?.hasCustomerConstraints;
+        data.value.hasValidateSample = props.customerInstruction?.hasValidateSample;
+        data.value.hasFinitionInstruction = props.customerInstruction?.hasFinitionInstruction;
+        data.value.validatedSampleId = props.customerInstruction?.validatedSampleId;
+        data.value.finitionInstructionId = props.customerInstruction?.finitionInstructionId;
+        data.value.constraintInstructionId = props.customerInstruction?.constraintInstructionId;
+    }
     watch(
         () => [
             data.value.orderNumber,
@@ -136,10 +149,13 @@
             data.value.constraintInstructionId,
         ],
         async (newCarpert, oldCarpet) => {
+            console.log(customerInstructionId.value);
             if(props.carpetDesignOrderId){
                 try{
-                    const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, data.value, customerInstructionId);
-                    if(!customerInstructionId){
+                    console.log(customerInstructionId.value);
+                    const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, data.value, customerInstructionId.value);
+                    console.log(res.data);
+                    if(!customerInstructionId.value){
                         updateCustomerInstructionId(res.id);
                     }
                 }catch(e){
@@ -154,6 +170,7 @@
         (customerInstruction) => {
             if(customerInstruction){
                 updateCustomerInstructionId(props.customerInstruction.id);
+                setData();
             }
         },
         { deep: true }

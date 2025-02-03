@@ -18,6 +18,11 @@
                             <d-special-treatment v-model="treatment.treatmentId" :error="error.treatmentId" @exportTrait="changeTrait($event,index)"></d-special-treatment>
                             <d-input :disabled="true" label="Prix/unité" v-model="treatment.unitPrice" :error="error.unitPrice"></d-input>
                             <d-input v-if="treatment.totalPrice" :disabled="true" label="Prix total" v-model="treatment.totalPrice" :error="error.totalPrice"></d-input>
+                            <div class="row justify-content-end" v-if="treatment.id">
+                                <div class="p-2 col-auto">
+                                    <d-delete :api="`/api/quoteDetailSpecificTreatment/${treatment.id}`" @isDone="sendTreatmentEvent(index)"></d-delete>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -42,6 +47,7 @@
     import dSpecialTreatment from "../../common/d-specialTreatment.vue";
     import {formatErrorViolations, Helper} from "../../../composables/global-methods";
     import '../../../assets/sass/components/tabs-accordian/custom-accordions.scss';
+    import dDelete from "../../common/d-delete.vue";
 
     // Props
     const props = defineProps({
@@ -67,6 +73,7 @@
     // Méthodes
     const addTreatment = () => {
         specialTreatments.value.push({
+            id: null,
             treatmentId: 0,
             unitPrice: "",
             totalPrice: "",
@@ -75,10 +82,12 @@
     
     addTreatment();
     
-    const removeTreatment = (index) => {
-        specialTreatments.value.splice(index, 1);
-    };
-    
+    const sendTreatmentEvent = (index = null) => {
+        if(index){
+            specialTreatments.value.splice(index, 1);
+        }
+        emit('addTreatment',true);
+    }
     const changeTrait = (trait, i) => {
         specialTreatments.value[i].unitPrice =  Helper.FormatNumber(trait.price);
         //specialTreatments.value[i].totalPrice =  Helper.FormatNumber(trait.price) * (props.quantity ? parseInt(props.quantity) : 1);
@@ -99,12 +108,13 @@
                 );
                 const t = res.data.response;
                 specialTreatments.value[specialTreatments.value.length - 1] = {
-                    treatmentId: t.treatment?.id,
-                    unitPrice: Helper.FormatNumber(t.unitPrice),
-                    totalPrice:  Helper.FormatNumber(t.totalPrice),
+                    id: t?.id,
+                    treatmentId: t?.treatmentId,
+                    unitPrice: Helper.FormatNumber(t?.unitPrice),
+                    totalPrice:  Helper.FormatNumber(t?.totalPrice),
                 };
                 addTreatment();
-                emit('addTreatment',true);
+                sendTreatmentEvent()
                 window.showMessage("Le traitement a été ajouté avec succès.");
             } else {
                 window.showMessage("Aucun traitement à ajouter.", "error");
@@ -125,6 +135,7 @@
         (newTreatments) => {
             specialTreatments.value = [...newTreatments.map(t => {
                 return {
+                    id: t?.id,
                     treatmentId: t.treatment?.id,
                     unitPrice: Helper.FormatNumber(t.unitPrice),
                     totalPrice:  Helper.FormatNumber(t.totalPrice), 

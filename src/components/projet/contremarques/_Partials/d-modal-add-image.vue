@@ -33,7 +33,7 @@
                             <div class="row">
                                 <div class="col-sm-12 col-md-4 text-black"> Image: </div>
                                 <div class="col-sm-12 col-md-8">
-                                    <input type="file" class="form-control" @change="onFileChange" accept="image/*" />
+                                    <d-upload-file @file-selected="slectedFile($event)"></d-upload-file>
                                     <div class="pt-3" v-if="uploadProgress">
                                         <div class="progress">
                                             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" :style="{width: uploadProgress+'%'}"></div>
@@ -59,6 +59,7 @@
     import axiosInstance from "../../../../config/http";
     import dImageTypeDropdown from "../dropdown/d-image-type-dropdown.vue";
     import dAttachmentTypeDropdown from "../dropdown/d-attachment-type-dropdown.vue";
+    import dUploadFile from "../../../common/d-upload-file.vue"
     import { useStore } from 'vuex';
     
     const props = defineProps({
@@ -87,8 +88,8 @@
     });
 
     // Handle file selection
-    const onFileChange = (event) => {
-        file.value = event.target.files[0];
+    const slectedFile = (event) => {
+        file.value = event;
     };
 
     // Handle form submission

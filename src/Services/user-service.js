@@ -111,10 +111,12 @@ export default {
         });
     },
     affectUserRoles(userInfo){
-        store.commit('setIsDesigner',userInfo.profile === DESIGNER_ROLE_NAME);
-        store.commit('setIsDesignerManager',userInfo.profile === DESIGNER_MANAGER_ROLE_NAME);
-        store.commit('setIsCommertial',userInfo.profile === COMMERCIAL_ROLE_NAME);
-        store.commit('setIsCommercialManager',userInfo.profile === COMMERCIAL_MANAGER_ROLE_NAME);
-        store.commit('setIsSuperAdmin',userInfo.profile === SUPER_ADMIN_ROLE_NAME);
+        if(userInfo){
+            store.commit('setIsDesigner',userInfo?.profile === DESIGNER_ROLE_NAME);
+            store.commit('setIsDesignerManager',userInfo?.profile === DESIGNER_MANAGER_ROLE_NAME);
+            store.commit('setIsCommertial',userInfo?.profile === COMMERCIAL_ROLE_NAME);
+            store.commit('setIsCommercialManager',userInfo?.profile === COMMERCIAL_MANAGER_ROLE_NAME);
+            store.commit('setIsSuperAdmin',userInfo?.profile === SUPER_ADMIN_ROLE_NAME); 
+        }
     }
 };
