@@ -73,15 +73,28 @@
             </div>
             <div class="panel br-6 p-2 mt-3">
                 <div class="row ms-2 mt-2 mb-2">
+                    <!-- Inputs Column -->
                     <div class="col-xl-4 col-md-12">
                         <d-input :disabled="true" v-model="customer.customerName" label="Client"></d-input>
                         <d-input :disabled="true" v-model="contremarque.designation" label="Contremarque"></d-input>
-                        <d-input :disabled="true" v-model="transDate" label="Date trasmission"></d-input>
+                        <d-input :disabled="true" v-model="transDate" label="Date transmission"></d-input>
                         <d-input :disabled="true" v-model="selectedData.demande_number" label="N° de la demande"></d-input>
                         <d-input :disabled="true" v-model="deadline" label="Deadline"></d-input>
                         <d-input :disabled="true" v-model="commercial" label="Commercial"></d-input>
                     </div>
-                    <div class="col-xl-8 col-md-12 pe-2">
+
+                    <div class="col-auto d-flex align-self-start flex-column" >
+                        <router-link alt="Voir contact" :to="'/contacts/manage/'+ customer.customer_id">
+                            <vue-feather style="padding: 11px 0px 1px 0px;" type="eye" stroke-width="1" class="cursor-pointer"></vue-feather>
+                        </router-link>
+                        <router-link alt="Voir contact" :to="'/projet/contremarques/manage/'+ contremarque_id">
+                            <vue-feather style="padding: 11px 0px 1px 0px;" type="eye" stroke-width="1" class="cursor-pointer"></vue-feather>
+                        </router-link>
+                    </div>
+
+
+                    <!-- Attachments Column -->
+                    <div class="col-xl-7 col-md-12 pe-2">
                         <d-attachment :diId="selectedData.project_di"></d-attachment>
                     </div>
                 </div>
