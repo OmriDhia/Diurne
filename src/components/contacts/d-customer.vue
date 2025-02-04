@@ -109,7 +109,7 @@
         is_agent: false,
         contact_origin_label: "",
         contact_origin_id: null,  // Updated from OriginContactId
-        commentaire: "",          // Updated from Commentaire
+        commentaire: "",
     });
 
 
@@ -156,7 +156,7 @@
         data.value.is_agent =  newVal.is_agent;
         data.value.firstname =  newVal.firstname;
         data.value.lastname =  newVal.lastname;
-        data.value.contact_origin_id = newVal.contact_origin_id;
+        data.value.contact_origin_id = newVal.contact_origin_id ?? null;
         data.value.commentaire = newVal.commentaire;
         data.value.contact_origin_label = newVal.contact_origin_label;
     };
@@ -172,12 +172,11 @@
         codeSuffix.value++;
         changeCode(data.value.social_reason);
     };
-    watch(
-        () => props.customerData,
-        (newVal) => {
-           affectData(newVal)
+    watch(() => props.customerData, (newVal) => {
+        if (newVal) {
+            affectData(newVal); // Update all customer fields
         }
-    );
+    });
     watch(
         () => data.value.social_reason,
         (newVal) => {
@@ -198,15 +197,22 @@
             }
         }
     );
-
-    watch(() => data.value.contact_origin_label, (newLabel) => {
-        console.log("new label " + newLabel);  // Debug to check if value is changing
-        errorContactOrigin.value = "";
-        isAutreSelectedOriginType.value = newLabel === "Autre";  // Check if it's "Autre"
-        
-        // Reset commentaire if it's not "Autre"
-        if (!isAutreSelectedOriginType.value) {
-            data.value.commentaire = "";
+    watch(() => data.value.contact_origin_label, (newLabel, oldLabel) => {
+        if (newLabel !== oldLabel) {  // Prevents unnecessary updates
+            console.log("New label detected:", newLabel);
+            errorContactOrigin.value = "";
+            isAutreSelectedOriginType.value = newLabel === "Autre";
+            
+            // Reset commentaire only if the label is different
+            if (!isAutreSelectedOriginType.value) {
+                data.value.commentaire = "";
+            }
+        }
+    });
+    watch(() => data.value.commentaire, (newCommentaire, oldCommentaire) => {
+        if (newCommentaire !== oldCommentaire) {
+            console.log("Commentaire updated:", oldCommentaire);
+            console.log("Commentaire updated:", newCommentaire);
         }
     });
 

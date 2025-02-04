@@ -78,6 +78,11 @@
                     this.$emit("update:modelValue", newValue);
                 }
             }
+        },
+        watch: {
+            modelValue(newValue) {
+                console.log("Textarea Updated:", newValue);
+            }
         }
     };
 </script>
