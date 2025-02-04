@@ -140,11 +140,6 @@
     const goToListCustomers = () => {
         router.push({name: 'contactsList'});
     }
-    // Function to update the variable when emitted from child
-    // const updateYassine = (newValue) => {
-    //     console.log(`yassinevariable updated in parent: ${newValue}`);
-    //     yassinevariable.value = newValue;
-    // };
     
 </script>
 <style scoped>
