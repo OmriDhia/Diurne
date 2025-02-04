@@ -1,5 +1,5 @@
 <template>
-    <d-base-page :loading="loading">
+    <d-base-page>
         <template v-slot:title>
             <d-page-title title="Contacts"></d-page-title>
         </template>
@@ -10,8 +10,11 @@
               </template>
               <template v-slot:panel-body>
                   <div class="row">
-                      <d-customer :customerData="currentCustomer"></d-customer>
-                      <d-contact-top  v-if="currentCustomer.customer_id" :contactData="currentCustomer.contactsData" :customerId="currentCustomer.customer_id"></d-contact-top>
+                      <d-customer :customerData="currentCustomer" ></d-customer>
+                      <d-contact-top  v-if="currentCustomer.customer_id" 
+                      :contactData="currentCustomer.contactsData" 
+                      :customerId="currentCustomer.customer_id"
+                      ></d-contact-top>
                   </div>
               </template>
           </d-panel>
@@ -55,7 +58,7 @@
                         </template>
                         <template v-slot:panel-body>
                             <div class="row pe-2 ps-0">
-                                <d-contremarque-histories :canAdd="currentCustomer?.contactsData.length > 0" :customerId="currentCustomer.customer_id"></d-contremarque-histories>
+                                <d-contremarque-histories :customerId="currentCustomer.customer_id"></d-contremarque-histories>
                                 <d-contremarque-prescriptor-histories :customerId="currentCustomer.customer_id"></d-contremarque-prescriptor-histories>
                             </div>
                         </template>
@@ -86,7 +89,7 @@
 </template>
 
 <script setup>
-    import {ref, onMounted} from 'vue';
+    import {ref, onMounted, watch} from 'vue';
     import {useMeta} from '/src/composables/use-meta';
     import axiosInstance from "../../config/http";
     import dBasePage from "../../components/base/d-base-page.vue";
@@ -101,12 +104,11 @@
     import dEventHistories from "../../components/contacts/_partial/d-event-histories.vue";
     import dContremarqueHistories from "../../components/contacts/_partial/d-contremarque-histories.vue";
     import dContremarquePrescriptorHistories from "../../components/contacts/_partial/d-contremarque-prescriptor-histories.vue";
-    import { useRoute, useRouter } from 'vue-router';
+    import { useRoute } from 'vue-router';
 
     useMeta({ title: 'Contacts' });
 
     const route = useRoute();
-    const router = useRouter();
     const customer_id = route.params.id;
     
     const currentCustomer = ref({});
@@ -138,6 +140,11 @@
     const goToListCustomers = () => {
         router.push({name: 'contactsList'});
     }
+    // Function to update the variable when emitted from child
+    // const updateYassine = (newValue) => {
+    //     console.log(`yassinevariable updated in parent: ${newValue}`);
+    //     yassinevariable.value = newValue;
+    // };
     
 </script>
 <style scoped>

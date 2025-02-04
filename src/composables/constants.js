@@ -100,6 +100,7 @@ export const filterSuiviDi = {
     contremarque: null,
     diNumber: null,
     carpetStatus: null,
+    contremarqueId: null,
 };
 
 export const customerInstructionObject = {

@@ -1,12 +1,19 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label for="droit" class="form-label">Type client<span class="required" v-if="required">*</span>:</label></div>
+        <div class="col-4">
+            <label for="droit" class="form-label">Type client<span class="required" v-if="required">*</span>:</label>
+        </div>
         <div class="col-8">
-            <select id="droit"  :class="{ 'is-invalid': error, 'form-select': true }" :value="type" @input="handleChange($event.target.value)">
-                <option value="" selected disabled>Type de client</option>
+            <select 
+                id="droit"  
+                :class="{ 'is-invalid': error, 'form-select': true }" 
+                :value="type" 
+                @input="handleChange($event.target.value)">
+                <option value="0" selected disabled>Type de client</option>
                 <option v-for="(prof, key) in customerTypes" :key="key" :value="prof.customerGroup_id">{{ prof.name }}</option>
+                <option value="9">Autre</option>
             </select>
-            <div v-if="error" class="invalid-feedback">{{ $t('Le type de client est abligatoire.') }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t('Le type de client est obligatoire.') }}</div>
         </div>
     </div>
 </template>
@@ -55,6 +62,8 @@
         watch: {
             modelValue(newValue) {
                 this.type = parseInt(newValue);
+                console.log("customer type : " + newValue)
+
             }
         }
     };

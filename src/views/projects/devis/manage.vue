@@ -234,12 +234,12 @@
     import dTransportCondition from "../../../components/common/d-transportCondition.vue";
     import dQuoteDetails from "../../../components/projet/devis/d-quote-details.vue";
     import dModalFactureDevis from "../../../components/projet/devis/d-modal-facture-devis.vue";
+
     
     useMeta({ title: 'Gestion Contremarque' });
 
     const route = useRoute();
     const router = useRouter();
-    const contremarqueId = ref(0);
     const quote_id = route.params.id;
     const selectedCustomer = ref(0);
     const selectedContact = ref({});
@@ -284,7 +284,8 @@
         weight: "",
     });
     const currentCustomer = ref({});
-    
+    const contremarqueId = ref(route.query.contremarqueId ? parseInt(route.query.contremarqueId) : null);
+
     watch(selectedCustomer, (customerId) => {
         getCustomer(customerId)
     });
@@ -430,6 +431,16 @@
             }
         }
     };
+
+    onMounted( async () => {
+       if(quote_id){
+           getQuote(quote_id);
+       }
+       if (contremarqueId.value){
+            console.log("Detected contremarqueId from URL:", contremarqueId.value);
+            getContremarque(contremarqueId.value);
+        }
+    });
     const changeStatusDetails = async () => {
         if(quote_id){
             statusUpdate = true;

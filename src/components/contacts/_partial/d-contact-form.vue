@@ -85,14 +85,18 @@
         firstname: null,
         lastname: null,
         email: null,
-        mailing: true,
-        mailing_with_calligraphie: true,
+        mailing: false,
+        mailing_with_calligraphie: false,
         phone: null,
         mobile_phone: null,
         fax: null,
         user_id: null,
-        customerId: props.customerId
+        customerId: props.customerId,
     });
+
+
+
+
     const error = ref({});
 
     const updateContact = async () => {
@@ -128,7 +132,7 @@
     };
    watch(
         () => props.contactData,
-        (newVal, oldVal) => {
+        (newVal) => {
             affectData(newVal);
         }
     );

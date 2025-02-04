@@ -4,7 +4,7 @@
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"
-                :model-value="contremarqueId"
+                :model-value="selectedContremarque"
                 :options="contremarques"
                 placeholder="Contremarque"
                 track-by="contremarque_id"
@@ -59,13 +59,16 @@
         },
         data() {
             return {
-                contremarqueId: null,
+                selectedContremarque: null,
                 contremarques: [],
             };
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', parseInt(value.contremarque_id));
+                // this.$emit('update:modelValue', parseInt(value.contremarque_id));
+                this.selectedContremarque = value;
+                this.$emit('update:modelValue', value ? value.contremarque_id : null);
+
             },
             handleSearch(searchQuery){
                 this.getContremarques(searchQuery);
@@ -89,22 +92,27 @@
                     }
                     
                     this.contremarques = JSON.parse(localStorage.getItem(localString));
-                    if(this.modelValue){
-                        this.contremarqueId = this.contremarques.filter(ad => ad.contremarque_id === this.modelValue)[0];
+                    // Select the contremarque from the URL if available
+                    if (this.modelValue) {
+                        this.selectedContremarque = this.contremarques.find(  ad => ad.contremarque_id === this.modelValue ) || null;
                     }
                 }catch(e){
                     console.error(e);
                     console.log('Erreur get contremarques list.')
                 }
-            },
+            }
         },
         mounted() {
             this.getContremarques();
         },
         watch: {
             modelValue(newValue) {
-                this.contremarqueId = this.contremarques.filter(ad => ad.contremarque_id === newValue)[0];
+                this.selectedContremarque = this.contremarques.find( ad => ad.contremarque_id === newValue ) || null;
+                console.log("Selection mise à jour :", this.selectedContremarque);
             },
+            // modelValue(newValue) {
+            //     this.contremarqueId = this.contremarques.filter(ad => ad.contremarque_id === newValue)[0];
+            // },
             customerId(){
                 this.getContremarques();
             }

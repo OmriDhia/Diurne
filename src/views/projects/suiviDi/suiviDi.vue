@@ -114,11 +114,11 @@ import { ref, reactive, onMounted } from 'vue';
 import {FILTER_SUIVI_DI_STORAGE_NAME, filterSuiviDi} from '../../../composables/constants';
 import { useMeta } from '/src/composables/use-meta';
 import { Helper } from "../../../composables/global-methods";
-import { useRouter } from 'vue-router';
+import { useRoute } from "vue-router";
 
 useMeta({ title: 'Contremarque' });
+const route = useRoute();
 
-const router = useRouter();
 const loading = ref(true);
 const loadingAttribution = ref(false);
 const total_rows = ref(0);
@@ -134,6 +134,7 @@ const filter = ref(Object.assign({}, filterSuiviDi));
 const filterActive = ref(false);
 const rows = ref(null);
 const selectedDiId = ref(0);
+const contremarqueId = ref(null);
 
 const cols = ref([
     { field: 'diNumber', title: 'N° de la DI' },
@@ -154,6 +155,7 @@ onMounted(() => {
         filter.value = f;
         filterActive.value = true;
     }
+    contremarqueId.value = route.query.contremarqueId || null;
     getDI();
 });
 const getDI = async () => {
@@ -167,6 +169,11 @@ const getDI = async () => {
             }else{
                 url += `&orderWay=asc`
             }
+        }
+
+        // Append contremarqueId in the required format
+        if (contremarqueId.value) {
+            url += `&filter[contremarqueId]=${contremarqueId.value}`;
         }
         
         url += getFilterParams();
@@ -217,17 +224,15 @@ const doReset = () => {
 const handleUpdateDI = async (diId) => {
     selectedDiId.value = diId;
 };
-
 const goTodetails = (id_di,carperOrderId = 0) => {
-    router.push({name: 'di_orderDesigner_update', params:{ id_di: id_di, carpetDesignOrderId: carperOrderId } });
-};
-
+    location.href = `/projet/dis/model/${id_di}/update/${carperOrderId}`;
+}
 const handleClose = () => {
     //selectedDiId.value = null;
 };
 
 const goToNewContremarque = () => {
-    router.push({name: 'projectsListManage'});
+    location.href = "/projet/contremarques/manage"
 };
     
 </script>

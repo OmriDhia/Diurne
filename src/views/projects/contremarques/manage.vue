@@ -37,35 +37,21 @@
                             <div class="row pe-2 ps-0" v-if="currentCustomer.contactsData">
                                 <d-discount v-model="tarifId.discount_rule_id"  :error="error.customerDiscount_id"></d-discount>
                             </div>
-                            <div class="row pe-2 ps-0 justify-content-center mt-5" v-if="contremarque_id">
-                                <div class="col-auto">
+                            <div class="row justify-content-center mt-5" v-if="contremarque_id">
+                                <div class="col-auto d-flex flex-column pe-3">
                                     <button class="btn btn-custom ps-5 pe-5 text-uppercase" @click="goToDIProjet">Voir les di projets</button>
+                                    <button class="btn btn-custom ps-5 pe-5 text-uppercase mt-2" @click="goToContremarques()">Voir les devis</button>
+                                    <button class="btn btn-custom ps-4 pe-4 text-uppercase mt-2">Voir les commandes</button>
                                 </div>
-                            </div>
-                            <div class="row pe-2 ps-0 justify-content-center  mt-2"  v-if="contremarque_id">
-                                <div class="col-auto">
-                                    <button class="btn btn-custom ps-5 pe-5 text-uppercase" @click="goToContremarques()">Voir les devis</button>
-                                </div>
-                                <div class="col-auto">
-                                    <button class="btn btn-custom ps-4 pe-4 text-uppercase">Voir les commandes</button>
-                                </div>
-                            </div>
-                            <div class="row pe-2 ps-0 justify-content-center  mt-2"  v-if="contremarque_id">
-                                <div class="col-auto">
-                                    <div class="col-auto">
-                                        <button class="btn btn-outline-custom" @click="goToListSUiviDI()">
-                                            Suivi DI projets
-                                            <vue-feather type="arrow-right" size="14"></vue-feather>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <div class="col-auto">
-                                        <button class="btn btn-outline-custom">
-                                            Suivi DI client
-                                            <vue-feather type="arrow-right" size="14"></vue-feather>
-                                        </button>
-                                    </div>
+                                <div class="col-auto d-flex flex-column">
+                                    <button class="btn btn-outline-custom" @click="goToListSUiviDI()">
+                                        Suivi DI projets
+                                        <vue-feather type="arrow-right" size="14"></vue-feather>
+                                    </button>
+                                    <button class="btn btn-outline-custom mt-2" @click="goToCreateDevis()">
+                                        Créer Un Devis
+                                        <vue-feather type="arrow-right" size="14"></vue-feather>
+                                    </button>
                                 </div>
                             </div>
                             <div class="row align-content-end justify-content-end p-2 pe-3">
@@ -299,7 +285,12 @@
         router.push({ name: 'devisList', query: { contremarqueId: contremarque_id } });
     };
     const goToListSUiviDI = () => {
-        router.push({name: 'di_list'})
+        router.push({name: 'di_list' , query: { contremarqueId: contremarque_id } });
+    };
+    
+    const goToCreateDevis = () => {
+        // location.href = "/projet/devis/manage?contremarqueId=" + contremarque_id
+        router.push({ name: 'devisManage', query: { contremarqueId: contremarque_id } });
     };
 </script>
 <style scoped>

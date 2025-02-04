@@ -12,13 +12,13 @@
         <div class="row p-2" v-if="isParticular">
             <d-input label="Prénom" :error="error.firstname" v-model="data.firstname"></d-input>
         </div>
-        <!--div class="row p-2">
+        <!-- <div class="row p-2">
             <d-input  :button="data.customer_id === 0" required="true" label="Code contact" v-model="data.code" :error="error.code">
                 <template v-slot:input-button>
                     <button class="btn btn-success" @click.prevent="incrimentSuffix" v-if="data.customer_id === 0">Générer</button>
                 </template>
             </d-input>
-        </div-->
+        </div> -->
         <div class="row p-2" v-if="!isParticular">
             <d-input label="CE TVA" v-model="data.tva_ce" :error="error.tva_ce"></d-input>
         </div>
@@ -39,32 +39,48 @@
                 </div>
             </div>
         </div>
-        <div class="row align-content-end justify-content-end p-2 pe-3">
+    </div>
+    <div class="col-sm-12 col-md-6 d-flex flex-column">
+        <div class="row p-2">
+            <d-customer-origin :required="true" :error="errorContactOrigin" v-model="data"  />
+        </div>
+        <div class="row p-2" v-if="isAutreSelectedOriginType">
+            <d-textarea
+                label="Commentaire"
+                v-model="data.commentaire"
+                :error="errorCommentaire"
+                :required="true"
+                :rows="5"
+                type="textarea"
+                class="custom-textarea"
+            />
+        </div>
+        <div class="row align-content-end justify-content-end p-2 pe-3 mt-auto">
             <div class="col-auto p-1">
-                <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="createCustomer">
-                    <vue-feather type="save" size="14"></vue-feather>
-                </button>
+                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer">Ajouter Contact</button> 
             </div>
             <div class="col-auto p-1 pe-4" v-if="data.customer_id">
                 <d-delete :api="`/api/customer/${data.customer_id}/delete`"></d-delete>
             </div>
         </div>
-
-
     </div>
 </template>
 
 <script setup>
-    import {ref, defineProps, onMounted, watch} from 'vue';
+    import {ref, defineProps, onMounted, watch, watchEffect} from 'vue';
     import axiosInstance from "../../config/http";
     import VueFeather from 'vue-feather';
     import dCustomerType from "../../components/common/d-customer-type.vue";
+    import dCustomerOrigin from "../../components/common/d-customer-origin.vue";
     import dDiscount from "../../components/common/d-discount.vue";
     import dLanguages from "../../components/common/d-langages.vue";
     import dInput from "../../components/base/d-input.vue";
     import dDelete from "../common/d-delete.vue";
     import {formatErrorViolations} from "../../composables/global-methods";
     import {particularCustomerGroupId, publicDiscountTypeId} from "../../composables/constants";
+    import dTextarea from '../../components/base/d-textarea.vue';
+
+
     import { useRouter } from 'vue-router';
     
     const props = defineProps({
@@ -90,12 +106,28 @@
         fax: "",
         discountTypeId: 0,
         mailingLanguageId: 0,
-        is_agent: false
+        is_agent: false,
+        contact_origin_label: "",
+        contact_origin_id: null,  // Updated from OriginContactId
+        commentaire: "",          // Updated from Commentaire
     });
+
+
+    const errorCommentaire = ref("");
+    const errorContactOrigin = ref("");
     const error = ref({});
     const isParticular = ref(false);
+    const isAutreSelectedOriginType = ref(false);
     let codeSuffix = ref(1);
     const createCustomer = async () => {
+        if (data.value.contact_origin_label === "") {
+            errorContactOrigin.value = "Le type d'origine est obligatoire.";
+        }
+        if (data.value.contact_origin_label === "Autre" && data.value.commentaire === "") {
+            errorCommentaire.value = "Commentaire est Obligatoire Pour Autre.";
+        } else {
+            errorCommentaire.value = "";
+        }
         try{
             if(props.customerData.customer_id){
                 error.value = {};
@@ -124,7 +156,11 @@
         data.value.is_agent =  newVal.is_agent;
         data.value.firstname =  newVal.firstname;
         data.value.lastname =  newVal.lastname;
+        data.value.contact_origin_id = newVal.contact_origin_id;
+        data.value.commentaire = newVal.commentaire;
+        data.value.contact_origin_label = newVal.contact_origin_label;
     };
+    
     const changeCode = (Rs) => {
         if(Rs){
             data.value.code = Rs.substr(0,4) + codeSuffix.value.toString().padStart(2, '0'); 
@@ -158,14 +194,28 @@
                 data.value.discountTypeId = particularCustomerGroupId;
             }else{
                 isParticular.value = false;
-                if(!props.customerData.customer_id) {
-                    data.value.discountTypeId = 0;
-                }
+                data.value.discountTypeId = 0;
             }
         }
     );
+
+    watch(() => data.value.contact_origin_label, (newLabel) => {
+        console.log("new label " + newLabel);  // Debug to check if value is changing
+        errorContactOrigin.value = "";
+        isAutreSelectedOriginType.value = newLabel === "Autre";  // Check if it's "Autre"
+        
+        // Reset commentaire if it's not "Autre"
+        if (!isAutreSelectedOriginType.value) {
+            data.value.commentaire = "";
+        }
+    });
+
+  
 </script>
 <style>
+    .custom-textarea {
+        align-items: baseline !important;
 
+    }
 </style>
 

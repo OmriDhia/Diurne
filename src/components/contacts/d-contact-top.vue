@@ -83,7 +83,7 @@
                         </header>
                         <div :id="'contact'+index" class="collapse" :aria-labelledby="'contact'+index"  data-bs-parent="#toggleAccordion">
                             <div class="card-body">
-                                <d-contact-form :contactData="item" :customerId="props.customerId" :index="index"></d-contact-form>
+                                <d-contact-form :contactData="item" :customerId="props.customerId" :index="index" ></d-contact-form>
                             </div>
                         </div>
                     </div>
@@ -97,7 +97,7 @@
 </template>
 
 <script setup>
-    import {defineProps, ref} from 'vue';
+    import {defineProps, ref, watch} from 'vue';
     import axiosInstance from "../../config/http";
     import VueFeather from 'vue-feather';
     import dContactForm from "./_partial/d-contact-form.vue"
@@ -114,7 +114,7 @@
         },
         customerId: {
             type: Number
-        }
+        },
     });
 
     const data = ref({
@@ -127,8 +127,9 @@
         phone: "",
         mobile_phone: "",
         fax: "",
-        customerId: props.customerId
+        customerId: props.customerId,
     });
+
     const error = ref({});
 
     const addContact = async () => {
