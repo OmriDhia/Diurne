@@ -47,23 +47,6 @@ export default {
             selectedOriginId: 0, // This will bind with the dropdown
         };
     },
-    // computed: {
-    //     selectedOriginId: {
-    //         get() {
-    //             return this.modelValue.contact_origin_id || 0; // Default to 0 if not set
-    //         },
-    //         set(newId) {
-    //             const selectedOption = this.contactOriginTypes.find(opt => opt.id === newId);
-    //             if (selectedOption) {
-    //                 this.$emit('update:modelValue', {
-    //                     ...this.modelValue,
-    //                     contact_origin_label: selectedOption.label,
-    //                     contact_origin_id: newId
-    //                 });
-    //             }
-    //         }
-    //     }
-    // },
     methods: {
         async getcontactOriginTypes() {
             try {
@@ -84,14 +67,19 @@ export default {
             }
         },
         setContactOrigin() {
-            const { contact_origin_label } = this.modelValue;
-            console.log ( "testtttt" , contact_origin_label);
-            const matchingOption = this.contactOriginTypes.find(
-                opt => opt.label === contact_origin_label
-            );
-            
-            if (matchingOption) {
+            const { contact_origin_label, contact_origin_id } = this.modelValue;
+            console.log("MODEL VALUE : ", this.modelValue);
+            // Find the matching option using label
+            const matchingOption = this.contactOriginTypes.find(opt => opt.label === contact_origin_label);
+
+            if (matchingOption && matchingOption.id !== contact_origin_id) {
                 this.selectedOriginId = matchingOption.id;
+                this.$emit('update:modelValue', {
+                    ...this.modelValue,
+                    contact_origin_label: contact_origin_label,
+                    contact_origin_id: matchingOption.id  // Only emit if ID needs to be updated
+                });
+                console.log("Updated origin contact ID to:", matchingOption.id);
             }
         }
     },
