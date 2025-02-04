@@ -189,10 +189,10 @@
         maxiLength: false,
         miniWidth: false,
         maxiWidth: false,
-        dstWallHeight: "",
-        dstWallDown: "",
-        dstWallLeft: "",
-        dstWallRight: ""
+        dstWallHeight: '0.0',
+        dstWallDown: '0.0',
+        dstWallLeft: '0.0',
+        dstWallRight: '0.0'
     });
     const error = ref({});
     

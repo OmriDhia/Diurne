@@ -2,7 +2,7 @@
     <!--  BEGIN SIDEBAR  -->
     <div class="sidebar-wrapper sidebar-theme">
         <nav ref="menu" id="sidebar">
-            <div class="shadow-bottom"></div>
+            <!--div class="shadow-bottom"></div-->
             <perfect-scrollbar class="list-unstyled menu-categories mt-5" tag="ul"
                 :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 300, suppressScrollX: true }">
                 <li class="menu" v-for="menu in menus" :key="menu.id">

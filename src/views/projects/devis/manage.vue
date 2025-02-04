@@ -30,7 +30,7 @@
                                 <d-customer-dropdown :disabled="disbledContremarque" :showCustomer="true" :required="true" v-model="selectedCustomer" :error="error.customer_id"></d-customer-dropdown>
                             </div>
                             <div class="row pe-2 ps-0" v-if="currentCustomer.contactsData">
-                                <d-base-dropdown :disabled="disbledContremarque" name="Contact" label="firstname" trackBy="contact_id" :datas="currentCustomer.contactsData" v-model="contact"></d-base-dropdown>
+                                <d-base-dropdown :disabled="disbledContremarque" name="Contact" label="lastname" trackBy="contact_id" :datas="currentCustomer.contactsData" v-model="contact"></d-base-dropdown>
                             </div>
                         </div>
                         <div class="col-md-6 col-sm-12 pe-sm-0">
@@ -47,7 +47,7 @@
                         <div class="col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Commercial" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0" v-if="currentCustomer.contactCommercialHistoriesData">
-                                <d-base-dropdown :disabled="disbledContremarque" name="Commercial" label="firstname" trackBy="commercial_id" :datas="currentCustomer.contactCommercialHistoriesData" v-model="commercial"></d-base-dropdown>
+                                <d-base-dropdown :disabled="disbledContremarque" name="Commercial" label="lastname" trackBy="commercial_id" :datas="currentCustomer.contactCommercialHistoriesData" v-model="commercial"></d-base-dropdown>
                             </div>
                         </div>
                         <div class="col-md-6 col-sm-12 pe-sm-0">
