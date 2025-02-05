@@ -24,7 +24,7 @@
                                 </div>
                             </div>
                             <div class="row p-1 align-items-center">
-                                <div class="col-sm-12 col-md-6">
+                                <div class="col-sm-12 col-md-6" >
                                     <d-input required="true" label="Nom" v-model="data.lastname" :error="error.lastname"></d-input>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
@@ -32,14 +32,14 @@
                                 </div>
                             </div>
                             <div class="row p-1 align-items-center">
-                                <div class="col-sm-12 col-md-6">
+                                <div class="col-sm-12 col-md-6" >
                                     <d-input label="Prénom" v-model="data.firstname" :error="error.firstname"></d-input>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
                                     <d-input label="Email" v-model="data.email" :error="error.email"></d-input>
                                 </div>
                             </div>
-                            <div class="row align-items-center justify-content-between">
+                            <div class="row align-items-center justify-content-between" >
                                 <div class="col-md-auto">
                                     <div class="row">
                                     <div class="col-md-auto">
@@ -56,7 +56,7 @@
                                     </div>
                                     </div>
                                 </div>
-                                <div class="col-md-auto">
+                                <div class="col-md-auto" >
                                     <div class="row">
                                         <div class="col-auto p-1">
                                             <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="addContact">
@@ -97,7 +97,7 @@
 </template>
 
 <script setup>
-    import {defineProps, ref, watch} from 'vue';
+    import {defineProps, ref, watch, watchEffect} from 'vue';
     import axiosInstance from "../../config/http";
     import VueFeather from 'vue-feather';
     import dContactForm from "./_partial/d-contact-form.vue"
@@ -114,9 +114,9 @@
         },
         customerId: {
             type: Number
-        },
+        }
     });
-
+    
     const data = ref({
         gender_id: 0,
         firstname: "",
@@ -157,6 +157,7 @@
 
         document.getElementById("toggleAccordion").scrollIntoView();
     }
+
 </script>
 <style>
 

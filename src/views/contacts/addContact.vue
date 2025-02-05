@@ -11,7 +11,8 @@
               <template v-slot:panel-body>
                   <div class="row">
                       <d-customer :customerData="currentCustomer" ></d-customer>
-                      <d-contact-top  v-if="currentCustomer.customer_id" 
+
+                      <d-contact-top v-if="currentCustomer.customer_group_id === 1"
                       :contactData="currentCustomer.contactsData" 
                       :customerId="currentCustomer.customer_id"
                       ></d-contact-top>
@@ -110,7 +111,6 @@
 
     const route = useRoute();
     const customer_id = route.params.id;
-    
     const currentCustomer = ref({});
     const loading = ref(false);
 
