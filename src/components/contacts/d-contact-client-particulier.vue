@@ -70,7 +70,7 @@
                     <div class="card mb-1">
                         <header class="card-header" role="tab">
                             <section class="mb-0 mt-0">
-                                <div class="collapsed" role="menu" data-bs-toggle="collapse show" :data-bs-target="'#contact'+index" aria-expanded="true" :aria-controls="'contact'+index">
+                                <div class="" role="menu" data-bs-toggle="collapse" :data-bs-target="'#contact'+index" :aria-expanded="index === 0 ? 'true' : 'false'"  :aria-controls="'contact'+index">
                                     {{ item.firstname + " " + item.lastname }}
                                     <div class="icons">
                                         <vue-feather type="chevron-down" size="14"></vue-feather>
@@ -78,7 +78,7 @@
                                 </div>
                             </section>
                         </header>
-                        <div :id="'contact'+index" class="collapse show" :aria-labelledby="'contact'+index"  data-bs-parent="#toggleAccordion">
+                        <div :id="'contact'+index" :class="index === 0 ? 'collapse show' : 'collapse'" :aria-labelledby="'contact'+index"  data-bs-parent="#toggleAccordion">
                             <div class="card-body">
                                 <d-contact-form-particulier :isParticular="isParticular" :contactData="item" :customerId="props.customerId" :index="index" ></d-contact-form-particulier>
                             </div>
@@ -86,7 +86,7 @@
                     </div>
                 </template>
             </div>
-        </div>
+        </div>  
     </div>
 </template>
 

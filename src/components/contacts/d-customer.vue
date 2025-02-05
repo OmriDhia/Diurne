@@ -32,6 +32,21 @@
             <d-languages :error="error.website" v-model="data.mailingLanguageId"></d-languages>
         </div>
         <div class="row p-2">
+            <d-customer-origin :required="true" :error="errorContactOrigin" v-model="data"  />
+        </div>
+        <div class="row p-2" v-if="isAutreSelectedOriginType">
+            <d-textarea
+                label="Commentaire"
+                v-model="data.commentaire"
+                :error="errorCommentaire"
+                :required="true"
+                :rows="5"
+                type="textarea"
+                class="custom-textarea"
+            />
+        </div>
+        
+        <div class="row p-2">
             <div class="col-md-auto">
                 <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
                     <input type="checkbox" v-model="data.is_agent" class="custom-control-input" id="isAgent"/>
@@ -39,8 +54,20 @@
                 </div>
             </div>
         </div>
+        <div class="row align-content-end justify-content-end p-2 pe-3 mt-auto" v-if="data.customerGroupId !== 1">
+            <div class="col-auto p-1">
+                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer" v-if="!props.customerData.customer_id">Ajouter Client</button>
+                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer" v-if="props.customerData.customer_id">Modifier Client</button>
+
+            </div>
+            <div class="col-auto p-1 pe-4" v-if="data.customer_id">
+                <d-delete :api="`/api/customer/${data.customer_id}/delete`"></d-delete>
+            </div>
+        </div>
+        
     </div>
-    <div class="col-sm-12 col-md-6 d-flex flex-column" v-if="data.customerGroupId !== 1">
+    
+    <!-- <div class="col-sm-12 col-md-6 d-flex flex-column" v-if="data.customerGroupId !== 1">
         <div class="row p-2">
             <d-customer-origin :required="true" :error="errorContactOrigin" v-model="data"  />
         </div>
@@ -63,7 +90,7 @@
                 <d-delete :api="`/api/customer/${data.customer_id}/delete`"></d-delete>
             </div>
         </div>
-    </div>
+    </div> -->
 
 
     <d-contact-client-particulier v-if="data.customerGroupId === 1"
@@ -77,7 +104,8 @@
     <div class="col-sm-12 col-md-12 d-flex flex-column" v-if="data.customerGroupId === 1">
                <div class="row align-content-end justify-content-end p-2 pe-3 mt-auto">
             <div class="col-auto p-1">
-                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer">Ajouter Client</button> 
+                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer" v-if="!props.customerData.customer_id">Ajouter Client</button>
+                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer" v-if="props.customerData.customer_id">Modifier Client</button>
             </div>
             <div class="col-auto p-1 pe-4" v-if="data.customer_id">
                 <d-delete :api="`/api/customer/${data.customer_id}/delete`"></d-delete>
@@ -109,13 +137,26 @@
             default: {}
         }
     });
-    const localCustomerData = ref({ firstName: "" , lastName: "", customer_id: null});
+    const localCustomerData = ref({ 
+        firstName: "" , 
+        lastName: "", 
+        customer_id: null
+    });
+    // Watch for changes in props.customerData and update localCustomerData
+    watchEffect(() => {
+        if (props.customerData) {
+            // Set values from props.customerData if they exist, else keep default values
+            localCustomerData.value.firstName = props.customerData.firstname || "";
+            localCustomerData.value.lastName = props.customerData.lastname || "";
+            localCustomerData.value.customer_id = props.customerData.customer_id || null;
+        }
+    });
     const localContactFullNameData = ref({ firstName: "" , lastName: ""});
     const router = useRouter();
     const data = ref({
         customer_id: 0,
         customerGroupId: 0,
-        code: "",
+        // code: "",
         social_reason: "",
         tva_ce: "",
         firstname: "",
@@ -129,7 +170,7 @@
         mailingLanguageId: 0,
         is_agent: false,
         contact_origin_label: "",
-        contact_origin_id: 11,  // Updated from OriginContactId
+        contact_origin_id: 0,  // Updated from OriginContactId
         commentaire: "",
     });
 
@@ -137,13 +178,10 @@
     const errorCommentaire = ref("");
     const errorContactOrigin = ref("");
     const error = ref({});
-    // const isParticular = ref(false);
-    // const isParticular = computed(() => !!props.customerData.customer_id);
-    // OR Solution 2: Using watchEffect if you prefer ref
-const isParticular = ref(false);
-watchEffect(() => {
-    isParticular.value = !!props.customerData.customer_id;
-});
+    const isParticular = ref(false);
+    watchEffect(() => {
+        isParticular.value = !!props.customerData.customer_id;
+    });
     const isAutreSelectedOriginType = ref(false);
     let codeSuffix = ref(1);
     const createCustomer = async () => {
@@ -158,15 +196,22 @@ watchEffect(() => {
         try{
             if(props.customerData.customer_id){
                 error.value = {};
+                console.log("data for updating customer: " , data.value);
+
                 const res = await axiosInstance.put("api/updateCustomer/" + props.customerData.customer_id,data.value);
                 window.showMessage("Mise a jour avec succées.")
             }else{
                 const res = await axiosInstance.post("/api/createCustomer",data.value);
-                localCustomerData.value.customer_id = res.data.response.customer_id;
-                localCustomerData.value.firstName = res.data.response.firstname;
-                localCustomerData.value.lastName = res.data.response.lastname;
                 window.showMessage("Client créé avec succès.");
-                console.log("customer id after response : " , localCustomerData.value.customer_id)
+                if ( data.value.customerGroupId === 1 ){
+                    localCustomerData.value.customer_id = res.data.response.customer_id;
+                    localCustomerData.value.firstName = res.data.response.firstname;
+                    localCustomerData.value.lastName = res.data.response.lastname;
+                    console.log("customer id after response : " , localCustomerData.value.customer_id)
+                }else{
+                    router.push({name: "addContact", params:{id: res.data.response.customer_id}})
+                }
+                
             }
         }catch(e){
              // Improved error handling with checks for the response structure
@@ -183,10 +228,7 @@ watchEffect(() => {
                 window.showMessage("Erreur de réseau ou serveur", "error");
                 console.log(e);
             }
-            // if(e.response.data.violations){
-            //     error.value = formatErrorViolations(e.response.data.violations)
-            // }
-            // window.showMessage(e.message,'error')
+            
         }
     };
     const affectData = (newVal) => {
@@ -204,6 +246,8 @@ watchEffect(() => {
         data.value.contact_origin_id = newVal.contact_origin_id ?? null;
         data.value.commentaire = newVal.commentaire;
         data.value.contact_origin_label = newVal.contact_origin_label;
+        data.value.email = newVal.contactsData[0].email;
+        // data.value.email = "y.bensalha@BRIDGETECHNOLOGYDOMAINE.onmicrosoft.m";
     };
     
     const changeCode = (Rs) => {
