@@ -54,7 +54,7 @@
                                 </div>
                             </div>
                             <div class="row pe-2 ps-0 align-items-center">
-                                <d-input label="N° Tapis dans le devis" v-model="carpetNumber"></d-input>
+                                <d-input :disabled="true" label="N° Tapis dans le devis" v-model="carpetNumber"></d-input>
                             </div>
                         </div>
                     </div>
