@@ -4,7 +4,7 @@
             <d-customer-type :required="true" :error="error.customerGroupId" v-model="data.customerGroupId"></d-customer-type>
         </div>
         <div class="row p-2" v-if="!isParticular">
-            <d-input required="true" label="Raison social" :error="error.social_reason" v-model="data.social_reason"></d-input>
+            <d-input :required="true" label="Raison social" :error="error.social_reason" v-model="data.social_reason"></d-input>
         </div>
         <div class="row p-2" v-if="isParticular">
             <d-input required="true" label="Nom" :error="error.lastname" v-model="data.lastname"></d-input>
@@ -64,11 +64,16 @@
             </div>
         </div>
     </div>
+
+
     <d-contact-client-particulier v-if="data.customerGroupId === 1"
-    :contactData="customerData.contactsData" 
+    :contactData="customerData.contactsData"
     :customerId="customerData.customer_id"
+    :customerData="localCustomerData"
     :isParticular="isParticular"
     ></d-contact-client-particulier>
+
+
     <div class="col-sm-12 col-md-12 d-flex flex-column" v-if="data.customerGroupId === 1">
                <div class="row align-content-end justify-content-end p-2 pe-3 mt-auto">
             <div class="col-auto p-1">
@@ -82,7 +87,7 @@
 </template>
 
 <script setup>
-    import {ref, defineProps, onMounted, watch, watchEffect} from 'vue';
+    import {ref, defineProps, onMounted, watch, watchEffect, computed} from 'vue';
     import axiosInstance from "../../config/http";
     import VueFeather from 'vue-feather';
     import dCustomerType from "../../components/common/d-customer-type.vue";
@@ -104,6 +109,8 @@
             default: {}
         }
     });
+    const localCustomerData = ref({ firstName: "" , lastName: "", customer_id: null});
+    const localContactFullNameData = ref({ firstName: "" , lastName: ""});
     const router = useRouter();
     const data = ref({
         customer_id: 0,
@@ -130,7 +137,13 @@
     const errorCommentaire = ref("");
     const errorContactOrigin = ref("");
     const error = ref({});
-    const isParticular = ref(false);
+    // const isParticular = ref(false);
+    // const isParticular = computed(() => !!props.customerData.customer_id);
+    // OR Solution 2: Using watchEffect if you prefer ref
+const isParticular = ref(false);
+watchEffect(() => {
+    isParticular.value = !!props.customerData.customer_id;
+});
     const isAutreSelectedOriginType = ref(false);
     let codeSuffix = ref(1);
     const createCustomer = async () => {
@@ -149,8 +162,11 @@
                 window.showMessage("Mise a jour avec succées.")
             }else{
                 const res = await axiosInstance.post("/api/createCustomer",data.value);
-                customerData.customer_id = res.data.response.customer_id; // set the customer id to pass to the child
+                localCustomerData.value.customer_id = res.data.response.customer_id;
+                localCustomerData.value.firstName = res.data.response.firstname;
+                localCustomerData.value.lastName = res.data.response.lastname;
                 window.showMessage("Client créé avec succès.");
+                console.log("customer id after response : " , localCustomerData.value.customer_id)
             }
         }catch(e){
              // Improved error handling with checks for the response structure
@@ -158,15 +174,14 @@
                 if (e.response.data.violations) {
                     error.value = formatErrorViolations(e.response.data.violations);
                 } else if (e.response.data.message) {
-                    // If there's a different error message format
                     window.showMessage(e.response.data.message, "error");
                 } else {
-                    // Fallback for any other unexpected error structure
                     window.showMessage("Erreur inconnue", "error");
                 }
             } else {
                 // If the error does not have a response object (network errors, etc.)
                 window.showMessage("Erreur de réseau ou serveur", "error");
+                console.log(e);
             }
             // if(e.response.data.violations){
             //     error.value = formatErrorViolations(e.response.data.violations)

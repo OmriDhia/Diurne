@@ -2,14 +2,11 @@
     <div class="col-sm-12 col-md-6">
         <div class="row pe-2">
             <div id="toggleAccordion" class="accordion">
-                <div class="card mb-1">
+                <div class="card mb-1" v-if="!props.customerId">
                     <header class="card-header" role="tab">
                         <section class="mb-0 mt-0">
-                            <div class="collapsed" role="menu" data-bs-toggle="collapse" data-bs-target="#headingOne1" aria-expanded="true" aria-controls="headingOne1">
+                            <div class="collapsed" role="menu"  data-bs-target="#headingOne1" aria-expanded="true" aria-controls="headingOne1">
                                 Nouveau contact
-                                <div class="icons">
-                                    <vue-feather type="chevron-down" size="14"></vue-feather>
-                                </div>
                             </div>
                         </section>
                     </header>
@@ -24,7 +21,7 @@
                                 </div>
                             </div>
                             <div class="row p-1 align-items-center">
-                                <div class="col-sm-12 col-md-6" v-if="!isParticular">
+                                <div class="col-sm-12 col-md-6" v-if="!props.isParticular">
                                     <d-input required="true" label="Nom" v-model="data.lastname" :error="error.lastname"></d-input>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
@@ -32,14 +29,14 @@
                                 </div>
                             </div>
                             <div class="row p-1 align-items-center">
-                                <div class="col-sm-12 col-md-6" v-if="!isParticular">
+                                <div class="col-sm-12 col-md-6" v-if="!props.isParticular">
                                     <d-input label="Prénom" v-model="data.firstname" :error="error.firstname"></d-input>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
                                     <d-input label="Email" v-model="data.email" :error="error.email"></d-input>
                                 </div>
                             </div>
-                            <div class="row align-items-center justify-content-between" v-if="!isParticular">
+                            <div class="row align-items-center justify-content-between" v-if="!props.isParticular">
                                 <div class="col-md-auto">
                                     <div class="row">
                                     <div class="col-md-auto">
@@ -56,7 +53,7 @@
                                     </div>
                                     </div>
                                 </div>
-                                <div class="col-md-auto" v-if="!isParticular">
+                                <div class="col-md-auto" v-if="!props.isParticular">
                                     <div class="row">
                                         <div class="col-auto p-1">
                                             <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="addContact">
@@ -73,7 +70,7 @@
                     <div class="card mb-1">
                         <header class="card-header" role="tab">
                             <section class="mb-0 mt-0">
-                                <div class="" role="menu" data-bs-toggle="collapse" :data-bs-target="'#contact'+index" aria-expanded="false" :aria-controls="'contact'+index">
+                                <div class="collapsed" role="menu" data-bs-toggle="collapse show" :data-bs-target="'#contact'+index" aria-expanded="true" :aria-controls="'contact'+index">
                                     {{ item.firstname + " " + item.lastname }}
                                     <div class="icons">
                                         <vue-feather type="chevron-down" size="14"></vue-feather>
@@ -81,9 +78,9 @@
                                 </div>
                             </section>
                         </header>
-                        <div :id="'contact'+index" class="collapse" :aria-labelledby="'contact'+index"  data-bs-parent="#toggleAccordion">
+                        <div :id="'contact'+index" class="collapse show" :aria-labelledby="'contact'+index"  data-bs-parent="#toggleAccordion">
                             <div class="card-body">
-                                <d-contact-form :contactData="item" :customerId="props.customerId" :index="index" ></d-contact-form>
+                                <d-contact-form-particulier :isParticular="isParticular" :contactData="item" :customerId="props.customerId" :index="index" ></d-contact-form-particulier>
                             </div>
                         </div>
                     </div>
@@ -94,10 +91,10 @@
 </template>
 
 <script setup>
-    import {defineProps, ref, watch, watchEffect} from 'vue';
+    import {defineProps, ref, watch, watchEffect, onMounted} from 'vue';
     import axiosInstance from "../../config/http";
     import VueFeather from 'vue-feather';
-    import dContactForm from "./_partial/d-contact-form.vue"
+    import dContactFormParticulier from "./_partial/d-contact-form-particulier.vue"
     import dGender from "../../components/common/d-gender.vue";
     import dInput from "../../components/base/d-input.vue";
     import {formatErrorViolations} from "../../composables/global-methods";
@@ -115,7 +112,9 @@
         },
         isParticular: {
             type: Boolean,
-            default: false, // default value
+        },
+        customerData: {
+            type: Object,
         }
     });
     
@@ -131,26 +130,22 @@
         fax: "",
         customerId: props.customerId,
     });
-
+    onMounted(() => {
+        console.log("particulier : ", props.isParticular);
+    });
     const error = ref({});
 
     const addContact = async () => {
         try{
-            if(props.customerId){
+            if(props.customerData.customer_id){
                 error.value = {};
-                const res = await axiosInstance.post("api/createContact/" + props.customerId,data.value);
+                const res = await axiosInstance.post("api/createContact/" + props.customerData.customer_id,data.value);
                 // Log the response to see its structure
-                console.log('Response:', response);
-                router.push({name: "addContact", params:{id: res.data.response.customer_id}})
+                console.log('createContactResponse:', res);
+                // router.push({name: "addContact", params:{id: props.customerId}})
 
                 window.showMessage("Ajout de contact avec succées.")
-                // Check if response.data exists
-                if (response && response.data) {
-                    window.showMessage("Ajout avec succès.");
-                } else {
-                    window.showMessage("Unexpected response format", 'error');
-                }
-                window.location.reload();
+                // window.location.reload();
             }
         }catch(e){
             console.error('Error during contact creation:', e);
@@ -160,14 +155,18 @@
             window.showMessage(e.message,'error')
         }
     };
-
-    watch(() => props.customerId, (newCustomerId) => {
-        if (newCustomerId) {
-            // Automatically trigger the addContact when the customerId is set
-            addContact();  // Call the contact creation API
-            console.log("Contact creation triggered automatically.");
-        }
-    });
+    watch(
+        () => props.customerData, 
+        (newVal) => {
+            if (newVal) {
+                console.log("New Customer ID detected in child:", newVal);
+                data.value.firstname = newVal.firstName;
+                data.value.lastname = newVal.lastName;
+                addContact();
+            }
+        },
+        { deep: true }  // Ensure Vue tracks nested properties
+    );
 </script>
 <style>
 
