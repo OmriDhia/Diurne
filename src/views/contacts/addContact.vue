@@ -12,7 +12,7 @@
                   <div class="row">
                       <d-customer :customerData="currentCustomer" ></d-customer>
 
-                      <d-contact-top v-if="currentCustomer.customer_group_id === 1"
+                      <d-contact-top v-if="!loading &&  currentCustomer.customerGroup?.customer_group_id && currentCustomer.customerGroup?.customer_group_id !== 1"
                       :contactData="currentCustomer.contactsData" 
                       :customerId="currentCustomer.customer_id"
                       ></d-contact-top>
@@ -120,6 +120,8 @@
             if(customer_id){
                 const res = await axiosInstance.get("api/customer/" + customer_id);
                 currentCustomer.value = res.data.response.customerData;
+                currentCustomer.customerGroup = res.data.response.customerData.customerGroup;
+                console.log("current customer ID : ", currentCustomer.value.customerGroup.customer_group_id);
             }
         }catch(e){
             let msg = "";
