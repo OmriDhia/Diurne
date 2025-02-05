@@ -40,7 +40,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-12 col-md-6 d-flex flex-column">
+    <div class="col-sm-12 col-md-6 d-flex flex-column" v-if="data.customerGroupId !== 1">
         <div class="row p-2">
             <d-customer-origin :required="true" :error="errorContactOrigin" v-model="data"  />
         </div>
@@ -57,7 +57,22 @@
         </div>
         <div class="row align-content-end justify-content-end p-2 pe-3 mt-auto">
             <div class="col-auto p-1">
-                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer">Ajouter Contact</button> 
+                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer">Ajouter Client</button> 
+            </div>
+            <div class="col-auto p-1 pe-4" v-if="data.customer_id">
+                <d-delete :api="`/api/customer/${data.customer_id}/delete`"></d-delete>
+            </div>
+        </div>
+    </div>
+    <d-contact-client-particulier v-if="data.customerGroupId === 1"
+    :contactData="customerData.contactsData" 
+    :customerId="customerData.customer_id"
+    :isParticular="isParticular"
+    ></d-contact-client-particulier>
+    <div class="col-sm-12 col-md-12 d-flex flex-column" v-if="data.customerGroupId === 1">
+               <div class="row align-content-end justify-content-end p-2 pe-3 mt-auto">
+            <div class="col-auto p-1">
+                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer">Ajouter Client</button> 
             </div>
             <div class="col-auto p-1 pe-4" v-if="data.customer_id">
                 <d-delete :api="`/api/customer/${data.customer_id}/delete`"></d-delete>
@@ -79,7 +94,7 @@
     import {formatErrorViolations} from "../../composables/global-methods";
     import {particularCustomerGroupId, publicDiscountTypeId} from "../../composables/constants";
     import dTextarea from '../../components/base/d-textarea.vue';
-
+    import dContactClientParticulier from "./d-contact-client-particulier.vue";
 
     import { useRouter } from 'vue-router';
     
@@ -89,7 +104,6 @@
             default: {}
         }
     });
-
     const router = useRouter();
     const data = ref({
         customer_id: 0,
@@ -108,7 +122,7 @@
         mailingLanguageId: 0,
         is_agent: false,
         contact_origin_label: "",
-        contact_origin_id: null,  // Updated from OriginContactId
+        contact_origin_id: 11,  // Updated from OriginContactId
         commentaire: "",
     });
 
@@ -135,13 +149,29 @@
                 window.showMessage("Mise a jour avec succées.")
             }else{
                 const res = await axiosInstance.post("/api/createCustomer",data.value);
-                router.push({name: "addContact", params:{id: res.data.response.customer_id}})
+                customerData.customer_id = res.data.response.customer_id; // set the customer id to pass to the child
+                window.showMessage("Client créé avec succès.");
             }
         }catch(e){
-            if(e.response.data.violations){
-                error.value = formatErrorViolations(e.response.data.violations)
+             // Improved error handling with checks for the response structure
+            if (e.response && e.response.data) {
+                if (e.response.data.violations) {
+                    error.value = formatErrorViolations(e.response.data.violations);
+                } else if (e.response.data.message) {
+                    // If there's a different error message format
+                    window.showMessage(e.response.data.message, "error");
+                } else {
+                    // Fallback for any other unexpected error structure
+                    window.showMessage("Erreur inconnue", "error");
+                }
+            } else {
+                // If the error does not have a response object (network errors, etc.)
+                window.showMessage("Erreur de réseau ou serveur", "error");
             }
-            window.showMessage(e.message,'error')
+            // if(e.response.data.violations){
+            //     error.value = formatErrorViolations(e.response.data.violations)
+            // }
+            // window.showMessage(e.message,'error')
         }
     };
     const affectData = (newVal) => {
@@ -195,8 +225,7 @@
                 isParticular.value = false;
                 data.value.discountTypeId = 0;
             }
-        }
-    );
+        }, { deep: true });
     watch(() => data.value.contact_origin_label, (newLabel, oldLabel) => {
         if (newLabel !== oldLabel) {  // Prevents unnecessary updates
             console.log("New label detected:", newLabel);
