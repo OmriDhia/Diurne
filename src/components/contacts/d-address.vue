@@ -41,18 +41,6 @@
                     <div class="row align-items-center">
                         <div class="col-md-6 col-sm-12 pe-md-0">
                             <div class="row">
-                            <div class="col-md-auto p-md-0 ps-md-2">
-                                <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
-                                    <input type="checkbox" v-model="data.is_f_valide" class="custom-control-input" id="addressAdd1"/>
-                                    <label class="custom-control-label" for="addressAdd1"> F-valide </label>
-                                </div>
-                            </div>
-                            <div class="col-md-auto p-md-0 ps-md-1">
-                                <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
-                                    <input type="checkbox" v-model="data.is_l_valide" class="custom-control-input" id="addressAdd2"/>
-                                    <label class="custom-control-label" for="addressAdd2">L-valide</label>
-                                </div>
-                            </div>
                                 <div class="col-md-auto p-md-0 ps-md-1">
                                     <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
                                         <input type="checkbox" v-model="data.is_wrong" class="custom-control-input" id="addressAdd3"/>
@@ -150,8 +138,6 @@
         city: "",
         zip_code: "",
         state: "",
-        is_f_valide: null,
-        is_l_valide: null,
         is_wrong: null,
         comment: "",
         phone: "",

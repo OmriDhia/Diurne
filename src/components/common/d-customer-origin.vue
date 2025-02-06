@@ -68,7 +68,7 @@ export default {
         },
         setContactOrigin() {
             const { contact_origin_label, contact_origin_id } = this.modelValue;
-            console.log("MODEL VALUE : ", this.modelValue);
+            // console.log("MODEL VALUE : ", this.modelValue);
             // Find the matching option using label
             const matchingOption = this.contactOriginTypes.find(opt => opt.label === contact_origin_label);
 
@@ -79,7 +79,7 @@ export default {
                     contact_origin_label: contact_origin_label,
                     contact_origin_id: matchingOption.id  // Only emit if ID needs to be updated
                 });
-                console.log("Updated origin contact ID to:", matchingOption.id);
+                // console.log("Updated origin contact ID to:", matchingOption.id);
             }
         }
     },

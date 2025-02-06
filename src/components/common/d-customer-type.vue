@@ -62,7 +62,7 @@
         watch: {
             modelValue(newValue) {
                 this.type = parseInt(newValue);
-                console.log("customer type : " + newValue)
+                // console.log("customer type : " + newValue)
 
             }
         }

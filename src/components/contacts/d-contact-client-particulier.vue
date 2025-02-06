@@ -2,14 +2,11 @@
     <div class="col-sm-12 col-md-6">
         <div class="row pe-2">
             <div id="toggleAccordion" class="accordion">
-                <div class="card mb-1">
+                <div class="card mb-1" v-if="!props.customerId">
                     <header class="card-header" role="tab">
                         <section class="mb-0 mt-0">
-                            <div class="collapsed" role="menu" data-bs-toggle="collapse" data-bs-target="#headingOne1" aria-expanded="true" aria-controls="headingOne1">
+                            <div class="collapsed" role="menu"  data-bs-target="#headingOne1" aria-expanded="true" aria-controls="headingOne1">
                                 Nouveau contact
-                                <div class="icons">
-                                    <vue-feather type="chevron-down" size="14"></vue-feather>
-                                </div>
                             </div>
                         </section>
                     </header>
@@ -24,7 +21,7 @@
                                 </div>
                             </div>
                             <div class="row p-1 align-items-center">
-                                <div class="col-sm-12 col-md-6" >
+                                <div class="col-sm-12 col-md-6" v-if="!props.isParticular">
                                     <d-input required="true" label="Nom" v-model="data.lastname" :error="error.lastname"></d-input>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
@@ -32,14 +29,14 @@
                                 </div>
                             </div>
                             <div class="row p-1 align-items-center">
-                                <div class="col-sm-12 col-md-6" >
+                                <div class="col-sm-12 col-md-6" v-if="!props.isParticular">
                                     <d-input label="Prénom" v-model="data.firstname" :error="error.firstname"></d-input>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
                                     <d-input label="Email" v-model="data.email" :error="error.email"></d-input>
                                 </div>
                             </div>
-                            <div class="row align-items-center justify-content-between" >
+                            <div class="row align-items-center justify-content-between" v-if="!props.isParticular">
                                 <div class="col-md-auto">
                                     <div class="row">
                                     <div class="col-md-auto">
@@ -56,7 +53,7 @@
                                     </div>
                                     </div>
                                 </div>
-                                <div class="col-md-auto" >
+                                <div class="col-md-auto" v-if="!props.isParticular">
                                     <div class="row">
                                         <div class="col-auto p-1">
                                             <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="addContact">
@@ -73,7 +70,7 @@
                     <div class="card mb-1">
                         <header class="card-header" role="tab">
                             <section class="mb-0 mt-0">
-                                <div class="" role="menu" data-bs-toggle="collapse" :data-bs-target="'#contact'+index" aria-expanded="false" :aria-controls="'contact'+index">
+                                <div class="" role="menu" data-bs-toggle="collapse" :data-bs-target="'#contact'+index" :aria-expanded="index === 0 ? 'true' : 'false'"  :aria-controls="'contact'+index">
                                     {{ item.firstname + " " + item.lastname }}
                                     <div class="icons">
                                         <vue-feather type="chevron-down" size="14"></vue-feather>
@@ -81,32 +78,30 @@
                                 </div>
                             </section>
                         </header>
-                        <div :id="'contact'+index" class="collapse" :aria-labelledby="'contact'+index"  data-bs-parent="#toggleAccordion">
+                        <div :id="'contact'+index" :class="index === 0 ? 'collapse show' : 'collapse'" :aria-labelledby="'contact'+index"  data-bs-parent="#toggleAccordion">
                             <div class="card-body">
-                                <d-contact-form :contactData="item" :customerId="props.customerId" :index="index" ></d-contact-form>
+                                <d-contact-form-particulier :isParticular="isParticular" :contactData="item" :customerId="props.customerId" :index="index" ></d-contact-form-particulier>
                             </div>
                         </div>
                     </div>
                 </template>
             </div>
-        </div>
-        <div class="row mt-2 pe-2 justify-content-end">
-            <d-btn-outlined icon="plus" label="Ajouter" @click.prevent="addNewContact"></d-btn-outlined>
-        </div>
+        </div>  
     </div>
 </template>
 
 <script setup>
-    import {defineProps, ref, watch, watchEffect} from 'vue';
+    import {defineProps, ref, watch, watchEffect, onMounted} from 'vue';
     import axiosInstance from "../../config/http";
     import VueFeather from 'vue-feather';
-    import dContactForm from "./_partial/d-contact-form.vue"
+    import dContactFormParticulier from "./_partial/d-contact-form-particulier.vue"
     import dGender from "../../components/common/d-gender.vue";
     import dInput from "../../components/base/d-input.vue";
     import {formatErrorViolations} from "../../composables/global-methods";
     import '../../assets/sass/components/tabs-accordian/custom-accordions.scss';
     import dBtnOutlined from "../base/d-btn-outlined.vue"
-
+    import { useRouter } from 'vue-router';
+    const router = useRouter();
     const props = defineProps({
         contactData: {
             type: Array,
@@ -114,6 +109,12 @@
         },
         customerId: {
             type: Number
+        },
+        isParticular: {
+            type: Boolean,
+        },
+        customerData: {
+            type: Object,
         }
     });
     
@@ -129,35 +130,43 @@
         fax: "",
         customerId: props.customerId,
     });
-
+    onMounted(() => {
+        console.log("particulier : ", props.isParticular);
+    });
     const error = ref({});
 
     const addContact = async () => {
         try{
-            if(props.customerId){
+            if(props.customerData.customer_id){
                 error.value = {};
-                const res = await axiosInstance.post("api/createContact/" + props.customerId,data.value);
-                window.showMessage("Ajout avec succées.")
-                window.location.reload();
+                const res = await axiosInstance.post("api/createContact/" + props.customerData.customer_id,data.value);
+                // Log the response to see its structure
+                console.log('createContactResponse:', res);
+                // router.push({name: "addContact", params:{id: props.customerId}})
+
+                window.showMessage("Ajout de contact avec succées.")
+                // window.location.reload();
             }
         }catch(e){
+            console.error('Error during contact creation:', e);
             if(e.response.data.violations){
                 error.value = formatErrorViolations(e.response.data.violations)
             }
             window.showMessage(e.message,'error')
         }
     };
-
-    const addNewContact = () => {
-        const element = document.querySelector("#toggleAccordion > div:nth-child(1) > header > section > div");
-
-        if(element.ariaExpanded === "false"){
-            element.click();
-        }
-
-        document.getElementById("toggleAccordion").scrollIntoView();
-    }
-
+    watch(
+        () => props.customerData, 
+        (newVal) => {
+            if (newVal) {
+                console.log("New Customer ID detected in child:", newVal);
+                data.value.firstname = newVal.firstName;
+                data.value.lastname = newVal.lastName;
+                addContact();
+            }
+        },
+        { deep: true }  // Ensure Vue tracks nested properties
+    );
 </script>
 <style>
 
