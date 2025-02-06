@@ -22,7 +22,7 @@
                             </div>
                             <div class="row p-1 align-items-center">
                                 <div class="col-sm-12 col-md-6" v-if="!props.isParticular">
-                                    <d-input required="true" label="Nom" v-model="data.lastname" :error="error.lastname"></d-input>
+                                    <d-input  label="Nom" v-model="data.lastname" :error="error.lastname"></d-input>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
                                     <d-input label="Tél. fixe" v-model="data.phone" :error="error.phone"></d-input>
@@ -115,6 +115,10 @@
         },
         customerData: {
             type: Object,
+        },
+        required: {
+            type: Boolean,
+            default: true
         }
     });
     
@@ -137,7 +141,9 @@
 
     const addContact = async () => {
         try{
-            if(props.customerData.customer_id){
+            if (data.value.gender_id === 0){
+                error.value.gender_id = "Civilité est obligatoire";
+            }else if(props.customerData.customer_id){
                 error.value = {};
                 const res = await axiosInstance.post("api/createContact/" + props.customerData.customer_id,data.value);
                 // Log the response to see its structure
@@ -146,7 +152,10 @@
 
                 window.showMessage("Ajout de contact avec succées.")
                 // window.location.reload();
+            }else {
+                console.log("else : gender_id", data.value.gender_id);
             }
+            console.log("normal : gender_id", data.value.gender_id);
         }catch(e){
             console.error('Error during contact creation:', e);
             if(e.response.data.violations){
