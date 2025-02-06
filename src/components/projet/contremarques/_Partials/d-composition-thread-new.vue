@@ -14,7 +14,7 @@
                 <div class="col-8">
                     <template v-if="step === 1">
                         <d-input label="trame" v-model="data.trame"></d-input>
-                        <d-input type="number" label="fil" v-model="data.threadCount" v-if="!props.carpetCompositionId"></d-input>
+                        <!-- <d-input type="number" label="fil" v-model="data.threadCount" v-if="!props.carpetCompositionId"></d-input> -->
                         <d-input type="number" label="couche" v-model="data.layerCount" v-if="!props.carpetCompositionId"></d-input>
                     </template>
                     <template v-else>
@@ -60,7 +60,7 @@
     const color = ref(null);
     const data = ref({
         trame: "",
-        threadCount: 0,
+        threadCount: 3,
         layerCount: 0
     });
     const step = ref(1);
