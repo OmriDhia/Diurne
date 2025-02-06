@@ -161,7 +161,6 @@
         tva_ce: "",
         firstname: "",
         lastname: "",
-        email: "",
         website: "",
         phone: "",
         mobile_phone: "",
@@ -201,16 +200,19 @@
                 const res = await axiosInstance.put("api/updateCustomer/" + props.customerData.customer_id,data.value);
                 window.showMessage("Mise a jour avec succées.")
             }else{
-                const res = await axiosInstance.post("/api/createCustomer",data.value);
-                window.showMessage("Client créé avec succès.");
-                if ( data.value.customerGroupId === 1 ){
-                    localCustomerData.value.customer_id = res.data.response.customer_id;
-                    localCustomerData.value.firstName = res.data.response.firstname;
-                    localCustomerData.value.lastName = res.data.response.lastname;
-                    console.log("customer id after response : " , localCustomerData.value.customer_id)
-                }else{
-                    router.push({name: "addContact", params:{id: res.data.response.customer_id}})
-                }
+                // if ( localCustomerData.value.customer_id){
+                    const res = await axiosInstance.post("/api/createCustomer",data.value);
+                    window.showMessage("Client créé avec succès.");
+                    if ( data.value.customerGroupId === 1 ){
+                        localCustomerData.value.customer_id = res.data.response.customer_id;
+                        localCustomerData.value.firstName = res.data.response.firstname;
+                        localCustomerData.value.lastName = res.data.response.lastname;
+                        console.log("customer id after response : " , localCustomerData.value.customer_id)
+                    }else{
+                        router.push({name: "addContact", params:{id: res.data.response.customer_id}})
+                    }
+                // }
+                
                 
             }
         }catch(e){
