@@ -388,7 +388,8 @@
     const getQuote = async (quote_id) => {
         try{
             if(quote_id){
-                loading.value = true; 
+                console.log("getting quote by ID : " , quote_id );
+                loading.value = true;
                 quote.value = await quoteService.getQuoteById(quote_id);
                 contremarqueId.value = quote.value?.contremarqueId;
                 quoteNumber.value = quote.value.reference;
