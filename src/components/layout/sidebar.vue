@@ -28,7 +28,8 @@
                             </li>
                             <li v-for="child in menu.children" :key="child.id">
                                 <router-link :to="getPathByName(child.route)"  @click.prevent="clickHExp($event)">
-                                    {{ $t(child.name) }}
+                                    <!-- {{ $t(child.name) }} -->
+                                    {{ child.name === "Suivi des DI" ? "Suivi Des Maquettes" : $t(child.name) }}
                                 </router-link>
                             </li>
                         </ul>

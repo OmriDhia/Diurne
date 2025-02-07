@@ -77,7 +77,7 @@ export default {
                     permission: "read carpet",
                 },
                 {
-                    title: 'Suivi des DI',
+                    title: 'Suivi des Maquettes',
                     image: 'di.png',
                     color: menuHomeColor.di,
                     href: '/projet/dis',
