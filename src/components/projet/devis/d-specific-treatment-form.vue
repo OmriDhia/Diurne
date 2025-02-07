@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-    import { ref, watch } from "vue";
+    import { ref, watch, onMounted } from "vue";
     import VueFeather from 'vue-feather';
     import dInput from "../../base/d-input.vue";
     import axiosInstance from "../../../config/http";
@@ -144,6 +144,9 @@
             addTreatment();
         }
     );
+    onMounted(() => {
+       console.log("hedhy heya")
+    });
 </script>
 
 <style scoped>

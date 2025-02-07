@@ -98,6 +98,7 @@
     :customerId="customerData.customer_id"
     :customerData="localCustomerData"
     :isParticular="isParticular"
+    :required="true"
     ></d-contact-client-particulier>
 
 
@@ -161,7 +162,6 @@
         tva_ce: "",
         firstname: "",
         lastname: "",
-        email: "",
         website: "",
         phone: "",
         mobile_phone: "",
@@ -194,23 +194,38 @@
             errorCommentaire.value = "";
         }
         try{
-            if(props.customerData.customer_id){
+            if (props.customerData.customer_id || localCustomerData.value.customer_id) {
                 error.value = {};
-                console.log("data for updating customer: " , data.value);
+                console.log("data for updating customer:", data.value);
 
-                const res = await axiosInstance.put("api/updateCustomer/" + props.customerData.customer_id,data.value);
-                window.showMessage("Mise a jour avec succées.")
-            }else{
-                const res = await axiosInstance.post("/api/createCustomer",data.value);
-                window.showMessage("Client créé avec succès.");
-                if ( data.value.customerGroupId === 1 ){
-                    localCustomerData.value.customer_id = res.data.response.customer_id;
-                    localCustomerData.value.firstName = res.data.response.firstname;
-                    localCustomerData.value.lastName = res.data.response.lastname;
-                    console.log("customer id after response : " , localCustomerData.value.customer_id)
-                }else{
-                    router.push({name: "addContact", params:{id: res.data.response.customer_id}})
-                }
+                const customerId = localCustomerData.value.customer_id 
+                    ? localCustomerData.value.customer_id 
+                    : props.customerData.customer_id;
+
+                const res = await axiosInstance.put(`api/updateCustomer/${customerId}`, data.value);
+                window.showMessage("Mise à jour avec succès.");
+            }
+            // if(props.customerData.customer_id || localCustomerData.value.customer_id){
+            //     error.value = {};
+            //     console.log("data for updating customer: " , data.value);
+
+            //     const res = await axiosInstance.put("api/updateCustomer/" + localCustomerData.value.customer_id ? localCustomerData.value.customer_id : props.customerData.customer_id,data.value);
+            //     window.showMessage("Mise a jour avec succées.")
+            // }
+            else{
+                // if ( localCustomerData.value.customer_id){
+                    const res = await axiosInstance.post("/api/createCustomer",data.value);
+                    window.showMessage("Client créé avec succès.");
+                    if ( data.value.customerGroupId === 1 ){
+                        localCustomerData.value.customer_id = res.data.response.customer_id;
+                        localCustomerData.value.firstName = res.data.response.firstname;
+                        localCustomerData.value.lastName = res.data.response.lastname;
+                        console.log("customer id after response : " , localCustomerData.value.customer_id)
+                    }else{
+                        router.push({name: "addContact", params:{id: res.data.response.customer_id}})
+                    }
+                // }
+                
                 
             }
         }catch(e){

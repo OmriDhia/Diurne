@@ -1,6 +1,6 @@
 <template>
     <div class="layout-px-spacing mt-4">
-        <d-page-title :title="'Suivi de di'"></d-page-title>
+        <d-page-title :title="'Suivi des Maquettes'"></d-page-title>
         <d-modal-create-di></d-modal-create-di>
         <div class="row layout-top-spacing mt-3 p-2">
             <div class="panel br-6 p-2">
@@ -63,11 +63,29 @@
                                         :pageSizeOptions="[10, 25, 50, 75, 100]" noDataContent="Aucun contact trouvé."
                                         paginationInfo="Affichage de {0} à {1} sur {2} entrées" :sortable="true"
                                         @change="changeServer" class="advanced-table text-nowrap">
+                            <template #image="data">
+                                <div class="d-flex justify-content-center">
+                                    <img :src="getImageUrl(data.value.image_name)" alt="Carpet Image" class="img-thumbnail" style="width: 80px; height: auto;">
+                                </div>
+                            </template>
+                            <template #image_name="data">
+                                <div class="d-flex justify-content-between">
+                                    <strong class="text-truncate" :title="data.value.image_name">
+                                        {{ truncateText(data.value.image_name, 14) }}
+                                    </strong>
+                                    <div>
+                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer" 
+                                            @click="goTodetails(data.value.di_id, data.value.order_design_id)">
+                                        </vue-feather>
+                                    </div>
+                                </div>
+                            </template>
+
                             <template #diNumber="data">
                                 <div class="d-flex justify-content-between">
                                     <strong>{{ data.value.diNumber}}</strong>
                                     <div>
-                                        <vue-feather type="search"  stroke-width="1" class="cursor-pointer" @click="goTodetails(data.value.di_id, data.value.order_design_id)"></vue-feather>
+                                        <vue-feather type="search"  stroke-width="1" class="cursor-pointer" @click="goToContreMarqueDetails(data.value.contremarque_id)"></vue-feather>
                                     </div>
                                 </div>
                             </template>
@@ -118,7 +136,6 @@ import { useRoute } from "vue-router";
 
 useMeta({ title: 'Contremarque' });
 const route = useRoute();
-
 const loading = ref(true);
 const loadingAttribution = ref(false);
 const total_rows = ref(0);
@@ -129,6 +146,10 @@ const params = reactive({
     orderBy: null,
     orderWay: null
 });
+const truncateText = (text, length) => {
+    if (!text) return '';
+    return text.length > length ? text.substring(0, length) + '...' : text;
+};
 
 const filter = ref(Object.assign({}, filterSuiviDi));
 const filterActive = ref(false);
@@ -137,6 +158,8 @@ const selectedDiId = ref(0);
 const contremarqueId = ref(null);
 
 const cols = ref([
+    { field: 'image', title: 'Image' },
+    { field: 'image_name', title: 'Nom' },
     { field: 'diNumber', title: 'N° de la DI' },
     { field: 'diDate', title: 'Date de la DI' },
     { field: 'customer', title: 'Client'},
@@ -148,7 +171,10 @@ const cols = ref([
     { field: 'carpet_status', title: 'Etat de tapis dans le DI'},
     { field: 'wrong_image', title: 'Image eronnée'},
 ]) || [];
-
+const getImageUrl = (imageName) => {
+    if (!imageName) return ''; // Handle missing images
+    return `https://diurne-api.webntricks.com/uploads/attachments/${imageName}`;
+};
 onMounted(() => {
     const f = Helper.getStorage(FILTER_SUIVI_DI_STORAGE_NAME);
     if(f && Helper.hasDefinedValue(f)){
@@ -226,6 +252,9 @@ const handleUpdateDI = async (diId) => {
 };
 const goTodetails = (id_di,carperOrderId = 0) => {
     location.href = `/projet/dis/model/${id_di}/update/${carperOrderId}`;
+}
+const goToContreMarqueDetails = (id_contremarque) => {
+    location.href = `/projet/contremarques/projectdis/${id_contremarque}`;
 }
 const handleClose = () => {
     //selectedDiId.value = null;

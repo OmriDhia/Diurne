@@ -14,8 +14,9 @@
                           <d-input label="Lieu distination" v-model="data.destination_location"></d-input>
                       </div>
                       <div class="col-md-4 col-sm-12">
-                          <d-input type="date" label="Date cible" :required="true" v-model="data.target_date" :error="error.target_date"></d-input>
+                          <d-input type="date" label="Date cible" :required="false" v-model="data.target_date" ></d-input>
                       </div>
+                      <!-- :error="error.target_date" -->
                   </div>
               </template>
           </d-panel>
