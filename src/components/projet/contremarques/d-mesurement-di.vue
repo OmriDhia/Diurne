@@ -11,7 +11,7 @@
                     <div class="row align-items-start">
                         <h6 class="w-100">{{ measurement.name }}</h6>
                     </div>
-                    <div class="card p-0">
+                    <div class="card p-0" :class="{ 'is-invalid': error}">
                         <div class="card-body ps-2 mt-2">
                             <div class="row">
                                 <template v-for="(unit, uIndex) in measurement.unit" :key="uIndex">
@@ -31,6 +31,7 @@
                     </div>
                 </div>
             </template>
+            <div v-if="error" class="invalid-feedback">{{ $t("tous Les champs sont obligatoire.") }}</div>
         </div>
     </div>
     
@@ -53,6 +54,10 @@
             type: Boolean,
             default: false
         },
+        error: {
+            type: Boolean,
+            default: false
+        }
     });
     const emit = defineEmits(['changeMeasurements']);
     const store = useStore();
@@ -115,6 +120,7 @@
             const dimension = result.dimension
             setMeasurementResults(larg.unit,dimension.larg);
             setMeasurementResults(long.unit,dimension.lng);
+            console.log("measurements", measurements);
             store.commit('setMeasurements', measurements);
         } catch (error) {
             console.error(`Error calculation mesurements:`, error);

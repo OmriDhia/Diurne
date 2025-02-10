@@ -20,6 +20,8 @@
             ></multiselect>
             <div v-if="error" class="invalid-feedback">{{ $t("Le champs collection est abligatoire.") }}
             </div>
+            <div v-if="errorCollection" class="invalid-feedback">{{ $t("Le champs collection est obligatoire.") }}
+            </div>
         </div>
     </div>
     <div class="row align-items-center justify-content-end" v-if="!showOnlyDropdown && !hideBtn">
@@ -65,6 +67,10 @@
                 type: Boolean,
                 default: false
             },
+            errorCollection: {
+                type: Boolean,
+                default: false
+            }
         },
         data() {
             return {

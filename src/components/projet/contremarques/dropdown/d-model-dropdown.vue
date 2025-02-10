@@ -17,7 +17,9 @@
                 :disabled="disabled"
                 @update:model-value="handleChange($event)"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champs modèle est abligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t("Le champs modèle est obligatoire.") }}</div>
+            <div v-if="errorModel" class="invalid-feedback">{{ $t("Le champs modèle est obligatoire.") }}</div>
+
         </div>
     </div>
     <div class="row align-items-center justify-content-end" v-if="!showOnlyDropdown && !hideBtn">
@@ -62,6 +64,10 @@
                 type: Boolean,
                 default: false
             },
+            errorModel: {
+                type: Boolean,
+                default: false
+            }
         },
         data() {
             return {
