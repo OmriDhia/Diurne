@@ -276,7 +276,7 @@ const deleteSelectedLayers = async () => {
 }
 
 .table>thead>tr {
-    border-radius-: 10px 0px 0px 10px;
+    border-radius: 10px 0px 0px 10px;
 }
 
 .multiselect,
