@@ -77,7 +77,7 @@
     </div>
 </template>
 <script setup>
-    import { ref } from "vue";
+    import { ref, onMounted, watch } from "vue";
     import VueFeather from 'vue-feather';
     import axiosInstance from "../../../../config/http";
     import dInput from "../../../../components/base/d-input.vue";
@@ -99,9 +99,10 @@
         },
     });
     
-    const emit = defineEmits(['onClose','updateCustomerInstructionId']);
+    const emit = defineEmits(['onClose','updateCustomerInstruction','updateCustomerInstructionId']);
     const finishingId = ref(null);
     const data = ref({
+        id: null,
         fabricColor: "",
         fringe: true,
         withoutBanking: true,
@@ -124,18 +125,19 @@
             }
 
             if(customerInstructionId){
-                if(finishingId.value){
-                    const res = await axiosInstance.put(`/api/customerInstruction/${customerInstructionId}/finishing/${finishingId.value}/update`,data.value);
+                if(data.value.id){
+                    const res = await axiosInstance.put(`/api/customerInstruction/${customerInstructionId}/finishing/${data.value.id}/update`,data.value);
                     window.showMessage("Mise a jour avec succées.");
                 }else{
                     const res = await axiosInstance.post(`/api/customerInstruction/${customerInstructionId}/finishing/create`,data.value);
+                    data.value.id = parseInt(res.data.response.id);
                     window.showMessage("Ajout avec succées.");
-                    customerInstruction.finitionInstructionId = res.data.response.id;
-                    if(props.carpetDesignOrderId){
-                        const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, customerInstruction, customerInstructionId);
-                    }
                 }
             }
+            emit('updateCustomerInstruction',{
+                instruction: 'finishing',
+                id: data.value.id,
+            });
             document.querySelector("#modalManageValidatedSimple .btn-close").click();
         }catch (e){
             console.log(e);
@@ -145,6 +147,17 @@
             window.showMessage(e.message,'error')
         }
     };
+    
+    const setData = () => {
+        if (props.finishingData) {
+            const { customerInstruction, ...constraint } = props.finishingData;
+            data.value = constraint;
+        }
+    };
+
+    watch(() => props.finishingData, setData, { deep: true });
+
+    onMounted(setData);
     
     const handleClose = () => {
         error.value = {};

@@ -17,6 +17,7 @@
                         :customerInstructionId="customerInstructionId"
                         :carpetDesignOrderId="props.carpetDesignOrderId"
                         @updateCustomerInstructionId="updateCustomerInstructionId"
+                        @updateCustomerInstruction="updateCustomerInstruction"
                     ></d-modal-constraint>
                 </div>
                 <div class="row justify-content-between align-items-center mt-3">
@@ -33,6 +34,7 @@
                             :customerInstructionId="customerInstructionId"
                             :carpetDesignOrderId="props.carpetDesignOrderId"
                             @updateCustomerInstructionId="updateCustomerInstructionId"
+                            @updateCustomerInstruction="updateCustomerInstruction"
                         ></d-modal-validated-sample>
                     </div>
                 </div>
@@ -51,6 +53,7 @@
                         :customerInstructionId="customerInstructionId" 
                         :carpetDesignOrderId="props.carpetDesignOrderId"
                         @updateCustomerInstructionId="updateCustomerInstructionId"
+                        @updateCustomerInstruction="updateCustomerInstruction"
                     ></d-modal-finishing>
                 </div>
             </div>
@@ -111,17 +114,34 @@
     const emit = defineEmits(['transmisAdv']);
     const canShowTransmisAdv = computed(() => (store.getters.isCommertial || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
     const canCreateVariation = computed(() => (store.getters.isDesigner || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
+    
     const transmisStudio = () => {
         emit('transmisAdv',carpetStatus.transmisAdvId);
     };
+    
     onMounted(() => {
         if(props.customerInstruction){
             updateCustomerInstructionId(props.customerInstruction.id);
         }
     });
+    
     const updateCustomerInstructionId = (id) => {
         customerInstructionId.value = id;
         setData();
+    };
+    
+    const updateCustomerInstruction = (event) => {
+        switch (event.instruction) {
+            case "constraint":
+                data.value.constraintInstructionId = event.id;
+                break;
+            case "finishing":
+                data.value.finitionInstructionId = event.id;
+                break;
+            case "validateSimple":
+                data.value.validatedSampleId = event.id;
+                break;
+        }
     };
     const setData = () => {
         data.value.orderNumber = props.customerInstruction?.orderNumber;
@@ -134,7 +154,7 @@
         data.value.validatedSampleId = props.customerInstruction?.validatedSampleId;
         data.value.finitionInstructionId = props.customerInstruction?.finitionInstructionId;
         data.value.constraintInstructionId = props.customerInstruction?.constraintInstructionId;
-    }
+    };
     watch(
         () => [
             data.value.orderNumber,
@@ -152,9 +172,7 @@
             console.log(customerInstructionId.value);
             if(props.carpetDesignOrderId){
                 try{
-                    console.log(customerInstructionId.value);
                     const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, data.value, customerInstructionId.value);
-                    console.log(res.data);
                     if(!customerInstructionId.value){
                         updateCustomerInstructionId(res.id);
                     }
