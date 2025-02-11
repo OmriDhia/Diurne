@@ -263,14 +263,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <!--div class="col-md-3">
                                         <d-currency v-model="data.quoteDetail.currencyId"></d-currency>
-                                        <!--div class="row align-items-center justify-content-center pt-1">
+                                        <div class="row align-items-center justify-content-center pt-1">
                                             <div class="col-auto">
                                                 <button class="btn btn-custom ps-4 pe-4 font-size-0-6">Calculer</button>
                                             </div>
-                                        </div-->
-                                    </div>
+                                        </diiv>
+                                    </div-->
                                 </div>
                             </div>
                         </div>
@@ -692,7 +692,6 @@
                 data.value.carpetSpecification.specialShapeId,
                 data.value.carpetSpecification.qualityId,
                 data.value.carpetSpecification.hasSpecialShape,
-                data.value.quoteDetail.currencyId,
                 data.value.quoteDetail.proposedDiscountRate,
                 data.value.quoteDetail.wantedQuantity,
                 prices.value?.tarif_avant_remise_complementaire?.total_ht
