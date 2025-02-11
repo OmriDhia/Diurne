@@ -17,7 +17,9 @@
                 :disabled="disabled"
                 @update:model-value="handleChange($event)"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champs qualité est abligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t("Le champs qualité est obligatoire.") }}</div>
+            <div v-if="errorQuality" class="invalid-feedback">{{ $t("Le champs qualité est obligatoire.") }}</div>
+
         </div>
     </div>
 </template>
@@ -48,6 +50,10 @@
                 type: Boolean,
                 default: false
             },
+            errorQuality: {
+                type: Boolean,
+                default: false
+            }
         },
         data() {
             return {
