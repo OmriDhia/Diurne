@@ -8,11 +8,11 @@
                            <d-designer-dropdown v-model="data.designerId" :error="error.designerId"></d-designer-dropdown>
                         </div>
                     </div>
-                    <div class="row p-1 align-items-center">
+                    <!-- <div class="row p-1 align-items-center">
                         <div class="col-sm-12 col-md-8">
                             <d-input label="Date d'attribution" type="date" v-model="data.dateFrom" :error="error.dateFrom"></d-input>
                         </div>
-                    </div>
+                    </div> -->
                     <!--div class="row p-2 align-items-center">
                         <div class="col-sm-12 col-md-8">
                             <d-designer-status v-model="designerStatus"></d-designer-status>
@@ -34,6 +34,7 @@
     import dDesignerStatus from "./d-designer-status.vue";
     import axiosInstance from "../../../../config/http";
     import {designerStatusConst} from "../../../../composables/constants";
+    import moment from "moment";
 
     const props = defineProps({
         carpetDesignOrderId : {
@@ -61,7 +62,7 @@
             /*data.value.inProgress = (designerStatus.value === designerStatusConst[0].id);
             data.value.stopped = (designerStatus.value === designerStatusConst[1].id);
             data.value.done = (designerStatus.value === designerStatusConst[2].id);*/
-
+            data.dateFrom = moment().format("YYYY-MM-DD HH:mm:ss");
             const res = await axiosInstance.post(`/api/carpetDesignOrders/${props.carpetDesignOrderId}/designerAssignment`,data.value);
             emit('addDesigner', res.data.response);
             window.showMessage("Ajout a jour avec succées.");
@@ -88,3 +89,23 @@
         emit('onClose')
     }
 </script>
+
+<style>
+.modal {
+    overflow: visible !important;
+}
+
+.modal-body {
+    overflow: visible !important;
+}
+
+.modal-content {
+    overflow: visible !important;
+}
+
+.d-designer-dropdown {
+    position: relative;
+    z-index: 1050; /* Ensure it’s above the modal-footer */
+}
+
+</style>
