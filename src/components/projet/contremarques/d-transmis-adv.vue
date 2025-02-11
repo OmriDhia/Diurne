@@ -16,6 +16,7 @@
                     <d-modal-constraint
                         :customerInstructionId="customerInstructionId"
                         :carpetDesignOrderId="props.carpetDesignOrderId"
+                        :constraintData="props.customerInstruction?.customerConstraint"
                         @updateCustomerInstructionId="updateCustomerInstructionId"
                         @updateCustomerInstruction="updateCustomerInstruction"
                     ></d-modal-constraint>
@@ -33,6 +34,7 @@
                         <d-modal-validated-sample
                             :customerInstructionId="customerInstructionId"
                             :carpetDesignOrderId="props.carpetDesignOrderId"
+                            :validateSimpleData="props.customerInstruction?.validatedSample"
                             @updateCustomerInstructionId="updateCustomerInstructionId"
                             @updateCustomerInstruction="updateCustomerInstruction"
                         ></d-modal-validated-sample>
@@ -52,6 +54,7 @@
                     <d-modal-finishing 
                         :customerInstructionId="customerInstructionId" 
                         :carpetDesignOrderId="props.carpetDesignOrderId"
+                        :finishingData="props.customerInstruction?.finitionInstruction"
                         @updateCustomerInstructionId="updateCustomerInstructionId"
                         @updateCustomerInstruction="updateCustomerInstruction"
                     ></d-modal-finishing>
