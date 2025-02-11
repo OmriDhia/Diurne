@@ -349,7 +349,14 @@
                     <button class="btn btn-custom pe-5 ps-5" @click="goToDevis">Retour à la page devis</button>
                 </div>
                 <div class="col-auto">
-                    <button class="btn btn-custom pe-5 ps-5" @click="saveDevisDetails">Enregistrer</button>
+                    <div class="row">
+                        <div class="col-auto" v-if="quoteDetailId">
+                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevisDetails(false)">Enregistrer & Rester</button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevisDetails(true)">Enregistrer</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </template>
@@ -488,7 +495,7 @@
     });
     
     let disableAutoSave = true;
-    const saveDevisDetails = async () => {
+    const saveDevisDetails = async (leave) => {
         try{
             error.value = {};
             if(quote_id){
@@ -509,7 +516,12 @@
                 dataToSent.quoteDetail.proposedDiscountRate = parseFloat(dataToSent.quoteDetail.proposedDiscountRate);
                 if(quoteDetailId){
                     const res = await axiosInstance.put(`/api/Quote/${quote_id}/updateQuoteDetail/${quoteDetailId}`,dataToSent);
-                    window.showMessage("Mise a jour avec succées.")
+                    window.showMessage("Mise a jour avec succées.");
+                    if(leave){
+                        setTimeout(()=>{
+                            goToDevis();
+                        }, 2000);
+                    }
                 }else{
                     const respn = await axiosInstance.post(`/api/Quote/${quote_id}/createQuoteDetail`,dataToSent);
                     window.showMessage("Ajout avec succées.")
