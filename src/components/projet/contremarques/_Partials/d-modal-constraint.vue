@@ -150,7 +150,7 @@
     </div>
 </template>
 <script setup>
-    import { ref } from "vue";
+    import { ref, watch, onMounted } from "vue";
     import VueFeather from 'vue-feather';
     import axiosInstance from "../../../../config/http";
     import dInput from "../../../../components/base/d-input.vue";
@@ -172,9 +172,10 @@
         },
     });
 
-    const emit = defineEmits(['onClose','updateCustomerInstructionId']);
+    const emit = defineEmits(['onClose','updateCustomerInstruction','updateCustomerInstructionId']);
     const constraintId = ref(null);
     const data = ref({
+        id: null,
         transmittedPlan: true,
         libTransmittedPlan: "",
         pit: false,
@@ -207,18 +208,19 @@
             }
             
             if(customerInstructionId){
-                if(constraintId.value){
-                    const res = await axiosInstance.put(`/api/customerInstruction/${customerInstructionId}/constraints/${constraintId.value}/update`,data.value);
+                if(data.value.id){
+                    const res = await axiosInstance.put(`/api/customerInstruction/${customerInstructionId}/constraints/${data.value.id}/update`,data.value);
                     window.showMessage("Mise a jour avec succées.");
                 }else{
                     const res = await axiosInstance.post(`/api/customerInstruction/${customerInstructionId}/constraints/create`,data.value);
+                    data.value.id = parseInt(res.data.response.id);
                     window.showMessage("Ajout avec succées.");
-                    customerInstruction.constraintInstructionId = res.data.response.id;
-                    if(props.carpetDesignOrderId){
-                        const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, customerInstruction, customerInstructionId);
-                    }
                 }
             }
+            emit('updateCustomerInstruction',{
+                instruction: 'constraint',
+                id: data.value.id,
+            });
             document.querySelector("#modalManageConstraint .btn-close").click();
         }catch (e){
             console.log(e);
@@ -228,6 +230,17 @@
             window.showMessage(e.message,'error')
         }
     };
+
+    const setData = () => {
+        if (props.constraintData) {
+            const { customerInstruction, ...constraint } = props.constraintData;
+            data.value = constraint;
+        }
+    };
+
+    watch(() => props.constraintData, setData, { deep: true });
+
+    onMounted(setData);
 
     const handleClose = () => {
         error.value = {};

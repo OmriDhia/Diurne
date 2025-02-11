@@ -283,14 +283,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <!--div class="col-md-3">
                                         <d-currency v-model="data.quoteDetail.currencyId"></d-currency>
-                                        <!--div class="row align-items-center justify-content-center pt-1">
+                                        <div class="row align-items-center justify-content-center pt-1">
                                             <div class="col-auto">
                                                 <button class="btn btn-custom ps-4 pe-4 font-size-0-6">Calculer</button>
                                             </div>
-                                        </div-->
-                                    </div>
+                                        </diiv>
+                                    </div-->
                                 </div>
                             </div>
                         </div>
@@ -367,7 +367,14 @@
                     <button class="btn btn-custom pe-5 ps-5" @click="goToDevis">Retour à la page devis</button>
                 </div>
                 <div class="col-auto">
-                    <button class="btn btn-custom pe-5 ps-5" @click="saveDevisDetails">Enregistrer</button>
+                    <div class="row">
+                        <div class="col-auto" v-if="quoteDetailId">
+                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevisDetails(false)">Enregistrer & Rester</button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevisDetails(true)">Enregistrer</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </template>
@@ -506,6 +513,7 @@
     });
 
     let disableAutoSave = true;
+
     const saveDevisDetails = async () => {
         try {
             error.value = {};
@@ -525,14 +533,21 @@
                 dataToSent.carpetSpecification.materials = store.getters.materials;
                 dataToSent.quoteDetail.wantedQuantity = parseInt(dataToSent.quoteDetail.wantedQuantity);
                 dataToSent.quoteDetail.proposedDiscountRate = parseFloat(dataToSent.quoteDetail.proposedDiscountRate);
-                if (quoteDetailId) {
-                    const res = await axiosInstance.put(`/api/Quote/${quote_id}/updateQuoteDetail/${quoteDetailId}`, dataToSent);
-                    window.showMessage('Mise a jour avec succées.');
-                } else {
-                    const respn = await axiosInstance.post(`/api/Quote/${quote_id}/createQuoteDetail`, dataToSent);
-                    window.showMessage('Ajout avec succées.');
-                    setTimeout(() => {
-                        router.push({ name: 'devisDetails', params: { qouteId: quote_id, id: respn.data.response.quoteDetail.id } });
+
+                if(quoteDetailId){
+                    const res = await axiosInstance.put(`/api/Quote/${quote_id}/updateQuoteDetail/${quoteDetailId}`,dataToSent);
+                    window.showMessage("Mise a jour avec succées.");
+                    if(leave){
+                        setTimeout(()=>{
+                            goToDevis();
+                        }, 2000);
+                    }
+                }else{
+                    const respn = await axiosInstance.post(`/api/Quote/${quote_id}/createQuoteDetail`,dataToSent);
+                    window.showMessage("Ajout avec succées.")
+                    setTimeout(()=>{
+                        router.push({name: "devisDetails", params:{qouteId: quote_id,id: respn.data.response.quoteDetail.id}})
+
                     }, 2000);
                 }
             } else {
@@ -693,21 +708,22 @@
     };
 
     watch(
-        () => [
-            data.value.quoteDetail.applyLargeProjectRate,
-            data.value.quoteDetail.applyProposedDiscount,
-            data.value.quoteDetail.TarifId,
-            data.value.quoteDetail.calculateFromTotalExcludingTax,
-            data.value.carpetSpecification.collectionId,
-            data.value.carpetSpecification.modelId,
-            data.value.carpetSpecification.specialShapeId,
-            data.value.carpetSpecification.qualityId,
-            data.value.carpetSpecification.hasSpecialShape,
-            data.value.quoteDetail.currencyId,
-            data.value.quoteDetail.proposedDiscountRate,
-            data.value.quoteDetail.wantedQuantity,
-            prices.value?.tarif_avant_remise_complementaire?.total_ht,
-        ],
+
+        () => [ 
+                data.value.quoteDetail.applyLargeProjectRate,
+                data.value.quoteDetail.applyProposedDiscount,
+                data.value.quoteDetail.TarifId,
+                data.value.quoteDetail.calculateFromTotalExcludingTax,
+                data.value.carpetSpecification.collectionId,
+                data.value.carpetSpecification.modelId,
+                data.value.carpetSpecification.specialShapeId,
+                data.value.carpetSpecification.qualityId,
+                data.value.carpetSpecification.hasSpecialShape,
+                data.value.quoteDetail.proposedDiscountRate,
+                data.value.quoteDetail.wantedQuantity,
+                prices.value?.tarif_avant_remise_complementaire?.total_ht
+              ],
+
         async (newCarpert, oldCarpet) => {
             await saveAndCalculate();
         },
