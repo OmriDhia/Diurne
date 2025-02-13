@@ -83,7 +83,7 @@
     </div>
 </template>
 <script setup>
-    import { ref } from "vue";
+    import { ref,onMounted,watch } from "vue";
     import VueFeather from 'vue-feather';
     import axiosInstance from "../../../../config/http";
     import dInput from "../../../../components/base/d-input.vue";
@@ -105,9 +105,10 @@
         },
     });
 
-    const emit = defineEmits(['onClose','updateCustomerInstructionId']);
+    const emit = defineEmits(['onClose','updateCustomerInstruction','updateCustomerInstructionId']);
     const validateSimpleId = ref(null);
     const data = ref({
+        id: null,
         rnValidatedSample: "",
         color: false,
         libColor: "",
@@ -130,18 +131,19 @@
             }
 
             if(customerInstructionId){
-                if(validateSimpleId.value){
-                    const res = await axiosInstance.put(`/api/customerInstruction/${customerInstructionId}/validatedSamples/${validateSimpleId.value}/update`,data.value);
+                if(data.value.id){
+                    const res = await axiosInstance.put(`/api/customerInstruction/${customerInstructionId}/validatedSamples/${data.value.id}/update`,data.value);
                     window.showMessage("Mise a jour avec succées.");
                 }else{
                     const res = await axiosInstance.post(`/api/customerInstruction/${customerInstructionId}/validated-sample/create`,data.value);
+                    data.value.id = parseInt(res.data.response.id);
                     window.showMessage("Ajout avec succées.");
-                    customerInstruction.validatedSampleId = res.data.response.id;
-                    if(props.carpetDesignOrderId){
-                        const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, customerInstruction, customerInstructionId);
-                    }
                 }
             }
+            emit('updateCustomerInstruction',{
+                instruction: 'validateSimple',
+                id: data.value.id,
+            });
             document.querySelector("#modalManageValidatedSimple .btn-close").click();
         }catch (e){
             console.log(e);
@@ -151,6 +153,17 @@
             window.showMessage(e.message,'error')
         }
     };
+
+    const setData = () => {
+        if (props.validateSimpleData) {
+            const { customerInstruction, ...validateSimple } = props.validateSimpleData;
+            data.value = validateSimple;
+        }
+    };
+    
+    watch(() => props.validateSimpleData, setData, { deep: true });
+    
+    onMounted(setData);
     
     const handleClose = () => {
         error.value = {};

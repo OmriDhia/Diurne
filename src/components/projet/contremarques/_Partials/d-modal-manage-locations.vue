@@ -13,7 +13,7 @@
                             <d-input label="Description" v-model="data.description" :error="error.description"></d-input>
                         </div>
                     </div>
-                    <div class="row p-1 align-items-center">
+                    <!--div class="row p-1 align-items-center">
                         <div class="col-sm-12 col-md-8">
                             <d-input required="true" label="Prix min" v-model="data.price_min" :error="error.price_min"></d-input>
                         </div>
@@ -22,7 +22,7 @@
                         <div class="col-sm-12 col-md-8">
                             <d-input required="true" label="Prix max" v-model="data.price_max" :error="error.price_max"></d-input>
                         </div>
-                    </div>
+                    </div-->
                     <!--div class="row p-1 align-items-center">
                         <div class="col-sm-12 col-md-6">
                             <d-input type="datetime-local" label="Date devis" v-model="data.quote_processing_date" :error="error.quote_processing_date"></d-input>
@@ -74,7 +74,7 @@
         carpetTypeId: 0,
         description: "",
         quote_processed: true,
-        quote_processing_date: {},
+        quote_processing_date: "",
         price_min: 0,
         price_max: 0,
         createdAt: new Date(),
