@@ -88,11 +88,27 @@
         },
         methods: {
             formatDataProps() {
-                this.materials = this.materialsProps.map((m) => ({
-                    material_id: m.material_id,
-                    rate: parseFloat(m.rate),
-                }));
+                if (Array.isArray(this.materialsProps)) {
+                    this.materials = this.materialsProps.map((m) => ({
+                        material_id: m.material_id,
+                        rate: parseFloat(m.rate),
+                    }));
+                } else if (typeof this.materialsProps === "object" && this.materialsProps !== null) {
+                    // Convert object to an array with a single item
+                    this.materials = [{
+                        material_id: this.materialsProps.material_id || null,
+                        rate: parseFloat(this.materialsProps.rate) || 0,
+                    }];
+                } else {
+                    console.error("Unexpected materialsProps format:", this.materialsProps);
+                    this.materials = [];
+                }
                 this.updateMaterialsInStore();
+                // this.materials = this.materialsProps.map((m) => ({
+                //     material_id: m.material_id,
+                //     rate: parseFloat(m.rate),
+                // }));
+                // this.updateMaterialsInStore();
             },
             addMaterial(newMaterial) {
                 newMaterial.rate = parseFloat(newMaterial.rate);
