@@ -194,7 +194,7 @@
                             <button class="btn btn-custom pe-5 ps-5" @click="saveDevis(false)">Enregistrer & Rester</button>
                         </div>
                         <div class="col-auto">
-                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevis(true)">Enregistrer</button>
+                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevis(false)">Enregistrer</button>
                         </div>
                     </div>
                 </div>

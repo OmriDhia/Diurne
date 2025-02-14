@@ -1,7 +1,8 @@
 <template>
     <div class="col-sm-12 col-md-6">
         <div class="row p-2">
-            <d-customer-type :required="true" :error="error.customerGroupId" v-model="data.customerGroupId"></d-customer-type>
+            <d-customer-type :required="true" :error="error.customerGroupId" 
+            v-model="customerGroup" />
         </div>
         <div class="row p-2" v-if="!isParticular">
             <d-input :required="true" label="Raison social" :error="error.social_reason" v-model="data.social_reason"></d-input>
@@ -95,13 +96,12 @@
 
     <d-contact-client-particulier v-if="data.customerGroupId === 1"
     :contactData="customerData.contactsData"
-    :customerId="customerData.customer_id"
-    :customerData="localCustomerData"
+    :customerId="customerData.customer_id || null "
     :isParticular="isParticular"
     :required="true"
-    ></d-contact-client-particulier>
-
-
+    :formData="localContactData"
+    @updateFormData="updateLocalContactData"
+    />
     <div class="col-sm-12 col-md-12 d-flex flex-column" v-if="data.customerGroupId === 1">
                <div class="row align-content-end justify-content-end p-2 pe-3 mt-auto">
             <div class="col-auto p-1">
@@ -114,7 +114,6 @@
         </div>
     </div>
 </template>
-
 <script setup>
     import {ref, defineProps, onMounted, watch, watchEffect, computed} from 'vue';
     import axiosInstance from "../../config/http";
@@ -131,33 +130,36 @@
     import dContactClientParticulier from "./d-contact-client-particulier.vue";
 
     import { useRouter } from 'vue-router';
-    
     const props = defineProps({
         customerData: {
             type: Object,
             default: {}
         }
     });
-    const localCustomerData = ref({ 
-        firstName: "" , 
-        lastName: "", 
-        customer_id: null
+    const localContactData = ref({
+        gender_id: 0,
+        email: "",
+        phone: null,
+        mobile_phone: null
     });
-    // Watch for changes in props.customerData and update localCustomerData
+    // Updates `localContactData` when child component emits changes
+    const updateLocalContactData = (newData) => {
+        localContactData.value = { ...newData };
+        console.log('Updated localContactData:', localContactData.value);
+    };
+    // Watch for changes in props.customerData and update localContactData
     watchEffect(() => {
-        if (props.customerData) {
-            // Set values from props.customerData if they exist, else keep default values
-            localCustomerData.value.firstName = props.customerData.firstname || "";
-            localCustomerData.value.lastName = props.customerData.lastname || "";
-            localCustomerData.value.customer_id = props.customerData.customer_id || null;
+        if (props.customerData.value) {
+            console.log("Updated customer data:", customerData.value);
         }
     });
-    const localContactFullNameData = ref({ firstName: "" , lastName: ""});
+
+
+
     const router = useRouter();
     const data = ref({
         customer_id: 0,
         customerGroupId: 0,
-        // code: "",
         social_reason: "",
         tva_ce: "",
         firstname: "",
@@ -172,7 +174,21 @@
         contact_origin_label: "",
         contact_origin_id: 0,  // Updated from OriginContactId
         commentaire: "",
+        email: "",
+        gender_id: 0,
+        phone: null,
+        mobile_phone: null,
     });
+    
+    const customerGroup = ref({
+        customerGroupId: 0,
+        customerType: ""
+    });
+    watch(() => customerGroup.value, (newValue) => {
+        // console.log("Updated customerGroup:", newValue);
+        data.value.customerGroupId = newValue.customerGroupId;
+    }, { deep: true });
+
 
 
     const errorCommentaire = ref("");
@@ -194,39 +210,25 @@
             errorCommentaire.value = "";
         }
         try{
-            if (props.customerData.customer_id || localCustomerData.value.customer_id) {
+            if (props.customerData.customer_id) {
                 error.value = {};
                 console.log("data for updating customer:", data.value);
-
-                const customerId = localCustomerData.value.customer_id 
-                    ? localCustomerData.value.customer_id 
-                    : props.customerData.customer_id;
-
+                const customerId = props.customerData.customer_id;
+                data.value.email = localContactData.value.email;
+                data.value.phone = localContactData.value.phone;
+                data.value.mobile_phone = localContactData.value.mobile_phone;
+                data.value.gender_id = localContactData.value.gender_id;
                 const res = await axiosInstance.put(`api/updateCustomer/${customerId}`, data.value);
                 window.showMessage("Mise à jour avec succès.");
             }
-            // if(props.customerData.customer_id || localCustomerData.value.customer_id){
-            //     error.value = {};
-            //     console.log("data for updating customer: " , data.value);
-
-            //     const res = await axiosInstance.put("api/updateCustomer/" + localCustomerData.value.customer_id ? localCustomerData.value.customer_id : props.customerData.customer_id,data.value);
-            //     window.showMessage("Mise a jour avec succées.")
-            // }
             else{
-                // if ( localCustomerData.value.customer_id){
+                    data.value.email = localContactData.value.email;
+                    data.value.phone = localContactData.value.phone;
+                    data.value.mobile_phone = localContactData.value.mobile_phone;
+                    data.value.gender_id = localContactData.value.gender_id;
                     const res = await axiosInstance.post("/api/createCustomer",data.value);
                     window.showMessage("Client créé avec succès.");
-                    if ( data.value.customerGroupId === 1 ){
-                        localCustomerData.value.customer_id = res.data.response.customer_id;
-                        localCustomerData.value.firstName = res.data.response.firstname;
-                        localCustomerData.value.lastName = res.data.response.lastname;
-                        console.log("customer id after response : " , localCustomerData.value.customer_id)
-                    }else{
-                        router.push({name: "addContact", params:{id: res.data.response.customer_id}})
-                    }
-                // }
-                
-                
+                    router.push({name: "addContact", params:{id: res.data.response.customer_id}})
             }
         }catch(e){
              // Improved error handling with checks for the response structure
@@ -262,7 +264,7 @@
         data.value.commentaire = newVal.commentaire;
         data.value.contact_origin_label = newVal.contact_origin_label;
         data.value.email = newVal.contactsData[0].email;
-        // data.value.email = "y.bensalha@BRIDGETECHNOLOGYDOMAINE.onmicrosoft.m";
+        customerGroup.value.customerGroupId = newVal.customerGroup.customer_group_id;
     };
     
     const changeCode = (Rs) => {
@@ -292,6 +294,7 @@
     watch(
         () => data.value.customerGroupId,
         (groupId) => {
+            // console.log("Updated customerGroupId:", groupId);
             if(groupId === publicDiscountTypeId){
                 isParticular.value = true;
                 data.value.discountTypeId = particularCustomerGroupId;
@@ -299,6 +302,7 @@
                 isParticular.value = false;
                 data.value.discountTypeId = 0;
             }
+            
         }, { deep: true });
     watch(() => data.value.contact_origin_label, (newLabel, oldLabel) => {
         if (newLabel !== oldLabel) {  // Prevents unnecessary updates

@@ -6,12 +6,11 @@
         <div class="col-8">
             <select 
                 id="droit"  
-                :class="{ 'is-invalid': error, 'form-select': true }" 
-                :value="type" 
-                @input="handleChange($event.target.value)">
+                :class="{ 'is-invalid': error, 'form-select': true }"
+                v-model="selectedCustomerGroupType"
+                @change="updateCustomerGroup">
                 <option value="0" selected disabled>Type de client</option>
                 <option v-for="(prof, key) in customerTypes" :key="key" :value="prof.customerGroup_id">{{ prof.name }}</option>
-                <option value="9">Autre</option>
             </select>
             <div v-if="error" class="invalid-feedback">{{ $t('Le type de client est obligatoire.') }}</div>
         </div>
@@ -38,21 +37,38 @@
         },
         data() {
             return {
-                type: this.modelValue,
+                selectedCustomerGroupType: this.modelValue.customerGroupId || 0,
                 customerTypes: []
             };
         },
         methods: {
-            handleChange(newValue) {
-                this.type = parseInt(newValue);
-                this.$emit('update:modelValue', parseInt(newValue));
-            },
             async getCustomerTypes() {
                 try {
                     const res = await axiosInstance.get('/api/customerGroups');
-                    this.customerTypes = res.data.response.customerGroup;
+                    this.customerTypes = res.data?.response?.customerGroup || [];
+                    this.setCustomerType(); // Initialize selected value after fetching
                 } catch (error) {
                     console.error('Failed to fetch customer groups:', error);
+                    this.customerTypes = [];
+                }
+            },
+            updateCustomerGroup(event) {
+                const selectedOption = this.customerTypes.find(opt => opt.customerGroup_id === parseInt(this.selectedCustomerGroupType));
+                if (selectedOption) {
+                    const newValue = {
+                        customerGroupId: selectedOption.customerGroup_id,
+                        customerType: selectedOption.name
+                    };
+                    // Emit only if the value has changed to prevent infinite loops
+                    if (JSON.stringify(newValue) !== JSON.stringify(this.modelValue)) {
+                        this.$emit('update:modelValue', newValue);
+                    }
+                }
+            },
+            setCustomerType() {
+                const matchingOption = this.customerTypes.find(opt => opt.customerGroup_id === this.modelValue.customerGroupId);
+                if (matchingOption) {
+                    this.selectedCustomerGroupType = matchingOption.customerGroup_id;
                 }
             }
         },
@@ -60,10 +76,13 @@
             this.getCustomerTypes();
         },
         watch: {
-            modelValue(newValue) {
-                this.type = parseInt(newValue);
-                // console.log("customer type : " + newValue)
-
+            modelValue: {
+                handler(newValue) {
+                    if (newValue && newValue.customerGroupId !== this.selectedCustomerGroupType) {
+                        this.selectedCustomerGroupType = newValue.customerGroupId;
+                    }
+                },
+                deep: true,
             }
         }
     };

@@ -25,7 +25,7 @@
     </div>
     <div class="row align-items-center justify-content-between">
         <div class="col-md-auto">
-            <div class="row">
+            <!-- <div class="row">
             <div class="col-md-auto">
                 <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
                     <input type="checkbox" v-model="data.mailing" class="custom-control-input" :id="'contactCheckbox1-'+props.index"/>
@@ -38,9 +38,9 @@
                     <label class="custom-control-label" :for="'contactCheckbox2-'+props.index"> Mailing calligraphique </label>
                 </div>
             </div>
-            </div>
+            </div> -->
         </div>
-        <div class="col-md-auto">
+        <!-- <div class="col-md-auto">
             <div class="row">
                 <div class="col-auto p-1">
                     <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="updateContact">
@@ -51,7 +51,7 @@
                     <d-delete :api="`/api/contact/${data.contact_id}/delete`"></d-delete>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -81,64 +81,23 @@
             type: Boolean,
         },
     });
-
     const data = ref({
-        contact_id: null,
-        gender_id: 0,
-        firstname: null,
-        lastname: null,
-        email: null,
-        mailing: false,
-        mailing_with_calligraphie: false,
-        phone: null,
-        mobile_phone: null,
-        fax: null,
-        user_id: null,
-        customerId: props.customerId,
-    });
-
-
-
-
+    gender_id: props.contactData.gender_id || 0,
+    firstname: props.contactData.firstname || "",
+    lastname: props.contactData.lastname || "",
+    email: props.contactData.email || "",
+    phone: props.contactData.phone || "",
+    mobile_phone: props.contactData.mobile_phone || "",
+});
+   
     const error = ref({});
 
-    const updateContact = async () => {
-        try{
-            if(props.customerId){
-                error.value = {};
-                const res = await axiosInstance.put("api/updateContact/" + data.value.contact_id + "/" + props.customerId,data.value);
-                window.showMessage("Mise a jour avec succées.")
-            }
-        }catch(e){
-            if(e.response.data.violations){
-                error.value = formatErrorViolations(e.response.data.violations)
-            }
-            window.showMessage(e.message,'error')
-        }
-    };
-    onMounted(() => {
-        affectData(props.contactData)
-    });
-    const affectData = (contact) => {
-        data.value.contact_id = contact.contact_id;
-        data.value.gender_id = contact.gender_id;
-        data.value.firstname = contact.firstname;
-        data.value.lastname = contact.lastname;
-        data.value.email = contact.email;
-        data.value.mailing = contact.mailing;
-        data.value.mailing_with_calligraphie = contact.mailing_with_caligraphie;
-        data.value.phone = contact.phone;
-        data.value.mobile_phone = contact.mobile_phone;
-        data.value.fax = contact.fax;
-        data.value.user_id = contact.user_id;
-        data.value.customerId = props.customerId
-    };
-   watch(
-        () => props.contactData,
-        (newVal) => {
-            affectData(newVal);
-        }
-    );
+    const emit = defineEmits(["updateContactData"]);
+    // Watch for changes and emit updates
+    watch(data, (newData) => {
+        emit("updateContactData", newData);
+    }, { deep: true });
+    
 </script>
 <style>
 
