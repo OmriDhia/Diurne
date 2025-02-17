@@ -57,7 +57,7 @@
     import VueFeather from 'vue-feather';
     import dInput from "../../base/d-input.vue";
     import {computed, onMounted, ref, watch} from "vue";
-    import {Helper} from "../../../composables/global-methods";
+    import {Helper, formatErrorViolations} from "../../../composables/global-methods";
     import contremarqueService from "../../../Services/contremarque-service";
 
     const props = defineProps({
@@ -116,6 +116,8 @@
         quoteDetailId: 0,
         currencyId: 0
     });
+    const error = ref({});
+
     const setMeasurements = (units, prefix) => {
         for (const u of units) {
             const mes = u.value ? parseFloat(u.value) : 0;
@@ -170,8 +172,10 @@
         if (long) {
             setMeasurements(long.unit, 'lng');
         }
+        // yassine ben salha
         
         try {
+            error.value = {};
             const result = await contremarqueService.calculateMesurementsNew(data.value);
             const dimension = result.dimension;
             sufaceM2.value = dimension.surface['m²'];
@@ -181,8 +185,11 @@
             store.commit('setMeasurements', measurements.value);
             emit('changePrices', result.price);
             window.showMessage("Le calcul s'est terminé avec succès")
-        } catch (error) {
-            console.error(`Error calculation mesurements:`, error);
+        } catch (e) {
+            error.value = formatErrorViolations(e);
+            // window.showMessage(e, 'error');
+            console.log(`youssf`, error?.largCm);
+
         }finally {
             calculationLoader.value = false;
         }

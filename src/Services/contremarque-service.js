@@ -119,7 +119,7 @@ export default {
         } catch (error) {
             const msg = 'Échec de calcule des mesures.';
             window.showMessage(msg, 'error');
-            throw new Error(msg);
+            throw new Error(error.response.data.violations);
         }
     },
     async addUpdatecustomerInstruction(carpetDesignOrderId,data,customerInstructionId = null){

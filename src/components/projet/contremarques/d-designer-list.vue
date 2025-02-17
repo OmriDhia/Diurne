@@ -1,16 +1,5 @@
 <template>
     <div class="row align-items-center p-0 pt-2">
-        <div class="row align-items-center mb-3" v-if="canShowFin">
-            <div class="col-md-12">
-                <!-- <h6>Types d'images sélectionnées :</h6>
-                <ul>
-                    <li v-for="(type, index) in imageTypeNames" :key="index">
-                        {{ type }}
-                    </li>
-                </ul> -->
-                <button class="disbaled btn btn-custom text-center w-100" @click="endCarpetDesigner">FIN</button>
-            </div>
-        </div>
         <div class="row align-items-start">
             <h6 class="w-100 p-0">Suivi de production de l'image</h6>
         </div>
@@ -82,7 +71,6 @@
                 type: Boolean,
                 default: false,
             },
-            imageTypeNames: Array,
         },
         data() {
             return {
@@ -93,9 +81,6 @@
             };
         },
         computed: {
-            canShowFin() {
-                return (this.$store.getters.isDesigner || this.$store.getters.isDesignerManager || this.$store.getters.isSuperAdmin) && !this.$store.getters.isFinStatus;
-            },
             canAddDesigner() {
                 return (this.$store.getters.isDesignerManager || this.$store.getters.isSuperAdmin) && !this.$store.getters.isFinStatus;
             },
@@ -146,14 +131,6 @@
                     window.showMessage('Erreur mise a jour');
                 }
             },
-            endCarpetDesigner() {
-                if (this.imageTypeNames.includes('Vignette') && this.imageTypeNames.some((name) => name.includes('Légendes'))) {
-                    this.$emit('endCarpetDesignOrder', carpetStatus.finiId);
-                } else {
-                    window.showMessage("Les images doivent contenir une Vignette et une image avec 'Légende' pour terminer.",'error');
-                }
-                // this.$emit('endCarpetDesignOrder', carpetStatus.finiId);
-            },
             updateDesignerStatus(status) {
                 const user = userService.getUserInfo();
                 const userId = parseInt(user.id);
@@ -183,7 +160,7 @@
         mounted() {
             if (this.designersProps && this.designersProps.length > 0) {
                 this.designers = this.getDesigners(this.designersProps);
-                this.updateDesignerStatus('inProgress');
+                // this.updateDesignerStatus('inProgress');
             }
         },
         unmounted() {
@@ -191,9 +168,13 @@
         },
         watch: {
             designersProps(newDesigners) {
+                console.log('newDesigners', newDesigners);
+                // if (userId === designer.id ){
+                    // console.log("userId === designer.id", userId);
+                // }
                 if (newDesigners && newDesigners.length > 0) {
                     this.designers = this.getDesigners(newDesigners);
-                    this.updateDesignerStatus('inProgress');
+                    // this.updateDesignerStatus('inProgress');
                 }
             },
         },

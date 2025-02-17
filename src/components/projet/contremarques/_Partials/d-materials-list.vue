@@ -38,7 +38,7 @@
             </div>
             <!-- Error Message (Appears Next to Button) -->
             <transition name="fade">
-                <span v-if="error" class="ms-3 text-danger fw-bold"> Le taux total des matières doit être au moins 100. </span>
+                <span v-if="error" class="ms-3 text-danger fw-bold"> Le taux total des matières doit être égale à 100. </span>
             </transition>
         </div>
     </div>
