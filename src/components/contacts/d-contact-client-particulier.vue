@@ -7,22 +7,22 @@
                         <div class="card-body">
                             <div class="row p-1 align-items-center">
                                 <div class="col-sm-12 col-md-6">
-                                    <d-gender :required="true" v-model="data.gender_id" :error="error.gender_id"></d-gender>
+                                    <d-gender :required="true" v-model="data.gender_id" :error="props.error?.gender_id"></d-gender>
                                 </div>
                             </div>
                             <div class="row p-1 align-items-center">
                                 <div class="col-sm-12 col-md-6">
-                                    <d-input label="Email" v-model="data.email" :error="error.email"></d-input>
+                                    <d-input label="Email" v-model="data.email" :error="props.error?.email"></d-input>
                                 </div>
                             </div>
                             <div class="row p-1 align-items-center">
                                 <div class="col-sm-12 col-md-6">
-                                    <d-input label="Tel. portable" v-model="data.mobile_phone" :error="error.mobile_phone"></d-input>
+                                    <d-input label="Tel. portable" v-model="data.mobile_phone" :error="props.error?.mobile_phone"></d-input>
                                 </div>
                             </div>
                             <div class="row p-1 align-items-center">
                                 <div class="col-sm-12 col-md-6">
-                                    <d-input label="Tél. fixe" v-model="data.phone" :error="error.phone"></d-input>
+                                    <d-input label="Tél. fixe" v-model="data.phone" :error="props.error?.phone"></d-input>
                                 </div>
                             </div>
                         </div>
@@ -62,31 +62,40 @@
             type: Object,
             required: true,
         },
+        error: {
+            type: Object,
+            default: () => ({}),
+        },
     });
     const emit = defineEmits(['updateFormData']);
-    const error = ref({});
+    // const error = ref({});
 
     // Initialize `data` with `contactData` if available, else use `formData`
     const data = ref({
         gender_id: props.formData.gender_id || 0,
-        email: props.formData.email || "",
+        email: props.formData.email || '',
         phone: props.formData.phone || null,
         mobile_phone: props.formData.mobile_phone || null,
     });
     // If `contactData` is provided, update `data`
-    watch(() => props.contactData, (newData) => {
-        if (newData.length > 0) {
-            data.value = { ...newData[0] };
-        }
-    }, { deep: true, immediate: true });
-    
+    watch(
+        () => props.contactData,
+        (newData) => {
+            if (newData.length > 0) {
+                data.value = { ...newData[0] };
+            }
+        },
+        { deep: true, immediate: true }
+    );
 
     // Watch for changes in data and emit updates to parent
-    watch(data, (newValue) => {
-        emit("updateFormData", newValue);
-    }, { deep: true });
-
-
+    watch(
+        data,
+        (newValue) => {
+            emit('updateFormData', newValue);
+        },
+        { deep: true }
+    );
 
     onMounted(() => {
         console.log('particulier : ', props.isParticular);
