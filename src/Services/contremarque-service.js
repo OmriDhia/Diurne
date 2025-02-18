@@ -117,9 +117,17 @@ export default {
             const res = await axiosInstance.post(`/api/convert-and-calculate`, data);
             return res.data.response
         } catch (error) {
-            const msg = 'Échec de calcule des mesures.';
-            window.showMessage(msg, 'error');
-            throw new Error(error.response.data.violations);
+            // console.log("Raw API error:", error.response?.data); // Debugging
+
+            const errorMessage = error.response?.data?.detail || 'Échec de calcule des mesures en feet et inches.';
+            // window.showMessage(errorMessage, 'error');
+            window.showMessage('Échec de calcule des mesures en feet et inches.', 'error');
+
+            // Throw the full error response to preserve backend details
+            throw error.response?.data || new Error(errorMessage);
+            // const msg = 'Échec de calcule des mesures.';
+            // throw new Error(error.response.data.violations);
+            // return error.response.data.violations;
         }
     },
     async addUpdatecustomerInstruction(carpetDesignOrderId,data,customerInstructionId = null){

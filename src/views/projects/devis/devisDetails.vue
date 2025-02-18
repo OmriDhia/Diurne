@@ -41,7 +41,7 @@
                         <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Information complémentaire" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0">
-                                <d-location-dropdown :contremarqueId="contremarqueId" v-model="data.quoteDetail.locationId"></d-location-dropdown>
+                                <d-location-dropdown :error="error.quoteDetail_locationId"  :contremarqueId="contremarqueId" v-model="data.quoteDetail.locationId"></d-location-dropdown>
                             </div>
                             <div class="row pe-2 ps-0 align-items-center">
                                 <div class="row align-items-center pt-2">
@@ -388,7 +388,7 @@
     import { useRoute, useRouter } from 'vue-router';
     import { ref, onMounted, watch } from 'vue';
     import { useMeta } from '/src/composables/use-meta';
-    import { Helper, formatErrorViolations } from '../../../composables/global-methods';
+    import { Helper, formatErrorViolations, formatErrorViolationsComposed } from '../../../composables/global-methods';
     import axiosInstance from '../../../config/http';
     import contremarqueService from '../../../Services/contremarque-service';
     import quoteService from '../../../Services/quote-service';
@@ -555,7 +555,8 @@
             }
         } catch (e) {
             if (e.response.data.violations) {
-                error.value = formatErrorViolations(e.response.data.violations);
+                error.value = formatErrorViolationsComposed(e.response.data.violations);
+                console.log(error.value);
             }
             window.showMessage(e.message, 'error');
         }

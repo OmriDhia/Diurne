@@ -1,10 +1,11 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4" v-if="!showOnlyDropdown"><label class="form-label">Emplacement<span class="required" v-if="required">*</span>:</label>
+        <div class="col-4" v-if="!showOnlyDropdown">
+            <label class="form-label">Emplacement<span class="required" v-if="required">*</span>:</label>
         </div>
-        <div :class="{'col-md-8':!showOnlyDropdown,'col-md-12':showOnlyDropdown}">
+        <div :class="{ 'col-md-8': !showOnlyDropdown, 'col-md-12': showOnlyDropdown }">
             <multiselect
-                :class="{ 'is-invalid': error}"
+                :class="{ 'is-invalid': error }"
                 :model-value="value"
                 :options="data"
                 placeholder="Emplacement"
@@ -17,50 +18,50 @@
                 :disabled="disabled"
                 @update:model-value="handleChange($event)"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champs emplacement est abligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t('Le champs emplacement est obligatoire.') }}</div>
         </div>
     </div>
 </template>
 
 <script>
     import contremarqueService from '../../../../Services/contremarque-service';
-    import Multiselect from 'vue-multiselect'
+    import Multiselect from 'vue-multiselect';
     import 'vue-multiselect/dist/vue-multiselect.css';
 
     export default {
         components: {
-            Multiselect
+            Multiselect,
         },
         props: {
             modelValue: {
                 type: [Number, String, null],
-                required: true
+                required: true,
             },
             contremarqueId: {
                 type: Number,
-                required: true
+                required: true,
             },
             error: {
                 type: String,
-                default: ''
+                default: '',
             },
             required: {
                 type: Boolean,
-                default: false
+                default: false,
             },
             disabled: {
                 type: Boolean,
-                default: false
+                default: false,
             },
             showOnlyDropdown: {
                 type: Boolean,
-                default: false
+                default: false,
             },
         },
         data() {
             return {
                 value: null,
-                data: []
+                data: [],
             };
         },
         methods: {
@@ -70,30 +71,28 @@
             async getData() {
                 try {
                     if (this.contremarqueId) {
-                        this.data = await contremarqueService.getLocationsByContremarque(this.contremarqueId)
-                        
-                        if(this.modelValue){
-                            this.value = this.data.filter(ad => ad.location_id === this.modelValue)[0]
+                        this.data = await contremarqueService.getLocationsByContremarque(this.contremarqueId);
+
+                        if (this.modelValue) {
+                            this.value = this.data.filter((ad) => ad.location_id === this.modelValue)[0];
                         }
                     }
                 } catch (error) {
                     console.error('Failed to fetch address types:', error);
                 }
             },
-            goToSettings() {
-
-            }
+            goToSettings() {},
         },
         mounted() {
             this.getData();
         },
         watch: {
             modelValue(newValue) {
-                this.value = this.data.filter(ad => ad.location_id === newValue)[0]
+                this.value = this.data.filter((ad) => ad.location_id === newValue)[0];
             },
             contremarqueId(contremarqueId) {
                 this.getData();
-            }
-        }
+            },
+        },
     };
 </script>
