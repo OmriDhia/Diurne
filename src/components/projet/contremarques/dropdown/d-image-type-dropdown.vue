@@ -70,6 +70,7 @@
             handleChange(value) {
                 this.$emit('update:modelValue', parseInt(value.id));
                 this.$emit('imageTypeSelected', value.name); // Emit name to parent
+                this.$emit('imageTypeUpdateSelected', value.id); // Emit name to parent
             },
             selectedValue() {
                 if (this.modelValue) {
