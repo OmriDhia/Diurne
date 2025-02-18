@@ -11,7 +11,7 @@
                             class="position-absolute top-0 end-0 m-2"
                             :id="'delete-checkbox-t' + index"
                             v-model="selectedImages"
-                            :value="item.id"
+                            :value="item.attachment.id"
                             :disabled="props.disabled"
                         />
                         <img :src="$Helper.getImagePath(item.attachment)" class="card-img-top cursor-pointer" @click="downloadImage(item.attachment)" alt="Image Preview" />
@@ -35,7 +35,7 @@
         <div class="col-md-12">
             <div class="row justify-content-end pe-2">
                 <!--  -->
-                <div class="col-auto p-1" v-if="status === 4" >
+                <div class="col-auto p-1" v-if="status === 4">
                     <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" :disabled="props.disabled" data-bs-toggle="modal" data-bs-target="#modalAddImage">
                         <vue-feather type="save" size="14"></vue-feather>
                     </button>
@@ -103,11 +103,11 @@
     });
     const updateImageTypes = (index, name) => {
         selectedImageTypes.value[index] = name;
-        console.log(name);
+        // console.log(name);
         emitSelectedImageTypes();
     };
     const UpdateImageReference = async (imageId, imageTypeId) => {
-        console.log(imageId);
+        // console.log(imageId);
         try {
             const response = await axiosInstance.put('/api/image/update-type', {
                 imageId: imageId,
