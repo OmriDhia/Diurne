@@ -86,6 +86,9 @@
                 selectedLocation: null,
             };
         },
+        mounted() {
+            // console.log("yassine : ", materialsProps);
+        },
         methods: {
             formatDataProps() {
                 if (Array.isArray(this.materialsProps)) {
@@ -93,15 +96,19 @@
                         material_id: m.material_id,
                         rate: parseFloat(m.rate),
                     }));
-                } else if (typeof this.materialsProps === "object" && this.materialsProps !== null) {
-                    // Convert object to an array with a single item
-                    this.materials = [{
-                        material_id: this.materialsProps.material_id || null,
-                        rate: parseFloat(this.materialsProps.rate) || 0,
-                    }];
+                } else if (typeof this.materialsProps === 'object' && this.materialsProps !== null) {
+                    // Convert object to an array with the object values
+                    this.materials = Object.values(this.materialsProps).map((m) => ({
+                        material_id: m.material_id,
+                        rate: parseFloat(m.rate),
+                    }));
                 } else {
-                    console.error("Unexpected materialsProps format:", this.materialsProps);
+                    console.error('Unexpected materialsProps format:', this.materialsProps);
                     this.materials = [];
+                    // this.materials = this.materialsProps.map((m) => ({
+                        // material_id: m.material_id,
+                        // rate: parseFloat(m.rate),
+                    // }));
                 }
                 this.updateMaterialsInStore();
                 // this.materials = this.materialsProps.map((m) => ({
