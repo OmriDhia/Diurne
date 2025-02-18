@@ -153,7 +153,7 @@
                                         ></d-designer-list>
                                         <d-images-list
                                             :status="dataCarpetOrder.status_id"
-                                            :disabled="CommercialAccess"
+                                            :disabled="!DesignerAccess"
                                             @imageTypesUpdated="updateDesignerList"
                                             :carpetDesignOrderId="carpetDesignOrderId"
                                         ></d-images-list>
