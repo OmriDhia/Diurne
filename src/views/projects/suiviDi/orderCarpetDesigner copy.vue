@@ -224,7 +224,7 @@
     watch(
         () => selectedImageTypes.value,
         (newSelectedImageTypes) => {
-            console.log('Selected Image Types:', newSelectedImageTypes);
+            // console.log('Selected Image Types:', newSelectedImageTypes);
         }
     );
     const materials = ref([]);

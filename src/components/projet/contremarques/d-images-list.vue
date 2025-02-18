@@ -134,10 +134,6 @@
                 window.showMessage('Please select at least one image to delete.', 'error');
                 return;
             }
-
-            // Call the deletion API for each selected image
-            // for (const imageId of selectedImages.value) {
-            // }
             const response = await axiosInstance.delete(`/api/image/delete`, {
                 data: {
                     imageIds: selectedImages.value, // Pass imageIds inside the 'data' property

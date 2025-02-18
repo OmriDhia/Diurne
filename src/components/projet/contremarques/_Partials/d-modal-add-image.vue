@@ -100,7 +100,7 @@
         }
         
         uploadProgress.value = 0;
-
+        console.log(data.imageTypeId);
         try {
             if(!uplodedImage){
                 const response = await attachmentService.uploadFile(
