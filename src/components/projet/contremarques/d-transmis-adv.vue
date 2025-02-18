@@ -79,9 +79,9 @@
                 <div class="row justify-content-between align-items-start mt-1 pe-2" v-if="canShowTransmisAdv">
                     <button class="btn btn-custom w-100 text-uppercase font-size-0-7">Transmettre l'image à l'ADV</button>
                 </div>
-                <div class="row justify-content-between align-items-start mt-1  pe-2" v-if="canCreateVariation">
+                <!-- <div class="row justify-content-between align-items-start mt-1  pe-2" v-if="canCreateVariation">
                     <button class="btn btn-custom w-100 text-uppercase font-size-0-7"  data-bs-toggle="modal" data-bs-target="#modalCreateVariation">Créer une variation</button>
-                </div>
+                </div> -->
             </div>
         </div>
         <d-modal-create-variation :id_di="props.id_di" :carpetDesignOrderId="props.carpetDesignOrderId"></d-modal-create-variation>
