@@ -3,11 +3,11 @@
         <div class="col-4" v-if="!hideLabel">
             <label class="form-label">Type image<span class="required" v-if="required">*</span>:</label>
         </div>
-        <div :class="{'col-8': !hideLabel, 'col-12': hideLabel}">
+        <div :class="{ 'col-8': !hideLabel, 'col-12': hideLabel }">
             <multiselect
                 :class="{ 'is-invalid': error }"
                 v-model="value"
-                :options="imageTypes" 
+                :options="imageTypes"
                 placeholder="Type image"
                 track-by="id"
                 label="name"
@@ -18,7 +18,7 @@
                 :disabled="disabled"
                 @update:model-value="handleChange($event)"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champs image type est obligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t('Le champs image type est obligatoire.') }}</div>
         </div>
     </div>
 </template>
@@ -30,56 +30,63 @@
 
     export default {
         components: {
-            Multiselect
+            Multiselect,
         },
         props: {
             modelValue: {
                 type: [Number, String, null],
-                required: true
+                required: true,
             },
             error: {
                 type: String,
-                default: ''
+                default: '',
             },
             required: {
                 type: Boolean,
-                default: false
+                default: false,
             },
             hideLabel: {
                 type: Boolean,
-                default: false
+                default: false,
             },
             disabled: {
                 type: Boolean,
-                default: false
+                default: false,
             },
         },
         data() {
             return {
-                value: null
+                value: null,
             };
         },
         computed: {
-            ...mapGetters(['imageTypes'])
+            // ...mapGetters(['imageTypes']),
+            imageTypes() {
+                return this.$store.getters.imageTypes;
+            },
         },
         methods: {
             ...mapActions(['fetchImageTypes']),
             handleChange(value) {
                 this.$emit('update:modelValue', parseInt(value.id));
+                this.$emit('imageTypeSelected', value.name); // Emit name to parent
+                this.$emit('imageTypeUpdateSelected', value.id); // Emit name to parent
             },
-            selectedValue(){
+            selectedValue() {
                 if (this.modelValue) {
-                    this.value = this.imageTypes.find(ad => ad.id === this.modelValue);
+                    this.value = this.imageTypes.find((ad) => ad.id === this.modelValue);
+                    this.$emit('update:modelValue', parseInt(this.value.id));
+                    this.$emit('imageTypeSelected', this.value.name); // Emit name to parent
                 }
-            }
+            },
         },
         async mounted() {
             await this.fetchImageTypes();
             this.selectedValue();
         },
         watch: {
-            modelValue:'selectedValue',
-            imageTypes:'selectedValue',
-        }
+            modelValue: 'selectedValue',
+            imageTypes: 'selectedValue',
+        },
     };
 </script>

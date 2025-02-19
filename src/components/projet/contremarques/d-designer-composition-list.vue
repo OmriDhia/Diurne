@@ -78,14 +78,17 @@
                     this.materials = this.designerComposition.map(m => {
                         m.rate = parseFloat(m.rate);
                         return m;
-                    })  
+                    });
+                    this.$emit('updateMaterials', this.materials);
                 };
             },
             addDesignerComposition(data){
                 this.materials.push(data);
+                this.$emit('updateMaterials', this.materials);
             },
             handleDelete(index){
                 this.materials.splice(index, 1);
+                this.$emit('updateMaterials', this.materials);
             }
         },
         mounted() {

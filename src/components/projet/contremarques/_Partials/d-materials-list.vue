@@ -38,7 +38,7 @@
             </div>
             <!-- Error Message (Appears Next to Button) -->
             <transition name="fade">
-                <span v-if="error" class="ms-3 text-danger fw-bold"> Le taux total des matières doit être au moins 100. </span>
+                <span v-if="error" class="ms-3 text-danger fw-bold"> Le taux total des matières doit être égale à 100. </span>
             </transition>
         </div>
     </div>
@@ -86,13 +86,36 @@
                 selectedLocation: null,
             };
         },
+        mounted() {
+            // console.log("yassine : ", materialsProps);
+        },
         methods: {
             formatDataProps() {
-                this.materials = this.materialsProps.map((m) => ({
-                    material_id: m.material_id,
-                    rate: parseFloat(m.rate),
-                }));
+                if (Array.isArray(this.materialsProps)) {
+                    this.materials = this.materialsProps.map((m) => ({
+                        material_id: m.material_id,
+                        rate: parseFloat(m.rate),
+                    }));
+                } else if (typeof this.materialsProps === 'object' && this.materialsProps !== null) {
+                    // Convert object to an array with the object values
+                    this.materials = Object.values(this.materialsProps).map((m) => ({
+                        material_id: m.material_id,
+                        rate: parseFloat(m.rate),
+                    }));
+                } else {
+                    console.error('Unexpected materialsProps format:', this.materialsProps);
+                    this.materials = [];
+                    // this.materials = this.materialsProps.map((m) => ({
+                        // material_id: m.material_id,
+                        // rate: parseFloat(m.rate),
+                    // }));
+                }
                 this.updateMaterialsInStore();
+                // this.materials = this.materialsProps.map((m) => ({
+                //     material_id: m.material_id,
+                //     rate: parseFloat(m.rate),
+                // }));
+                // this.updateMaterialsInStore();
             },
             addMaterial(newMaterial) {
                 newMaterial.rate = parseFloat(newMaterial.rate);

@@ -1,27 +1,26 @@
 <template>
     <div class="row align-items-center p-0 pt-2">
-        <div class="row align-items-center mb-3" v-if="canShowFin">
-            <div class="col-md-12">
-                <button class="btn btn-custom text-center w-100" @click="endCarpetDesigner">FIN</button>  
-            </div>
-        </div>
         <div class="row align-items-start">
             <h6 class="w-100 p-0">Suivi de production de l'image</h6>
         </div>
-            <div class="card p-0">
-                <perfect-scrollbar tag="div" class="h-200-forced p-0"
-                                   :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 200, suppressScrollX: true }">
-
+        <div class="card p-0">
+            <perfect-scrollbar tag="div" class="h-200-forced p-0" :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 200, suppressScrollX: true }">
                 <div class="card-body p-0 mt-2">
                     <div class="row row-cols-1 p-2">
-                        <div class="col mb-2" v-for="(designer,index) in designers" :key="index">
+                        <div class="col mb-2" v-for="(designer, index) in designers" :key="index">
                             <div class="card">
                                 <div class="row align-items-center justify-content-between p-2">
                                     <div class="col-xl-8 col-md-12">
-                                        <d-designer-dropdown :disabled="disabled" class="font-size-0-7" v-model="designer.designer"  :hideLabel="true"  @change="handleChange(index)"></d-designer-dropdown>
+                                        <d-designer-dropdown
+                                            :disabled="disabled"
+                                            class="font-size-0-7"
+                                            v-model="designer.designer"
+                                            :hideLabel="true"
+                                            @change="handleChange(index)"
+                                        ></d-designer-dropdown>
                                     </div>
                                     <div class="col-xl-4 col-md-12 font-size-0-7">
-                                        {{$Helper.FormatDate(designer.date_from)}}
+                                        {{ $Helper.FormatDate(designer.date_from) }}
                                     </div>
                                     <!--div class="col-md-12 mt-1 font-size-0-8">
                                         <d-designer-status :disabled="true" v-model="designer.status" @change="handleChange(index)"></d-designer-status>
@@ -31,8 +30,8 @@
                         </div>
                     </div>
                 </div>
-                </perfect-scrollbar>
-            </div>
+            </perfect-scrollbar>
+        </div>
         <d-modal-add-designer :carpetDesignOrderId="carpetOrderId" @addDesigner="addDesigner($event)"></d-modal-add-designer>
         <div class="row ps-0 mt-2" v-if="canAddDesigner">
             <div class="col-auto">
@@ -47,12 +46,12 @@
 
 <script>
     import axiosInstance from '../../../config/http';
-    import dModalAddDesigner from "./_Partials/d-modal-add-designer.vue";
+    import dModalAddDesigner from './_Partials/d-modal-add-designer.vue';
     import VueFeather from 'vue-feather';
-    import dDesignerDropdown from "../../common/d-designer-dropdown.vue";
-    import dDesignerStatus from "./_Partials/d-designer-status.vue";
-    import { designerStatusConst, carpetStatus } from "../../../composables/constants";
-    import userService from "../../../Services/user-service";
+    import dDesignerDropdown from '../../common/d-designer-dropdown.vue';
+    import dDesignerStatus from './_Partials/d-designer-status.vue';
+    import { designerStatusConst, carpetStatus } from '../../../composables/constants';
+    import userService from '../../../Services/user-service';
 
     export default {
         components: {
@@ -62,16 +61,16 @@
             VueFeather,
         },
         props: {
-           designersProps: {
-               default: []
-           },
-            carpetDesignOrderId : {
-                type: Number
+            designersProps: {
+                default: [],
+            },
+            carpetDesignOrderId: {
+                type: Number,
             },
             disabled: {
                 type: Boolean,
-                default: false
-            }
+                default: false,
+            },
         },
         data() {
             return {
@@ -82,20 +81,13 @@
             };
         },
         computed: {
-            canShowFin() {
-                return (this.$store.getters.isDesigner || this.$store.getters.isDesignerManager  || this.$store.getters.isSuperAdmin) && !this.$store.getters.isFinStatus;
+            canAddDesigner() {
+                return (this.$store.getters.isDesignerManager || this.$store.getters.isSuperAdmin) && !this.$store.getters.isFinStatus;
             },
-            canAddDesigner(){
-                return (this.$store.getters.isDesignerManager || this.$store.getters.isSuperAdmin ) && !this.$store.getters.isFinStatus;
-            }
         },
         methods: {
-            async getLocations() {
-                
-            },
-            updateLocation(location){
-                
-            },
+            async getLocations() {},
+            updateLocation(location) {},
             getDesigners(designers) {
                 return designers?.map((d) => {
                     const inProgress = d.in_progress || false;
@@ -119,73 +111,73 @@
             handleDelete(index) {
                 this.designers.splice(index, 1);
             },
-            async handleChange(index){
+            async handleChange(index) {
                 const designer = this.designers[index];
-                if(!designer){
-                    window.showMessage('Ce designeur n\'existe pas !!');
-                    return ;
+                if (!designer) {
+                    window.showMessage("Ce designeur n'existe pas !!");
+                    return;
                 }
                 const data = {
                     dateFrom: designer.date_from,
                     dateTo: designer.date_to,
                     inProgress: designer.status === designerStatusConst[0].id,
                     stopped: designer.status === designerStatusConst[1].id,
-                    done: designer.status === designerStatusConst[2].id
+                    done: designer.status === designerStatusConst[2].id,
                 };
-                try{
-                    const res = axiosInstance.put(`/api/designerAssignments/${designer.id}`,data);
+                try {
+                    const res = axiosInstance.put(`/api/designerAssignments/${designer.id}`, data);
                     window.showMessage('Mise à jour avec succées');
-                }catch{
+                } catch {
                     window.showMessage('Erreur mise a jour');
                 }
             },
-            endCarpetDesigner(){
-                this.$emit('endCarpetDesignOrder', carpetStatus.finiId);
-            },
-            updateDesignerStatus(status){
+            updateDesignerStatus(status) {
                 const user = userService.getUserInfo();
                 const userId = parseInt(user.id);
-                if(userId){
-                    const designer = this.designers.find(d => d.designer === userId);
-                    const indexDesigner = this.designers.findIndex(d => d.designer === userId);
-                    if(designer && !designer.done){
-                        this.designers[indexDesigner].inProgress =  status === 'inProgress';
-                        this.designers[indexDesigner].stopped =  status === 'stopped';
+                if (userId) {
+                    const designer = this.designers.find((d) => d.designer === userId);
+                    const indexDesigner = this.designers.findIndex((d) => d.designer === userId);
+                    if (designer && !designer.done) {
+                        this.designers[indexDesigner].inProgress = status === 'inProgress';
+                        this.designers[indexDesigner].stopped = status === 'stopped';
                         const data = {
                             dateFrom: designer.date_from,
                             dateTo: designer.date_to,
-                            inProgress: status === 'inProgress' ,
+                            inProgress: status === 'inProgress',
                             stopped: status === 'stopped',
-                            done: false
+                            done: false,
                         };
-                        try{
-                            const res = axiosInstance.put(`/api/designerAssignments/${designer.id}`,data);
+                        try {
+                            const res = axiosInstance.put(`/api/designerAssignments/${designer.id}`, data);
                             console.log('Mise à jour avec succées');
-                        }catch(e){
-                            console.log('Erreur mise a jour',e);
+                        } catch (e) {
+                            console.log('Erreur mise a jour', e);
                         }
                     }
-                    
                 }
             },
         },
         mounted() {
             if (this.designersProps && this.designersProps.length > 0) {
                 this.designers = this.getDesigners(this.designersProps);
-                this.updateDesignerStatus('inProgress');
+                // this.updateDesignerStatus('inProgress');
             }
         },
-        unmounted(){
+        unmounted() {
             this.updateDesignerStatus('stopped');
         },
         watch: {
             designersProps(newDesigners) {
+                console.log('newDesigners', newDesigners);
+                // if (userId === designer.id ){
+                    // console.log("userId === designer.id", userId);
+                // }
                 if (newDesigners && newDesigners.length > 0) {
                     this.designers = this.getDesigners(newDesigners);
-                    this.updateDesignerStatus('inProgress');
+                    // this.updateDesignerStatus('inProgress');
                 }
-            }
-        }
+            },
+        },
     };
 </script>
 <style scoped>

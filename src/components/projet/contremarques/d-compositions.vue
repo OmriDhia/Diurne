@@ -12,7 +12,7 @@
             <table class="table table-striped">
                 <thead>
                     <tr class="border-top text-black bg-black">
-                        <th class="border-start border-end text-white">Select</th>
+                        <th v-if="!disabled" class="border-start border-end text-white">Select</th>
                         <th class="border-start border-end text-white">N° couche</th>
                         <template v-for="(col, index) in dynamicColumns" :key="index">
                             <th :style="{ backgroundColor: col.hexCode }"> Col. N° {{ index + 1 }} </th>
@@ -25,7 +25,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
-                        <td class="border-start border-end text-center">
+                        <td v-if="!disabled" class="border-start border-end text-center">
                             <input type="checkbox" :value="row.id" @change="toggleLayerSelection(row.id, $event)">
                         </td>
                         <td class="border-start border-end text-center">{{ row.layerNumber }}</td>
@@ -162,7 +162,7 @@ const newCarpetComposition = (CompositionId) => {
 };
 
 onMounted(() => {
-    console.log("data : ", props.compositionData)
+    // console.log("data : ", props.compositionData)
     if (props.compositionData) {
         formatData(props.compositionData);
     }

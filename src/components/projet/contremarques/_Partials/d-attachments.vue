@@ -10,7 +10,7 @@
                     <div class="checkbox-primary custom-control">
                         <div class="row justify-content-between align-items-center">
                             <div class="col-md-8">  {{ data.attachment.fromDistantServer ? data.attachment.path : data.attachment.file }} </div>
-                            <div class="col-md-4 d-flex justify-content-end">
+                            <div class="col-md-4 d-flex justify-content-end" v-if="!disable">
                                 <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDownload(data.attachment)" v-if="!data.attachment.fromDistantServer">
                                     <vue-feather type="download" :size="14"></vue-feather>
                                 </button>
@@ -21,7 +21,7 @@
                 </li>
             </ul>
         </perfect-scrollbar>
-        <div class="col-md-12">
+        <div class="col-md-12" v-if="!disable">
             <div class="row justify-content-center">
                 <div class="col-auto">
                     <d-modal-add-attachment :carpetDesignOrderId="props.carpetDesignOrderId" :diId="props.diId" @onClose="handleClose"></d-modal-add-attachment>
@@ -50,6 +50,10 @@
         },
         diId: {
             type: Number,
+        },
+        disable: {
+            type: Boolean,
+            default: true
         }
     });
     

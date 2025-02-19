@@ -31,147 +31,113 @@
             <div class="panel br-6 p-2 mt-3">
                 <div class="container p-0">
                     <div class="row m-2">
-                        <div class="col-md-12 pe-4">
+                        <div class="col-md-12 col-xl-9 pe-4">
                             <div class="container p-0">
-                                <div class="d-flex">
-                                    <div class="col-md-12 col-xl-9 pe-4">
+                                <div class="row">
+                                    <div class="col-xl-4 col-md-12">
+                                        <d-input :disabled="true" v-model="customer.customerName" label="Client"></d-input>
+                                        <d-input :disabled="true" v-model="contremarque.designation" label="Contremarque"></d-input>
+                                        <d-location-dropdown
+                                            :disabled="store.getters.isFinStatus"
+                                            :contremarqueId="projectDi.contremarque"
+                                            v-model="dataCarpetOrder.location_id"
+                                            :error="errorCarpetOrder.location_id"
+                                        ></d-location-dropdown>
+                                        <d-input :disabled="true" v-model="transDate" label="Date trasmission"></d-input>
+                                        <d-input :disabled="true" v-model="projectDi.demande_number" label="N° de la demande"></d-input>
+                                        <d-input :disabled="true" v-model="deadline" label="Deadline"></d-input>
+                                        <d-input :disabled="true" v-model="commercial" label="Commercial"></d-input>
+                                    </div>
+                                    <div class="col-xl-8 col-md-12 pe-2">
+                                        <d-attachments :disable="disableDocuments" :carpetDesignOrderId="carpetDesignOrderId"></d-attachments>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center justify-content-between mt-5" v-if="carpetDesignOrderId">
+                                    <div class="col-md-auto col-sm-6">
+                                        <d-carpet-status-dropdown :disabled="true" v-model="dataCarpetOrder.status_id"></d-carpet-status-dropdown>
+                                    </div>
+                                    <div class="col-md-auto col-sm-6" v-if="!disableForDesigner">
+                                        <button class="btn btn-custom mb-2 text-uppercase" @click="applyDefaultMaterials">Générer matière par defaut</button>
+                                    </div>
+                                </div>
+                                <div class="row ps-2 mt-4 mb-2" v-if="carpetDesignOrderId && firstLoad">
+                                    <div class="alert alert-light-primary alert-dismissible border-0 mb-4" role="alert">
+                                        <strong>Pour des raisons de performance, la sauvegarde automatique sera bloquée pendant 5 secondes.</strong>
+                                    </div>
+                                </div>
+                                <div class="row ps-2 mt-4 mb-2" v-if="carpetDesignOrderId">
+                                    <div class="col-xl-4 col-md-12">
+                                        <d-materials-list
+                                            :error="errorCarpetDesignOrder.materialsRate"
+                                            :disabled="disableForDesigner"
+                                            :firstLoad="firstLoad"
+                                            @changeMaterials="saveCarpetOrderSpecifications"
+                                            :materialsProps="currentMaterials"
+                                        ></d-materials-list>
+                                    </div>
+                                    <div class="col-xl-8 col-md-12">
                                         <div class="row">
-                                            <div class="col-xl-4 col-md-12">
-                                                <d-input :disabled="true" v-model="customer.customerName" label="Client"></d-input>
-                                                <d-input :disabled="true" v-model="contremarque.designation" label="Contremarque"></d-input>
-                                                <d-location-dropdown
-                                                    :disabled="store.getters.isFinStatus"
-                                                    :contremarqueId="projectDi.contremarque"
-                                                    v-model="dataCarpetOrder.location_id"
-                                                    :error="errorCarpetOrder.location_id"
-                                                ></d-location-dropdown>
-                                                <d-input :disabled="true" v-model="transDate" label="Date trasmission"></d-input>
-                                                <d-input :disabled="true" v-model="projectDi.demande_number" label="N° de la demande"></d-input>
-                                                <d-input :disabled="true" v-model="deadline" label="Deadline"></d-input>
-                                                <d-input :disabled="true" v-model="commercial" label="Commercial"></d-input>
-                                            </div>
-                                            <div class="col-xl-8 col-md-12 pe-2">
-                                                <d-attachments :disable="disableDocuments" :carpetDesignOrderId="carpetDesignOrderId"></d-attachments>
-                                            </div>
-                                        </div>
-                                        <div class="row align-items-center justify-content-between mt-5" v-if="carpetDesignOrderId">
-                                            <div class="col-md-auto col-sm-6">
-                                                <d-carpet-status-dropdown :disabled="true" v-model="dataCarpetOrder.status_id"></d-carpet-status-dropdown>
-                                            </div>
-                                            <div class="col-md-auto col-sm-6" v-if="!disableForDesigner">
-                                                <button class="btn btn-custom mb-2 text-uppercase" @click="applyDefaultMaterials">Générer matière par defaut</button>
-                                            </div>
-                                        </div>
-                                        <div class="row ps-2 mt-4 mb-2" v-if="carpetDesignOrderId && firstLoad">
-                                            <div class="alert alert-light-primary alert-dismissible border-0 mb-4" role="alert">
-                                                <strong>Pour des raisons de performance, la sauvegarde automatique sera bloquée pendant 5 secondes.</strong>
-                                            </div>
-                                        </div>
-                                        <div class="row ps-2 mt-4 mb-2" v-if="carpetDesignOrderId">
-                                            <div class="col-xl-4 col-md-12">
-                                                <d-materials-list
-                                                    :error="errorCarpetDesignOrder.materialsRate"
+                                            <div class="col-xl-6 col-md-12">
+                                                <d-collections-dropdown
                                                     :disabled="disableForDesigner"
-                                                    :firstLoad="firstLoad"
-                                                    @changeMaterials="saveCarpetOrderSpecifications"
-                                                    :materialsProps="currentMaterials"
-                                                ></d-materials-list>
+                                                    v-model="dataSpecification.collectionId"
+                                                    :error="errorCarpetOrdeSpecification.collectionId"
+                                                    :errorCollection="errorCarpetDesignOrder.collectionID"
+                                                ></d-collections-dropdown>
                                             </div>
-                                            <div class="col-xl-8 col-md-12">
-                                                <div class="row">
-                                                    <div class="col-xl-6 col-md-12">
-                                                        <d-collections-dropdown
-                                                            :disabled="disableForDesigner"
-                                                            v-model="dataSpecification.collectionId"
-                                                            :error="errorCarpetOrdeSpecification.collectionId"
-                                                            :errorCollection="errorCarpetDesignOrder.collectionID"
-                                                        ></d-collections-dropdown>
-                                                    </div>
-                                                    <div class="col-xl-6 col-md-12">
-                                                        <d-model-dropdown
-                                                            :disabled="disableForDesigner"
-                                                            v-model="dataSpecification.modelId"
-                                                            :error="errorCarpetOrdeSpecification.modelId"
-                                                            :errorModel="errorCarpetDesignOrder.ModelID"
-                                                        ></d-model-dropdown>
-                                                    </div>
-                                                    <div class="col-xl-6 col-md-12">
-                                                        <d-qualities-dropdown
-                                                            :disabled="disableForDesigner"
-                                                            v-model="dataSpecification.qualityId"
-                                                            :error="errorCarpetOrdeSpecification.qualityId"
-                                                            :errorQuality="errorCarpetDesignOrder.qualityID"
-                                                        ></d-qualities-dropdown>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId">
-                                            <d-measurements-di
-                                                :disabled="disableForDesigner"
-                                                :firstLoad="firstLoad"
-                                                @changeMeasurements="saveCarpetOrderSpecifications"
-                                                :dimensionsProps="currentDimensions"
-                                                :error="errorCarpetDesignOrder.measurments"
-                                            ></d-measurements-di>
-                                        </div>
-                                        <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId">
-                                            <div class="col-12">
-                                                <div class="text-black p-0 pb-2">Description de l'image</div>
-                                            </div>
-                                            <div class="col-12">
-                                                <textarea
+                                            <div class="col-xl-6 col-md-12">
+                                                <d-model-dropdown
                                                     :disabled="disableForDesigner"
-                                                    v-model="dataSpecification.description"
-                                                    :class="{ 'is-invalid': errorCarpetDesignOrder.description }"
-                                                    class="w-100 h-130-forced block-custom-border"
-                                                ></textarea>
-                                                <div v-if="errorCarpetDesignOrder.description" class="invalid-feedback">La description est obligatoire.</div>
+                                                    v-model="dataSpecification.modelId"
+                                                    :error="errorCarpetOrdeSpecification.modelId"
+                                                    :errorModel="errorCarpetDesignOrder.ModelID"
+                                                ></d-model-dropdown>
                                             </div>
-                                        </div>
-                                        <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && store.getters.isNonTrasmisStatus">
-                                            <d-transmis-studio @transmisStudio="updateCarpetDesignStatus($event)"></d-transmis-studio>
-                                        </div>
-                                        <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetSpecificationId">
-                                            <div class="col-12">
-                                                <d-compositions
-                                                    :disabled="CommercialAccess"
-                                                    :compositionData="compositionData"
-                                                    :carpetSpecificationId="carpetSpecificationId"
-                                                    v-if="carpetDesignOrderId"
-                                                ></d-compositions>
+                                            <div class="col-xl-6 col-md-12">
+                                                <d-qualities-dropdown
+                                                    :disabled="disableForDesigner"
+                                                    v-model="dataSpecification.qualityId"
+                                                    :error="errorCarpetOrdeSpecification.qualityId"
+                                                    :errorQuality="errorCarpetDesignOrder.qualityID"
+                                                ></d-qualities-dropdown>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-12 col-xl-3 ps-1 d-flex flex-column" v-if="carpetDesignOrderId">
-                                        <d-designer-list
+                                </div>
+                                <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId">
+                                    <d-measurements-di
+                                        :disabled="disableForDesigner"
+                                        :firstLoad="firstLoad"
+                                        @changeMeasurements="saveCarpetOrderSpecifications"
+                                        :dimensionsProps="currentDimensions"
+                                        :error="errorCarpetDesignOrder.measurments"
+                                    ></d-measurements-di>
+                                </div>
+                                <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId">
+                                    <div class="col-12">
+                                        <div class="text-black p-0 pb-2">Description de l'image</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <textarea
+                                            :disabled="disableForDesigner"
+                                            v-model="dataSpecification.description"
+                                            :class="{ 'is-invalid': errorCarpetDesignOrder.description }"
+                                            class="w-100 h-130-forced block-custom-border"
+                                        ></textarea>
+                                        <div v-if="errorCarpetDesignOrder.description" class="invalid-feedback">La description est obligatoire.</div>
+                                    </div>
+                                </div>
+                                <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && store.getters.isNonTrasmisStatus">
+                                    <d-transmis-studio @transmisStudio="updateCarpetDesignStatus($event)"></d-transmis-studio>
+                                </div>
+                                <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetSpecificationId">
+                                    <div class="col-12">
+                                        <d-compositions
                                             :disabled="CommercialAccess"
-                                            @endCarpetDesignOrder="updateCarpetDesignStatus($event)"
-                                            :carpetDesignOrderId="carpetDesignOrderId"
-                                            :designersProps="currentCarpetObject.designers"
-                                            :imageTypeNames="selectedImageTypes"
-                                        ></d-designer-list>
-                                        <d-images-list
-                                            :status="dataCarpetOrder.status_id"
-                                            :disabled="!DesignerAccess"
-                                            @imageTypesUpdated="updateDesignerList"
-                                            :carpetDesignOrderId="carpetDesignOrderId"
-                                        ></d-images-list>
-                                        <d-designer-composition-list
-                                            :disabled="CommercialAccess"
-                                            :designerComposition="designerComposition"
+                                            :compositionData="compositionData"
                                             :carpetSpecificationId="carpetSpecificationId"
-                                            @updateMaterials="updateMaterials($event)"
-                                            v-if="carpetSpecificationId"
-                                        ></d-designer-composition-list>
-                                        <div class="row align-items-end mt-auto" v-if="displayFin" style="margin-bottom: 80px;">
-                                            <div class="col-md-12">
-                                                <button class="disbaled btn btn-custom text-center w-100 mb-3" @click="FinDIStatus(6)">FIN</button>
-                                            </div>
-                                            <div class="col-md-12" v-if="DesignerAccess">
-                                                <button class="disbaled btn btn-custom text-center w-100" @click="CreateVariation()">Créer Variation</button>
-                                            </div>
-                                        </div>
+                                            v-if="carpetDesignOrderId"
+                                        ></d-compositions>
                                     </div>
                                 </div>
                                 <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && DesignerAccess">
@@ -181,6 +147,33 @@
                                         :carpetDesignOrderId="carpetDesignOrderId"
                                         @transmisAdv="updateCarpetDesignStatus($event)"
                                     ></d-transmis-adv>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-xl-3 ps-1 d-flex flex-column" v-if="carpetDesignOrderId" style="max-height: 150vh; overflow-y: auto;padding-left: 12px !important;">
+                            <d-designer-list
+                                :disabled="CommercialAccess"
+                                @endCarpetDesignOrder="updateCarpetDesignStatus($event)"
+                                :carpetDesignOrderId="carpetDesignOrderId"
+                                :designersProps="currentCarpetObject.designers"
+                                :imageTypeNames="selectedImageTypes"
+                            ></d-designer-list>  
+                            <d-images-list
+                                :status="dataCarpetOrder.status_id"
+                                :disabled="CommercialAccess"
+                                @imageTypesUpdated="updateDesignerList"
+                                :carpetDesignOrderId="carpetDesignOrderId"
+                            ></d-images-list>
+                            <d-designer-composition-list
+                                :disabled="CommercialAccess"
+                                :designerComposition="designerComposition"
+                                :carpetSpecificationId="carpetSpecificationId"
+                                @updateMaterials="updateMaterials($event)"
+                                v-if="carpetSpecificationId"
+                            ></d-designer-composition-list>
+                            <div class="row align-items-end mt-auto" v-if="displayFin">
+                                <div class="col-md-12">
+                                    <button class="disbaled btn btn-custom text-center w-100"  @click="FinDIStatus(6)">FIN</button>
                                 </div>
                             </div>
                         </div>
@@ -246,13 +239,13 @@
         }
     );
     const checkIfMaterialsIsNotEmpty = () => {
-        // Check if the array is not empty
-        if (materials.value && materials.value.length > 0) {
-            return true;
-        }
-        window.showMessage('Le Table de matiéres ne peut pas être vide', 'error');
-        return false;
-    };
+    // Check if the array is not empty
+    if (materials.value && materials.value.length > 0) {
+        return true;
+    }
+    window.showMessage("Le Table de matiéres ne peut pas être vide",'error');
+    return false;
+};
     useMeta({ title: 'Maquette' });
 
     const store = useStore();
@@ -307,16 +300,16 @@
     //     return ((store.getters.isCommertial || store.getters.isCommercialManager) && !store.getters.isNonTrasmisStatus) || store.getters.isFinStatus;
     // });
     const disableForCommercial = computed(() => {
-        return (store.getters.isCommertial || store.getters.isCommercialManager) && !store.getters.isNonTrasmisStatus;
+        return ((store.getters.isCommertial || store.getters.isCommercialManager) && !store.getters.isNonTrasmisStatus);
     });
     const disableDocuments = computed(() => {
-        return !store.getters.isNonTrasmisStatus;
+        return (!store.getters.isNonTrasmisStatus);
     });
     const CommercialAccess = computed(() => {
-        return store.getters.isCommertial || store.getters.isCommercialManager || store.getters.isSuperAdmin;
+        return (store.getters.isCommertial || store.getters.isCommercialManager || store.getters.isSuperAdmin);
     });
     const DesignerAccess = computed(() => {
-        return store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isSuperAdmin;
+        return (store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isSuperAdmin);
     });
     const disableForDesigner = computed(() => {
         return store.getters.isDesigner || store.getters.isDesignerManager || !store.getters.isNonTrasmisStatus;
@@ -324,6 +317,8 @@
     const displayFin = computed(() => {
         return (store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isSuperAdmin) && !store.getters.isFinStatus;
     });
+    
+
 
     const getProjectDI = async () => {
         try {
@@ -383,25 +378,8 @@
         setTimeout(() => {
             firstLoad.value = false;
         }, 5000);
-        console.log('role : ', DesignerAccess.value);
+        console.log("role : " , DesignerAccess.value);
     });
-
-    const CreateVariation = async () => {
-            try {
-                const response = await axiosInstance.post('/api/createCarpetDesignOrderVariation', {
-                    orderId: parseInt(carpetDesignOrderId),
-                    variation: ""
-                });
-
-                console.log("Variation created:", response.data);
-                // Handle success response, maybe show a notification or update the UI
-                router.push({ name: 'di_orderDesigner_update', params: { id_di: id_di, carpetDesignOrderId: response.data.response.id } });
-
-            } catch (error) {
-                console.error("Error creating variation:", error);
-                // Handle error, show an error message to the user
-            }
-        }
 
     const saveCarpetOrder = async (statusId) => {
         try {
@@ -506,16 +484,17 @@
 
     const FinDIStatus = async (statusId) => {
         const imageTypesArray = Array.from(selectedImageTypes.value);
-        console.log(selectedImageTypes.value, imageTypesArray);
+        console.log(selectedImageTypes.value,imageTypesArray);
         if (imageTypesArray.includes('Vignette') && imageTypesArray.some((name) => name.includes('Légende'))) {
             dataCarpetOrder.value.status_id = statusId;
-
+            
             if (checkIfMaterialsIsNotEmpty()) {
                 await saveCarpetOrder(statusId);
             }
         } else {
-            window.showMessage("Les images doivent contenir une Vignette et une image avec 'Légende' pour terminer.", 'error');
+            window.showMessage("Les images doivent contenir une Vignette et une image avec 'Légende' pour terminer.",'error');
         }
+        
     };
 
     const updateCarpetDesignStatus = async (statusId) => {
@@ -523,7 +502,7 @@
         console.log(statusId);
         ValidateBeforeTransmission();
         if (!errorTransmis.value) {
-            await saveCarpetOrder(statusId);
+            await saveCarpetOrder(statusId  );
         }
     };
 
