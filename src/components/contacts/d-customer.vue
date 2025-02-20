@@ -215,12 +215,14 @@
             errorCommentaire.value = '';
         }
         validateContactData(); // Validate before proceeding
-
-        // Check if there are any errors
-        if (Object.values(validationContactErrors.value).some((error) => error !== '')) {
-            console.log('There are validation errors.', validationContactErrors.value);
-            return; // Stop further execution if there are errors
+        if (data.customerGroupId === 1) {
+            // Check if there are any errors
+            if (Object.values(validationContactErrors.value).some((error) => error !== '')) {
+                console.log('There are validation errors.', validationContactErrors.value);
+                return; // Stop further execution if there are errors
+            }
         }
+
         try {
             if (props.customerData.customer_id) {
                 error.value = {};
@@ -273,7 +275,9 @@
         data.value.contact_origin_id = newVal.contact_origin_id ?? null;
         data.value.commentaire = newVal.commentaire;
         data.value.contact_origin_label = newVal.contact_origin_label;
-        data.value.email = newVal.contactsData[0].email;
+        if( newVal?.contactsData[0]){
+            data.value.email = newVal?.contactsData[0]?.email;
+        }
         customerGroup.value.customerGroupId = newVal.customerGroup.customer_group_id;
     };
 
