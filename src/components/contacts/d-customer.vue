@@ -175,7 +175,7 @@
     watch(
         () => customerGroup.value,
         (newValue) => {
-            // console.log("Updated customerGroup:", newValue);
+            console.log("Updated customerGroup:", newValue);
             data.value.customerGroupId = newValue.customerGroupId;
         },
         { deep: true }
@@ -215,7 +215,7 @@
             errorCommentaire.value = '';
         }
         validateContactData(); // Validate before proceeding
-        if (data.customerGroupId === 1) {
+        if (customerGroup.value.customerType === "Particulier (Client)") {
             // Check if there are any errors
             if (Object.values(validationContactErrors.value).some((error) => error !== '')) {
                 console.log('There are validation errors.', validationContactErrors.value);
