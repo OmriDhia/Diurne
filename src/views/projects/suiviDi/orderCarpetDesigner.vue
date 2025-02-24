@@ -33,7 +33,7 @@
                     <div class="row m-2">
                         <div class="col-md-12 pe-4">
                             <div class="container p-0">
-                                <div class="d-flex">
+                                <div class="d-flex flex-column flex-md-row">
                                     <div class="col-md-12 col-xl-9 pe-4">
                                         <div class="row">
                                             <div class="col-xl-4 col-md-12">
