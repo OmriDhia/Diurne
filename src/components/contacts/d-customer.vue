@@ -192,16 +192,10 @@
     let codeSuffix = ref(1);
     const validationContactErrors = ref({
         gender_id: '',
-        email: '',
-        mobile_phone: '',
-        phone: '',
     });
     // Validation function
     const validateContactData = () => {
         validationContactErrors.value.gender_id = localContactData.value.gender_id !== 0 ? '' : 'Le genre est requis';
-        validationContactErrors.value.email = localContactData.value.email ? '' : "Format d'email invalide";
-        validationContactErrors.value.mobile_phone = localContactData.value.mobile_phone ? '' : 'Le numéro de téléphone portable est requis';
-        validationContactErrors.value.phone = localContactData.value.phone ? '' : 'Le numéro de téléphone est requis';
     };
     const createCustomer = async () => {
         if (data.value.contact_origin_label === '') {
