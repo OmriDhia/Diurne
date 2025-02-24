@@ -80,26 +80,29 @@
                                             <div class="col-xl-8 col-md-12">
                                                 <div class="row">
                                                     <div class="col-xl-6 col-md-12">
+                                                        <!-- :error="errorCarpetOrdeSpecification.collectionId" -->
                                                         <d-collections-dropdown
                                                             :disabled="disableForDesigner"
                                                             v-model="dataSpecification.collectionId"
-                                                            :error="errorCarpetOrdeSpecification.collectionId"
+                                                            :error="error?.collectionId"
                                                             :errorCollection="errorCarpetDesignOrder.collectionID"
                                                         ></d-collections-dropdown>
                                                     </div>
                                                     <div class="col-xl-6 col-md-12">
+                                                        <!-- :error="errorCarpetOrdeSpecification.modelId" -->
                                                         <d-model-dropdown
                                                             :disabled="disableForDesigner"
                                                             v-model="dataSpecification.modelId"
-                                                            :error="errorCarpetOrdeSpecification.modelId"
+                                                            :error="error?.modelId"
                                                             :errorModel="errorCarpetDesignOrder.ModelID"
                                                         ></d-model-dropdown>
                                                     </div>
                                                     <div class="col-xl-6 col-md-12">
+                                                        <!--:error="errorCarpetOrdeSpecification.qualityId" -->
                                                         <d-qualities-dropdown
                                                             :disabled="disableForDesigner"
                                                             v-model="dataSpecification.qualityId"
-                                                            :error="errorCarpetOrdeSpecification.qualityId"
+                                                            :error="error?.qualityId"
                                                             :errorQuality="errorCarpetDesignOrder.qualityID"
                                                         ></d-qualities-dropdown>
                                                     </div>
@@ -123,10 +126,10 @@
                                                 <textarea
                                                     :disabled="disableForDesigner"
                                                     v-model="dataSpecification.description"
-                                                    :class="{ 'is-invalid': errorCarpetDesignOrder.description }"
+                                                    :class="{ 'is-invalid': error?.description }"
                                                     class="w-100 h-130-forced block-custom-border"
                                                 ></textarea>
-                                                <div v-if="errorCarpetDesignOrder.description" class="invalid-feedback">La description est obligatoire.</div>
+                                                <div v-if="error?.description" class="invalid-feedback">La description est obligatoire.</div>
                                             </div>
                                         </div>
                                         <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && store.getters.isNonTrasmisStatus">
@@ -209,7 +212,7 @@
     import dCarpetStatusDropdown from '../../../components/common/d-carpet-status-dropdown.vue';
     import dMeasurementsDi from '../../../components/projet/contremarques/d-mesurement-di.vue';
     import { useMeta } from '/src/composables/use-meta';
-    import { Helper } from '../../../composables/global-methods';
+    import { Helper , formatErrorViolations} from '../../../composables/global-methods';
     import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
     import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
     import dQualitiesDropdown from '../../../components/projet/contremarques/dropdown/d-qualities-dropdown.vue';
@@ -224,6 +227,8 @@
     import dTransmisStudio from '../../../components/projet/contremarques/d-transmis-studio.vue';
     import dTransmisAdv from '../../../components/projet/contremarques/d-transmis-adv.vue';
     import moment from 'moment';
+    // src/views/projects/suiviDi/orderCarpetDesigner.vue
+    // src/composables/global-methods.js
     const selectedImageTypes = ref([]);
     // Handle designer addition from the child component
 
@@ -290,6 +295,8 @@
         dataCarpetOrder.value.status_id = status;
     };
     const errorCarpetOrder = ref({});
+    const error = ref({});
+
     const errorCarpetOrdeSpecification = ref({});
     const dataSpecification = ref({
         reference: '',
@@ -364,7 +371,6 @@
                     currentDimensions.value = dSP.carpetDimensions;
                     currentMaterials.value = dSP.carpetMaterials;
                     compositionData.value = dSP.carpedComposition;
-                    console.log('yassineeeeee', compositionData.value);
                     designerComposition.value = dSP.designMaterials;
                     dataSpecification.value = {
                         id: dSP.id,
@@ -547,7 +553,16 @@
             await saveCarpetOrder(statusId);
         }
     };
-
+    //dataCarpetOrder.location_id
+    watch(
+        () => dataCarpetOrder.value.location_id,
+        async (newID) => {
+            if (!firstLoad.value) {
+                await saveCarpetOrder();
+            }
+        },
+        { deep: true }
+    );
     const applyCarpetStatus = (statusId) => {
         store.commit('setCarpetDesignOrderStatus', statusId);
         store.commit('setIsFinStatus', statusId === carpetStatus.finiId);
