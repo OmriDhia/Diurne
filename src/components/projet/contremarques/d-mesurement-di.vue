@@ -11,17 +11,17 @@
                     <div class="row align-items-start">
                         <h6 class="w-100">{{ measurement.name }}</h6>
                     </div>
-                    <div class="card p-0" :class="{ 'is-invalid': error}">
+                    <div class="card p-0" :class="{ 'is-invalid': error }">
                         <div class="card-body ps-2 mt-2">
                             <div class="row">
                                 <template v-for="(unit, uIndex) in measurement.unit" :key="uIndex">
-                                    <div class="col-md-4">
+                                    <div class="col-12 col-md-4">
                                         <div class="row align-items-center">
-                                            <div class="col-auto text-black">
+                                            <div class="col-12 col-sm-auto text-black mb-1 mb-sm-0">
                                                 {{ unit.abbreviation }}
                                             </div>
-                                            <div class="col-auto">
-                                                <input class="form-control text-center" v-model="unit.value" :disabled="disabled" @change="handleChange(unit.abbreviation)">
+                                            <div class="col-12 col-sm-auto">
+                                                <input class="form-control text-center" v-model="unit.value" :disabled="disabled" @change="handleChange(unit.abbreviation)" />
                                             </div>
                                         </div>
                                     </div>
@@ -29,35 +29,51 @@
                             </div>
                         </div>
                     </div>
+                    <!-- <div class="card p-0" :class="{ 'is-invalid': error }">
+                        <div class="card-body ps-2 mt-2">
+                            <div class="row g-3">
+                                <template v-for="(unit, uIndex) in measurement.unit" :key="uIndex">
+                                    <div class="col-12 col-sm-4">
+                                        <div class="d-flex flex-column flex-sm-row align-items-center mb-2">
+                                        <!-- <div class="d-flex align-items-center mb-2"> 
+                                            <label class="col-2 col-sm-3 text-black fw-bold me-3 mb-0">
+                                                {{ unit.abbreviation }}
+                                            </label>
+                                            <input class="form-control text-center" v-model="unit.value" :disabled="disabled" @change="handleChange(unit.abbreviation)" />
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div> -->
                 </div>
             </template>
-            <div v-if="error" class="invalid-feedback">{{ $t("tous Les champs sont obligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t('tous Les champs sont obligatoire.') }}</div>
         </div>
     </div>
-    
 </template>
 
 <script setup>
-    import {useStore} from "vuex";
-    import {computed, onMounted, ref, watch} from "vue";
-    import contremarqueService from "../../../Services/contremarque-service";
-    import dInput from "../../base/d-input.vue";
+    import { useStore } from 'vuex';
+    import { computed, onMounted, ref, watch } from 'vue';
+    import contremarqueService from '../../../Services/contremarque-service';
+    import dInput from '../../base/d-input.vue';
 
     const props = defineProps({
-        dimensionsProps : {
-            type: Object
+        dimensionsProps: {
+            type: Object,
         },
-        firstLoad : {
-            type: Boolean
+        firstLoad: {
+            type: Boolean,
         },
         disabled: {
             type: Boolean,
-            default: false
+            default: false,
         },
         error: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     });
     const emit = defineEmits(['changeMeasurements']);
     const store = useStore();
@@ -70,8 +86,8 @@
         lngFeet: 0,
         largInches: 0,
         lngInches: 0,
-        InputUnit: "cm",
-        quoteDetailId: 0
+        InputUnit: 'cm',
+        quoteDetailId: 0,
     });
     const setMeasurements = (units, prefix) => {
         for (const u of units) {
@@ -90,7 +106,7 @@
         }
     };
 
-    const setMeasurementResults = (units,val) => {
+    const setMeasurementResults = (units, val) => {
         for (const u of units) {
             switch (u.abbreviation) {
                 case 'cm':
@@ -106,8 +122,8 @@
         }
     };
     const calculateInchesFeet = async () => {
-        const larg = measurements.value.find(m => m.name === 'Largeur');
-        const long = measurements.value.find(m => m.name === 'Longueur');
+        const larg = measurements.value.find((m) => m.name === 'Largeur');
+        const long = measurements.value.find((m) => m.name === 'Longueur');
         if (larg) {
             setMeasurements(larg.unit, 'larg');
         }
@@ -117,10 +133,10 @@
 
         try {
             const result = await contremarqueService.calculateMesurementsNew(data.value);
-            const dimension = result.dimension
-            setMeasurementResults(larg.unit,dimension.larg);
-            setMeasurementResults(long.unit,dimension.lng);
-            console.log("measurements", measurements);
+            const dimension = result.dimension;
+            setMeasurementResults(larg.unit, dimension.larg);
+            setMeasurementResults(long.unit, dimension.lng);
+            console.log('measurements', measurements);
             store.commit('setMeasurements', measurements);
         } catch (error) {
             console.error(`Error calculation mesurements:`, error);
@@ -129,11 +145,11 @@
 
     const formatDataValue = () => {
         if (props.dimensionsProps) {
-            measurements.value = measurements.value.map(m => {
+            measurements.value = measurements.value.map((m) => {
                 const d = props.dimensionsProps[m.id];
                 if (d) {
-                    m.unit = m.unit.map(u => {
-                        let tmpU = d.find(t => t.unit_id === u.id);
+                    m.unit = m.unit.map((u) => {
+                        let tmpU = d.find((t) => t.unit_id === u.id);
                         if (tmpU) {
                             u.value = parseFloat(tmpU.value);
                         }
@@ -149,12 +165,12 @@
             const unitOfMeasurements = await contremarqueService.getUnitOfMeasurements();
             const meas = await contremarqueService.getMeasurements();
 
-            measurements.value = meas.map(m => ({
+            measurements.value = meas.map((m) => ({
                 ...m,
-                unit: unitOfMeasurements.map(u => ({
+                unit: unitOfMeasurements.map((u) => ({
                     ...u,
-                    value: ""
-                }))
+                    value: '',
+                })),
             }));
 
             formatDataValue();
@@ -162,11 +178,11 @@
             console.error(e.message);
         }
     };
-    
+
     const handleChange = (abb) => {
         data.value.InputUnit = abb;
     };
-    
+
     onMounted(() => {
         getMeasurements();
     });
@@ -175,7 +191,7 @@
         () => measurements.value,
         (newMeasurements) => {
             store.commit('setMeasurements', newMeasurements);
-            if(!props.firstLoad){
+            if (!props.firstLoad) {
                 emit('changeMeasurements', newMeasurements);
             }
         },
@@ -187,5 +203,4 @@
             formatDataValue();
         }
     );
-    
 </script>
