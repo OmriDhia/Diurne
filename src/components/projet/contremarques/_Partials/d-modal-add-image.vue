@@ -93,7 +93,7 @@
     };
 
     // Handle form submission
-    const submitFile = async () => {
+    const submitFile = async () => { 
         if (!file.value) {
             uploadError.value = 'Please select a file to upload.';
             return;
