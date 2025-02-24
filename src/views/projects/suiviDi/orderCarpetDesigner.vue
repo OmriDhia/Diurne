@@ -511,6 +511,16 @@
     };
 
     const FinDIStatus = async (statusId) => {
+        // Assuming compositionData is a reactive reference
+        const isEmpty = compositionData.value.length === 0;
+        
+        if (isEmpty) {
+            window.showMessage('La composition de la maquettes ne doit pas etres vide.', 'error');
+            console.log('The array has NOOOO elements:', compositionData.value);
+        } else {
+            window.showMessage('composition vide.', 'success');
+            console.log('The array has elements:', compositionData.value);
+        }
         const imageTypesArray = Array.from(selectedImageTypes.value);
         console.log(selectedImageTypes.value, imageTypesArray);
         if (imageTypesArray.includes('Vignette') && imageTypesArray.some((name) => name.includes('Légende'))) {
@@ -520,7 +530,12 @@
                 await saveCarpetOrder(statusId);
             }
         } else {
-            window.showMessage("Les images doivent contenir une Vignette et une image avec 'Légende' pour terminer.", 'error');
+                // Wait for 3 seconds, then show the second message
+            setTimeout(() => {
+                console.log('Showing the second message after the first one');
+                window.showMessage("Les images doivent contenir une Vignette et une image avec 'Légende' pour terminer.", 'error');
+            }, 4000); // Show second message after 3 seconds
+            // window.showMessage("Les images doivent contenir une Vignette et une image avec 'Légende' pour terminer.", 'error');
         }
     };
 
