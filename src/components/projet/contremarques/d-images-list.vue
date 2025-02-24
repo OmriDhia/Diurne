@@ -23,7 +23,7 @@
                                     :hideLabel="true"
                                     @imageTypeSelected="updateImageTypes(index, $event)"
                                     @imageTypeUpdateSelected="UpdateImageReference(item.id, item.imageType.id)"
-                                    ></d-image-type-dropdown>
+                                ></d-image-type-dropdown>
                                 <h6 class="card-title">{{ item.image_reference }}</h6>
                             </div>
                         </div>
@@ -72,6 +72,12 @@
             default: 0,
         },
     });
+    watch(
+        () => props.status,
+        (newStatus) => {
+        },
+        { deep: true }
+    );
 
     const images = ref([]);
     const selectedImages = ref([]); // Array to hold the selected image IDs

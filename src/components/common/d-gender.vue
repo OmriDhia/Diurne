@@ -6,7 +6,7 @@
                 <option value="-1" selected="selected">Selectionnez une civilité</option>
                 <option v-for="(civ, key) in genders" :key="key" :value="civ.gender_id">{{ civ.name }}</option>
             </select>
-            <div v-if="error" class="invalid-feedback">{{ $t('La civilité est abligatoire.') }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t('La civilité est obligatoire.') }}</div>
         </div>
     </div>
 </template>

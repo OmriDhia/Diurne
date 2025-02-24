@@ -33,7 +33,7 @@
                     <div class="row m-2">
                         <div class="col-md-12 pe-4">
                             <div class="container p-0">
-                                <div class="d-flex">
+                                <div class="d-flex flex-column flex-md-row">
                                     <div class="col-md-12 col-xl-9 pe-4">
                                         <div class="row">
                                             <div class="col-xl-4 col-md-12">
@@ -132,14 +132,22 @@
                                         <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && store.getters.isNonTrasmisStatus">
                                             <d-transmis-studio @transmisStudio="updateCarpetDesignStatus($event)"></d-transmis-studio>
                                         </div>
-                                        <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetSpecificationId">
-                                            <div class="col-12">
+                                        <div class="row ps-2 mt-4 mb-2 justify-content-between">
+                                            <div class="col-12" v-if="carpetSpecificationId">
                                                 <d-compositions
                                                     :disabled="CommercialAccess"
                                                     :compositionData="compositionData"
                                                     :carpetSpecificationId="carpetSpecificationId"
                                                     v-if="carpetDesignOrderId"
                                                 ></d-compositions>
+                                            </div>
+                                            <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && DesignerAccess">
+                                                <d-transmis-adv
+                                                    :customerInstruction="currentCarpetObject?.customerInstruction"
+                                                    :id_di="id_di"
+                                                    :carpetDesignOrderId="carpetDesignOrderId"
+                                                    @transmisAdv="updateCarpetDesignStatus($event)"
+                                                ></d-transmis-adv>
                                             </div>
                                         </div>
                                     </div>
@@ -150,6 +158,7 @@
                                             :carpetDesignOrderId="carpetDesignOrderId"
                                             :designersProps="currentCarpetObject.designers"
                                             :imageTypeNames="selectedImageTypes"
+                                            @designerAdded="handleDesignerAdded"
                                         ></d-designer-list>
                                         <d-images-list
                                             :status="dataCarpetOrder.status_id"
@@ -164,7 +173,7 @@
                                             @updateMaterials="updateMaterials($event)"
                                             v-if="carpetSpecificationId"
                                         ></d-designer-composition-list>
-                                        <div class="row align-items-end mt-auto" v-if="displayFin" style="margin-bottom: 80px;">
+                                        <div class="row align-items-end mt-auto" v-if="displayFin">
                                             <div class="col-md-12">
                                                 <button class="disbaled btn btn-custom text-center w-100 mb-3" @click="FinDIStatus(6)">FIN</button>
                                             </div>
@@ -173,14 +182,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && DesignerAccess">
-                                    <d-transmis-adv
-                                        :customerInstruction="currentCarpetObject?.customerInstruction"
-                                        :id_di="id_di"
-                                        :carpetDesignOrderId="carpetDesignOrderId"
-                                        @transmisAdv="updateCarpetDesignStatus($event)"
-                                    ></d-transmis-adv>
                                 </div>
                             </div>
                         </div>
@@ -224,6 +225,7 @@
     import dTransmisAdv from '../../../components/projet/contremarques/d-transmis-adv.vue';
     import moment from 'moment';
     const selectedImageTypes = ref([]);
+    // Handle designer addition from the child component
 
     const updateDesignerList = (types) => {
         selectedImageTypes.value = types;
@@ -242,7 +244,7 @@
     watch(
         () => materials.value,
         (newMaterials) => {
-            console.log('Updated materials:', newMaterials);
+            // console.log('Updated materials:', newMaterials);
         }
     );
     const checkIfMaterialsIsNotEmpty = () => {
@@ -283,6 +285,10 @@
         location_id: 0,
         status_id: carpetStatus.nonTransmisId,
     });
+    const handleDesignerAdded = (status) => {
+        // You can perform other actions here, like updating the list of designers, etc.
+        dataCarpetOrder.value.status_id = status;
+    };
     const errorCarpetOrder = ref({});
     const errorCarpetOrdeSpecification = ref({});
     const dataSpecification = ref({
@@ -358,6 +364,7 @@
                     currentDimensions.value = dSP.carpetDimensions;
                     currentMaterials.value = dSP.carpetMaterials;
                     compositionData.value = dSP.carpedComposition;
+                    console.log('yassineeeeee', compositionData.value);
                     designerComposition.value = dSP.designMaterials;
                     dataSpecification.value = {
                         id: dSP.id,
@@ -383,25 +390,24 @@
         setTimeout(() => {
             firstLoad.value = false;
         }, 5000);
-        console.log('role : ', DesignerAccess.value);
+        // console.log('role : ', DesignerAccess.value);
     });
 
     const CreateVariation = async () => {
-            try {
-                const response = await axiosInstance.post('/api/createCarpetDesignOrderVariation', {
-                    orderId: parseInt(carpetDesignOrderId),
-                    variation: ""
-                });
+        try {
+            const response = await axiosInstance.post('/api/createCarpetDesignOrderVariation', {
+                orderId: parseInt(carpetDesignOrderId),
+                variation: '',
+            });
 
-                console.log("Variation created:", response.data);
-                // Handle success response, maybe show a notification or update the UI
-                router.push({ name: 'di_orderDesigner_update', params: { id_di: id_di, carpetDesignOrderId: response.data.response.id } });
-
-            } catch (error) {
-                console.error("Error creating variation:", error);
-                // Handle error, show an error message to the user
-            }
+            console.log('Variation created:', response.data);
+            // Handle success response, maybe show a notification or update the UI
+            router.push({ name: 'di_orderDesigner_update', params: { id_di: id_di, carpetDesignOrderId: response.data.response.id } });
+        } catch (error) {
+            console.error('Error creating variation:', error);
+            // Handle error, show an error message to the user
         }
+    };
 
     const saveCarpetOrder = async (statusId) => {
         try {

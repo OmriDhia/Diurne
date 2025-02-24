@@ -58,11 +58,16 @@
                             </div>
                             <d-btn-fullscreen></d-btn-fullscreen>
                         </div>
-                        <vue3-datatable :rows="rows" :columns="cols" :loading="loading" :isServerMode="true" :sortColumn="params.orderBy" :sortDirection="params.orderWay"
-                                        :totalRows="total_rows" :page="params.current_page" :pageSize="params.pagesize"
-                                        :pageSizeOptions="[10, 25, 50, 75, 100]" noDataContent="Aucun devis trouvé."
-                                        paginationInfo="Affichage de {0} à {1} sur {2} entrées" :sortable="true"
-                                        @change="changeServer" class="advanced-table text-nowrap">
+                        <vue3-datatable :rows="rows" 
+                        :columns="cols" :loading="loading" 
+                        :isServerMode="true" :sortColumn="params.orderBy" 
+                        :sortDirection="params.orderWay"
+                        :totalRows="total_rows" :page="params.current_page" 
+                        :pageSize="params.pagesize"
+                        :pageSizeOptions="[10, 25, 50, 75, 100]" 
+                        noDataContent="Aucun devis trouvé."
+                        paginationInfo="Affichage de {0} à {1} sur {2} entrées" :sortable="true"
+                        @change="changeServer" class="advanced-table text-nowrap">
                             <template #reference="data">
                                 <div class="d-flex justify-content-between">
                                     <strong>{{ data.value.reference}}</strong>

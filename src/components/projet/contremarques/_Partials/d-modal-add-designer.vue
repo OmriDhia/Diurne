@@ -36,6 +36,7 @@
     import {designerStatusConst} from "../../../../composables/constants";
     import moment from "moment";
 
+
     const props = defineProps({
         carpetDesignOrderId : {
             type: Number
@@ -68,9 +69,10 @@
             window.showMessage("Ajout a jour avec succées.");
             document.querySelector("#modalAddDesigner .btn-close").click();
         }catch (e){
-            if(e.response.data.violations){
-                error.value = formatErrorViolations(e.response.data.violations);
-            }
+            // if(e.response.data.violations){
+            //     error.value = formatErrorViolations(e.response.data.violations);
+            // }
+            console.log(e);
             window.showMessage(e.message,'error')
         }
         

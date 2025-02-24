@@ -41,8 +41,10 @@
                         </div>
                         <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Tapis de projet" className="ps-2"></d-panel-title>
-                            <div class="row pe-2 ps-0"></div>
-                            <div class="row pe-2 ps-0 align-items-center"></div>
+                            <d-imageDevisAttribution :contremarqueId="contremarqueId" />
+
+                            <!-- <div class="row pe-2 ps-0"></div>
+                            <div class="row pe-2 ps-0 align-items-center"></div> -->
                         </div>
                         <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Information complémentaire" className="ps-2"></d-panel-title>
@@ -475,7 +477,7 @@ import dSpecialShapes from '../../../components/common/d-special-shapes.vue';
 import dMesurementQuote from '../../../components/projet/devis/d-mesurement-quote.vue';
 import dSpecialTreatment from '../../../components/common/d-specialTreatment.vue';
 import dSpecificTreatmentForm from '../../../components/projet/devis/d-specific-treatment-form.vue';
-
+import dImageDevisAttribution from './d-imageDevisAttribution.vue';
 useMeta({ title: 'Gestion Devis' });
 
 const route = useRoute();

@@ -52,5 +52,8 @@ export default {
         isSuperAdmin(state) {
             return state.isSuperAdmin;
         },
+        getUser(state) {
+            return state.user;
+        }
     },
 }

@@ -171,6 +171,7 @@ onMounted(() => {
 const formatData = (compositionData) => {
     if (compositionData && compositionData.id) {
         carpetCompositionId.value = compositionData.id;
+        console.log("carpetCompositionId.value", carpetCompositionId.value)
 
         if (compositionData.layers && compositionData.layers[0] && compositionData.layers[0].layer_details) {
             const th = compositionData.layers[0].layer_details.map(d => {
