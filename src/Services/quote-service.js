@@ -28,7 +28,7 @@ export default {
     async getQuoteHtml(id){
         try {
             const res = await axiosInstance.get(`/api/quote/download/${id}`);
-            return res.data.html;
+            return res.data;
         } catch (error) {
             throw new Error('Échec de récupération de html devis');
         }

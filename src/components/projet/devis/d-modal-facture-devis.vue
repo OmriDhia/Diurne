@@ -79,7 +79,7 @@
     const editorData = ref('');
     
     const exportToPDF = () => {
-        const contentToExport = editorData.value;
+        const contentToExport = `<style> ${devisDocxStyle} </style> ${editorData.value}`;
         html2pdf()
             .set({ margin: 5 })
             .from(contentToExport)
@@ -97,7 +97,7 @@
     });
     
    const exportToDOCX = async () => {
-       const contentToExport =  editorData.value;
+       const contentToExport =  `<style> ${devisDocxStyle} </style> ${editorData.value}`;
        asBlob(contentToExport).then(blobData => {
            saveAs(blobData, `Facture_devis_${props.quoteId}.docx`,{centerStr: 'Diurne'}) // save as docx document
        })
