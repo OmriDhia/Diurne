@@ -17,10 +17,12 @@ jobs:
       - name: Check branch and commit
         run: |
           git branch --show-current  # Should show 'main' or a detached HEAD
-          git log -1                  # Shows the latest commit
+          git log -1                 # Shows the latest commit
 
       - name: Copy source code to server
         run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.DIURNE_HOST }} >> ~/.ssh/known_hosts
           scp -r ./* ${{ secrets.DIURNE_USERNAME }}@${{ secrets.DIURNE_HOST }}:/var/www/html/diurne_vuejs/
 
       - name: Build and configure on server
@@ -37,4 +39,4 @@ jobs:
             sudo chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
             sudo find /var/www/html/diurne_vuejs -type d -exec chmod 755 {} \;
             sudo find /var/www/html/diurne_vuejs -type f -exec chmod 644 {} \;
-            sudo systemctl restart apache2  # Restarts Apache
+            sudo systemctl restart apache2
