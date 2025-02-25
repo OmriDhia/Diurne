@@ -557,9 +557,7 @@
     watch(
         () => dataCarpetOrder.value.location_id,
         async (newID) => {
-            if (!firstLoad.value) {
-                await saveCarpetOrder();
-            }
+            await saveCarpetOrder();
         },
         { deep: true }
     );
