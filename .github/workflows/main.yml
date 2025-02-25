@@ -20,10 +20,15 @@ jobs:
           git log -1                 # Shows the latest commit
 
       - name: Copy source code to server
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.DIURNE_HOST }} >> ~/.ssh/known_hosts
-          scp -r ./* ${{ secrets.DIURNE_USERNAME }}@${{ secrets.DIURNE_HOST }}:/var/www/html/diurne_vuejs/
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DIURNE_HOST }}
+          username: ${{ secrets.DIURNE_USERNAME }}
+          password: ${{ secrets.DIURNE_PASSWORD }}
+          port: 22
+          source: "./*"
+          target: "/var/www/html/diurne_vuejs/"
+          strip_components: 0  # Keeps the files at the target root
 
       - name: Build and configure on server
         uses: appleboy/ssh-action@master
