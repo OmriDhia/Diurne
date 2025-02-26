@@ -4,16 +4,16 @@
             <div class="col-lg-8 col-md-12">
                 <div class="row justify-content-between align-items-center mt-3">
                     <div class="col-lg-7 col-md-12">
-                        <d-input label="N° de la commande" v-model="data.orderNumber"></d-input>
+                        <d-input :disabled="disabled" label="N° de la commande" v-model="data.orderNumber"></d-input>
                     </div>
                     <div class="col-lg-5 col-md-12 d-flex">
                         <div class="checkbox-default custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="hasConstraints" v-model="data.hasConstraints"/>
+                            <input :disabled="disabled" type="checkbox" class="custom-control-input" id="hasConstraints" v-model="data.hasConstraints"/>
                             <label class="custom-control-label" for="hasConstraints"></label>
                         </div>
-                        <d-btn-outlined data-bs-toggle="modal" data-bs-target="#modalManageConstraint" label="Contraintes et remarque" icon="arrow-right" buttonClass="ps-1 font-size-0-6"></d-btn-outlined>
+                        <d-btn-outlined :disabled="disabled" data-bs-toggle="modal" data-bs-target="#modalManageConstraint" label="Contraintes et remarque" icon="arrow-right" buttonClass="ps-1 font-size-0-6"></d-btn-outlined>
                     </div>
-                    <d-modal-constraint
+                    <d-modal-constraint v-if="!disabled"
                         :customerInstructionId="customerInstructionId"
                         :carpetDesignOrderId="props.carpetDesignOrderId"
                         :constraintData="props.customerInstruction?.customerConstraint"
@@ -23,15 +23,15 @@
                 </div>
                 <div class="row justify-content-between align-items-center mt-3">
                     <div class="col-lg-7 col-md-12">
-                        <d-input label="Transmi. ADV" v-model="data.transmi_adv"></d-input>
+                        <d-input :disabled="disabled" label="Transmi. ADV" v-model="data.transmi_adv"></d-input>
                     </div>
                     <div class="col-lg-5 col-md-12 d-flex">
                         <div class="checkbox-default custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="hasValidateSample" v-model="data.hasValidateSample"/>
+                            <input :disabled="disabled" type="checkbox" class="custom-control-input" id="hasValidateSample" v-model="data.hasValidateSample"/>
                             <label class="custom-control-label" for="hasValidateSample"></label>
                         </div>
-                        <d-btn-outlined data-bs-toggle="modal" data-bs-target="#modalManageValidatedSimple" label="Ech. Validée de ref" icon="arrow-right" buttonClass="ps-1 font-size-0-6"></d-btn-outlined>
-                        <d-modal-validated-sample
+                        <d-btn-outlined :disabled="disabled" data-bs-toggle="modal" data-bs-target="#modalManageValidatedSimple" label="Ech. Validée de ref" icon="arrow-right" buttonClass="ps-1 font-size-0-6"></d-btn-outlined>
+                        <d-modal-validated-sample v-if="!disabled"
                             :customerInstructionId="customerInstructionId"
                             :carpetDesignOrderId="props.carpetDesignOrderId"
                             :validateSimpleData="props.customerInstruction?.validatedSample"
@@ -42,16 +42,16 @@
                 </div>
                 <div class="row justify-content-between align-items-center mt-3">
                     <div class="col-lg-7 col-md-12">
-                        <d-input type="date" label="Validation client" v-model="data.customerValidationDate"></d-input>
+                        <d-input :disabled="disabled" type="date" label="Validation client" v-model="data.customerValidationDate"></d-input>
                     </div>
                     <div class="col-lg-5 col-md-12 d-flex">
                         <div class="checkbox-default custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="hasFinitionInstruction" v-model="data.hasFinitionInstruction"/>
-                            <label class="custom-control-label" for="hasFinitionInstruction"></label>
+                            <input :disabled="disabled" type="checkbox" class="custom-control-input" id="hasFinitionInstruction" v-model="data.hasFinitionInstruction"/>
+                            <label :disabled="disabled" class="custom-control-label" for="hasFinitionInstruction"></label>
                         </div>
-                        <d-btn-outlined data-bs-toggle="modal" data-bs-target="#modalManageFinishing" label="Finition" icon="arrow-right" buttonClass="ps-1 font-size-0-8"></d-btn-outlined>
+                        <d-btn-outlined :disabled="disabled" data-bs-toggle="modal" data-bs-target="#modalManageFinishing" label="Finition" icon="arrow-right" buttonClass="ps-1 font-size-0-8"></d-btn-outlined>
                     </div>
-                    <d-modal-finishing 
+                    <d-modal-finishing  v-if="!disabled"
                         :customerInstructionId="customerInstructionId" 
                         :carpetDesignOrderId="props.carpetDesignOrderId"
                         :finishingData="props.customerInstruction?.finitionInstruction"
@@ -66,7 +66,7 @@
                         <div class="text-black p-0 pb-2">Commentaire client</div>
                     </div>
                     <div class="col-12">
-                        <textarea class="w-100 h-130-forced block-custom-border" v-model="data.customerComment"></textarea>
+                        <textarea :disabled="disabled" class="w-100 h-130-forced block-custom-border" v-model="data.customerComment"></textarea>
                     </div>
                 </div>
             </div>
@@ -109,6 +109,10 @@
         customerInstruction:{
             type: Object
         },
+        disabled: {
+            type: Boolean,
+            default: false
+        }
     });
     const data = ref(Object.assign({}, customerInstructionObject));
     
@@ -172,7 +176,6 @@
             data.value.constraintInstructionId,
         ],
         async (newCarpert, oldCarpet) => {
-            console.log(customerInstructionId.value);
             if(props.carpetDesignOrderId){
                 try{
                     const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, data.value, customerInstructionId.value);
@@ -193,6 +196,13 @@
                 updateCustomerInstructionId(props.customerInstruction.id);
                 setData();
             }
+        },
+        { deep: true }
+    );
+    watch(
+        () => props.disabled,
+        (newvalue) => {
+            console.log("new disabled value : " ,newvalue);
         },
         { deep: true }
     );

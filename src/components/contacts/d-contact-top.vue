@@ -17,7 +17,7 @@
                         <div class="card-body">
                             <div class="row p-1 align-items-center">
                                 <div class="col-sm-12 col-md-6">
-                                    <d-gender v-model="data.gender_id" :error="error.gender_id"></d-gender>
+                                    <d-gender required="true" v-model="data.gender_id" :error="error.gender_id"></d-gender>
                                 </div>
                                 <div class="col-sm-12 col-md-6">
                                     <d-input label="Tel. portable" v-model="data.mobile_phone" :error="error.mobile_phone"></d-input>

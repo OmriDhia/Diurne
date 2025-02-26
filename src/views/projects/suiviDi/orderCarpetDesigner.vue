@@ -33,7 +33,7 @@
                     <div class="row m-2">
                         <div class="col-md-12 pe-4">
                             <div class="container p-0">
-                                <div class="d-flex">
+                                <div class="d-flex flex-column flex-md-row">
                                     <div class="col-md-12 col-xl-9 pe-4">
                                         <div class="row">
                                             <div class="col-xl-4 col-md-12">
@@ -80,26 +80,29 @@
                                             <div class="col-xl-8 col-md-12">
                                                 <div class="row">
                                                     <div class="col-xl-6 col-md-12">
+                                                        <!-- :error="errorCarpetOrdeSpecification.collectionId" -->
                                                         <d-collections-dropdown
                                                             :disabled="disableForDesigner"
                                                             v-model="dataSpecification.collectionId"
-                                                            :error="errorCarpetOrdeSpecification.collectionId"
+                                                            :error="error?.collectionId"
                                                             :errorCollection="errorCarpetDesignOrder.collectionID"
                                                         ></d-collections-dropdown>
                                                     </div>
                                                     <div class="col-xl-6 col-md-12">
+                                                        <!-- :error="errorCarpetOrdeSpecification.modelId" -->
                                                         <d-model-dropdown
                                                             :disabled="disableForDesigner"
                                                             v-model="dataSpecification.modelId"
-                                                            :error="errorCarpetOrdeSpecification.modelId"
+                                                            :error="error?.modelId"
                                                             :errorModel="errorCarpetDesignOrder.ModelID"
                                                         ></d-model-dropdown>
                                                     </div>
                                                     <div class="col-xl-6 col-md-12">
+                                                        <!--:error="errorCarpetOrdeSpecification.qualityId" -->
                                                         <d-qualities-dropdown
                                                             :disabled="disableForDesigner"
                                                             v-model="dataSpecification.qualityId"
-                                                            :error="errorCarpetOrdeSpecification.qualityId"
+                                                            :error="error?.qualityId"
                                                             :errorQuality="errorCarpetDesignOrder.qualityID"
                                                         ></d-qualities-dropdown>
                                                     </div>
@@ -123,23 +126,32 @@
                                                 <textarea
                                                     :disabled="disableForDesigner"
                                                     v-model="dataSpecification.description"
-                                                    :class="{ 'is-invalid': errorCarpetDesignOrder.description }"
+                                                    :class="{ 'is-invalid': error?.description }"
                                                     class="w-100 h-130-forced block-custom-border"
                                                 ></textarea>
-                                                <div v-if="errorCarpetDesignOrder.description" class="invalid-feedback">La description est obligatoire.</div>
+                                                <div v-if="error?.description" class="invalid-feedback">La description est obligatoire.</div>
                                             </div>
                                         </div>
                                         <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && store.getters.isNonTrasmisStatus">
                                             <d-transmis-studio @transmisStudio="updateCarpetDesignStatus($event)"></d-transmis-studio>
                                         </div>
-                                        <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetSpecificationId">
-                                            <div class="col-12">
+                                        <div class="row ps-2 mt-4 mb-2 justify-content-between">
+                                            <div class="col-12" v-if="carpetSpecificationId">
                                                 <d-compositions
                                                     :disabled="CommercialAccess"
                                                     :compositionData="compositionData"
                                                     :carpetSpecificationId="carpetSpecificationId"
                                                     v-if="carpetDesignOrderId"
                                                 ></d-compositions>
+                                            </div>
+                                            <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId">
+                                                <d-transmis-adv
+                                                    :customerInstruction="currentCarpetObject?.customerInstruction"
+                                                    :id_di="id_di"
+                                                    :carpetDesignOrderId="carpetDesignOrderId"
+                                                    @transmisAdv="updateCarpetDesignStatus($event)"
+                                                    :disabled="!CommercialAccessADV"
+                                                ></d-transmis-adv>
                                             </div>
                                         </div>
                                     </div>
@@ -150,6 +162,7 @@
                                             :carpetDesignOrderId="carpetDesignOrderId"
                                             :designersProps="currentCarpetObject.designers"
                                             :imageTypeNames="selectedImageTypes"
+                                            @designerAdded="handleDesignerAdded"
                                         ></d-designer-list>
                                         <d-images-list
                                             :status="dataCarpetOrder.status_id"
@@ -164,7 +177,7 @@
                                             @updateMaterials="updateMaterials($event)"
                                             v-if="carpetSpecificationId"
                                         ></d-designer-composition-list>
-                                        <div class="row align-items-end mt-auto" v-if="displayFin" style="margin-bottom: 80px;">
+                                        <div class="row align-items-end mt-auto" v-if="displayFin">
                                             <div class="col-md-12">
                                                 <button class="disbaled btn btn-custom text-center w-100 mb-3" @click="FinDIStatus(6)">FIN</button>
                                             </div>
@@ -173,14 +186,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && DesignerAccess">
-                                    <d-transmis-adv
-                                        :customerInstruction="currentCarpetObject?.customerInstruction"
-                                        :id_di="id_di"
-                                        :carpetDesignOrderId="carpetDesignOrderId"
-                                        @transmisAdv="updateCarpetDesignStatus($event)"
-                                    ></d-transmis-adv>
                                 </div>
                             </div>
                         </div>
@@ -208,7 +213,7 @@
     import dCarpetStatusDropdown from '../../../components/common/d-carpet-status-dropdown.vue';
     import dMeasurementsDi from '../../../components/projet/contremarques/d-mesurement-di.vue';
     import { useMeta } from '/src/composables/use-meta';
-    import { Helper } from '../../../composables/global-methods';
+    import { Helper, formatErrorViolations } from '../../../composables/global-methods';
     import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
     import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
     import dQualitiesDropdown from '../../../components/projet/contremarques/dropdown/d-qualities-dropdown.vue';
@@ -223,7 +228,10 @@
     import dTransmisStudio from '../../../components/projet/contremarques/d-transmis-studio.vue';
     import dTransmisAdv from '../../../components/projet/contremarques/d-transmis-adv.vue';
     import moment from 'moment';
+    // src/views/projects/suiviDi/orderCarpetDesigner.vue
+    // src/composables/global-methods.js
     const selectedImageTypes = ref([]);
+    // Handle designer addition from the child component
 
     const updateDesignerList = (types) => {
         selectedImageTypes.value = types;
@@ -242,7 +250,7 @@
     watch(
         () => materials.value,
         (newMaterials) => {
-            console.log('Updated materials:', newMaterials);
+            // console.log('Updated materials:', newMaterials);
         }
     );
     const checkIfMaterialsIsNotEmpty = () => {
@@ -283,7 +291,13 @@
         location_id: 0,
         status_id: carpetStatus.nonTransmisId,
     });
+    const handleDesignerAdded = (status) => {
+        // You can perform other actions here, like updating the list of designers, etc.
+        dataCarpetOrder.value.status_id = status;
+    };
     const errorCarpetOrder = ref({});
+    const error = ref({});
+
     const errorCarpetOrdeSpecification = ref({});
     const dataSpecification = ref({
         reference: '',
@@ -324,6 +338,13 @@
     const displayFin = computed(() => {
         return (store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isSuperAdmin) && !store.getters.isFinStatus;
     });
+    const CommercialAccessADV = computed(() => {
+        return (store.getters.isCommertial || store.getters.isCommercialManager) && store.getters.isFinStatus;
+    });
+    watch(CommercialAccessADV, (newValue, oldValue) => {
+        console.log('new value', newValue);
+    });
+
 
     const getProjectDI = async () => {
         try {
@@ -380,28 +401,31 @@
     onMounted(() => {
         getOrderCarpet(carpetDesignOrderId);
         getProjectDI();
+        console.log(store.getters.isFinStatus, CommercialAccessADV.value, 'yassssssssssssssssssssssine');
+
         setTimeout(() => {
             firstLoad.value = false;
-        }, 5000);
-        console.log('role : ', DesignerAccess.value);
+            console.log(store.getters.isFinStatus, CommercialAccessADV.value, 'yassssssssssssssssssssssine');
+        }, 3000);
+
+        // console.log('role : ', DesignerAccess.value);
     });
 
     const CreateVariation = async () => {
-            try {
-                const response = await axiosInstance.post('/api/createCarpetDesignOrderVariation', {
-                    orderId: parseInt(carpetDesignOrderId),
-                    variation: ""
-                });
+        try {
+            const response = await axiosInstance.post('/api/createCarpetDesignOrderVariation', {
+                orderId: parseInt(carpetDesignOrderId),
+                variation: '',
+            });
 
-                console.log("Variation created:", response.data);
-                // Handle success response, maybe show a notification or update the UI
-                router.push({ name: 'di_orderDesigner_update', params: { id_di: id_di, carpetDesignOrderId: response.data.response.id } });
-
-            } catch (error) {
-                console.error("Error creating variation:", error);
-                // Handle error, show an error message to the user
-            }
+            console.log('Variation created:', response.data);
+            // Handle success response, maybe show a notification or update the UI
+            router.push({ name: 'di_orderDesigner_update', params: { id_di: id_di, carpetDesignOrderId: response.data.response.id } });
+        } catch (error) {
+            console.error('Error creating variation:', error);
+            // Handle error, show an error message to the user
         }
+    };
 
     const saveCarpetOrder = async (statusId) => {
         try {
@@ -505,16 +529,25 @@
     };
 
     const FinDIStatus = async (statusId) => {
+        // Assuming compositionData is a reactive reference
+        const isEmpty = compositionData.value.length === 0;
+
+        if (isEmpty) {
+            window.showMessage('La composition de la maquettes ne doit pas etres vide.', 'error');
+            console.log('The array has NOOOO elements:', compositionData.value);
+        }
         const imageTypesArray = Array.from(selectedImageTypes.value);
         console.log(selectedImageTypes.value, imageTypesArray);
-        if (imageTypesArray.includes('Vignette') && imageTypesArray.some((name) => name.includes('Légende'))) {
+        //&& imageTypesArray.some((name) => name.includes('Légende'))
+        if (imageTypesArray.includes('Vignette')) {
             dataCarpetOrder.value.status_id = statusId;
 
             if (checkIfMaterialsIsNotEmpty()) {
                 await saveCarpetOrder(statusId);
             }
         } else {
-            window.showMessage("Les images doivent contenir une Vignette et une image avec 'Légende' pour terminer.", 'error');
+            window.showMessage('Les images doivent contenir au moins une Vignettepour terminer.', 'error');
+            // window.showMessage("Les images doivent contenir une Vignette et une image avec 'Légende' pour terminer.", 'error');
         }
     };
 
@@ -526,10 +559,27 @@
             await saveCarpetOrder(statusId);
         }
     };
+    //dataCarpetOrder.location_id
+    watch(
+        () => dataCarpetOrder.value.location_id,
+        async (newID) => {
+            if (!firstLoad.value) {
+                await saveCarpetOrder();
+            }
+        },
+        { deep: true }
+    );
+    watch(
+        () => CommercialAccessADV.value,
+        (newValue, oldValue) => {
+            console.log('newValue', newValue);
+        }
+    );
 
     const applyCarpetStatus = (statusId) => {
         store.commit('setCarpetDesignOrderStatus', statusId);
         store.commit('setIsFinStatus', statusId === carpetStatus.finiId);
+        console.log('applyCarpetStatus : ', store.getters.isFinStatus);
         store.commit('setIsNonTrasmisStatus', statusId === carpetStatus.nonTransmisId);
     };
 

@@ -67,6 +67,7 @@
         methods: {
             handleChange(value) {
                 this.$emit('update:modelValue', parseInt(value.location_id));
+                console.log("location id : " , parseInt(value.location_id));
             },
             async getData() {
                 try {
@@ -76,6 +77,7 @@
                         if (this.modelValue) {
                             this.value = this.data.filter((ad) => ad.location_id === this.modelValue)[0];
                         }
+                        // console.log("data retrieved for locations : ", this.data);
                     }
                 } catch (error) {
                     console.error('Failed to fetch address types:', error);

@@ -92,10 +92,8 @@
         try{
             data.value.price_min = parseFloat(data.value.price_min);
             data.value.price_max = parseFloat(data.value.price_max);
-            data.value.quote_processing_date = (typeof data.value.quote_processing_date === 'object' && Object.keys(data.value.quote_processing_date).length > 0)
-                ? Helper.FormatDate(data.value.quote_processing_date, "YYYY-MM-DD HH:mm:ss")
-                : {};
-            data.value.createdAt = Helper.FormatDate(data.value.createdAt,"YYYY-MM-DD HH:mm:ss");
+            data.value.quote_processing_date = "";
+            data.value.createdAt = data.value.createdAt ? Helper.FormatDate(data.value.createdAt,"YYYY-MM-DD HH:mm:ss") : Helper.FormatDate(new Date(),"YYYY-MM-DD HH:mm:ss");
             data.value.contremarqueId = props.contremarqueId;
             if(data.value.location_id){
                 const res = await axiosInstance.put("/api/updateLocation/" + data.value.location_id,data.value);
@@ -119,7 +117,7 @@
         data.value.carpetTypeId = 0;
         data.value.description = "";
         data.value.quote_processed = true;
-        data.value.quote_processing_date = {};
+        data.value.quote_processing_date = "";
         setOptions();
     };
 
@@ -130,10 +128,10 @@
                 carpetTypeId: loc.carpetType_id,
                 description: loc.description,
                 quote_processed: loc.quote_processed,
-                quote_processing_date: (loc.quote_processing_date) ? Helper.FormatDate(loc.quote_processing_date.date,'YYYY-MM-DD HH:mm:ss') : {},
+                quote_processing_date: "",
                 price_min: Helper.FormatNumber(loc.price_min),
                 price_max: Helper.FormatNumber(loc.price_max),
-                createdAt: new Date(loc.created_at.date),
+                createdAt: loc.created_at.date ? new Date(loc.created_at.date) : new Date(),
             };
         }
     };

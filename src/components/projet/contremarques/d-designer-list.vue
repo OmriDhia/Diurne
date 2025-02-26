@@ -52,6 +52,8 @@
     import dDesignerStatus from './_Partials/d-designer-status.vue';
     import { designerStatusConst, carpetStatus } from '../../../composables/constants';
     import userService from '../../../Services/user-service';
+    import { useRoute, useRouter } from 'vue-router';
+    import store from '../../../store';
 
     export default {
         components: {
@@ -107,6 +109,15 @@
                     status: data.inProgress ? designerStatusConst[0].id : data.stopped ? designerStatusConst[1].id : data.done ? designerStatusConst[2].id : 0,
                 };
                 this.designers.push(newDesigner);
+                // Convert both values to integers for comparison
+                const userId = parseInt(userService.getUserInfo().id, 10);
+                const designerId = parseInt(newDesigner.designer, 10);
+                // Compare the two values and emit based on the comparison
+                if (userId === designerId) {
+                    this.$emit('designerAdded', 4); // Emit 'En cours' if they are equal
+                } else {
+                    this.$emit('designerAdded', 3); // Emit 'Attribué' if they are not equal
+                }
             },
             handleDelete(index) {
                 this.designers.splice(index, 1);
@@ -168,9 +179,9 @@
         },
         watch: {
             designersProps(newDesigners) {
-                console.log('newDesigners', newDesigners);
+                // console.log('newDesigners', newDesigners);
                 // if (userId === designer.id ){
-                    // console.log("userId === designer.id", userId);
+                // console.log("userId === designer.id", userId);
                 // }
                 if (newDesigners && newDesigners.length > 0) {
                     this.designers = this.getDesigners(newDesigners);
