@@ -130,7 +130,7 @@
                 carpetTypeId: loc.carpetType_id,
                 description: loc.description,
                 quote_processed: loc.quote_processed,
-                quote_processing_date: (loc.quote_processing_date) ? Helper.FormatDate(loc.quote_processing_date.date,'YYYY-MM-DD HH:mm:ss') : {},
+                quote_processing_date: (loc.quote_processing_date) ? Helper.FormatDate(loc.quote_processing_date.date,'YYYY-MM-DD HH:mm:ss') : "",
                 price_min: Helper.FormatNumber(loc.price_min),
                 price_max: Helper.FormatNumber(loc.price_max),
                 createdAt: loc.created_at.date ? new Date(loc.created_at.date) : new Date(),
