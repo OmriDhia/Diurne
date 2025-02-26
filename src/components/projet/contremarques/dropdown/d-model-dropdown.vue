@@ -4,7 +4,7 @@
         </div>
         <div :class="{'col-md-8':!showOnlyDropdown,'col-md-12':showOnlyDropdown}">
             <multiselect
-                :class="{ 'is-invalid': error}"
+                :class="{ 'multiselect--error': error }"
                 :model-value="value"
                 :options="data"
                 placeholder="Modèle"
@@ -105,3 +105,8 @@
         }
     };
 </script>
+<style>
+.multiselect--error .multiselect__tags {
+    border: 1px solid red !important;  /* Use !important to ensure it overrides other styles */
+}
+</style>

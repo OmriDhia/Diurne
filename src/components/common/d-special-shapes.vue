@@ -6,7 +6,7 @@
                 <option value="0">Auccun forme</option>
                 <option v-for="(prof, key) in discounts" :key="key" :value="prof.id">{{ prof.name }}</option>
             </select>
-            <div v-if="error" class="invalid-feedback">{{ $t('Forme spéciale est abligatoire.') }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t('Forme spéciale est obligatoire.') }}</div>
         </div>
     </div>
 </template>
