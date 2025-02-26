@@ -273,6 +273,70 @@
         if (filter.value.firstname) {
             param += '&filter[customerName]=' + filter.value.firstname;
         }
+        if (filter.value.lastname) {
+            param += '&filter[lastname]=' + filter.value.lastname;
+        }
+        if (filter.value.rs) {
+            param += '&filter[socialReason]=' + filter.value.rs;
+        }
+        if (filter.value.city) {
+            param += '&filter[city]=' + filter.value.city;
+        }
+        if (filter.value.postCode) {
+            param += '&filter[zip_code]=' + filter.value.postCode;
+        }
+        if (filter.value.country) {
+            param += '&filter[country]=' + filter.value.country;
+        }
+        if (filter.value.mailingLanguageId) {
+            param += '&filter[mailingLanguageId]=' + filter.value.mailingLanguageId;
+        }
+        if (filter.value.customerTypeId) {
+            const typeId = filter.value.customerTypeId.map((e) => e.customerGroup_id).join(',');
+            param += '&filter[customerGroupId]=' + typeId;
+        }
+        if (filter.value.contactMailing) {
+            param += '&filter[contactMailing]=' + filter.value.contactMailing;
+        }
+        if (filter.value.wrongAdd === 'true') {
+            param += '&filter[hasWrongAddress]=1';
+        }
+        if (filter.value.wrongAdd === 'false') {
+            param += '&filter[hasWrongAddress]=0';
+        }
+        if (filter.value.validAdd === 'true') {
+            param += '&filter[hasValidAddress]=1';
+        }
+        if (filter.value.validAdd === 'false') {
+            param += '&filter[hasValidAddress]=0';
+        }
+        if (filter.value.active && filter.value.active !== 'all') {
+            param += '&filter[active]=1';
+        }
+        if (filter.value.hasInvalidCommercial) {
+            param += '&filter[hasInvalidCommercial]=1';
+        }
+        if (filter.value.tva_ce) {
+            param += '&filter[tva_ce]=' + filter.value.tva_ce;
+        }
+        if (filter.value.commercial) {
+            param += '&filter[commercial]=' + filter.value.commercial;
+        }
+        if (filter.value.webSite) {
+            param += '&filter[website]=' + filter.value.webSite;
+        }
+        if (filter.value.pres) {
+            param += '&filter[prescripteur]=' + filter.value.pres;
+        }
+        if (filter.value.hasOnlyOneContact) {
+            param += '&filter[hasOnlyOneContact]=1';
+        }
+        if (filter.value.is_agent) {
+            param += '&filter[is_agent]=1';
+        }
+        if (filter.value.is_prescripteur) {
+            param += '&filter[is_prescripteur]=1';
+        }
         return param;
     };
     const exportCustomers = async () => {
