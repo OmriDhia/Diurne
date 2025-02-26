@@ -119,7 +119,7 @@
         data.value.carpetTypeId = 0;
         data.value.description = "";
         data.value.quote_processed = true;
-        data.value.quote_processing_date = {};
+        data.value.quote_processing_date = "";
         setOptions();
     };
 
@@ -133,7 +133,7 @@
                 quote_processing_date: (loc.quote_processing_date) ? Helper.FormatDate(loc.quote_processing_date.date,'YYYY-MM-DD HH:mm:ss') : {},
                 price_min: Helper.FormatNumber(loc.price_min),
                 price_max: Helper.FormatNumber(loc.price_max),
-                createdAt: new Date(loc.created_at.date),
+                createdAt: loc.created_at.date ? new Date(loc.created_at.date) : new Date(),
             };
         }
     };
