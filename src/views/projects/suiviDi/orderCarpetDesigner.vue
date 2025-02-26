@@ -144,12 +144,13 @@
                                                     v-if="carpetDesignOrderId"
                                                 ></d-compositions>
                                             </div>
-                                            <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && DesignerAccess">
+                                            <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId">
                                                 <d-transmis-adv
                                                     :customerInstruction="currentCarpetObject?.customerInstruction"
                                                     :id_di="id_di"
                                                     :carpetDesignOrderId="carpetDesignOrderId"
                                                     @transmisAdv="updateCarpetDesignStatus($event)"
+                                                    :disabled="!CommercialAccessADV"
                                                 ></d-transmis-adv>
                                             </div>
                                         </div>
@@ -212,7 +213,7 @@
     import dCarpetStatusDropdown from '../../../components/common/d-carpet-status-dropdown.vue';
     import dMeasurementsDi from '../../../components/projet/contremarques/d-mesurement-di.vue';
     import { useMeta } from '/src/composables/use-meta';
-    import { Helper , formatErrorViolations} from '../../../composables/global-methods';
+    import { Helper, formatErrorViolations } from '../../../composables/global-methods';
     import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
     import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
     import dQualitiesDropdown from '../../../components/projet/contremarques/dropdown/d-qualities-dropdown.vue';
@@ -337,6 +338,13 @@
     const displayFin = computed(() => {
         return (store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isSuperAdmin) && !store.getters.isFinStatus;
     });
+    const CommercialAccessADV = computed(() => {
+        return (store.getters.isCommertial || store.getters.isCommercialManager) && store.getters.isFinStatus;
+    });
+    watch(CommercialAccessADV, (newValue, oldValue) => {
+        console.log('new value', newValue);
+    });
+
 
     const getProjectDI = async () => {
         try {
@@ -393,9 +401,13 @@
     onMounted(() => {
         getOrderCarpet(carpetDesignOrderId);
         getProjectDI();
+        console.log(store.getters.isFinStatus, CommercialAccessADV.value, 'yassssssssssssssssssssssine');
+
         setTimeout(() => {
             firstLoad.value = false;
-        }, 5000);
+            console.log(store.getters.isFinStatus, CommercialAccessADV.value, 'yassssssssssssssssssssssine');
+        }, 3000);
+
         // console.log('role : ', DesignerAccess.value);
     });
 
@@ -519,28 +531,22 @@
     const FinDIStatus = async (statusId) => {
         // Assuming compositionData is a reactive reference
         const isEmpty = compositionData.value.length === 0;
-        
+
         if (isEmpty) {
             window.showMessage('La composition de la maquettes ne doit pas etres vide.', 'error');
             console.log('The array has NOOOO elements:', compositionData.value);
-        } else {
-            window.showMessage('composition vide.', 'success');
-            console.log('The array has elements:', compositionData.value);
         }
         const imageTypesArray = Array.from(selectedImageTypes.value);
         console.log(selectedImageTypes.value, imageTypesArray);
-        if (imageTypesArray.includes('Vignette') && imageTypesArray.some((name) => name.includes('Légende'))) {
+        //&& imageTypesArray.some((name) => name.includes('Légende'))
+        if (imageTypesArray.includes('Vignette')) {
             dataCarpetOrder.value.status_id = statusId;
 
             if (checkIfMaterialsIsNotEmpty()) {
                 await saveCarpetOrder(statusId);
             }
         } else {
-                // Wait for 3 seconds, then show the second message
-            setTimeout(() => {
-                console.log('Showing the second message after the first one');
-                window.showMessage("Les images doivent contenir une Vignette et une image avec 'Légende' pour terminer.", 'error');
-            }, 4000); // Show second message after 3 seconds
+            window.showMessage('Les images doivent contenir au moins une Vignettepour terminer.', 'error');
             // window.showMessage("Les images doivent contenir une Vignette et une image avec 'Légende' pour terminer.", 'error');
         }
     };
@@ -563,9 +569,17 @@
         },
         { deep: true }
     );
+    watch(
+        () => CommercialAccessADV.value,
+        (newValue, oldValue) => {
+            console.log('newValue', newValue);
+        }
+    );
+
     const applyCarpetStatus = (statusId) => {
         store.commit('setCarpetDesignOrderStatus', statusId);
         store.commit('setIsFinStatus', statusId === carpetStatus.finiId);
+        console.log('applyCarpetStatus : ', store.getters.isFinStatus);
         store.commit('setIsNonTrasmisStatus', statusId === carpetStatus.nonTransmisId);
     };
 
