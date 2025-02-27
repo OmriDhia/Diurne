@@ -7,8 +7,8 @@
             <select id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="discount" @change="handleChange($event.target.value)">
                 <option v-for="(prof, key) in discounts" :key="key" :value="prof.id">{{ prof.label }}</option>
             </select>
-            <div v-if="error" class="invalid-feedback">{{ $t('tarif est abligatoire.') }}</div>
         </div>
+        <div v-if="error" class="invalid-feedback">{{ $t('tarif est obligatoire.') }}</div>
     </div>
 </template>
 

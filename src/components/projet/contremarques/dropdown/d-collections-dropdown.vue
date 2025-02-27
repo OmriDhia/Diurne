@@ -1,11 +1,12 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-md-4" v-if="!showOnlyDropdown"><label class="form-label">Collection<span class="required"
-                                                                        v-if="required">*</span>:</label>
+        <div class="col-md-4" v-if="!showOnlyDropdown">
+            <label class="form-label">Collection<span class="required" v-if="required">*</span>:</label>
         </div>
-        <div :class="{'col-md-8':!showOnlyDropdown,'col-md-12':showOnlyDropdown}">
+        <!-- :class="{ 'is-invalid': error}" -->
+        <div :class="{ 'col-md-8': !showOnlyDropdown, 'col-md-12': showOnlyDropdown }">
             <multiselect
-                :class="{ 'is-invalid': error}"
+                :class="{ 'multiselect--error': error }"
                 :model-value="value"
                 :options="data"
                 placeholder="Collections"
@@ -18,64 +19,55 @@
                 :disabled="disabled"
                 @update:model-value="handleChange($event)"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champs collection est abligatoire.") }}
-            </div>
-            <div v-if="errorCollection" class="invalid-feedback">{{ $t("Le champs collection est obligatoire.") }}
-            </div>
+            <div v-if="error" class="invalid-feedback">{{ $t('Le champs collection est obligatoire.') }}</div>
         </div>
     </div>
     <div class="row align-items-center justify-content-end" v-if="!showOnlyDropdown && !hideBtn">
         <div class="col-md-8">
-            <button class="btn btn-custom pe-2 ps-2 font-size-0-7 w-100" @click="goToSettings">Céer une
-                collection
-            </button>
+            <button class="btn btn-custom pe-2 ps-2 font-size-0-7 w-100" @click="goToSettings">Céer une collection</button>
         </div>
     </div>
 </template>
 
 <script>
     import axiosInstance from '../../../../config/http';
-    import Multiselect from 'vue-multiselect'
+    import Multiselect from 'vue-multiselect';
     import 'vue-multiselect/dist/vue-multiselect.css';
 
     export default {
         components: {
-            Multiselect
+            Multiselect,
         },
         props: {
             modelValue: {
                 type: [Number, String, null],
-                required: true
+                required: true,
             },
             error: {
                 type: String,
-                default: ''
+                default: '',
             },
             required: {
                 type: Boolean,
-                default: false
+                default: false,
             },
             disabled: {
                 type: Boolean,
-                default: false
+                default: false,
             },
             showOnlyDropdown: {
                 type: Boolean,
-                default: false
+                default: false,
             },
             hideBtn: {
                 type: Boolean,
-                default: false
+                default: false,
             },
-            errorCollection: {
-                type: Boolean,
-                default: false
-            }
         },
         data() {
             return {
                 value: null,
-                data: []
+                data: [],
             };
         },
         methods: {
@@ -87,24 +79,28 @@
                     const res = await axiosInstance.get('/api/collections');
                     this.data = res.data.response;
 
-                    if(this.modelValue){
-                        this.value = this.data.filter(ad => ad.id === this.modelValue)[0]
+                    if (this.modelValue) {
+                        this.value = this.data.filter((ad) => ad.id === this.modelValue)[0];
                     }
                 } catch (error) {
                     console.error('Failed to fetch address types:', error);
                 }
             },
-            goToSettings() {
-
-            }
+            goToSettings() {},
         },
         mounted() {
             this.getData();
         },
         watch: {
             modelValue(newValue) {
-                this.value = this.data.filter(ad => ad.id === newValue)[0]
-            }
-        }
+                this.value = this.data.filter((ad) => ad.id === newValue)[0];
+            },
+        },
     };
 </script>
+
+<style>
+.multiselect--error .multiselect__tags {
+    border: 1px solid red !important;  /* Use !important to ensure it overrides other styles */
+}
+</style>

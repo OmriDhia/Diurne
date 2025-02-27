@@ -60,20 +60,21 @@
             };
         },
         computed: {
-            // ...mapGetters(['imageTypes']),
-            imageTypes() {
-                return this.$store.getters.imageTypes;
-            },
+            ...mapGetters(['imageTypes']),
+            // imageTypes() {
+            //     return this.$store.getters.imageTypes;
+            // }
         },
         methods: {
-            ...mapActions(['fetchImageTypes']),
+            ...mapActions(['fetchImageTypes','fetchAttachmentTypes']),
             handleChange(value) {
-                this.$emit('update:modelValue', parseInt(value.id));
-                this.$emit('imageTypeSelected', value.name); // Emit name to parent
-                this.$emit('imageTypeUpdateSelected', value.id); // Emit name to parent
+                    this.$emit('update:modelValue', parseInt(value.id));
+                    this.$emit('imageTypeSelected', value.name); // Emit name to parent
+                    this.$emit('imageTypeUpdateSelected', value.id); // Emit name to parent
             },
             selectedValue() {
-                if (this.modelValue) {
+                if (this.modelValue >  0) {
+                    console.log("selected value :", this.modelValue);
                     this.value = this.imageTypes.find((ad) => ad.id === this.modelValue);
                     this.$emit('update:modelValue', parseInt(this.value.id));
                     this.$emit('imageTypeSelected', this.value.name); // Emit name to parent
@@ -82,6 +83,7 @@
         },
         async mounted() {
             await this.fetchImageTypes();
+            await this.fetchAttachmentTypes();
             this.selectedValue();
         },
         watch: {
