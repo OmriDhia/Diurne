@@ -565,6 +565,11 @@
                 dataToSent.quoteDetail.proposedDiscountRate = parseFloat(dataToSent.quoteDetail.proposedDiscountRate);
 
                 if (quoteDetailId) {
+                    validationSubmitData();
+                    if (Object.values(validationSubmitErrors.value).some((error) => error !== '')) {
+                        console.log('There are validation errors.', validationSubmitErrors.value);
+                        return; // Stop further execution if there are errors
+                    }
                     const res = await axiosInstance.put(`/api/Quote/${quote_id}/updateQuoteDetail/${quoteDetailId}`, dataToSent);
                     window.showMessage('Mise a jour avec succées.');
                     if (leave) {
