@@ -108,7 +108,7 @@
         watch: {
             modelValue(newValue) {
                 this.selectedContremarque = this.contremarques.find( ad => ad.contremarque_id === newValue ) || null;
-                console.log("Selection mise à jour :", this.selectedContremarque);
+                // console.log("Selection mise à jour :", this.selectedContremarque);
             },
             // modelValue(newValue) {
             //     this.contremarqueId = this.contremarques.filter(ad => ad.contremarque_id === newValue)[0];

@@ -220,6 +220,18 @@ export const devisDocxStyle = 'body{' +
     '        }' +
     '        table, tbody {' +
     '            width: 100%;' +
+    '            border: none !important;' +
     '            vertical-align: top;' +
     '            overflow: visible;' +
+    '        }'+
+    '        img {' +
+    '            max-width: 160px !important;' +
+    '        }'+
+    '       @page { size: A4; margin: 2cm; }' +
+    '       .header {' +
+    '            text-align: center;' +
+    '            font-family: Garamond, serif;' +
+    '            font-size: 14pt;' +
+    '            font-weight: bold;' +
+    '            margin-bottom: 20pt;' +
     '        }';

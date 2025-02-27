@@ -4,7 +4,7 @@
         </div>
         <div class="col-8">
             <multiselect
-                :class="{ 'is-invalid': error}"
+                :class="{ 'multiselect--error': error }"
                 :model-value="value"
                 :options="data"
                 placeholder="Qualité"
@@ -18,7 +18,6 @@
                 @update:model-value="handleChange($event)"
             ></multiselect>
             <div v-if="error" class="invalid-feedback">{{ $t("Le champs qualité est obligatoire.") }}</div>
-            <div v-if="errorQuality" class="invalid-feedback">{{ $t("Le champs qualité est obligatoire.") }}</div>
 
         </div>
     </div>
@@ -91,3 +90,8 @@
         }
     };
 </script>
+<style>
+.multiselect--error .multiselect__tags {
+    border: 1px solid red !important;  /* Use !important to ensure it overrides other styles */
+}
+</style>
