@@ -41,7 +41,7 @@
                         </div>
                         <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Tapis de projet" className="ps-2"></d-panel-title>
-                            <d-imageDevisAttribution :contremarqueId="contremarqueId" />
+                            <d-imageDevisAttribution :quoteDetailId="quoteDetailId" :contremarqueId="contremarqueId" />
 
                             <!-- <div class="row pe-2 ps-0"></div>
                             <div class="row pe-2 ps-0 align-items-center"></div> -->

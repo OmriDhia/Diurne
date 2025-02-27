@@ -7,6 +7,7 @@ export default {
             formData.append('file', file);
             formData.append('distantFilePath', distantFilePath); 
             formData.append('attachmentTypeId', type);
+            formData.append('attachmentType', "A4");
             const url = '/api/upload/attachment';
             
             const response = await axiosInstance.post(url, formData, {

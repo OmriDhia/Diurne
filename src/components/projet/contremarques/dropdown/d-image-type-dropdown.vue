@@ -68,6 +68,7 @@
         methods: {
             ...mapActions(['fetchImageTypes']),
             handleChange(value) {
+                console.log("value attachment type id : ", value.id);
                 this.$emit('update:modelValue', parseInt(value.id));
                 this.$emit('imageTypeSelected', value.name); // Emit name to parent
                 this.$emit('imageTypeUpdateSelected', value.id); // Emit name to parent

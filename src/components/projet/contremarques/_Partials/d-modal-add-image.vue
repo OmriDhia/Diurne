@@ -100,12 +100,14 @@
         }
         
         uploadProgress.value = 0;
-        console.log(data.imageTypeId);
+        console.log(data.value.imageTypeId);
+        // return;
         try {
             if(!uplodedImage){
                 const response = await attachmentService.uploadFile(
                     file.value,
-                    store.getters.defaultTypeImageId,
+                    // store.getters.defaultTypeImageId,
+                    data.value.imageTypeId,
                     distantFilePath.value,
                     (progress) => {
                         uploadProgress.value = progress;
