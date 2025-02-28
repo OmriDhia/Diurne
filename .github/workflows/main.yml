@@ -40,8 +40,6 @@ jobs:
           script: |
             cd /var/www/html/diurne_vuejs
             sudo chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
-            sudo find /var/www/html/diurne_vuejs -type d -exec chmod 755 {} \;
-            sudo find /var/www/html/diurne_vuejs -type f -exec chmod 644 {} \;
             npm install
             npm run build
             sudo systemctl restart apache2
