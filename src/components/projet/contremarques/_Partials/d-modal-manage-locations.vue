@@ -127,7 +127,7 @@
                 contremarqueId: loc.contremarque_id,
                 carpetTypeId: loc.carpetType_id,
                 description: loc.description,
-                location_id: loc.id ? loc.id : null;
+                location_id: loc.id ? loc.id : null,
                 quote_processed: loc.quote_processed,
                 quote_processing_date: "",
                 price_min: Helper.FormatNumber(loc.price_min),

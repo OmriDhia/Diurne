@@ -357,6 +357,7 @@
                 contremarque.value = await contremarqueService.getContremarqueById(projectDi.value.contremarque);
                 commercial.value = contremarque.value.commercials ? contremarque.value.commercials[0].firstname + ' ' + contremarque.value.commercials[0].lastname : '';
                 customer.value = contremarque.value.customer;
+                firstLoad.value = false;
             }
         } catch (e) {
             console.log(e);
@@ -403,10 +404,10 @@
         getProjectDI();
         // console.log(store.getters.isFinStatus, CommercialAccessADV.value, 'yassssssssssssssssssssssine');
 
-        setTimeout(() => {
-            firstLoad.value = false;
-            // console.log(store.getters.isFinStatus, CommercialAccessADV.value, 'yassssssssssssssssssssssine');
-        }, 3000);
+        // setTimeout(() => {
+        //     firstLoad.value = false;
+        //     // console.log(store.getters.isFinStatus, CommercialAccessADV.value, 'yassssssssssssssssssssssine');
+        // }, 1000);
 
         // console.log('role : ', DesignerAccess.value);
     });
