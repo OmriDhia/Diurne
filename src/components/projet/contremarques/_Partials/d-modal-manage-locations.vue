@@ -49,26 +49,30 @@
     import dInput from "../../../../components/base/d-input.vue";
     import dBaseModal from "../../../../components/base/d-base-modal.vue";
     import dPanelTitle from "../../../../components/common/d-panel-title.vue";
-    import {formatErrorViolations, Helper} from "../../../../composables/global-methods";
+    import { formatErrorViolations, Helper } from "../../../../composables/global-methods";
     import dCarpetDropdown from "../../../../components/common/d-carpet-dropdown.vue";
-  
+
     const props = defineProps({
         locationData: {
             type: Object,
         },
-        contremarqueId:{
+        contremarqueId: {
             type: Number
         },
-        options:{
+        options: {
             type: Object,
             default: {
                 min_price: 0,
                 max_price: 0,
                 last_quote_date: ''
             }
+        },
+        saveAndStay: {
+            type: Boolean,
+            default: true
         }
     });
-    
+
     const data = ref({
         contremarqueId: 0,
         carpetTypeId: 0,
@@ -80,7 +84,7 @@
         createdAt: new Date(),
     });
     const error = ref({});
-    
+
     onMounted(()=>{
         if(props.locationData){
             affectData(props.locationData);  
@@ -88,30 +92,35 @@
         setOptions();
     });
     
-    const saveLocation = async () =>{
+    const saveLocation = async () => {
         try{
             data.value.price_min = parseFloat(data.value.price_min);
             data.value.price_max = parseFloat(data.value.price_max);
             data.value.quote_processing_date = "";
             data.value.createdAt = data.value.createdAt ? Helper.FormatDate(data.value.createdAt,"YYYY-MM-DD HH:mm:ss") : Helper.FormatDate(new Date(),"YYYY-MM-DD HH:mm:ss");
             data.value.contremarqueId = props.contremarqueId;
+            let res;
             if(data.value.location_id){
-                const res = await axiosInstance.put("/api/updateLocation/" + data.value.location_id,data.value);
+                res = await axiosInstance.put("/api/updateLocation/" + data.value.location_id,{ ...data.value, quoteProcessed: data.value.quote_processed });
                 window.showMessage("Mise à jour avec succées.");
             }else{
-                const res = await axiosInstance.post("/api/createLocation",data.value);
+                res = await axiosInstance.post("/api/createLocation",data.value);
                 window.showMessage("Ajout avec succées.");
             }
-            document.querySelector("#modalLocationManage .btn-close").click();
-            initData();
-        }catch (e){
-            if(e.response.data.violations){
+            if (props.saveAndStay && !data.value.location_id) {
+                affectData(res.data.response);
+            } else {
+                document.querySelector("#modalLocationManage .btn-close").click();
+                initData();
+            }
+        } catch (e) {
+            if (e.response.data.violations) {
                 error.value = formatErrorViolations(e.response.data.violations);
             }
-            window.showMessage(e.message,'error')
+            window.showMessage(e.message, 'error')
         }
     };
-    
+
     const initData = () => {
         data.value.contremarqueId = 0;
         data.value.carpetTypeId = 0;
@@ -127,7 +136,7 @@
                 contremarqueId: loc.contremarque_id,
                 carpetTypeId: loc.carpetType_id,
                 description: loc.description,
-                location_id: loc.id ? loc.id : null,
+                location_id: loc.id ? loc.id : loc.location_id ? loc.location_id : 0,
                 quote_processed: loc.quote_processed,
                 quote_processing_date: "",
                 price_min: Helper.FormatNumber(loc.price_min),
@@ -136,7 +145,7 @@
             };
         }
     };
-    
+
     const setOptions = () => {
         if(props.options){
             data.value.price_min = Helper.FormatNumber(props.options?.min_price);
