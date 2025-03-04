@@ -357,6 +357,7 @@
                 contremarque.value = await contremarqueService.getContremarqueById(projectDi.value.contremarque);
                 commercial.value = contremarque.value.commercials ? contremarque.value.commercials[0].firstname + ' ' + contremarque.value.commercials[0].lastname : '';
                 customer.value = contremarque.value.customer;
+                firstLoad.value = false;
             }
         } catch (e) {
             console.log(e);
@@ -401,12 +402,12 @@
     onMounted(() => {
         getOrderCarpet(carpetDesignOrderId);
         getProjectDI();
-        console.log(store.getters.isFinStatus, CommercialAccessADV.value, 'yassssssssssssssssssssssine');
+        // console.log(store.getters.isFinStatus, CommercialAccessADV.value, 'yassssssssssssssssssssssine');
 
-        setTimeout(() => {
-            firstLoad.value = false;
-            console.log(store.getters.isFinStatus, CommercialAccessADV.value, 'yassssssssssssssssssssssine');
-        }, 3000);
+        // setTimeout(() => {
+        //     firstLoad.value = false;
+        //     // console.log(store.getters.isFinStatus, CommercialAccessADV.value, 'yassssssssssssssssssssssine');
+        // }, 1000);
 
         // console.log('role : ', DesignerAccess.value);
     });
@@ -579,8 +580,11 @@
     const applyCarpetStatus = (statusId) => {
         store.commit('setCarpetDesignOrderStatus', statusId);
         store.commit('setIsFinStatus', statusId === carpetStatus.finiId);
-        console.log('applyCarpetStatus : ', store.getters.isFinStatus);
+        // console.log('applyCarpetStatus : ', statusId,carpetStatus.nonTransmisId);
         store.commit('setIsNonTrasmisStatus', statusId === carpetStatus.nonTransmisId);
+        if (statusId === 0){
+            store.commit('setIsNonTrasmisStatus', true);
+        }
     };
 
     const saveCarpetOrderSpecifications = async () => {

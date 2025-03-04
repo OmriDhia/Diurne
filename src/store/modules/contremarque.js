@@ -121,7 +121,8 @@ export default {
                 const res = await axiosInstance.get('/api/attachment-types');
                 commit('setAttachmentTypes', res.data.response);
                 const id = res.data.response.find(f => f.name === 'Image');
-                commit('setDefaultTypeImageId', id?.id);
+                commit('setDefaultTypeImageId', id.id);
+                // console.log(id.id,res);
                 
             
             } catch (error) {
