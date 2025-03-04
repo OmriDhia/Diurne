@@ -77,7 +77,7 @@
         quote_processing_date: "",
         price_min: 0,
         price_max: 0,
-        createdAt: new Date(),
+        createdAt: "",
     });
     const error = ref({});
     
@@ -140,7 +140,7 @@
         if(props.options){
             data.value.price_min = Helper.FormatNumber(props.options?.min_price);
             data.value.price_max = Helper.FormatNumber(props.options?.max_price);
-            data.value.createdAt = new Date(props.options?.last_quote_date);
+            data.value.createdAt =  props.options?.last_quote_date ? new Date(props.options?.last_quote_date) : "";
         }
     };
     watch(
