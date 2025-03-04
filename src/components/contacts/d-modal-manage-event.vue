@@ -16,7 +16,7 @@
                             <div class="col-lg-4 col-md-12">
                                 <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
                                     <input type="checkbox" class="custom-control-input" id="reminderDisabled" v-model="data.reminder_disabled" />
-                                    <label class="custom-control-label text-dark" for="reminderDisabled"> {{ $t('Plus de relance') }} </label>
+                                    <label class="custom-control-label text-dark" for="reminderDisabled"> {{ $t('plusderelance') }} </label>
                                 </div>
                             </div>
                         </div>
@@ -73,6 +73,10 @@
         },
         eventData: {
             type: [Object, null],
+        },
+        saveAndStay: {
+            type: Boolean,
+            default: true
         }
     });
 
@@ -101,15 +105,21 @@
             data.value.people_present.contacts = contactId.value;
             data.value.people_present.users = userId.value;
             data.value.customerId = eventCustomerId.value;
+            let res;
             if (data.value.event_id) {
-                const res = await axiosInstance.put("api/updateEvent/" + data.value.event_id, data.value);
+                res = await axiosInstance.put("api/updateEvent/" + data.value.event_id, data.value);
                 window.showMessage("Mise a jour avec succées.");
             } else {
-                const res = await axiosInstance.post("/api/createEvent", data.value);
+                res = await axiosInstance.post("/api/createEvent", data.value);
                 window.showMessage("Ajout avec succées.");
             }
-            document.querySelector("#modalEventManage .btn-close").click();
-            eventCustomerId.value = 0;
+            if (props.saveAndStay && !data.value.event_id) {
+                affectData(res.data.response);
+            } else {
+                document.querySelector("#modalEventManage .btn-close").click();
+                initData();
+                eventCustomerId.value = 0;
+            }
         } catch (e) {
             if (e.response.data.violations) {
                 error.value = formatErrorViolations(e.response.data.violations);
