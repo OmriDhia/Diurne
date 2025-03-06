@@ -345,7 +345,6 @@
         console.log('new value', newValue);
     });
 
-
     const getProjectDI = async () => {
         try {
             projectDi.value = await contremarqueService.getProjectDiById(id_di);
