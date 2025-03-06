@@ -52,7 +52,7 @@
                         <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Information complémentaire" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0">
-                                <d-location-dropdown :error="error.quoteDetail_locationId"
+                                <d-location-dropdown :error="validationSubmitErrors.locationId"
                                     :contremarqueId="contremarqueId"
                                     v-model="data.quoteDetail.locationId"></d-location-dropdown>
                             </div>
@@ -575,6 +575,7 @@ let disableAutoSave = true;
 
 const errorHandling = ref({});
 const validationSubmitErrors = ref({
+    locationId: '',
     collectionId: '',
     modelId: '',
     locationId: '',
@@ -583,6 +584,7 @@ const validationSubmitErrors = ref({
 });
 // Validation function
 const validationSubmitData = () => {
+    validationSubmitErrors.value.locationId = parseInt(data.value.quoteDetail.locationId) !== 0 ? '' : 'la localisation est requis';
     validationSubmitErrors.value.collectionId = parseInt(data.value.carpetSpecification.collectionId) !== 0 ? '' : 'la collection est requis';
     validationSubmitErrors.value.modelId = parseInt(data.value.carpetSpecification.modelId) !== 0 ? '' : 'Le modele est requis';
     validationSubmitErrors.value.qualityId = parseInt(data.value.carpetSpecification.qualityId) !== 0 ? '' : 'la qualité est requis';
