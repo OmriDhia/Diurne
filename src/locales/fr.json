@@ -114,5 +114,6 @@
     "Request failed with status code 500": "Erreur serveur. Veuillez contacter l'administrateur système.",
     "Uploaded file exceeds the maximum size of 3 MB": "Le fichier téléchargé dépasse la taille maximale de 3 Mo",
     "Please enter a valid name.": "Veuillez saisir un nom valide.",
-    "This value should be greater than or equal to 1." : "Cette valeur doit être supérieure ou égale à 1."
+    "This value should be greater than or equal to 1." : "Cette valeur doit être supérieure ou égale à 1.",
+    "plusderelance": "Plus de relance"
 }

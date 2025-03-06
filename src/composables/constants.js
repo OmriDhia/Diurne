@@ -137,25 +137,49 @@ export const carpetStatus = {
     transmisAdvId: 9
 };
 
-export const devisDocxStyle = 'body{' +
+export const devisDocxStyle = '@media print {' +
+    '            .page-number:after {' +
+    '                content: counter(page) " sur " counter(pages);' +
+    '            }' +
+    '            .no-page-break {' +
+    '                page-break-inside: avoid;' +
+    '            }' +
+    '        }' +
+    '        .page-header {' +
+    '            position: fixed;' +
+    '            top: 0;' +
+    '            left: 0;' +
+    '            right: 0;' +
+    '            text-align: center;' +
+    '            font-size: 20px;' +
+    '            font-weight: bold;' +
+    '            border: 2px solid black;' +
+    '            padding: 10px;' +
+    '            margin-bottom: 40px;' +
+    '        }' +
+    '        body {' +
     '            margin: auto;' +
     '            width: 90%;' +
-    '          }' +
-    '          h2 {' +
+    '            font-size: 12px;' +
+    '        }' +
+    '        h2 {' +
     '            color: #585858;' +
     '            font-family: Garamond, serif;' +
     '            font-style: normal;' +
     '            font-weight: bold;' +
     '            text-decoration: none;' +
-    '            font-size: 11pt;' +
-    '         }' +
-    '        .p, p {' +
+    '            font-size: 12px;' +
+    '            ;' +
+    '        }' +
+    '        .p,' +
+    '        p {' +
     '            color: #585858;' +
     '            font-family: Garamond, serif;' +
     '            font-style: normal;' +
     '            font-weight: normal;' +
     '            text-decoration: none;' +
-    '            font-size: 11pt;' +
+    '            font-size: 12px;' +
+    '            ;' +
     '            margin: 0pt;' +
     '        }' +
     '        .h1 {' +
@@ -166,7 +190,6 @@ export const devisDocxStyle = 'body{' +
     '            text-decoration: underline;' +
     '            font-size: 11.5pt;' +
     '        }' +
-
     '        .s1 {' +
     '            color: #585858;' +
     '            font-family: Garamond, serif;' +
@@ -191,7 +214,6 @@ export const devisDocxStyle = 'body{' +
     '            text-decoration: none;' +
     '            font-size: 9pt;' +
     '        }' +
-
     '        .s4 {' +
     '            color: #585858;' +
     '            font-family: Garamond, serif;' +
@@ -200,7 +222,6 @@ export const devisDocxStyle = 'body{' +
     '            text-decoration: none;' +
     '            font-size: 12pt;' +
     '        }' +
-
     '        .s5 {' +
     '            color: #585858;' +
     '            font-family: Garamond, serif;' +
@@ -209,29 +230,24 @@ export const devisDocxStyle = 'body{' +
     '            text-decoration: none;' +
     '            font-size: 12pt;' +
     '        }' +
-
     '        .s6 {' +
     '            color: #585858;' +
     '            font-family: Garamond, serif;' +
     '            font-style: normal;' +
     '            font-weight: normal;' +
     '            text-decoration: underline;' +
-    '            font-size: 11pt;' +
+    '            font-size: 12px;' +
+    '            ;' +
     '        }' +
-    '        table, tbody {' +
+    '        table,' +
+    '        tbody {' +
     '            width: 100%;' +
-    '            border: none !important;' +
     '            vertical-align: top;' +
     '            overflow: visible;' +
-    '        }'+
-    '        img {' +
-    '            max-width: 160px !important;' +
-    '        }'+
-    '       @page { size: A4; margin: 2cm; }' +
-    '       .header {' +
-    '            text-align: center;' +
-    '            font-family: Garamond, serif;' +
-    '            font-size: 14pt;' +
-    '            font-weight: bold;' +
-    '            margin-bottom: 20pt;' +
+    '        }' +
+    '        @page {' +
+    '            margin-top: 40mm;' +
+    '        }' +
+    '        .page-break {' +
+    '            page-break-before: always;' +
     '        }';

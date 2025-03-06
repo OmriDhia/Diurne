@@ -39,9 +39,7 @@ jobs:
           port: 22
           script: |
             cd /var/www/html/diurne_vuejs
+            sudo chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
             npm install
             npm run build
-            sudo chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
-            sudo find /var/www/html/diurne_vuejs -type d -exec chmod 755 {} \;
-            sudo find /var/www/html/diurne_vuejs -type f -exec chmod 644 {} \;
             sudo systemctl restart apache2
