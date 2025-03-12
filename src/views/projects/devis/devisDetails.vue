@@ -53,7 +53,7 @@
                             <d-panel-title title="Information complémentaire" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0">
                                 <d-location-dropdown :error="validationSubmitErrors.locationId"
-                                    :contremarqueId="contremarqueId"
+                                    :contremarqueId="contremarqueId" required
                                     v-model="data.quoteDetail.locationId"></d-location-dropdown>
                             </div>
                             <div class="row pe-2 ps-0 align-items-center">
