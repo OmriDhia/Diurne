@@ -1,6 +1,5 @@
 <template>
-    <div class="modal animated fadeInDown" :id="props.id" tabindex="-1" role="dialog" aria-labelledby="fadeinModalLabel"
-        aria-hidden="true">
+    <div :ref="props.ref" class="modal animated fadeInDown" :key="`_Key_${props.id}`" :id="props.id" tabindex="-1" role="dialog" aria-labelledby="fadeinModalLabel">
         <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -19,30 +18,24 @@
     </div>
 </template>
 <script setup>
-import { onMounted } from 'vue';
-
-const props = defineProps({
-    title: {
-        type: String,
-        default: ""
-    },
-    id: {
-        type: String,
-        default: "idModal"
-    }
-});
-
-const emit = defineEmits(['onClose']);
-
-const handleClose = () => {
-    emit('onClose')
-}
-
-onMounted(() => {
-    const modal = document.getElementById(props.id);
-
-    modal.addEventListener('hidden.bs.modal', () => {
-        handleClose();
+    const props = defineProps({
+        title : {
+            type: String,
+            default: ""
+        },
+        id : {
+            type: String,
+            default: "idModal"
+        },
+        ref : {
+            type: String,
+            default: ""
+        }
     });
-});
+    
+    const emit = defineEmits(['onClose']);
+
+    const handleClose = () => {
+        emit('onClose')
+    }
 </script>

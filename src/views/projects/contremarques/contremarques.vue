@@ -129,9 +129,9 @@
                             <template #lastEvent="data">
                                 <div class="d-flex justify-content-between">
                                     {{ (data.value.last_event) ? data.value.last_event.subject : '' }}
-                                    <!--button type="button" class="btn btn-icon p-0"  data-bs-toggle="modal" data-bs-target="#ModalUpdateEventContact" @click="selectCustomer(data.value.customer_id)">
+                                    <button type="button" class="btn btn-icon p-0"  data-bs-toggle="modal" data-bs-target="#ModalUpdateEventContact" @click="selectContremarque(data.value.contremarque_id)">
                                         <vue-feather type="file-text"></vue-feather>
-                                    </button-->
+                                    </button>
                                 </div>
                             </template>
                             <template #lastEventDate="data">
@@ -148,7 +148,7 @@
                     </div>
                 </div>
             </div>
-            <d-modal-event :customerId="selectedCustomerId" :contramarqueId="selectedContremarqueId"></d-modal-event>
+            <d-modal-event :contremarqueId="selectedContremarqueId"></d-modal-event>
         </div>
     </div>
 </template>
@@ -165,7 +165,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { filterContremarque, FILTER_CONTREMARQUE_STORAGE_NAME } from '../../../composables/constants';
 import moment from "moment";
 import { Helper } from "../../../composables/global-methods";
-import dModalEvent from "../../../components/projet/contremarques/_Partials/d-modal-event.vue";
+import dModalEvent from "../../../components/contacts/_partial/d-modal-event.vue";
 import { useRouter } from 'vue-router';
 
 import { useMeta } from '/src/composables/use-meta';
@@ -288,9 +288,9 @@ const doReset = () => {
     getContremarques();
 };
 
-const selectCustomer = (customerId, contremarqueId) => {
-    selectedCustomerId.value = customerId;
+const selectContremarque = (contremarqueId) => {
     selectedContremarqueId.value = contremarqueId;
+    console.log(selectedContremarqueId.value)
 };
 
 const goToNewContremarque = () => {
