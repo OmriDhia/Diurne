@@ -8,7 +8,7 @@
                         <button type="button" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" class="btn-close"></button>
                     </div>
                     <div class="modal-body">
-                        <d-event-histories :customerId="props.customerId"></d-event-histories>
+                        <d-event-histories :customerId="props.customerId" :contremarqueId="props.contremarqueId"></d-event-histories>
                     </div>
                 </div>
             </div>
@@ -21,6 +21,9 @@
     
     const props = defineProps({
         customerId : {
+            type: Number
+        },
+        contremarqueId : {
             type: Number
         }
     });

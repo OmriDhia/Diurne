@@ -41,10 +41,10 @@
                     <textarea id="textarea" v-model="comment" class="form-control h-200-forced"></textarea>
                 <div class="position-absolute d-flex bottom-0">
                     <div class="col-auto p-1 pe-4">
-                        <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" data-bs-toggle="modal" data-bs-target="#modalEventManage">
+                        <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleData">
                             <vue-feather type="search" size="14"></vue-feather>
                         </button>
-                        <d-modal-manage-event :eventData="selectedEvent" :customerId="props.customerId"></d-modal-manage-event>
+                        <d-modal-manage-event ref="modalEnvent" :eventData="selectedEvent" :customerId="props.customerId"></d-modal-manage-event>
                     </div>
                 </div>
             </perfect-scrollbar>
@@ -54,11 +54,12 @@
 </template>
 
 <script setup>
-    import { ref, onMounted, watch} from "vue"
+    import { ref, onMounted, watch, nextTick} from "vue"
     import axiosInstance from "../../../config/http";
     import VueFeather from 'vue-feather';
     import dDelete from "../../common/d-delete.vue";
     import dModalManageEvent from "../../contacts/d-modal-manage-event.vue";
+
     const props = defineProps({
         customerId: {
             type: Number
@@ -76,35 +77,61 @@
       try{
           if(customerId){
               let url = `/api/customer/${customerId}/events`;
-              if(props.contremarqueId){
-                  url += "?contremarqueId=" + props.contremarqueId  
-              }
               const res = await axiosInstance.get(url);
               datas.value = res.data.response.customerEventsData;
-              handleComment(0);
+          }else if(contremarqueId){
+              let url = `/api/events?page=1&itemsPerPage=100&filter[contremarqueId]=${contremarqueId}`;
+              const res = await axiosInstance.get(url);
+              datas.value = res.data.response.events;
+          }
+          
+          console.log(datas.value)
+          
+          if(datas.value.length > 0){
+              selected.value = 0;
+              handleComment(0); 
           }
       }catch{
           console.log("Erreur get events customer")
       }
     };
+
     const handleComment = (index) => {
         selected.value = index;
         comment.value = datas.value[index].commentaire;
+    };
+
+    const setSelectedEvent = (index) => {
         selectedEvent.value = datas.value[index];
         selectedEvent.value.contramarqueId = props.contremarqueId ? props.contremarqueId : 0;
     };
+    const modalEnvent = ref(null);
+    const handleData = async () => {
+        selectedEvent.value = null;
+        setSelectedEvent(selected.value);
+        await nextTick();
+        if (modalEnvent.value) {
+            modalEnvent.value.show();
+        }
+    };
+
     onMounted(()=>{
-        getEventHistories(props.customerId);
+        getEventHistories(props.customerId, props.contremarqueId);
     });
     watch(
         () => props.customerId,
         (newVal) => {
-            getEventHistories(newVal)
+            getEventHistories(newVal);  // Appel la méthode lors du changement de customerId
         },
+        { deep: true }
+    );
+
+    watch(
         () => props.contremarqueId,
         (newVal) => {
-            selectedEvent.value.contramarqueId = newVal;
-        }
+            getEventHistories(null, newVal);  // Mise à jour du contremarqueId
+        },
+        { deep: true }
     );
 </script>
 
