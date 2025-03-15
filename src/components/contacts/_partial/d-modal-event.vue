@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="modal animated fadeInDown" id="ModalUpdateEventContact" tabindex="-1" role="dialog" aria-labelledby="fadeinModalLabel" aria-hidden="true">
+        <div class="modal animated fadeInDown" id="ModalUpdateEventContact" tabindex="-1" role="dialog" aria-labelledby="fadeinModalLabel">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">

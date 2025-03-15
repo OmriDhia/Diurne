@@ -4,7 +4,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title text-capitalize" id="fadeinModalLabel">{{ props.title }}</h5>
-                    <button type="button" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close" class="btn-close" @click.prevent="handleClose"></button>
+                    <button type="button" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close"
+                        class="btn-close" @click.prevent="handleClose"></button>
                 </div>
                 <div class="modal-body">
                     <slot name="modal-body"></slot>

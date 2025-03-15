@@ -17,7 +17,7 @@
                 selected-label=""
                 select-label=""
                 deselect-label=""
-                @change="handleChange"
+                @select="handleChange"
             ></multiselect>
             <div v-if="error" class="invalid-feedback">{{ $t("Le sujet évènement est abligatoire.") }}</div>
         </div>
