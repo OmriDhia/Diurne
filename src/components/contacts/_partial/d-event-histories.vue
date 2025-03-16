@@ -75,17 +75,15 @@
     const comment = ref("");
     const getEventHistories = async (customerId, contremarqueId = null) => {
       try{
-          if(customerId){
+          if(customerId && !contremarqueId){
               let url = `/api/customer/${customerId}/events`;
               const res = await axiosInstance.get(url);
               datas.value = res.data.response.customerEventsData;
           }else if(contremarqueId){
-              let url = `/api/events?page=1&itemsPerPage=100&filter[contremarqueId]=${contremarqueId}`;
+              let url = `/api/contremarque/${contremarqueId}/events`;
               const res = await axiosInstance.get(url);
-              datas.value = res.data.response.events;
+              datas.value = res.data.response.eventData;
           }
-          
-          console.log(datas.value)
           
           if(datas.value.length > 0){
               selected.value = 0;

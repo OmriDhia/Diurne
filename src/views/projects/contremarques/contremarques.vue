@@ -129,7 +129,7 @@
                             <template #lastEvent="data">
                                 <div class="d-flex justify-content-between">
                                     {{ (data.value.last_event) ? data.value.last_event.subject : '' }}
-                                    <button type="button" class="btn btn-icon p-0"  data-bs-toggle="modal" data-bs-target="#ModalUpdateEventContact" @click="selectContremarque(data.value.contremarque_id)">
+                                    <button type="button" class="btn btn-icon p-0"  data-bs-toggle="modal" data-bs-target="#ModalUpdateEventContact" @click="selectContremarque(data.value.contremarque_id, data.value.customer.customer_id)">
                                         <vue-feather type="file-text"></vue-feather>
                                     </button>
                                 </div>
@@ -148,7 +148,7 @@
                     </div>
                 </div>
             </div>
-            <d-modal-event :contremarqueId="selectedContremarqueId"></d-modal-event>
+            <d-modal-event :customerId="selectedCustomerId" :contremarqueId="selectedContremarqueId"></d-modal-event>
         </div>
     </div>
 </template>
@@ -288,9 +288,9 @@ const doReset = () => {
     getContremarques();
 };
 
-const selectContremarque = (contremarqueId) => {
+const selectContremarque = (contremarqueId, customerId) => {
     selectedContremarqueId.value = contremarqueId;
-    console.log(selectedContremarqueId.value)
+    selectedCustomerId.value = customerId;
 };
 
 const goToNewContremarque = () => {
