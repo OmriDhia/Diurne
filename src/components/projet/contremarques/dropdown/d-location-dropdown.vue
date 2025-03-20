@@ -66,18 +66,21 @@
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', parseInt(value.location_id));
-                console.log("location id : " , parseInt(value.location_id));
+                if (value && value.location_id !== undefined) {
+                    this.$emit('update:modelValue', parseInt(value.location_id));
+                    console.log("location id : ", parseInt(value.location_id));
+                } else {
+                    this.$emit('update:modelValue', null); 
+                }
             },
             async getData() {
                 try {
                     if (this.contremarqueId) {
                         this.data = await contremarqueService.getLocationsByContremarque(this.contremarqueId);
-
+                        
                         if (this.modelValue) {
-                            this.value = this.data.filter((ad) => ad.location_id === this.modelValue)[0];
+                            this.value = this.data.find((ad) => ad.location_id === this.modelValue) || null;
                         }
-                        // console.log("data retrieved for locations : ", this.data);
                     }
                 } catch (error) {
                     console.error('Failed to fetch address types:', error);
@@ -90,7 +93,9 @@
         },
         watch: {
             modelValue(newValue) {
-                this.value = this.data.filter((ad) => ad.location_id === newValue)[0];
+                if (this.data.length > 0) {
+                    this.value = this.data.find((ad) => ad.location_id === newValue) || null;
+                }
             },
             contremarqueId(contremarqueId) {
                 this.getData();
