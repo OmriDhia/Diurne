@@ -1,9 +1,11 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4" v-if="!hideLabel"><label class="form-label">Designeur<span class="required" v-if="required">*</span> :</label></div>
-        <div :class="{'col-8': !hideLabel,'col-12': hideLabel}">
-            <multiselect
-                :class="{ 'is-invalid': error}"
+        <div class="col-4" v-if="!hideLabel">
+            <label class="form-label">Designeur<span class="required" v-if="required">*</span> :</label>
+        </div>
+        <div :class="{ 'col-8': !hideLabel, 'col-12': hideLabel }">
+            <Multiselect
+                :class="{ 'is-invalid': error }"
                 :multiple="isMultiple"
                 v-model="userId"
                 :options="users"
@@ -16,123 +18,98 @@
                 deselect-label=""
                 :disabled="disabled"
                 @tag="addTag"
-                @update:model-value="handleChange($event)"
-                @search-change="handleSearch($event)"
-            ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champ designeur est abligatoire.") }}</div>
+                @update:model-value="handleChange"
+                @search-change="handleSearch"
+            />
+            <div v-if="error" class="invalid-feedback">{{ $t("Le champ designeur est obligatoire.") }}</div>
         </div>
     </div>
 </template>
 
-<script>
-    import axiosInstance from '../../config/http';
-    import Multiselect from 'vue-multiselect'
-    import 'vue-multiselect/dist/vue-multiselect.css';
+<script setup>
+import { ref, watchEffect } from 'vue';
+import axiosInstance from '../../config/http';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.css';
 
-    export default {
-        components:{
-            Multiselect
-        },
-        computed: {
-            
-        },
-        props: {
-            modelValue: {
-                type: [Array, null],
-                required: true
-            },
-            error: {
-                type: String,
-                default: ''
-            },
-            required:{
-                type: Boolean,
-                default: false
-            },
-            hideLabel: {
-                type: Boolean,
-                default: false
-            }, 
-            isMultiple: {
-                type: Boolean,
-                default: false
-            },
-            disabled: {
-                type: Boolean,
-                default: false
-            },
-        },
-        data() {
-            return {
-                userId: [],
-                users: [],
-            };
-        },
-        methods: {
-            handleChange(value) {
-                if(this.isMultiple){
-                    this.$emit('update:modelValue', value.map(e => {
-                        return e.id
-                    }));  
-                }else{
-                    this.$emit('update:modelValue', value.id);
-                }
-            },
-            addTag(newTag){
-                this.users.push(newTag);
-                this.userId.push(newTag);  
-            },
-            handleSearch(searchQuery){
-                const se = searchQuery.split(' ');
-                this.getUsers(se[0], se[1]);
-            },
-            async getUsers (firstname = "", lastname = ""){
-                try{
-                    let url = 'api/users?page=1&itemPerPage=100';
+const props = defineProps({
+    modelValue: {
+        type: [Array, String, null],
+        required: true
+    },
+    error: {
+        type: String,
+        default: ''
+    },
+    required: {
+        type: Boolean,
+        default: false
+    },
+    hideLabel: {
+        type: Boolean,
+        default: false
+    },
+    isMultiple: {
+        type: Boolean,
+        default: false
+    },
+    disabled: {
+        type: Boolean,
+        default: false
+    }
+});
 
-                    if(firstname){
-                        url += '&filter[firstname]='+firstname;
-                    }
+const emit = defineEmits(['update:modelValue']);
 
-                    if(lastname){
-                        url += '&filter[lastname]='+lastname;
-                    }
+const userId = ref([]);
+const users = ref([]);
 
-                    url += "&filter[profiles]=Designer,Designer manager";
+const handleChange = (value) => {
+    emit('update:modelValue', props.isMultiple ? value.map(e => e.id) : value?.id);
+};
 
-                    const res = await axiosInstance.get(url);
-                    this.users = res.data.response.users.map(e => {
-                        return {
-                            id : e.id,
-                            name: e.firstname + " " + e.lastname
-                        }
-                    });
+const addTag = (newTag) => {
+    users.value.push(newTag);
+    userId.value.push(newTag);
+};
 
-                    if(this.modelValue){
-                        if(this.isMultiple){
-                            this.userId = this.users.filter(f => this.modelValue.indexOf(f.id) > -1 )
-                        }else{
-                            this.userId = this.users.filter(f => this.modelValue === f.id)[0]
-                        }
-                    }
-                }catch{
-                    console.log('Erreur get users list.')
-                }
-            },
-        },
-        mounted() {
-            this.getUsers();
-        },
-        watch: {
-            modelValue(newValue) {
-                if(newValue){
-                    if(this.isMultiple){
-                        this.userId = this.users.filter(f => newValue.indexOf(f.id) > -1 )
-                    }else{
-                        this.userId = this.users.filter(f => newValue === f.id)[0]
-                    }
-                }
-            }
+const handleSearch = (searchQuery) => {
+    const [firstname = '', lastname = ''] = searchQuery.split(' ');
+    getUsers(firstname, lastname);
+};
+
+const getUsers = async (firstname = "", lastname = "") => {
+    try {
+        let url = 'api/users?page=1&itemPerPage=100';
+        if (firstname) url += `&filter[firstname]=${firstname}`;
+        if (lastname) url += `&filter[lastname]=${lastname}`;
+        url += "&filter[profiles]=Designer,Designer manager";
+
+        const res = await axiosInstance.get(url);
+        users.value = res.data.response.users.map(e => ({
+            id: e.id,
+            name: `${e.firstname} ${e.lastname}`
+        }));
+
+        syncUserId();
+    } catch {
+        console.error('Erreur get users list.');
+    }
+};
+
+const syncUserId = () => {
+    if (props.modelValue) {
+        if (props.isMultiple) {
+            userId.value = users.value.filter(f => props.modelValue.includes(f.id));
+        } else {
+            userId.value = users.value.find(f => f.id === props.modelValue) || null;
         }
-    };
+    }
+};
+
+watchEffect(() => {
+    syncUserId();
+});
+
+getUsers();
 </script>

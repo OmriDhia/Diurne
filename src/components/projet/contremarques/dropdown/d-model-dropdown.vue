@@ -82,7 +82,7 @@
             async getData() {
                 try {
                     const res = await axiosInstance.get('/api/models');
-                    this.data = res.data.response;
+                    this.data = res.data.response.data;
 
                     if(this.modelValue){
                         this.value = this.data.filter(ad => ad.id === this.modelValue)[0]
