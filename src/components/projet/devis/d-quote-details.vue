@@ -24,8 +24,8 @@
                 <tr v-for="(row, rowIndex) in props.quoteDetails" :key="rowIndex">
                     <td class="border-start border-end text-center">{{ row.reference}}</td>
                     <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.impactOnTheQuotePrice)}}</td>
-                    <td class="border-start border-end text-center"><d-collections-dropdown v-if="row.carpetSpecification.collection" :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.collection.id"></d-collections-dropdown></td>
-                    <td class="border-start border-end text-center"><d-model-dropdown v-if="row.carpetSpecification.model" :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.model.id"></d-model-dropdown></td>
+                    <td class="border-start border-end text-center"><d-collections-dropdown v-if="row.carpetSpecification?.collection" :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.collection.id"></d-collections-dropdown></td>
+                    <td class="border-start border-end text-center"><d-model-dropdown v-if="row.carpetSpecification?.model" :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.model.id"></d-model-dropdown></td>
                     <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'tarif.m².price')) }}</td> 
                     <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'tarif.sqft.price')) }}</td> 
                     <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'prix-propose-avant-remise-complementaire.m².price')) }}</td> 
