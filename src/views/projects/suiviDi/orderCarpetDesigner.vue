@@ -1,7 +1,6 @@
 <template>
     <div class="layout-px-spacing mt-4">
         <d-page-title icon="image" :title="'Maquette'"></d-page-title>
-
         <div class="row layout-top-spacing mt-3 p-2">
             <div class="panel br-6 p-2 mt-3">
                 <div class="row ms-2 mt-2 mb-2">
@@ -132,10 +131,10 @@
                                                 <div v-if="error?.description" class="invalid-feedback">La description est obligatoire.</div>
                                             </div>
                                         </div>
-                                        <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && store.getters.isNonTrasmisStatus">
+                                        <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && !hideForTrans">
                                             <d-transmis-studio @transmisStudio="updateCarpetDesignStatus($event)"></d-transmis-studio>
                                         </div>
-                                        <div class="row ps-2 mt-4 mb-2 justify-content-between">
+                                        <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="!hideForTrans">
                                             <div class="col-12" v-if="carpetSpecificationId">
                                                 <d-compositions
                                                     :disabled="CommercialAccess"
@@ -144,7 +143,7 @@
                                                     v-if="carpetDesignOrderId"
                                                 ></d-compositions>
                                             </div>
-                                            <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId">
+                                            <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && !hideForAttributePause">
                                                 <d-transmis-adv
                                                     :customerInstruction="currentCarpetObject?.customerInstruction"
                                                     :id_di="id_di"
@@ -155,7 +154,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-12 col-xl-3 ps-1 d-flex flex-column" v-if="carpetDesignOrderId">
+                                    <div class="col-md-12 col-xl-3 ps-1 d-flex flex-column" v-if="carpetDesignOrderId && !hideForTrans">
                                         <d-designer-list
                                             :disabled="CommercialAccess"
                                             @endCarpetDesignOrder="updateCarpetDesignStatus($event)"
@@ -177,7 +176,7 @@
                                             @updateMaterials="updateMaterials($event)"
                                             v-if="carpetSpecificationId"
                                         ></d-designer-composition-list>
-                                        <div class="row align-items-end mt-auto" v-if="displayFin">
+                                        <div class="row align-items-end mt-auto" v-if="displayFin  && !hideForTrans">
                                             <div class="col-md-12">
                                                 <button class="disbaled btn btn-custom text-center w-100 mb-3" @click="FinDIStatus(6)">FIN</button>
                                             </div>
@@ -191,6 +190,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row p-2 justify-content-between">
+            <div class="col-auto">
+                <button class="btn btn-custom pe-5 ps-5" @click="goToDis">Retour à la liste</button>
             </div>
         </div>
     </div>
@@ -231,6 +235,8 @@
     // src/views/projects/suiviDi/orderCarpetDesigner.vue
     // src/composables/global-methods.js
     const selectedImageTypes = ref([]);
+    const hideForTrans = ref(false);
+    const hideForAttributePause = ref(false);
     // Handle designer addition from the child component
 
     const updateDesignerList = (types) => {
@@ -317,6 +323,10 @@
     const carpetSpecificationId = ref(0);
     const firstLoad = ref(true);
 
+    const setHideForTrans = () => {
+        hideForTrans.value = (dataCarpetOrder.value.status_id === carpetStatus.transmisId || dataCarpetOrder.value.status_id === carpetStatus.nonTransmisId);
+        hideForAttributePause.value = (dataCarpetOrder.value.status_id === carpetStatus.attribuId || dataCarpetOrder.value.status_id === carpetStatus.enPauseId || dataCarpetOrder.value.status_id === carpetStatus.enCoursId)
+    };
     // const disableForCommercial = computed(() => {
     //     return ((store.getters.isCommertial || store.getters.isCommercialManager) && !store.getters.isNonTrasmisStatus) || store.getters.isFinStatus;
     // });
@@ -370,6 +380,7 @@
                 const res = await axiosInstance.get(`/api/carpet-design-orders/${id}`);
                 currentCarpetObject.value = res.data.response;
                 dataCarpetOrder.value.location_id = currentCarpetObject.value.location && currentCarpetObject.value.location.location_id ? currentCarpetObject.value.location.location_id : 0;
+                console.log('currentCarpetObject.value.status', currentCarpetObject.value);
                 dataCarpetOrder.value.status_id = currentCarpetObject.value.status && currentCarpetObject.value.status.id ? currentCarpetObject.value.status.id : 0;
                 transDate.value = currentCarpetObject.value.transmition_date ? Helper.FormatDate(currentCarpetObject.value.transmition_date.date) : '';
                 applyCarpetStatus(dataCarpetOrder.value.status_id);
@@ -570,6 +581,14 @@
         { deep: true }
     );
     watch(
+        () => dataCarpetOrder.value.status_id, 
+        (newID) => {
+            console.log('newID', newID);
+            setHideForTrans();
+        },
+        { deep: true }
+    );
+    watch(
         () => CommercialAccessADV.value,
         (newValue, oldValue) => {
             console.log('newValue', newValue);
@@ -642,6 +661,10 @@
         },
         { deep: true }
     );
+    
+    const goToDis = ()=>{
+        router.push({ name: 'di_list'});
+    }
 </script>
 
 <style>
