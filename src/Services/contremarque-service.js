@@ -43,8 +43,8 @@ export default {
     },
     async getUnitOfMeasurements(){
         try {
-            const res = await axiosInstance.get('/api/unitOfMeasurements');
-            return res.data.response.units;
+            const res = await axiosInstance.get('/api/unitOfMeasurements?feetInchCombinated=0');
+            return res.data.response.data;
         } catch (error) {
             throw new Error('Échec de récupération unité de mesure');
         }
