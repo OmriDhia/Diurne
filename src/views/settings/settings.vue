@@ -65,20 +65,10 @@
                             <d-model></d-model>
                         </div>
                         <div class="tab-pane fade" id="carrier" role="tabpanel" aria-labelledby="border-profile-tab">
-                            <div class="media">
-                                <img class="meta-usr-img me-3" src="@/assets/images/profile-32.jpeg" alt="Generic placeholder image" />
-                                <div class="media-body">
-                                    Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra
-                                    turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                                </div>
-                            </div>
+                            <d-carrier></d-carrier>
                         </div>
                         <div class="tab-pane fade" id="currency" role="tabpanel" aria-labelledby="border-contact-tab">
-                            <p class="dropcap dc-outline-primary">
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-                                nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            </p>
+                            <d-devise></d-devise>
                         </div>
                         <div class="tab-pane fade" id="dominant-color" role="tabpanel" aria-labelledby="border-contact-tab">
                             <p class="dropcap dc-outline-primary">
@@ -128,6 +118,8 @@
     import dBasePage from "@/components/base/d-base-page.vue";
     import dPageTitle from "@/components/common/d-page-title.vue";
     import dModel from "@/components/settings/d-model.vue";
+    import dCarrier from "@/components/settings/d-carrier.vue";
+    import dDevise from "@/components/settings/d-devise.vue";
     
     useMeta({ title: "Settings" });
 </script>

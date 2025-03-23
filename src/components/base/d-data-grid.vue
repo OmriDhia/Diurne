@@ -1,185 +1,166 @@
 <template>
-    <div class="container">
-        <h1 class="my-4">{{ props.title}}</h1>
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th v-for="column in columns" :key="column.key">{{ column.label }}</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-if="isLoading">
-                <td :colspan="columns.length + 1" class="text-center">Chargement...</td>
-            </tr>
-            <tr v-for="(row, index) in gridData" :key="row[props.rowKey]">
-                <td v-for="column in columns" :key="column.key">
-                    <template v-if="isEditing === row[props.rowKey]">
-                        <template v-if="column.type === 'text'">
-                            <input
-                                type="text"
-                                v-model="row[column.key]"
-                                class="form-control"
-                            />
-                        </template>
-                        <template v-else-if="column.type === 'dropdown'">
-                            <select v-model="row[column.key]" class="form-select">
-                                <option v-for="option in column.options" :value="option" :key="option">
-                                    {{ option }}
-                                </option>
-                            </select>
-                        </template>
-                        <template v-else-if="column.type === 'boolean'">
-                            <input
-                                type="checkbox"
-                                v-model="row[column.key]"
-                                class="form-check-input"
-                            />
-                        </template>
-                    </template>
-                    <template v-else>
-              <span v-if="column.type === 'boolean'">
-                <i
-                    :class="row[column.key] ? 'bi bi-check-circle text-success' : 'bi bi-x-circle text-danger'"
-                ></i>
-              </span>
-                        <span v-else>
-                {{ row[column.key] }}
-              </span>
-                    </template>
-                </td>
-                <td>
-                    <template v-if="isEditing === row[props.rowKey]">
-                        <button class="btn btn-success btn-sm" @click="saveEdit(row)">
-                            Sauvegarder
-                        </button>
-                        <button class="btn btn-secondary btn-sm" @click="cancelEdit">
-                            Annuler
-                        </button>
-                    </template>
-                    <template v-else>
-                        <button class="btn btn-primary btn-sm" @click="isEditing = row[props.rowKey]">
-                            Modifier
-                        </button>
-                    </template>
-                </td>
-            </tr>
-            <tr>
-                <td v-for="column in columns" :key="column.key">
-                    <template v-if="column.type === 'text'">
-                        <input
-                            type="text"
-                            v-model="newRow[column.key]"
-                            class="form-control"
-                            :placeholder="`Ajouter ${column.label}`"
-                        />
-                    </template>
-                    <template v-else-if="column.type === 'dropdown'">
-                        <select v-model="newRow[column.key]" class="form-select">
-                            <option
-                                v-for="option in column.options"
-                                :value="option"
-                                :key="option"
-                            >
-                                {{ option }}
-                            </option>
-                        </select>
-                    </template>
-                    <template v-else-if="column.type === 'boolean'">
-                        <input
-                            type="checkbox"
-                            v-model="newRow[column.key]"
-                            class="form-check-input"
-                        />
-                    </template>
-                </td>
-                <td>
-                    <button class="btn btn-success btn-sm" @click="addRow">Ajouter</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+  <div class="container">
+    <h1 class="my-4">{{ title }}</h1>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th v-for="column in columns" :key="column.key">
+            {{ column.label }}
+          </th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-if="isLoading">
+          <td :colspan="columns.length + 1" class="text-center">
+            Chargement...
+          </td>
+        </tr>
+        <TableRow v-for="row in rows" :key="row[rowKey]" :row="row" :columns="columns"
+          :isEditing="isEditing === row[rowKey]" @edit="startEdit" @save="saveEdit" @delete="deleteRow"
+          @cancel="cancelEdit" />
+        <tr>
+          <EditableCell v-for="column in columns" :key="column.key" :row="newRow" :column="column" :isEditing="true" />
+          <td>
+            <button class="btn btn-dark ps-2" @click="addRow">
+              <span class="me-2">Ajouter</span>
+              <vue-feather type="plus" size="14"></vue-feather>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <Pagination v-if="showPagination" :currentPage="pagination.currentPage" :totalPages="pagination.totalPages"
+      :totalItems="pagination.totalItems" :itemsPerPage="pagination.itemsPerPage" @page-change="changePage"
+      @page-size-change="changePageSize" />
+
+  </div>
 </template>
 
 <script setup>
-    import { ref, reactive, onMounted } from "vue";
+  import { ref, reactive, onMounted, computed } from "vue";
+  import VueFeather from 'vue-feather';
+  import Pagination from './Pagination/d-pagination.vue';
+  import TableRow from './d-table-row.vue';
+  import EditableCell from './d-editable-cell.vue';
 
-    const props = defineProps({
-        fetchData: {
-            type: Function,
-            required: true,
-        },
-        saveData: {
-            type: Function,
-            required: true,
-        },
-        addData: {
-            type: Function,
-            required: true,
-        },
-        columns: {
-            type: Array,
-            required: true, // [{ key: 'name', label: 'Nom', type: 'text' | 'dropdown' | 'boolean', options?: [...] }]
-        },
-        rowKey: {
-            type: String,
-            required: true,
-        },
-        title: {
-            type: String,
-            required: false,
-        },
+  const props = defineProps({
+    fetchData: { type: Function, required: true },
+    saveData: { type: Function, required: true },
+    deleteData: { type: Function, required: true },
+    addData: { type: Function, required: true },
+    columns: { type: Array, required: true },
+    rowKey: { type: String, required: true },
+    title: { type: String, required: false },
+  });
+
+  const emit = defineEmits(["updated", "added"]);
+
+  const rows = ref([]);
+  const isEditing = ref(null);
+  const newRow = reactive({});
+  const isLoading = ref(false);
+
+  const pagination = ref({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 100,
+    itemsPerPage: 10,
+  });
+
+  const initializeNewRow = () => {
+    props.columns.forEach(column => {
+      newRow[column.key] = column.type === 'boolean' ? false : '';
     });
+  };
 
-    const emit = defineEmits(["updated", "added"]);
+  const saveEdit = async (row) => {
+    try {
+      await props.saveData(row);
+      isEditing.value = null;
+      emit("updated", row);
+      window.showMessage("La modification a été effectuée avec succès.");
+    } catch (error) {
+      window.showMessage("La modification n'a pas pu être effectuée.", "error");
+      console.error("Erreur lors de la sauvegarde des données :", error);
+    }
+  };
 
-    const gridData = ref([]);
-    const isEditing = ref(false);
-    const newRow = reactive({});
-    const isLoading = ref(false);
+  const deleteRow = async (row) => {
+    try {
+      await props.deleteData(row);
+      rows.value = rows.value.filter(item => item[props.rowKey] !== row[props.rowKey]);
+      emit("delete", row);
+      window.showMessage("La suppression a été effectuée avec succès.");
+    } catch (error) {
+      window.showMessage("Erreur lors de la suppression des données.", "error");
+      console.error("Erreur lors de la suppression des données :", error);
+    }
+  };
 
-    // Charger les données
-    const loadGridData = async () => {
-        isLoading.value = true;
-        try {
-            gridData.value = await props.fetchData();
-        } catch (error) {
-            console.error("Erreur lors du chargement :", error);
-        } finally {
-            isLoading.value = false;
+  const cancelEdit = () => {
+    isEditing.value = null;
+  };
+
+  const startEdit = (row) => {
+    isEditing.value = row[props.rowKey];
+  };
+
+  const addRow = async () => {
+    try {
+      const addedRow = await props.addData(newRow);
+      rows.value.push(addedRow);
+      emit("added", addedRow);
+      initializeNewRow();
+      window.showMessage("L'ajout a été effectué avec succès.");
+    } catch (error) {
+      console.error("Erreur inattendue lors de l'ajout d'une nouvelle ligne :", error);
+    }
+  };
+
+  const fetchData = async () => {
+    const { currentPage, itemsPerPage } = pagination.value;
+    try {
+      isLoading.value = true;
+      const data = await props.fetchData({ page: currentPage, itemsPerPage });
+
+      if (data && data.response) {
+        rows.value = data.response?.data ?? data.response ?? null;
+
+        if (data.response.pagination) {
+          pagination.value.totalPages = data.response.pagination.totalPages || 1;
+          pagination.value.totalItems = data.response.pagination.totalItems || 0;
+        } else {
+          console.error("Pagination data is missing in the response:", data.response);
         }
-    };
+      } else {
+        console.error("Invalid data structure:", data);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des données:', error);
+      window.showMessage("Erreur lors de la récupération des données.", "error");
+    } finally {
+      isLoading.value = false;
+    }
+  };
 
-    // Sauvegarder
-    const saveEdit = async (row) => {
-        try {
-            await props.saveData(row);
-            isEditing.value = false;
-            emit("updated", row);
-        } catch (error) {
-            console.error("Erreur de sauvegarde :", error);
-        }
-    };
+  const changePage = (page) => {
+    pagination.value.currentPage = page;
+    fetchData();
+  };
 
-    // Annuler
-    const cancelEdit = () => {
-        isEditing.value = false;
-    };
+  const changePageSize = (newSize) => {
+    pagination.value.itemsPerPage = newSize;
+    pagination.value.currentPage = 1;
+    fetchData();
+  };
 
-    // Ajouter une ligne
-    const addRow = async () => {
-        try {
-            const addedRow = await props.addData(newRow);
-            gridData.value.push(addedRow);
-            emit("added", addedRow);
-            Object.keys(newRow).forEach((key) => (newRow[key] = ""));
-        } catch (error) {
-            console.error("Erreur d'ajout :", error);
-        }
-    };
+  const showPagination = computed(() => {
+    return pagination.value.totalPages > 1;
+  });
 
-    onMounted(() => {
-        loadGridData();
-    });
+  onMounted(() => {
+    fetchData();
+  });
 </script>
