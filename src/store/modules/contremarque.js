@@ -85,7 +85,7 @@ export default {
                 isFetchingMaterials = true;
                 
                 const res = await axiosInstance.get('/api/materials');
-                commit('setMaterialsData', res.data.response); // Enregistrer les matériaux dans l'état
+                commit('setMaterialsData', res.data.response.data); // Enregistrer les matériaux dans l'état
             
             } catch (error) {
                 console.error('Failed to fetch materials:', error);
