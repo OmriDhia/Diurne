@@ -110,14 +110,22 @@
             data.value.people_present.contacts = contactId.value;
             data.value.people_present.users = userId.value;
             data.value.customerId = eventCustomerId.value;
+            
+
+            data.value.people_present = {
+                contacts: [...contactId.value], 
+                users: [...userId.value]
+            };
+
             let res;
             if (data.value.event_id) {
                 res = await axiosInstance.put("api/updateEvent/" + data.value.event_id, data.value);
-                window.showMessage("Mise a jour avec succées.");
+                window.showMessage("Mise à jour avec succès.");
             } else {
                 res = await axiosInstance.post("/api/createEvent", data.value);
-                window.showMessage("Ajout avec succées.");
+                window.showMessage("Ajout avec succès.");
             }
+
             if (props.saveAndStay && !data.value.event_id) {
                 affectData(res.data.response);
             } else {
@@ -126,10 +134,11 @@
                 eventCustomerId.value = 0;
             }
         } catch (e) {
-            if (e.response.data.violations) {
+            console.error("Erreur lors de l'enregistrement :", e);
+            if (e.response?.data?.violations) {
                 error.value = formatErrorViolations(e.response.data.violations);
             }
-            window.showMessage(e.message, 'error')
+            window.showMessage(e.message, 'error');
         }
     };
 
@@ -151,26 +160,27 @@
     };
 
     const affectData = (event) => {
-        console.log(props.eventData);
         if (event) {
             Object.assign(data.value, {
                 event_id: event.event_id,
-                nomenclatureId: event.nomenclature.nomenclature_id,
+                nomenclatureId: event.nomenclature?.nomenclature_id ?? null,
                 customerId: props.customerId,
-                contremarqueId: event.contramarqueId ? event.contramarqueId : 0,
-                quoteId: event.quoteId ? event.quoteId : 0,
+                contremarqueId: event.contramarqueId ?? 0,
+                quoteId: event.quoteId ?? 0,
                 reminder_disabled: event.reminder_disabled || false,
-                commentaire: event.commentaire,
-                event_date: Helper.FormatDate(event.event_date.date, "YYYY-MM-DD"),
-                next_reminder_deadline: event.next_reminder_deadline
-                    ? Helper.FormatDate(event.next_reminder_deadline.date, "YYYY-MM-DD")
+                commentaire: event.commentaire ?? "",
+                event_date: event.event_date ? Helper.FormatDate(event.event_date.date, "YYYY-MM-DD") : "",
+                next_reminder_deadline: event.next_reminder_deadline 
+                    ? Helper.FormatDate(event.next_reminder_deadline.date, "YYYY-MM-DD") 
                     : "",
-                people_present: event.people_present
+                people_present: event.people_present ?? { contacts: [], users: [] }
             });
 
             eventCustomerId.value = props.customerId;
-            userId.value = event.people_present?.users || [];
-            contactId.value = event.people_present?.contacts || [];
+            userId.value = event.people_present?.users ?? [];
+            contactId.value = event.people_present?.contacts ?? [];
+            
+            console.log("Données après affectation:", JSON.stringify(data.value, null, 2));
         }
     };
 
