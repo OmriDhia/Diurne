@@ -96,6 +96,15 @@ export const routes = [
                     permission: 'read user'
                 },*/
             },
+            {
+                path: 'models',
+                name: 'models',
+                component: () => import('../views/settings/d-models.vue'),
+                // meta: {
+                //     requiresAuth: true,
+                //     permission: "create contact",
+                // },
+            },
         ],
         meta: {
             requiresAuth: true
