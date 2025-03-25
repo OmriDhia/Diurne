@@ -77,7 +77,7 @@
                     const url = '/api/unitOfMeasurements?feetInchCombinated=1';
                     const res = await axiosInstance.get(url);
                     
-                    this.unitOfMesurements = res.data.response.units;
+                    this.unitOfMesurements = res.data.response.data;
                     if(this.modelValue){
                         this.unit = this.modelValue;
                     }
