@@ -257,7 +257,7 @@
     const affectData = (newVal) => {
         data.value.customer_id = newVal.customer_id;
         data.value.customerGroupId = newVal.customerGroup.customer_group_id;
-        data.value.discountTypeId = newVal.discountRule.discount_rule_id;
+        data.value.discountTypeId = newVal?.discountRule?.discount_rule_id || 0;
         data.value.social_reason = newVal.socialReason;
         data.value.website = newVal.website;
         data.value.code = newVal.code;
@@ -305,13 +305,13 @@
     watch(
         () => data.value.customerGroupId,
         (groupId) => {
-            // console.log("Updated customerGroupId:", groupId);
+            console.log("Updated customerGroupId:", groupId);
             if (groupId === publicDiscountTypeId) {
                 isParticular.value = true;
                 data.value.discountTypeId = particularCustomerGroupId;
             } else {
                 isParticular.value = false;
-                data.value.discountTypeId = 0;
+                //data.value.discountTypeId = 0;
             }
         },
         { deep: true }
