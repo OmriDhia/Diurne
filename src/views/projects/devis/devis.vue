@@ -227,7 +227,11 @@ const doReset = () => {
 };
 
 const goToNewDevis = () => {
-    router.push({name: 'devisManage'});
+    if(route.query.contremarqueId){
+        router.push({ name: 'devisManage', query: { contremarqueId: route.query.contremarqueId } });
+    }else{
+        router.push({name: 'devisManage'});
+    }
 };
     
 </script>
