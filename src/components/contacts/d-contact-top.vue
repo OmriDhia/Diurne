@@ -131,13 +131,14 @@
     });
 
     const error = ref({});
-
+    const emit = defineEmits(["addContact"]);
     const addContact = async () => {
         try{
             if(props.customerId){
                 error.value = {};
                 const res = await axiosInstance.post("api/createContact/" + props.customerId,data.value);
                 window.showMessage("Ajout avec succées.")
+                emit("addContact",true);
                 window.location.reload();
             }
         }catch(e){

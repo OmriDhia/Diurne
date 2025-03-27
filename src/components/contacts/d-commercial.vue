@@ -15,7 +15,7 @@
                 deselect-label=""
                 @search-change="handleSearch($event)"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le type de d'adresse est abligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t("Veuillez choisir un commercial.") }}</div>
         </div>
     </div>
     <div class="row">
@@ -58,13 +58,14 @@
     const commertial = ref('');
     const dates = ref({startDate: "", endDate: ""});
     const commercialData = ref([]);
-
+    const error = ref(false);
     const addAttribution = async () => {
         try{
             if(commercialData.value[0] && commercialData.value[0].status === "Pending"){
                 window.showMessage("La dernière attribution est en attente de validation.", 'error');
                 return;
             }
+            error.value = false;
             let url = 'api/AssignCommercialToCustomer';
             const res = await axiosInstance.post(url,{
                 commercialId: commertial.value.user_id,
@@ -88,6 +89,7 @@
             });
             window.showMessage("Commercial ajouté avec succès.");
         }catch (e){
+            error.value = true;
             window.showMessage("Veuillez vérifier les dates et les commerciaux choisis.","error");
         }
     };

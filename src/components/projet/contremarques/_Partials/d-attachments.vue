@@ -21,7 +21,7 @@
                 </li>
             </ul>
         </perfect-scrollbar>
-        <div class="col-md-12" v-if="!disable">
+        <div class="col-md-12" v-if="!props.disable">
             <div class="row justify-content-center">
                 <div class="col-auto">
                     <d-modal-add-attachment :carpetDesignOrderId="props.carpetDesignOrderId" :diId="props.diId" @onClose="handleClose"></d-modal-add-attachment>
@@ -53,7 +53,7 @@
         },
         disable: {
             type: Boolean,
-            default: true
+            default: false
         }
     });
     

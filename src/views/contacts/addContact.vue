@@ -14,7 +14,8 @@
 
                       <d-contact-top v-if="!loading &&  currentCustomer.customerGroup?.customer_group_id && currentCustomer.customerGroup?.customer_group_id !== 1"
                       :contactData="currentCustomer.contactsData" 
-                      :customerId="currentCustomer.customer_id"
+                      :customerId="currentCustomer.customer_id" 
+                      @addContact="addNewContact" 
                       ></d-contact-top>
                   </div>
               </template>
@@ -59,7 +60,7 @@
                         </template>
                         <template v-slot:panel-body>
                             <div class="row pe-2 ps-0">
-                                <d-contremarque-histories :customerId="currentCustomer.customer_id"></d-contremarque-histories>
+                                <d-contremarque-histories :canAdd="canAddContremarque" :customerId="currentCustomer.customer_id"></d-contremarque-histories>
                                 <d-contremarque-prescriptor-histories :customerId="currentCustomer.customer_id"></d-contremarque-prescriptor-histories>
                             </div>
                         </template>
@@ -113,6 +114,7 @@
     const customer_id = route.params.id;
     const currentCustomer = ref({});
     const loading = ref(false);
+    const canAddContremarque = ref(false);
 
     const getCustomer = async () => {
         try{
@@ -121,7 +123,9 @@
                 const res = await axiosInstance.get("api/customer/" + customer_id);
                 currentCustomer.value = res.data.response.customerData;
                 currentCustomer.customerGroup = res.data.response.customerData.customerGroup;
-                console.log("current customer ID : ", currentCustomer.value.customerGroup.customer_group_id);
+                if(currentCustomer.value.contactsData.length > 0){
+                    canAddContremarque.value = true;
+                }
             }
         }catch(e){
             let msg = "";
@@ -139,6 +143,12 @@
         getCustomer();
     });
 
+    const addNewContact = (event) => {
+        if(event){
+            canAddContremarque.value = true;
+        }
+    }
+    
     const goToListCustomers = () => {
         router.push({name: 'contactsList'});
     }

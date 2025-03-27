@@ -2,7 +2,7 @@
     <div class="row align-items-center">
         <d-modal-manage-locations ref="manageLocations" :locationData="selectedLocation"
             :contremarqueId="contremarqueId" :options="props.locationOptions"
-            @onClose="handleClose"></d-modal-manage-locations>
+            @onClose="handleClose" :saveAndStay="false" @addLocation="addNewLocation"></d-modal-manage-locations>
         <div class="row pe-2 ps-2">
             <div class="col-auto">
                 <button class="btn btn-custom pe-5 ps-5" data-bs-toggle="modal" data-bs-target="#modalLocationManage"
@@ -100,6 +100,9 @@ const getLocations = async () => {
 
 const updateLocation = (location) => {
     selectedLocation.value = location;
+};
+const addNewLocation = (location) => {
+    locations.value.push(location)
 };
 
 const handleClose = () => {

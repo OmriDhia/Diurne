@@ -290,7 +290,6 @@
     };
     
     const goToCreateDevis = () => {
-        // location.href = "/projet/devis/manage?contremarqueId=" + contremarque_id
         router.push({ name: 'devisManage', query: { contremarqueId: contremarque_id } });
     };
 </script>

@@ -26,7 +26,7 @@
     <div class="row align-items-center">
         <div class="col-md-6 col-sm-12">
             <div class="row">
-                <div class="col-md-auto">
+                <!--div class="col-md-auto">
                     <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
                         <input type="checkbox" v-model="data.is_f_valide" class="custom-control-input" :id="'addressCheckbox1-'+props.index"/>
                         <label class="custom-control-label" :for="'addressCheckbox1-'+props.index"> F-valide </label>
@@ -37,7 +37,7 @@
                         <input type="checkbox" v-model="data.is_l_valide" class="custom-control-input" :id="'addressCheckbox2-'+props.index"/>
                         <label class="custom-control-label" :for="'addressCheckbox2-'+props.index">L-valide</label>
                     </div>
-                </div>
+                </div-->
                 <div class="col-md-auto">
                     <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
                         <input type="checkbox" v-model="data.is_wrong" class="custom-control-input" :id="'addressCheckbox3-'+props.index"/>

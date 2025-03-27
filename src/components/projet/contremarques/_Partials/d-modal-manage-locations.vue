@@ -86,6 +86,7 @@ const data = ref({
     createdAt: "",
 });
 const error = ref({});
+const emit = defineEmits(['onClose','addLocation']);
 
 onMounted(() => {
     if (props.locationData) {
@@ -116,6 +117,10 @@ const saveLocation = async () => {
         } else {
             document.querySelector("#modalLocationManage .btn-close").click();
             initData();
+        }
+        
+        if(!data.value.location_id){
+            emit('addLocation',res.data.response);
         }
     } catch (e) {
         if (e.response.data.violations) {
@@ -179,7 +184,6 @@ watch(
     },
     { deep: true }
 );
-const emit = defineEmits(['onClose']);
 
 const handleClose = () => {
     initData();
