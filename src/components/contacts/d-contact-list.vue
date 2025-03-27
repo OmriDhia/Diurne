@@ -215,7 +215,7 @@
                         </div>
                     </template>
                     <template #commercial="data">
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between align-items-center">
                             <strong>
                                 {{ data.value.last_commercial }} 
                                 <span class="font-size-0-7" v-if="data.value.before_last_commercial && data.value.before_last_commercial !== ' '"> 
