@@ -216,10 +216,13 @@
                     </template>
                     <template #commercial="data">
                         <div class="d-flex justify-content-between">
-                            <strong
-                                >{{ data.value.last_commercial }} <span class="font-size-0-7" v-if="data.value.before_last_commercial"> / {{ data.value.before_last_commercial }}</span></strong
-                            >
-                            <div v-if="data.value.status == 'Pending'">
+                            <strong>
+                                {{ data.value.last_commercial }} 
+                                <span class="font-size-0-7" v-if="data.value.before_last_commercial && data.value.before_last_commercial !== ' '"> 
+                                    / {{ data.value.before_last_commercial }}
+                                </span>
+                            </strong>
+                            <div v-if="data.value.s_last_name == 'Pending'">
                                 <button type="button" class="btn btn-icon p-0" v-if="data.value.loading">
                                     <vue-feather type="loader" animation="spin"></vue-feather>
                                 </button>
