@@ -36,7 +36,7 @@
                                 <d-base-dropdown name="Contact" label="lastname" trackBy="contact_id" :datas="currentCustomer.contactsData" v-model="contact"></d-base-dropdown>
                             </div>
                             <div class="row pe-2 ps-0" v-if="currentCustomer.contactsData">
-                                <d-discount v-model="tarifId.discount_rule_id"  :error="error.customerDiscount_id"></d-discount>
+                                <d-discount :disabled="true" v-model="tarifId.discount_rule_id"  :error="error.customerDiscount_id"></d-discount>
                             </div>
                             <div class="row justify-content-center mt-5" v-if="contremarque_id">
                                 <div class="col-auto d-flex flex-column pe-3">

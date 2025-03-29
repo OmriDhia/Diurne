@@ -2,7 +2,7 @@
     <div class="row align-items-center">
         <div class="col-4"><label for="droit" class="form-label">Discount par défaut<span class="required" v-if="required">*</span>:</label></div>
         <div class="col-8">
-            <select id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="discount" @input="handleChange($event.target.value)">
+            <select id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="discount" @input="handleChange($event.target.value)" :disabled="disabled">
                 <option value="0" selected >Selectionnez un discount par défaut</option>
                 <option v-for="(prof, key) in discounts" :key="key" :value="prof.discountRule_id">{{ prof.title }}</option>
             </select>
@@ -25,6 +25,10 @@
                 default: ''
             },
             required: {
+                type: Boolean,
+                default: false
+            },
+            disabled: {
                 type: Boolean,
                 default: false
             },
