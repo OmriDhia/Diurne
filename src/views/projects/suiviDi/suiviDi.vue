@@ -65,7 +65,7 @@
                                         @change="changeServer" class="advanced-table text-nowrap">
                             <template #image="data">
                                 <div class="d-flex justify-content-center">
-                                    <img :src="getImageUrl(data.value.image_name)" alt="Carpet Image" class="img-thumbnail" style="width: 80px; height: auto;">
+                                    <img :src="$Helper.getImagePathNew(data.value.image_path, data.value.image_name)" alt="Carpet Image" class="img-thumbnail" style="width: 80px; height: auto;">
                                 </div>
                             </template>
                             <template #image_name="data">
@@ -143,8 +143,8 @@ const total_rows = ref(0);
 const params = reactive({
     current_page: 1,
     pagesize: 50,
-    orderBy: null,
-    orderWay: null
+    orderBy: 'di_id',
+    orderWay: 'desc'
 });
 const truncateText = (text, length) => {
     if (!text) return '';
@@ -158,6 +158,7 @@ const selectedDiId = ref(0);
 const contremarqueId = ref(null);
 
 const cols = ref([
+    { field: 'di_id', title: 'ID' },
     { field: 'image', title: 'Image' },
     { field: 'image_name', title: 'Nom' },
     { field: 'diNumber', title: 'N° de la DI' },
@@ -173,7 +174,7 @@ const cols = ref([
 ]) || [];
 const getImageUrl = (imageName) => {
     if (!imageName) return ''; // Handle missing images
-    return `https://diurne-api.webntricks.com/uploads/attachments/${imageName}`;
+    return `/uploads/attachments/${imageName}`;
 };
 onMounted(() => {
     const f = Helper.getStorage(FILTER_SUIVI_DI_STORAGE_NAME);
