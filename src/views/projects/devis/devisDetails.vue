@@ -90,7 +90,7 @@
                                             client. Voulez-vous continuer ?</div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-danger"
-                                                data-bs-dismiss="modal">Annuler</button>
+                                                 @click="confirmTarifChange(true)">Annuler</button>
                                             <button type="button" class="btn btn-primary"
                                                 @click="confirmTarifChange">Confirmer</button>
                                         </div>
@@ -654,10 +654,8 @@ const getQuote = async (quote_id) => {
     try {
         if (quote_id) {
             quote.value = await quoteService.getQuoteById(quote_id);
-            // Set defaultCustomTarifId if exists
             if (quote.value?.defaultCustomTarifId) {
                 data.value.quoteDetail.TarifId = quote.value.defaultCustomTarifId;
-                console.log('data.value.quoteDetail.TarifId', data.value.quoteDetail.TarifId);
             }
             contremarqueId.value = quote.value.contremarqueId;
             quoteNumber.value = quote.value.reference;
@@ -856,8 +854,10 @@ const closeModal = () => {
     modalInstance.hide();
 };
 
-const confirmTarifChange = () => {
-    // Apply the change
+const confirmTarifChange = (annulation = false) => {
+    if(annulation){
+        data.value.quoteDetail.TarifId = quote.value.defaultCustomTarifId;
+    }
     isModalOpen.value = false;
     modalInstance.hide();
 };
