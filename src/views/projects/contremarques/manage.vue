@@ -16,7 +16,6 @@
                       <div class="col-md-4 col-sm-12">
                           <d-input type="date" label="Date cible" :required="false" v-model="data.target_date" ></d-input>
                       </div>
-                      <!-- :error="error.target_date" -->
                   </div>
               </template>
           </d-panel>
@@ -232,6 +231,9 @@
         }catch(e){
             if(e.response.data.violations){
                 error.value = formatErrorViolations(e.response.data.violations)
+                if(e.response.data.violations.indexOf("There is an other project with the same name.") > -1){
+                    error.value["designation"] = "There is an other project with the same name."
+                }
             }
             window.showMessage(e.message,'error')
         }
