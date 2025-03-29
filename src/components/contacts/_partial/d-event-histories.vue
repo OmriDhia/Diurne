@@ -1,5 +1,5 @@
 <template>
-    <div class="row">
+    <div class="row" v-if="datas.length > 0">
         <div class="col-lg-12 col-xl-6">
             <div class="row">
                 <div class="col-12">
@@ -49,6 +49,14 @@
                 </div>
             </perfect-scrollbar>
             </div>
+        </div>
+    </div>
+    <div class="row" v-else>
+        <div class="col-12" v-if="props.contremarqueId">
+            Cette contremarque ne possède pas des évènements.
+        </div>
+        <div class="col-12" v-else>
+            Ce client ne possède pas des évènements.
         </div>
     </div>
 </template>
