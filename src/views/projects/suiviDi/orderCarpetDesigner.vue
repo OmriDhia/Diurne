@@ -81,6 +81,7 @@
                                                     <div class="col-xl-6 col-md-12">
                                                         <!-- :error="errorCarpetOrdeSpecification.collectionId" -->
                                                         <d-collections-dropdown
+                                                            :required="true"
                                                             :disabled="disableForDesigner"
                                                             v-model="dataSpecification.collectionId"
                                                             :error="error?.collectionId"
@@ -90,6 +91,7 @@
                                                     <div class="col-xl-6 col-md-12">
                                                         <!-- :error="errorCarpetOrdeSpecification.modelId" -->
                                                         <d-model-dropdown
+                                                            :required="true"
                                                             :disabled="disableForDesigner"
                                                             v-model="dataSpecification.modelId"
                                                             :error="error?.modelId"
@@ -99,6 +101,7 @@
                                                     <div class="col-xl-6 col-md-12">
                                                         <!--:error="errorCarpetOrdeSpecification.qualityId" -->
                                                         <d-qualities-dropdown
+                                                            :required="true"
                                                             :disabled="disableForDesigner"
                                                             v-model="dataSpecification.qualityId"
                                                             :error="error?.qualityId"
@@ -119,7 +122,7 @@
                                         </div>
                                         <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId">
                                             <div class="col-12">
-                                                <div class="text-black p-0 pb-2">Description de l'image</div>
+                                                <div class="text-black p-0 pb-2">Description de l'image <span class="required">*</span></div>
                                             </div>
                                             <div class="col-12">
                                                 <textarea

@@ -1,7 +1,7 @@
 <template>
     <div class="row align-items-center">
         <div class="row align-items-start" v-if="showTitle">
-            <h6 class="w-100 p-0">Matière demandés</h6>
+            <h6 class="w-100 p-0">Matière demandés <span class="required">*</span></h6>
         </div>
         <div class="card p-0" :class="{ 'border border-danger shadow-sm': error }">
             <perfect-scrollbar tag="div" class="h-130-forced p-0" :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 130, suppressScrollX: true }">

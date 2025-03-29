@@ -111,9 +111,11 @@
     "Quote processing date must be a valid date in Y-m-d H:i:s format.": "La date de traitement du devis doit être une date valide au format Y-m-d H:i:s.",
     "Designation cannot be empty.": "La désignation ne peut pas être vide.",
     "Request failed with status code 422": "Une ou plusieurs champs sont obligatoires ou ne sont pas conformes au type demandé. Veuillez vérifier les champs saisis.",
+    "Request failed with status code 400": "Une ou plusieurs champs sont obligatoires ou ne sont pas conformes au type demandé. Veuillez vérifier les champs saisis.",
     "Request failed with status code 500": "Erreur serveur. Veuillez contacter l'administrateur système.",
     "Uploaded file exceeds the maximum size of 3 MB": "Le fichier téléchargé dépasse la taille maximale de 3 Mo",
     "Please enter a valid name.": "Veuillez saisir un nom valide.",
     "This value should be greater than or equal to 1." : "Cette valeur doit être supérieure ou égale à 1.",
-    "plusderelance": "Plus de relance"
+    "plusderelance": "Plus de relance",
+    "There is an other project with the same name.": "Il existe un autre projet portant le même nom."
 }

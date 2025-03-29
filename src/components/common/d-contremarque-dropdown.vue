@@ -16,7 +16,18 @@
                 :disabled="disabled"
                 @update:model-value="handleChange($event)"
                 @search-change="handleSearch($event)"
-            ></multiselect>
+            >
+                <template v-slot:afterList>
+                    <div class="row justify-content-between align-items-center p-1">
+                        <div class="col-6 text-start">
+                            <a href="#" @click.prevent="prevPage" class="w-100 font-size-0-9" v-if="currentPage > 1">« précédent</a>
+                        </div>
+                        <div class="col-6 text-end">
+                            <a href="#" @click.prevent="nextPage" class="w-100 font-size-0-9"  v-if="currentPage < totalPages">suivant »</a>
+                        </div>
+                    </div>
+                </template>
+            </multiselect>
             <div v-if="error" class="invalid-feedback">{{ $t("Le champ contremarque est abligatoire.") }}</div>
         </div>
     </div>
@@ -27,13 +38,11 @@
     import Multiselect from 'vue-multiselect'
     import 'vue-multiselect/dist/vue-multiselect.css';
     import store from "../../store/index";
+    import contremarqueService from "../../Services/contremarque-service.js";
 
     export default {
         components:{
             Multiselect
-        },
-        computed: {
-            
         },
         props: {
             modelValue: {
@@ -61,11 +70,18 @@
             return {
                 selectedContremarque: null,
                 contremarques: [],
+                currentPage: 1,
+                itemsPerPage: 100, 
+                totalContrmarques: 0,
             };
+        },
+        computed: {
+            totalPages() {
+                return Math.ceil(this.totalContrmarques / this.itemsPerPage);
+            }
         },
         methods: {
             handleChange(value) {
-                // this.$emit('update:modelValue', parseInt(value.contremarque_id));
                 this.selectedContremarque = value;
                 this.$emit('update:modelValue', value ? value.contremarque_id : null);
 
@@ -75,7 +91,7 @@
             },
             async getContremarques (designation = ""){
                 try{
-                    let url = '/api/contremarques?page=1&limit=200&order=designation&orderWay=asc';
+                    let url = `/api/contremarques?page=${this.currentPage}&limit=${this.itemsPerPage}&order=designation&orderWay=asc`;
                     let localString = "contremarqueList";
                     if(this.customerId){
                         url += '&customerId=' + this.customerId;
@@ -85,20 +101,36 @@
                         url += '&designation=' + designation;
                         localString += designation;
                     }
-
-                    if(!localStorage.getItem(localString)){
-                        const res = await axiosInstance.get(url);
-                        localStorage.setItem(localString,JSON.stringify(res.data.contremarques))
-                    }
                     
-                    this.contremarques = JSON.parse(localStorage.getItem(localString));
-                    // Select the contremarque from the URL if available
-                    if (this.modelValue) {
-                        this.selectedContremarque = this.contremarques.find(  ad => ad.contremarque_id === this.modelValue ) || null;
-                    }
+                    const res = await axiosInstance.get(url);
+                    this.contremarques = res.data.contremarques;
+                    this.totalContrmarques = res.data.count;
+                    await this.matchContremarqueWithModel()
                 }catch(e){
                     console.error(e);
                     console.log('Erreur get contremarques list.')
+                }
+            },
+            async matchContremarqueWithModel() {
+                if (this.modelValue) {
+                    const selectedContremarque = this.contremarques.find(cust => cust.id === this.modelValue);
+                    if (!selectedContremarque) {
+                        const missingContremarque = await contremarqueService.getContremarqueById(this.modelValue);
+                        this.contremarques.push(missingContremarque);
+                        this.selectedContremarque = missingContremarque
+                    }
+                }
+            },
+            async nextPage() {
+                if (this.currentPage < this.totalPages) {
+                    this.currentPage++;
+                    await this.getContremarques();
+                }
+            },
+            async prevPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                    await this.getContremarques();
                 }
             }
         },
@@ -108,11 +140,7 @@
         watch: {
             modelValue(newValue) {
                 this.selectedContremarque = this.contremarques.find( ad => ad.contremarque_id === newValue ) || null;
-                // console.log("Selection mise à jour :", this.selectedContremarque);
             },
-            // modelValue(newValue) {
-            //     this.contremarqueId = this.contremarques.filter(ad => ad.contremarque_id === newValue)[0];
-            // },
             customerId(){
                 this.getContremarques();
             }

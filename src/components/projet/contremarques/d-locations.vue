@@ -89,10 +89,12 @@ const props = defineProps({
 const locations = ref([]);
 const selectedLocation = ref(null);
 const manageLocations = ref(null);
+const emit = defineEmits(['updateLocation']);
 
 const getLocations = async () => {
     try {
         locations.value = await contremarqueService.getLocationsByContremarque(props.contremarqueId);
+        emit("updateLocation",locations.value.length);
     } catch (error) {
         console.error('Failed to fetch profiles:', error);
     }
@@ -103,6 +105,7 @@ const updateLocation = (location) => {
 };
 const addNewLocation = (location) => {
     locations.value.push(location)
+    emit("updateLocation",locations.value.length);
 };
 
 const handleClose = () => {

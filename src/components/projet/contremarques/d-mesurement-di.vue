@@ -9,7 +9,7 @@
             <template v-for="(measurement, index) in measurements" :key="index">
                 <div class="col-xl-5-1 col-md-12 mt-2 mb-2 pe-0">
                     <div class="row align-items-start">
-                        <h6 class="w-100">{{ measurement.name }}</h6>
+                        <h6 class="w-100">{{ measurement.name }} <span class="required">*</span></h6>
                     </div>
                     <div class="card p-0" :class="{ 'is-invalid': error }">
                         <div class="card-body ps-2 mt-2">

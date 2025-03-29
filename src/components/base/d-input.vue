@@ -5,6 +5,8 @@
             <input
                 :type="type"
                 :value="modelValue"
+                :min="min"
+                :max="max"
                 @input="$emit('update:modelValue', $event.target.value)"
                 :class="{ 'is-invalid': error, 'form-control': true }"
                 :id="computedId"
@@ -59,6 +61,14 @@
             button: {
                 type: Boolean,
                 default: false
+            },
+            min: {
+                type: String,
+                default: null
+            },
+            max: {
+                type: String,
+                default: null
             }
         },
         computed: {

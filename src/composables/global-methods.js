@@ -69,9 +69,12 @@ export const Helper = {
         }
         return '/assets/images/projet/no-image.png';
     },
-    getImagePathNew: (path) => {
+    getImagePathNew: (path, name = "") => {
         if (path) {
             const baseUrl = path.replace('/var/www/html/api_diurne/public', FILE_URL);
+            if (name) {
+                return baseUrl + '/' + name;
+            }
             return baseUrl;
         }
         return '/assets/images/projet/no-image.png';

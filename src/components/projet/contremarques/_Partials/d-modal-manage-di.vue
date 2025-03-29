@@ -35,7 +35,7 @@
                     </div>
                     <div class="row p-1 align-items-center">
                         <div class="col-sm-12 col-md-9">
-                            <d-input :required="true" type="date" label="Deadline" v-model="data.deadline" :error="error.deadline"></d-input>
+                            <d-input :min="today" :required="true" type="date" label="Deadline" v-model="data.deadline" :error="error.deadline"></d-input>
                         </div>
                     </div>
                     <div class="row p-1 align-items-center" v-if="props.diId">
@@ -87,7 +87,7 @@
         contremarque_id: 0
     });
     const error = ref({});
-
+    const today = ref(new Date().toISOString().split('T')[0]);
     const saveDI = async () =>{
         try{
             if(props.contremarqueId){
