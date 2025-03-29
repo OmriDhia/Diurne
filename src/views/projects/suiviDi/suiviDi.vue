@@ -143,7 +143,7 @@ const total_rows = ref(0);
 const params = reactive({
     current_page: 1,
     pagesize: 50,
-    orderBy: 'di_id',
+    orderBy: 'order_design_id',
     orderWay: 'desc'
 });
 const truncateText = (text, length) => {
@@ -158,7 +158,7 @@ const selectedDiId = ref(0);
 const contremarqueId = ref(null);
 
 const cols = ref([
-    { field: 'di_id', title: 'ID' },
+    { field: 'order_design_id', title: 'ID' },
     { field: 'image', title: 'Image' },
     { field: 'image_name', title: 'Nom' },
     { field: 'diNumber', title: 'N° de la DI' },
