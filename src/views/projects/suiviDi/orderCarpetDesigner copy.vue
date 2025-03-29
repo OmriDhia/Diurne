@@ -81,12 +81,14 @@
                                                 <d-collections-dropdown
                                                     :disabled="disableForDesigner"
                                                     v-model="dataSpecification.collectionId"
+                                                    :required="true"
                                                     :error="errorCarpetOrdeSpecification.collectionId"
                                                     :errorCollection="errorCarpetDesignOrder.collectionID"
                                                 ></d-collections-dropdown>
                                             </div>
                                             <div class="col-xl-6 col-md-12">
                                                 <d-model-dropdown
+                                                    :required="true"
                                                     :disabled="disableForDesigner"
                                                     v-model="dataSpecification.modelId"
                                                     :error="errorCarpetOrdeSpecification.modelId"
@@ -95,6 +97,7 @@
                                             </div>
                                             <div class="col-xl-6 col-md-12">
                                                 <d-qualities-dropdown
+                                                    :required="true"
                                                     :disabled="disableForDesigner"
                                                     v-model="dataSpecification.qualityId"
                                                     :error="errorCarpetOrdeSpecification.qualityId"
