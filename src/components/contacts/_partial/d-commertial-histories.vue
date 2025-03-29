@@ -34,17 +34,17 @@
 <script setup>
     import { ref, onMounted, watch} from "vue"
     const props = defineProps({
-        commertialData: {
+        commercialData: {
             type: Array
         }
     });
     
     const datas = ref([]);
     onMounted(()=>{
-        datas.value = props.commertialData;
+        datas.value = props.commercialData;
     });
     watch(
-        () => props.commertialData,
+        () => props.commercialData,
         (newVal) => {
             datas.value = newVal
         }

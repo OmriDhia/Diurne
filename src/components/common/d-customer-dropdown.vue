@@ -56,6 +56,8 @@
     import Multiselect from 'vue-multiselect';
     import 'vue-multiselect/dist/vue-multiselect.css';
     import contactService from "../../Services/contact-service";
+    import userService from "../../Services/user-service.js";
+    import store from "../../store/index";
 
     export default {
         components: {
@@ -128,6 +130,11 @@
                     if (customerName) {
                         url += `&filter[customerName]=${customerName}`;
                     }
+
+                    const user = userService.getUserInfo()
+                    if (user && (store.getters.isCommertial || store.getters.isCommercialManager)){
+                        url += `&filter[commercialId]=${user.id}`;    
+                    }
                     
                     url += `&filter[hasOnlyOneContact]=true`;
 
@@ -183,6 +190,12 @@
                     this.matchCustomerWithModel();
                 },
                 immediate: true
+            },
+            commercialId:{
+                handler() {
+                    this.matchCustomerWithModel();
+                },
+                immediate: true 
             }
         }
     };
