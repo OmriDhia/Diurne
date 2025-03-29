@@ -40,16 +40,16 @@
                             </div>
                             <div class="row justify-content-center mt-5" v-if="contremarque_id">
                                 <div class="col-auto d-flex flex-column pe-3">
-                                    <button class="btn btn-custom ps-5 pe-5 text-uppercase" @click="goToDIProjet">Voir les di projets</button>
-                                    <button class="btn btn-custom ps-5 pe-5 text-uppercase mt-2" @click="goToContremarques()">Voir les devis</button>
-                                    <button class="btn btn-custom ps-4 pe-4 text-uppercase mt-2">Voir les commandes</button>
+                                    <button class="btn btn-custom ps-5 pe-5 text-uppercase" @click="goToDIProjet"  :disabled="disableButtonActions">Voir les di projets</button>
+                                    <button class="btn btn-custom ps-5 pe-5 text-uppercase mt-2" @click="goToContremarques()"  :disabled="disableButtonActions">Voir les devis</button>
+                                    <button class="btn btn-custom ps-4 pe-4 text-uppercase mt-2" :disabled="disableButtonActions">Voir les commandes</button>
                                 </div>
                                 <div class="col-auto d-flex flex-column">
-                                    <button class="btn btn-outline-custom" @click="goToListSUiviDI()">
+                                    <button class="btn btn-outline-custom" @click="goToListSUiviDI()" :disabled="disableButtonActions">
                                         Suivi DI projets
                                         <vue-feather type="arrow-right" size="14"></vue-feather>
                                     </button>
-                                    <button class="btn btn-outline-custom mt-2" @click="goToCreateDevis()">
+                                    <button class="btn btn-outline-custom mt-2" @click="goToCreateDevis()"  :disabled="disableButtonActions">
                                         Créer Un Devis
                                         <vue-feather type="arrow-right" size="14"></vue-feather>
                                     </button>
@@ -103,7 +103,7 @@
                             <d-panel-title title="Liste des emplacements de la contremarque"></d-panel-title>
                         </template>
                         <template v-slot:panel-body>
-                            <d-locations :locationOptions="locationOptions" :contremarqueId="contremarque.contremarque_id"> </d-locations>
+                            <d-locations @updateLocation="disableButton" :locationOptions="locationOptions" :contremarqueId="contremarque.contremarque_id"> </d-locations>
                         </template>
                     </d-panel>
                 </div>
@@ -167,6 +167,7 @@
     const tarifId = ref(0);
     const contact = ref({});
     const prescriber = ref(0);
+    const disableButtonActions = ref(true);
     const error = ref({});
     const loading = ref(false);
     
@@ -200,6 +201,10 @@
         }finally {
             loading.value = false;
         }
+    };
+    const disableButton = async (locations) => {
+        console.log("Locations count: ",locations)
+        disableButtonActions.value = locations === 0;
     };
 
     const saveContremarque = async () => {
