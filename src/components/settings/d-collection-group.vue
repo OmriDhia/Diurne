@@ -67,7 +67,7 @@
     const saveData = async (row) => {
       try {
         const payload = {
-            group_number: row.groupNumber
+            collection_group_id : row.groupNumber
         };
         const { data } = await axiosInstance.put(`/api/collection-group/${row.id}`, payload);
         const index = rows.value.findIndex(item => item.id === row.id);
