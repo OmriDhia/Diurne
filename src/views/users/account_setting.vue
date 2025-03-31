@@ -16,32 +16,21 @@
                                         <div class="row m-2 mb-4">
                                             <div class="col-6">
                                                 <div class="row align-items-center">
-                                                    <div class="col-3"><label for="name" class="form-label">Nom:</label>
-                                                    </div>
-                                                    <div class="col-9"><input v-model="userObj.lastname" id="name"
-                                                            type="text" class="form-control" /></div>
+                                                    <d-input label="Nom" v-model="userObj.lastname" :required="true" :error="error.lastname"> </d-input>
                                                 </div>
                                             </div>
                                             <div class="col-6">
                                                 <div class="row align-items-center">
-                                                    <div class="col-3"><label for="login"
-                                                            class="form-label">Login:</label></div>
-                                                    <div class="col-9"><input v-model="userObj.email" id="login"
-                                                            type="text" class="form-control" /></div>
+                                                    <d-input label="E-mail" v-model="userObj.email" :required="true" :error="error.email"> </d-input>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row m-2 mt-4">
                                             <div class="col-6">
-                                                <div class="row align-items-center">
-                                                    <div class="col-3"><label for="surname"
-                                                            class="form-label">Prénom:</label></div>
-                                                    <div class="col-9"><input v-model="userObj.firstname" id="surname"
-                                                            type="text" class="form-control" /></div>
-                                                </div>
+                                                <d-input label="Prénom" v-model="userObj.firstname" :required="true" :error="error.firstname"> </d-input>
                                             </div>
                                             <div class="col-6">
-                                                <d-profile v-model="userObj.profile"></d-profile>
+                                                <d-profile v-model="userObj.profile" :error="error.profileId"></d-profile>
                                             </div>
                                         </div>
                                     </div>
@@ -78,13 +67,15 @@ import dPanelTitle from '../../components/common/d-panel-title.vue'
 import { useMeta } from "/src/composables/use-meta";
 import axiosInstance from "../../config/http";
 import userService from "../../Services/user-service";
-import user from "../../store/modules/user";
+import dInput from "../../components/base/d-input.vue";
+import {formatErrorViolations} from "../../composables/global-methods.js";
 
 useMeta({ title: "Account Setting" });
 
 const route = useRoute();
 const { id } = route.params;
 const router = useRouter();
+const error = ref({})
 
 if (id) {
     onMounted(() => {
@@ -102,6 +93,7 @@ const userObj = reactive({
 
 const save = async () => {
     try {
+        error.value = {}
         if (id) {
             const res_user = await axiosInstance.put(`/api/user/${id}/update`, {
                 firstname: userObj.firstname,
@@ -126,8 +118,21 @@ const save = async () => {
 
         window.showMessage("L'utilisateur a été enregistré avec succès.");
         router.push({name: "users"}); 
-    } catch (error) {
-        window.showMessage("Quelque chose s'est mal passé.", 'error');
+    } catch (e) {
+        if(e.response.data.violations){
+            error.value = formatErrorViolations(e.response.data.violations)
+            if(error.value.email && error.value.email.includes("is not a valid email")){
+                error.value.email = "Veuillez entrer un email valide."
+            }
+        }
+        
+        if(e.response.data.detail === "duplicate"){
+            window.showMessage("Un compte utilisateur avec cet email existe déjà.", 'error');
+            error.value.email = "Email existe déjà."
+        }else{
+            window.showMessage("Quelque chose s'est mal passé.", 'error'); 
+        }
+        
     }
 
 };

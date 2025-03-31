@@ -39,7 +39,7 @@
         methods: {
             handleChange(newValue) {
                 newValue = parseInt(newValue);
-                this.$emit("confirm-change", newValue);
+                this.$emit("update:modelValue", newValue);
             },
             async getDiscounts() {
                 try {

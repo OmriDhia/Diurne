@@ -76,26 +76,7 @@
                             <d-panel-title title="Prix" className="ps-2"></d-panel-title>
                             <div class="row">
                                 <d-tarifs :required="true" v-model="data.quoteDetail.TarifId"
-                                    :error="validationSubmitErrors.tarifId" @confirm-change="openModal"></d-tarifs>
-                            </div>
-                            <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Confirmation</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">Changer le tarif affectera le tarif par défaut du
-                                            client. Voulez-vous continuer ?</div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-danger"
-                                                 @click="confirmTarifChange(true)">Annuler</button>
-                                            <button type="button" class="btn btn-primary"
-                                                @click="confirmTarifChange">Confirmer</button>
-                                        </div>
-                                    </div>
-                                </div>
+                                    :error="validationSubmitErrors.tarifId"></d-tarifs>
                             </div>
                             <div class="row">
                                 <d-qualities-dropdown :required="true" v-model="data.carpetSpecification.qualityId"
@@ -571,6 +552,7 @@ const prices = ref({
     },
 });
 
+let applyConfirmationTarifId = true;
 let disableAutoSave = true;
 
 const errorHandling = ref({});
@@ -756,7 +738,6 @@ const applyStopAutoSave = () => {
 onMounted(() => {
     if (quote_id) {
         getQuote(quote_id);
-        modalInstance = new bootstrap.Modal(document.getElementById('confirmModal'));
     }
     if (quoteDetailId) {
         getQuoteDetails(quoteDetailId);
@@ -798,7 +779,6 @@ watch(
     () => [
         data.value.quoteDetail.applyLargeProjectRate,
         data.value.quoteDetail.applyProposedDiscount,
-        data.value.quoteDetail.TarifId,
         data.value.quoteDetail.calculateFromTotalExcludingTax,
         data.value.carpetSpecification.collectionId,
         data.value.carpetSpecification.modelId,
@@ -814,6 +794,16 @@ watch(
         await saveAndCalculate();
     },
     { deep: true }
+);
+watch(
+    () => data.value.quoteDetail.TarifId, 
+    async (newTarifId, oldTarifId) => {
+        if (quoteDetailId && !disableAutoSave && applyConfirmationTarifId) {
+            await confirmHandle()
+        }
+        applyConfirmationTarifId = true;
+    },
+    { deep: true,immediate: true }
 );
 watch(
     () => data.value.carpetSpecification.hasSpecialShape,
@@ -839,27 +829,28 @@ watch(
     { deep: true }
 );
 
-const isModalOpen = ref(false);
-const newTarifId = ref(null);
-let modalInstance = null;
-
-const openModal = (tarifId) => {
-    newTarifId.value = tarifId;
-    isModalOpen.value = true;
-    modalInstance.show();
-};
-
-const closeModal = () => {
-    isModalOpen.value = false;
-    modalInstance.hide();
-};
-
-const confirmTarifChange = (annulation = false) => {
-    if(annulation){
-        data.value.quoteDetail.TarifId = quote.value.defaultCustomTarifId;
-    }
-    isModalOpen.value = false;
-    modalInstance.hide();
+const confirmHandle = async () => {
+    new window.Swal({
+        title: 'Êtes-vous sûr ?',
+        text: "Changer le tarif affectera le tarif par défaut du client. Voulez-vous continuer ?",
+        type: 'warning',
+        showCancelButton: true,
+        cancelButtonText: 'Annuler',
+        confirmButtonText: 'Confirmer',
+        padding: '2em'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            await saveAndCalculate();
+        } else {
+            console.log("TarifId", quote.value);
+            if (quote.value?.defaultCustomTarifId) {
+                data.value.quoteDetail.TarifId = quote.value.defaultCustomTarifId;
+            }else{
+                window.showMessage("Le tarif par défaut n'est pas définie",'error');
+            }
+            applyConfirmationTarifId = false;
+        }
+    });
 };
 </script>
 <style scoped>
@@ -873,9 +864,5 @@ const confirmTarifChange = (annulation = false) => {
 .row>[class*='col-'] {
     display: flex;
     flex-direction: column;
-}
-
-.modal-content {
-    text-align: center;
 }
 </style>
