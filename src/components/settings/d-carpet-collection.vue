@@ -170,7 +170,6 @@ const addData = async (row) => {
                     ? row.special_shape.id 
                     : row.special_shape)
                 : null,
-            police_id: row.police,
             image_name: row.image_name,
             languages: row.languages && row.languages.length > 0 
                 ? row.languages 
@@ -182,7 +181,7 @@ const addData = async (row) => {
         const newRow = {
             ...data.response,
             collection_group_id: collectionGroups.value.find(g => g.id === data.response.collection_group_id),
-            police_id: polices.value.find(g => g.id === data.response.police),
+            police: polices.value.find(g => g.id === data.response.police),
             special_shape: data.response.special_shape 
                 ? specialShapes.value.find(g => g.id === data.response.special_shape)
                 : null
@@ -223,7 +222,7 @@ const saveData = async (row) => {
         const updatedRow = {
             ...data.response,
             collection_group_id: collectionGroups.value.find(g => g.id === data.response.collection_group_id),
-            police_id: polices.value.find(g => g.id === data.response.police_id),
+            police_id: polices.value.find(g => g.id === data.response.police),
             special_shape: data.response.special_shape 
                 ? specialShapes.value.find(g => g.id === data.response.special_shape)
                 : null,

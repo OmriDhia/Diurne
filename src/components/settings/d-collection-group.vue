@@ -31,9 +31,16 @@
   
     const addData = async (row) => {
       try {
-        const { data } = await axiosInstance.post('/api/createCollectionGroup', row);
-        rows.value.push(data.response);
-        return data.response;
+        const payload = {
+            group_number: row.groupNumber
+        };
+        const { data } = await axiosInstance.post('/api/createCollectionGroup', payload);
+        const newRow = {
+            ...data.response,
+            groupNumber: data.response.group_number,
+        };
+        rows.value.push(newRow);
+        return newRow;
       } catch (error) {
         if (error.response && error.response.status === 409) {
           const errorMessage = "Un Transporteur avec ce code existe déjà.";
@@ -59,7 +66,10 @@
   
     const saveData = async (row) => {
       try {
-        const { data } = await axiosInstance.put(`/api/collection-group/${row.id}`, row);
+        const payload = {
+            group_number: row.groupNumber
+        };
+        const { data } = await axiosInstance.put(`/api/collection-group/${row.id}`, payload);
         const index = rows.value.findIndex(item => item.id === row.id);
         if (index !== -1) {
           rows.value[index] = data.response;
