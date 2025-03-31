@@ -69,7 +69,7 @@ export default {
 
             try {
                 const res = await axiosInstance.get('/api/color');
-                commit('setColors', res.data.response);
+                commit('setColors', res.data.response.data);
             } catch (error) {
                 console.error('Erreur lors de la récupération des couleurs:', error);
             } finally {
@@ -102,7 +102,7 @@ export default {
                 isFetchingImageTypes = true;
                 
                 const res = await axiosInstance.get('/api/image-types');
-                commit('setImageTypes', res.data.response);
+                commit('setImageTypes', res.data.response.data);
             
             } catch (error) {
                 console.error('Failed to fetch image types:', error);
