@@ -21,7 +21,7 @@
                 :disabled="disabled"
             />
             <div v-if="error" class="invalid-feedback">
-                {{ error || $t('Le champ collection est obligatoire.') }}
+                {{ $t('Le champ collection est obligatoire.') }}
             </div>
         </div>
     </div>

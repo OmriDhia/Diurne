@@ -84,7 +84,7 @@
                                                             :required="true"
                                                             :disabled="disableForDesigner"
                                                             v-model="dataSpecification.collectionId"
-                                                            :error="error?.collectionId"
+                                                            :error="error?.collectionId || errorCarpetDesignOrder.collectionID"
                                                             :errorCollection="errorCarpetDesignOrder.collectionID"
                                                         ></d-collections-dropdown>
                                                     </div>
@@ -94,8 +94,7 @@
                                                             :required="true"
                                                             :disabled="disableForDesigner"
                                                             v-model="dataSpecification.modelId"
-                                                            :error="error?.modelId"
-                                                            :errorModel="errorCarpetDesignOrder.ModelID"
+                                                            :error="error?.modelId || errorCarpetDesignOrder.ModelID"
                                                         ></d-model-dropdown>
                                                     </div>
                                                     <div class="col-xl-6 col-md-12">
@@ -104,7 +103,7 @@
                                                             :required="true"
                                                             :disabled="disableForDesigner"
                                                             v-model="dataSpecification.qualityId"
-                                                            :error="error?.qualityId"
+                                                            :error="error?.qualityId || errorCarpetDesignOrder.qualityID"
                                                             :errorQuality="errorCarpetDesignOrder.qualityID"
                                                         ></d-qualities-dropdown>
                                                     </div>
@@ -128,10 +127,10 @@
                                                 <textarea
                                                     :disabled="disableForDesigner"
                                                     v-model="dataSpecification.description"
-                                                    :class="{ 'is-invalid': error?.description }"
+                                                    :class="{ 'is-invalid': error?.description || errorCarpetDesignOrder.description }"
                                                     class="w-100 h-130-forced block-custom-border"
                                                 ></textarea>
-                                                <div v-if="error?.description" class="invalid-feedback">La description est obligatoire.</div>
+                                                <div v-if="error?.description || errorCarpetDesignOrder.description" class="invalid-feedback">La description est obligatoire.</div>
                                             </div>
                                         </div>
                                         <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && !hideForTrans">
@@ -566,11 +565,10 @@
     };
 
     const updateCarpetDesignStatus = async (statusId) => {
-        dataCarpetOrder.value.status_id = statusId;
-        console.log(statusId);
         ValidateBeforeTransmission();
         if (!errorTransmis.value) {
             await saveCarpetOrder(statusId);
+            dataCarpetOrder.value.status_id = statusId;
         }
     };
     //dataCarpetOrder.location_id

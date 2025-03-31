@@ -42,7 +42,7 @@
                 </div>
                 <div class="row justify-content-between align-items-center mt-3">
                     <div class="col-lg-7 col-md-12">
-                        <d-input :disabled="disabled" type="date" label="Validation client" v-model="data.customerValidationDate"></d-input>
+                        <d-input type="date" label="Validation client" v-model="data.customerValidationDate" :error="errorADV.dateCustomer"></d-input>
                     </div>
                     <div class="col-lg-5 col-md-12 d-flex">
                         <div class="checkbox-default custom-control custom-checkbox">
@@ -66,8 +66,14 @@
                         <div class="text-black p-0 pb-2">Commentaire client</div>
                     </div>
                     <div class="col-12">
-                        <textarea :disabled="disabled" class="w-100 h-130-forced block-custom-border" v-model="data.customerComment"></textarea>
+                        <textarea
+                            :disabled="disabled"
+                            :class="{ 'is-invalid': errorADV.customerComment }"
+                            class="w-100 h-130-forced block-custom-border" 
+                            v-model="data.customerComment">
+                        </textarea>
                     </div>
+                    <div v-if="errorADV.customerComment" class="invalid-feedback">{{ errorADV.customerComment }}</div>
                 </div>
             </div>
         </div>
@@ -77,7 +83,7 @@
             </div>
             <div class="col-lg-4 col-md-12">
                 <div class="row justify-content-between align-items-start mt-1 pe-2" v-if="canShowTransmisAdv">
-                    <button class="btn btn-custom w-100 text-uppercase font-size-0-7">Transmettre l'image à l'ADV</button>
+                    <button class="btn btn-custom w-100 text-uppercase font-size-0-7" @click="transmisAdv"  :disabled="disabled">Transmettre l'image à l'ADV</button>
                 </div>
                 <!-- <div class="row justify-content-between align-items-start mt-1  pe-2" v-if="canCreateVariation">
                     <button class="btn btn-custom w-100 text-uppercase font-size-0-7"  data-bs-toggle="modal" data-bs-target="#modalCreateVariation">Créer une variation</button>
@@ -115,6 +121,7 @@
         }
     });
     const data = ref(Object.assign({}, customerInstructionObject));
+    const errorADV = ref({});
     
     const store = useStore();
     const customerInstructionId = ref(null);
@@ -122,8 +129,19 @@
     const canShowTransmisAdv = computed(() => (store.getters.isCommertial || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
     const canCreateVariation = computed(() => (store.getters.isDesigner || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
     
-    const transmisStudio = () => {
-        emit('transmisAdv',carpetStatus.transmisAdvId);
+    const transmisAdv = () => {
+        errorADV.value = {};
+        if(!data.value.customerValidationDate){
+            errorADV.value.dateCustomer = "Date de validation client est obligatoire.";  
+        }
+        if(!data.value.customerComment){
+            errorADV.value.customerComment = "Commentaire client est obligatoire.";  
+        }
+        
+        if(!errorADV.value){
+            emit('transmisAdv',carpetStatus.transmisAdvId); 
+        }
+        
     };
     
     onMounted(() => {
