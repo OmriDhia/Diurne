@@ -60,7 +60,7 @@ export default {
     async getCarpetDesignImages(carpetDesignOrderId){
         try {
             const res = await axiosInstance.get(`/api/carpet-design-order/${carpetDesignOrderId}/images`);
-            return res.data.response
+            return res.data.response.data
         } catch (error) {
             throw new Error('Échec de récupération des images tapis');
         }

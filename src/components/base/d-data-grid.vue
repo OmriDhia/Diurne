@@ -1,36 +1,37 @@
 <template>
-  <div class="container">
+  <div class="br-6 p-2 mt-3">
     <h1 class="my-4">{{ title }}</h1>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th v-for="column in columns" :key="column.key">
-            {{ column.label }}
-          </th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-if="isLoading">
-          <td :colspan="columns.length + 1" class="text-center">
-            Chargement...
-          </td>
-        </tr>
-        <TableRow v-for="row in rows" :key="row[rowKey]" :row="row" :columns="columns"
-          :isEditing="isEditing === row[rowKey]" @edit="startEdit" @save="saveEdit" @delete="deleteRow"
-          @cancel="cancelEdit" />
-        <tr>
-          <EditableCell v-for="column in columns" :key="column.key" :row="newRow" :column="column" :isEditing="true" />
-          <td>
-            <button class="btn btn-dark ps-2" @click="addRow">
-              <span class="me-2">Ajouter</span>
-              <vue-feather type="plus" size="14"></vue-feather>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
+    <div class="bh-table-responsive">
+      <table class="bh-table-striped bh-table-hover">
+        <thead>
+          <tr>
+            <th v-for="column in columns" :key="column.key">
+              {{ column.label }}
+            </th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-if="isLoading">
+            <td :colspan="columns.length + 1" class="text-center">
+              Chargement...
+            </td>
+          </tr>
+          <TableRow v-for="row in rows" :key="row[rowKey]" :row="row" :columns="columns"
+            :isEditing="isEditing === row[rowKey]" @edit="startEdit" @save="saveEdit" @delete="deleteRow"
+            @cancel="cancelEdit" />
+          <tr>
+            <EditableCell v-for="column in columns" :key="column.key" :row="newRow" :column="column" :isEditing="true" />
+            <td>
+              <button class="btn btn-dark ps-2" @click="addRow">
+                <span class="me-2">Ajouter</span>
+                <vue-feather type="plus" size="14"></vue-feather>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <Pagination v-if="showPagination" :currentPage="pagination.currentPage" :totalPages="pagination.totalPages"
       :totalItems="pagination.totalItems" :itemsPerPage="pagination.itemsPerPage" @page-change="changePage"
       @page-size-change="changePageSize" />
@@ -122,28 +123,41 @@
   const fetchData = async () => {
     const { currentPage, itemsPerPage } = pagination.value;
     try {
-      isLoading.value = true;
-      const data = await props.fetchData({ page: currentPage, itemsPerPage });
+        isLoading.value = true;
+        const data = await props.fetchData({ page: currentPage, itemsPerPage });
 
-      if (data && data.response) {
-        rows.value = data.response?.data ?? data.response ?? null;
+        if (data && data.response) {
 
-        if (data.response.pagination) {
-          pagination.value.totalPages = data.response.pagination.totalPages || 1;
-          pagination.value.totalItems = data.response.pagination.totalItems || 0;
+          rows.value = data.response?.data ?? data.response ?? null;
+
+          if (data.response?.pagination || data.response?.meta || data.response.data?.pagination) {
+            pagination.value.totalPages = 
+              data.response.pagination?.totalPages || 
+              Math.ceil(data.response.meta?.total_items / itemsPerPage) || 
+              1;
+              
+            pagination.value.totalItems = 
+              data.response.pagination?.totalItems || 
+              data.response.meta?.total_items || 
+              data.response.meta?.totalItems || 
+              0;
+
+          } else {
+            console.warn("Pagination data is missing in the response, using defaults:", data.response);
+            pagination.value.totalPages = 1;
+            pagination.value.totalItems = rows.value?.length || 0;
+          }
         } else {
-          console.error("Pagination data is missing in the response:", data.response);
+          console.error("Invalid data structure:", data);
+          window.showMessage("Received invalid data structure from server.", "error");
         }
-      } else {
-        console.error("Invalid data structure:", data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données:', error);
+        window.showMessage("Erreur lors de la récupération des données.", "error");
+      } finally {
+        isLoading.value = false;
       }
-    } catch (error) {
-      console.error('Erreur lors de la récupération des données:', error);
-      window.showMessage("Erreur lors de la récupération des données.", "error");
-    } finally {
-      isLoading.value = false;
-    }
-  };
+    };
 
   const changePage = (page) => {
     pagination.value.currentPage = page;
@@ -164,3 +178,9 @@
     fetchData();
   });
 </script>
+
+<style scoped>
+  .bh-table-responsive table thead tr, .bh-table-responsive table tfoot tr, .bh-table-responsive table thead tr th.bh-sticky, .bh-table-responsive table tbody tr td.bh-sticky {
+    background: #eff5ff !important;
+  }
+</style>
