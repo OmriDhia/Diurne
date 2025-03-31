@@ -27,7 +27,7 @@
                                         </div>
                                         <div class="row m-2 mt-4">
                                             <div class="col-6">
-                                                <d-input label="E-mail" v-model="userObj.firstname" :required="true" :error="error.firstname"> </d-input>
+                                                <d-input label="Prénom" v-model="userObj.firstname" :required="true" :error="error.firstname"> </d-input>
                                             </div>
                                             <div class="col-6">
                                                 <d-profile v-model="userObj.profile" :error="error.profileId"></d-profile>
@@ -121,11 +121,18 @@ const save = async () => {
     } catch (e) {
         if(e.response.data.violations){
             error.value = formatErrorViolations(e.response.data.violations)
-            if(error.value.email){
+            if(error.value.email && error.value.email.includes("is not a valid email")){
                 error.value.email = "Veuillez entrer un email valide."
             }
         }
-        window.showMessage("Quelque chose s'est mal passé.", 'error');
+        
+        if(e.response.data.detail === "duplicate"){
+            window.showMessage("Un compte utilisateur avec cet email existe déjà.", 'error');
+            error.value.email = "Email existe déjà."
+        }else{
+            window.showMessage("Quelque chose s'est mal passé.", 'error'); 
+        }
+        
     }
 
 };
