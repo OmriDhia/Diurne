@@ -8,7 +8,7 @@ export const routes = [
     {
         path: '/lockscreen',
         name: 'lockscreen',
-        component: () => import( '../views/auth/lockscreen.vue'),
+        component: () => import('../views/auth/lockscreen.vue'),
         meta: { layout: 'auth' },
     },
     {
@@ -27,7 +27,7 @@ export const routes = [
         path: '/home',
         name: 'home',
         component: () => import('../views/home.vue'),
-        meta: { 
+        meta: {
             layout: 'home',
             requiresAuth: true
         },
@@ -40,14 +40,14 @@ export const routes = [
             requiresAuth: true
         },
     },
-    
+
     //users
     {
         path: '/users',
         name: 'users',
         children: [
             {
-                path: '', 
+                path: '',
                 name: 'users-manage',
                 component: () => import('../views/users/users.vue'),
                 meta: {
@@ -79,7 +79,7 @@ export const routes = [
                 },
             }
         ],
-        meta: { 
+        meta: {
             requiresAuth: true
         },
     },
@@ -92,18 +92,60 @@ export const routes = [
                 path: '',
                 name: 'settings_home',
                 component: () => import('../views/settings/settings.vue'),
-               /* meta: {
-                    permission: 'read user'
-                },*/
             },
             {
-                path: 'models',
-                name: 'models',
-                component: () => import('../views/settings/d-models.vue'),
-                // meta: {
-                //     requiresAuth: true,
-                //     permission: "create contact",
-                // },
+                path: 'collections-produits',
+                name: 'collections-produits',
+                component: () => import('../views/settings/d-collections-produits.vue'),
+                meta: { permission: 'create setting' }
+            },
+            {
+                path: 'transport-livraison',
+                name: 'transport-livraison',
+                component: () => import('../views/settings/d-transport-livraison.vue'),
+                meta: { permission: 'create setting' }
+            },
+            {
+                path: 'couleurs-materiaux',
+                name: 'couleurs-materiaux',
+                component: () => import('../views/settings/d-couleurs-materiaux.vue'),
+                meta: { permission: 'create setting' }
+            },
+            {
+                path: 'fabricants-qualite',
+                name: 'fabricants-qualite',
+                component: () => import('../views/settings/d-fabricants-qualite.vue'),
+                meta: { permission: 'create setting' }
+            },
+            {
+                path: 'tarification-taxes',
+                name: 'tarification-taxes',
+                component: () => import('../views/settings/d-tarification-taxes.vue'),
+                meta: { permission: 'create setting' }
+            },
+            {
+                path: 'payment-types',
+                name: 'payment-types',
+                component: () => import('../views/settings/d-payment-types.vue'),
+                meta: { permission: 'create setting' }
+            },
+            {
+                path: 'formes-traitements',
+                name: 'formes-traitements',
+                component: () => import('../views/settings/d-formes-traitements.vue'),
+                meta: { permission: 'create setting' }
+            },
+            {
+                path: 'images-models',
+                name: 'images-models',
+                component: () => import('../views/settings/d-images-models.vue'),
+                meta: { permission: 'create setting' }
+            },
+            {
+                path: 'attachment-types',
+                name: 'attachment-types',
+                component: () => import('../views/settings/d-attachment-types.vue'),
+                meta: { permission: 'create setting' }
             },
         ],
         meta: {

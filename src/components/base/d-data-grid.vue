@@ -123,29 +123,41 @@
   const fetchData = async () => {
     const { currentPage, itemsPerPage } = pagination.value;
     try {
-      isLoading.value = true;
-      const data = await props.fetchData({ page: currentPage, itemsPerPage });
+        isLoading.value = true;
+        const data = await props.fetchData({ page: currentPage, itemsPerPage });
 
-      if (data && data.response) {
+        if (data && data.response) {
 
-        rows.value = data.response?.data ?? data.response ?? null;
+          rows.value = data.response?.data ?? data.response ?? null;
 
-        if (data.response.pagination) {
-          pagination.value.totalPages = data.response.pagination.totalPages || 1;
-          pagination.value.totalItems = data.response.pagination.totalItems || 0;
+          if (data.response?.pagination || data.response?.meta || data.response.data?.pagination) {
+            pagination.value.totalPages = 
+              data.response.pagination?.totalPages || 
+              Math.ceil(data.response.meta?.total_items / itemsPerPage) || 
+              1;
+              
+            pagination.value.totalItems = 
+              data.response.pagination?.totalItems || 
+              data.response.meta?.total_items || 
+              data.response.meta?.totalItems || 
+              0;
+
+          } else {
+            console.warn("Pagination data is missing in the response, using defaults:", data.response);
+            pagination.value.totalPages = 1;
+            pagination.value.totalItems = rows.value?.length || 0;
+          }
         } else {
-          console.error("Pagination data is missing in the response:", data.response);
+          console.error("Invalid data structure:", data);
+          window.showMessage("Received invalid data structure from server.", "error");
         }
-      } else {
-        console.error("Invalid data structure:", data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données:', error);
+        window.showMessage("Erreur lors de la récupération des données.", "error");
+      } finally {
+        isLoading.value = false;
       }
-    } catch (error) {
-      console.error('Erreur lors de la récupération des données:', error);
-      window.showMessage("Erreur lors de la récupération des données.", "error");
-    } finally {
-      isLoading.value = false;
-    }
-  };
+    };
 
   const changePage = (page) => {
     pagination.value.currentPage = page;
