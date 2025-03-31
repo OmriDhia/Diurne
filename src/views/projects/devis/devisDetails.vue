@@ -841,12 +841,14 @@ const confirmHandle = async () => {
     }).then(async (result) => {
         if (result.isConfirmed) {
             await saveAndCalculate();
-            console.log("TarifId", data.value.quoteDetail.TarifId);
         } else {
+            console.log("TarifId", quote.value);
             if (quote.value?.defaultCustomTarifId) {
-                applyConfirmationTarifId = false
                 data.value.quoteDetail.TarifId = quote.value.defaultCustomTarifId;
+            }else{
+                window.showMessage("Le tarif par défaut n'est pas définie",'error');
             }
+            applyConfirmationTarifId = false;
         }
     });
 };
