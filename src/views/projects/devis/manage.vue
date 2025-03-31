@@ -388,7 +388,6 @@
     const getQuote = async (quote_id) => {
         try{
             if(quote_id){
-                console.log("getting quote by ID : " , quote_id );
                 loading.value = true;
                 quote.value = await quoteService.getQuoteById(quote_id);
                 contremarqueId.value = quote.value?.contremarqueId;
@@ -428,8 +427,8 @@
         }finally {
             if(statusUpdate){
                 statusUpdate = false;
-                loading.value = false;
             }
+            loading.value = false;
         }
     };
 
@@ -462,8 +461,8 @@
     const calculateTotal = async (quote_id) => {
         try {
             const res = await quoteService.calculateQuote(quote_id,{
-                additionalDiscount: parseFloat(data.value.shippingPrice),
-                shippingPrice: parseFloat(data.value.additionalDiscount)
+                additionalDiscount: parseFloat(data.value.additionalDiscount),
+                shippingPrice: parseFloat(data.value.shippingPrice)
             })
         }catch(e){
             console.log(e);
