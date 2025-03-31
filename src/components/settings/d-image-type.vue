@@ -59,7 +59,6 @@
     };
   
     const deleteData = async (row) => {
-      console.log(row);
       try {
         await axiosInstance.delete(`/api/image-types/${row.id}`);
         rows.value = rows.value.filter(item => item.id !== row.id);
