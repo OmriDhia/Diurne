@@ -6,6 +6,16 @@ export function generateUniqueId(prefix = 'input') {
     return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
+export const checkImageExists = async (url) => {
+    try {
+        const response = await fetch(url, { method: "HEAD" });
+        console.log(response);
+        return response.ok;
+    } catch {
+        return false;
+    }
+};
+
 export function formatErrorViolations(violations) {
     let obj = {};
     const err = violations.map( m => {
@@ -70,6 +80,7 @@ export const Helper = {
         return '/assets/images/projet/no-image.png';
     },
     getImagePathNew: (path, name = "") => {
+        const noImage = '/assets/images/No-Image-Placeholder.svg';
         if (path) {
             const baseUrl = path.replace('/var/www/html/api_diurne/public', FILE_URL);
             if (name) {
@@ -77,7 +88,7 @@ export const Helper = {
             }
             return baseUrl;
         }
-        return '/assets/images/projet/no-image.png';
+        return noImage;
     },
     hasDefinedValue: (obj, excludedKey = '') => {
         for (let key in obj) {
