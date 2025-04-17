@@ -595,7 +595,9 @@
             console.log('newValue', newValue);
         }
     );
-
+    if (dataCarpetOrder.value.status_id===1){
+        setHideForTrans();
+    }
     const applyCarpetStatus = (statusId) => {
         store.commit('setCarpetDesignOrderStatus', statusId);
         store.commit('setIsFinStatus', statusId === carpetStatus.finiId);
