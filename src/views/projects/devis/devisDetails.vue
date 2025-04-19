@@ -218,12 +218,22 @@
                                                 id="applyProposedDiscount" name="applyProposedDiscount"
                                                 v-model="data.quoteDetail.applyProposedDiscount" value="true" />
                                             <label class="custom-control-label text-black" for="applyProposedDiscount">
-                                                Appliquer remise
-                                                proposée </label>
+                                                Appliquer remise proposée
+                                            </label>
                                         </div>
-                                        <d-input v-model="data.quoteDetail.proposedDiscountRate"
-                                            :disabled="!data.quoteDetail.applyProposedDiscount"></d-input>
+                                    
+                                        <div class="input-group">
+                                            <d-input
+                                                v-model="data.quoteDetail.proposedDiscountRate"
+                                                :disabled="!data.quoteDetail.applyProposedDiscount"
+                                                class="form-control"
+                                            ></d-input>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
