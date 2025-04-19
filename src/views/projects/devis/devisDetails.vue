@@ -333,7 +333,7 @@
                             <div class="col-md-4 col-sm-12">
                                 <div class="row align-items-center p-2">
                                     <div class="col-md-12">
-                                        <d-input label="% prix total"
+                                        <d-input :disabled="true" label="% prix total"
                                             v-model="data.quoteDetail.impactOnTheQuotePrice"></d-input>
                                     </div>
                                 </div>
