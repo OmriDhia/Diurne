@@ -177,6 +177,9 @@ const getDevis = async () => {
         if(route.query.contremarqueId){
             url += `&contremarqueId=${route.query.contremarqueId}`; 
         }
+        if(route.query.locationId ){
+            url += `&locationId=${route.query.locationId}`; 
+        }
         url += getFilterParams();
         const response = await axiosInstance.get(url);
         const data = response.data;
