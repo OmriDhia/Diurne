@@ -57,7 +57,7 @@
                                     <d-taxRules :required="true" v-model="data.taxRuleId" :error="error.taxRuleId"></d-taxRules>
                                 </div>
                                 <div class="col-md-6 col-sm-12 pe-sm-0">
-                                    <d-conversions :required="true" v-model="data.conversionId" :error="error.conversionId"></d-conversions>
+                                    <d-conversions :required="data.currencyId===1" v-model="data.conversionId" :error="error.conversionId"></d-conversions>
                                 </div>
                             </div>
                             <div class="row pe-4 align-items-center">

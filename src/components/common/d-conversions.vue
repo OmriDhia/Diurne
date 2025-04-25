@@ -2,7 +2,7 @@
     <div class="row align-items-center">
         <div class="col-4"><label for="droit" class="form-label">Taux de convertion<span class="required" v-if="required">*</span>:</label></div>
         <div class="col-8">
-            <select id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="discount" @input="handleChange($event.target.value)">
+            <select :required="required"  :disabled="disabled" id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="discount" @input="handleChange($event.target.value)">
                 <option v-for="(prof, key) in discounts" :key="key" :value="prof.id">{{ prof.coefficient }}</option>
             </select>
             <div v-if="error" class="invalid-feedback">{{ $t('Taux de convertion est abligatoire.') }}</div>
@@ -27,6 +27,10 @@
                 type: Boolean,
                 default: false
             },
+        disabled: {
+            type: Boolean,
+            default: false
+        }
         },
         data() {
             return {
