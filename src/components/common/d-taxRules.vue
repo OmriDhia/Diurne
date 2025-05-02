@@ -2,7 +2,7 @@
     <div class="row align-items-center">
         <div class="col-4"><label for="droit" class="form-label">TVA<span class="required" v-if="required">*</span>:</label></div>
         <div class="col-8">
-            <select id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="discount" @input="handleChange($event.target.value)">
+            <select  :disabled="disabled" id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="discount" @input="handleChange($event.target.value)">
                 <option v-for="(prof, key) in discounts" :key="key" :value="prof.id">{{ prof.rate }}</option>
             </select>
             <div v-if="error" class="invalid-feedback">{{ $t('TVA est abligatoire.') }}</div>
@@ -12,8 +12,10 @@
 
 <script>
     import axiosInstance from '../../config/http';
+    import Multiselect from 'vue-multiselect';
 
     export default {
+        components: { Multiselect },
         props: {
             modelValue: {
                 type: [Number, null],
@@ -27,6 +29,10 @@
                 type: Boolean,
                 default: false
             },
+          disabled: {
+            type: Boolean,
+            default: false
+        }
         },
         data() {
             return {
