@@ -34,11 +34,11 @@
                                     "DD/MM/YYYY")
                                 }}
                                 </li>
-                                <li class="pt-1"><d-btn-outlined label="Commande" icon="arrow-right"
+                                <li class="pt-1 d-none"><d-btn-outlined label="Commande" icon="arrow-right"
                                         buttonClass="ps-2"></d-btn-outlined></li>
                                 <li class="pt-1 d-flex">
                                     <d-btn-outlined label="B1234" icon="arrow-right"
-                                        buttonClass="ps-2"></d-btn-outlined>
+                                        buttonClass="ps-2 d-none"></d-btn-outlined>
                                     <div class="col-auto p-1 pe-0">
                                         <d-delete :api="'/api/locations/' + location.location_id"
                                             @isDone="handleClose"></d-delete>
@@ -59,7 +59,7 @@
                             <button class="btn btn-custom pe-2 ps-2 h6">Voir Images</button>
                         </div>
                         <div class="col-auto p-0">
-                            <button class="btn btn-custom pe-2 ps-2 h6">Voir Devis</button>
+                            <button class="btn btn-custom pe-2 ps-2 h6" @click="goToQuotes(location.location_id)"> Voir Devis</button>
                         </div>
                     </div>
                 </div>
@@ -70,6 +70,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import VueFeather from 'vue-feather';
 import dDelete from "../../common/d-delete.vue";
 import dBtnOutlined from "../../base/d-btn-outlined.vue";
@@ -85,7 +86,8 @@ const props = defineProps({
         type: Object,
     }
 });
-
+const route = useRoute();
+const router = useRouter();
 const locations = ref([]);
 const selectedLocation = ref(null);
 const manageLocations = ref(null);
@@ -123,7 +125,10 @@ const initForm = () => {
     selectedLocation.value = null;
     manageLocations.value.initData();
 };
-
+const goToQuotes = (location_id) => {
+    console.log(props.contremarqueId ,location_id  )
+    router.push({ name: 'devisList', query: { contremarqueId: props.contremarqueId , locationId:location_id } });
+};
 watch(() => props.contremarqueId, getLocations);
 </script>
 <style scoped>
