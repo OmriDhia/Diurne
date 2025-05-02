@@ -275,6 +275,47 @@ export const routes = [
             class: 'projects'
         },
     },
+    //Carpet Order
+    {
+        path: '/tapis/order',
+        name: 'tapis',
+        children: [
+            {
+                path: '',
+                name: 'carpetOrderList',
+                component: () => import('../views/carpet/order/carpetOrders.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'tapis',
+                    permission: "read carpet",
+                },
+            },
+            {
+                path: 'manage/:id?',
+                name: 'carpetOrderManage',
+                component: () => import('../views/carpet/order/manage.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'tapis',
+                    permission: "read carpet",
+                },
+            },
+            {
+                path: ':carpetOrder/details/:id?',
+                name: 'carpetOrderDetails',
+                component: () => import('../views/carpet/order/devisDetails.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'tapis',
+                    permission: "create quote",
+                },
+            }
+        ],
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        },
+    },
     {
         path: '/projet/dis',
         name: 'suiviDI',
