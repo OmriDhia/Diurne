@@ -137,6 +137,18 @@ export const carpetStatus = {
     transmisAdvId: 9
 };
 
+export const statusNames = {
+    1 : "Non transmis",
+    2 : "Transmis",
+    3 : "Attribué",
+    4 : "En cours",
+    5 : "En pause",
+    6 : "Fini",
+    7 : "Annulé studio",
+    8 : "Annulé commercial",
+    9 : "Transmis Adv",
+};
+
 export const devisDocxStyle = '@media print {' +
     '            .page-number:after {' +
     '                content: counter(page) " sur " counter(pages);' +

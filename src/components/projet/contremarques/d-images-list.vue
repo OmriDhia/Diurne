@@ -28,7 +28,7 @@
         <div class="col-md-12">
             <div class="row justify-content-end pe-2">
                 <!--  -->
-                <div class="col-auto p-1" v-if="status === 4">
+                <div class="col-auto p-1">
                     <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" :disabled="props.disabled"
                         data-bs-toggle="modal" data-bs-target="#modalAddImage">
                         <vue-feather type="save" size="14"></vue-feather>
@@ -76,6 +76,7 @@ watch(
 
 const images = ref([]);
 const selectedImages = ref([]); // Array to hold the selected image IDs
+const emit = defineEmits(['imageTypesUpdated', 'imageLists']); // 🔥 Define emit correctly
 
 const getImages = async () => {
     try {
@@ -127,7 +128,7 @@ const emitSelectedImageTypes = () => {
     const uniqueTypes = [...new Set(selectedImageTypes.value)]; // Remove duplicates
     emit('imageTypesUpdated', uniqueTypes);
 };
-const emit = defineEmits(['imageTypesUpdated']); // 🔥 Define emit correctly
+
 // Method to delete selected images
 const deleteSelectedImages = async () => {
     try {

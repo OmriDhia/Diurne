@@ -48,7 +48,7 @@
                     </div> -->
                 </div>
             </template>
-            <div v-if="error" class="invalid-feedback">{{ $t('tous Les champs sont obligatoire.') }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t('Au moins une valeur de dimension doit être supérieure à 0.') }}</div>
         </div>
     </div>
 </template>
