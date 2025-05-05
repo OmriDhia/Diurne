@@ -14,7 +14,7 @@
                           <d-input type="date" label="Date de création" v-model="createdDate" :disabled="true"></d-input>
                       </div>
                       <div class="col-md-4 col-sm-12">
-                          <d-contremarque-dropdown v-model="contremarqueId"></d-contremarque-dropdown>
+                          <d-contremarque-dropdown v-model="contremarqueId" customer-id="" ></d-contremarque-dropdown>
                       </div>
                   </div>
               </template>
@@ -57,7 +57,7 @@
                                     <d-taxRules :required="true" v-model="data.taxRuleId" :error="error.taxRuleId"></d-taxRules>
                                 </div>
                                 <div class="col-md-6 col-sm-12 pe-sm-0">
-                                    <d-conversions :required="true" v-model="data.conversionId" :error="error.conversionId"></d-conversions>
+                                    <d-conversions :required="data.currencyId===1" v-model="data.conversionId" :error="error.conversionId"></d-conversions>
                                 </div>
                             </div>
                             <div class="row pe-4 align-items-center">
@@ -83,11 +83,26 @@
                         <div class="col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Adresses" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0" v-if="currentCustomer.addressesData">
-                                <d-base-dropdown  :required="true" name="Adresse de livraison" label="address1" trackBy="address_id" :datas="currentCustomer.addressesData" v-model="data.deliveryAddressId" :error="error.deliveryAddressId"></d-base-dropdown>
+                                <d-base-dropdown
+                                    :required="true"
+                                    name="Adresse de livraison"
+                                    label="address1"
+                                    trackBy="address_id"
+                                    :datas="deliveryAddresses"
+                                    v-model="data.deliveryAddressId"
+                                    :error="error.deliveryAddressId"
+                                />
                             </div>
                             <div class="row pe-2 ps-0 align-items-center" v-if="currentCustomer.addressesData">
-                                <d-base-dropdown  :required="true" name="Adresse de facturation" label="address1" trackBy="address_id" :datas="currentCustomer.addressesData" v-model="data.invoiceAddressId" :error="error.invoiceAddressId"></d-base-dropdown>
-                            </div>
+                                <d-base-dropdown
+                                    :required="true"
+                                    name="Adresse de facturation"
+                                    label="address1"
+                                    trackBy="address_id"
+                                    :datas="invoiceAddresses"
+                                    v-model="data.invoiceAddressId"
+                                    :error="error.invoiceAddressId"
+                                /> </div>
                         </div>
                     </div>
                     <div class="row mt-3 mb-3 pe-0" v-if="quote_id">
@@ -207,7 +222,7 @@
     import VueFeather from 'vue-feather';
     import { useRoute, useRouter } from 'vue-router';
     import moment from "moment";
-    import {ref, onMounted, watch} from 'vue';
+    import {ref, onMounted, watch,computed } from 'vue';
     import {useMeta} from '/src/composables/use-meta';
     import { Helper, formatErrorViolations } from "../../../composables/global-methods";
     import axiosInstance from "../../../config/http";
@@ -295,6 +310,7 @@
     });
     
     const getCustomer = async (customer_id) => {
+    
         try{
             if(customer_id){
                 currentCustomer.value =  await contremarqueService.getCustomerById(customer_id);
@@ -307,7 +323,17 @@
             window.showMessage(msg,'error');
         }
     };
+    const deliveryAddresses = computed(() => {
+        return currentCustomer.value?.addressesData?.filter(addr =>
+            [1, 3].includes(addr.addressType.addressTypeId)
+        ) || [];
+    });
 
+    const invoiceAddresses = computed(() => {
+        return currentCustomer.value?.addressesData?.filter(addr =>
+            [2, 3].includes(addr.addressType.addressTypeId)
+        ) || [];
+    });
     const saveDevis = async (leave) => {
         try{
             error.value = {};

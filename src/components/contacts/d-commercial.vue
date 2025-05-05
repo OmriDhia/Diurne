@@ -29,7 +29,7 @@
     <div class="row justify-content-end mt-3 pe-0">
         <perfect-scrollbar tag="div" class="h-100"
                            :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 300, suppressScrollX: true }">
-            <d-commertial-histories :commertialData="commercialData"></d-commertial-histories>
+            <d-commertial-histories :commercialData="commercialData"></d-commertial-histories>
         </perfect-scrollbar>
     </div>
 

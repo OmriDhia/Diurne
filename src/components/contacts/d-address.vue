@@ -154,12 +154,12 @@
                 const res = await axiosInstance.post("api/createAddress",data.value);
                 if(props.intermediary && props.intermediaryId){
                     const res2 = await axiosInstance.post("api/AssignAddressToIntermediary",{
-                        addressId: res.data.response.address_id,
+                        addressId: res.data.response.id,
                         intermediaryId: props.intermediaryId
                     });
                 }else if(props.customerId){
                     const res2 = await axiosInstance.post("api/AssignAddressToCustomer",{
-                        addressId: res.data.response.address_id,
+                        addressId: res.data.response.id,
                         customerId: props.customerId
                     }); 
                 }

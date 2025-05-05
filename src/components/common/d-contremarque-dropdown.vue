@@ -1,6 +1,9 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Contremarque<span class="required" v-if="required">*</span> :</label></div>
+        <div class="col-3"><label class="form-label">Contremarque<span class="required" v-if="required">*</span> :</label>
+
+        </div>
+
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"
@@ -28,7 +31,13 @@
                     </div>
                 </template>
             </multiselect>
+            
             <div v-if="error" class="invalid-feedback">{{ $t("Le champ contremarque est abligatoire.") }}</div>
+        </div>
+        <div class="col-1">
+            <router-link alt="Voir contremarques" :to="'/projet/contremarques/manage/' + contremarqueId ">
+                <vue-feather type="eye"  stroke-width="1" class="cursor-pointer"></vue-feather>
+            </router-link>
         </div>
     </div>
 </template>
@@ -39,9 +48,11 @@
     import 'vue-multiselect/dist/vue-multiselect.css';
     import store from "../../store/index";
     import contremarqueService from "../../Services/contremarque-service.js";
+    import VueFeather from 'vue-feather';
 
     export default {
         components:{
+            VueFeather,
             Multiselect
         },
         props: {
@@ -65,6 +76,7 @@
                 type: Boolean,
                 default: false
             }
+
         },
         data() {
             return {
@@ -78,6 +90,8 @@
         computed: {
             totalPages() {
                 return Math.ceil(this.totalContrmarques / this.itemsPerPage);
+            },contremarqueId() {
+                return this.selectedContremarque?.contremarque_id || '';
             }
         },
         methods: {
