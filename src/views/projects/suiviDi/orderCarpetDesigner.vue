@@ -74,12 +74,12 @@
                                                         Projet
                                                     </a>
                                                 </li>
-                                                <li class="nav-item">
+                                                <!--li class="nav-item">
                                                     <a class="nav-link" id="samples-tab-tab" data-bs-toggle="tab" href="#samples-tab" role="tab" aria-controls="border-profile" aria-selected="false"
                                                     >
                                                         Echantillon
                                                     </a>
-                                                </li>
+                                                </li-->
                                             </ul>
                                             <div class="tab-content mb-4" id="border-tabsContent">
                                                 <div class="tab-pane fade show active" id="project-tab" role="tabpanel" aria-labelledby="project-tab-tab">
