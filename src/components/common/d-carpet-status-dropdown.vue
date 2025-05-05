@@ -67,7 +67,6 @@
                     let url = '/api/contremarque/carpetDesignOrder/statuses';
                     const res = await axiosInstance.get(url);
                     this.carpetStatus = res.data.response.statuses;
-                    
                     if(this.modelValue){
                         this.carpertStatusId = this.carpetStatus.find(ad => ad.id === this.modelValue);
                     }

@@ -12,7 +12,15 @@
                                 <d-materials-dropdown :disabled="disabled" :hideLabel="true" v-model="material.material_id"></d-materials-dropdown>
                             </div>
                             <div class="col-3 text-end font-size-0-7">
-                                {{ material.rate }}
+                                <input
+                                    v-model.number="material.rate"
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    class="form-control form-control-sm"
+                                    @input="rebalanceRates(index)"
+                                    :disabled="disabled"
+                                />
                             </div>
                             <div class="col-3">
                                 <button :disabled="disabled" type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDelete(index)">
@@ -120,17 +128,39 @@
             addMaterial(newMaterial) {
                 newMaterial.rate = parseFloat(newMaterial.rate);
                 this.materials.push(newMaterial);
+                this.rebalanceRates();
                 this.updateMaterialsInStore();
                 this.$emit('changeMaterials', this.materials);
             },
             handleDelete(index) {
                 this.materials.splice(index, 1);
+                this.rebalanceRates();
                 this.updateMaterialsInStore();
                 this.$emit('changeMaterials', this.materials);
             },
             updateMaterialsInStore() {
                 this.$store.commit('setMaterials', this.materials);
             },
+            rebalanceRates(changedIndex = null) {
+                if (this.materials.length === 0) return;
+
+                let total = this.materials.reduce((sum, m) => sum + m.rate, 0);
+
+                if (total === 0) {
+                    const egal = +(100 / this.materials.length).toFixed(2);
+                    this.materials.forEach(m => (m.rate = egal));
+                } else {
+                    // Si un champ est modifié, figer celui-ci et redistribuer le reste
+                    let fixed = changedIndex !== null ? this.materials[changedIndex].rate : 0;
+                    let autres = this.materials.filter((_, i) => i !== changedIndex);
+                    let autresTotal = autres.reduce((sum, m) => sum + m.rate, 0);
+                    let reste = 100 - fixed;
+
+                    autres.forEach(m => {
+                        m.rate = +(reste * m.rate / autresTotal).toFixed(2);
+                    });
+                }
+            }
         },
         watch: {
             materialsProps() {
