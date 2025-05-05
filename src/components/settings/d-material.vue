@@ -26,16 +26,7 @@ async function fetchLanguages() {
    
     
     languages.value = res.data.response.languages;
-    
-    const testTransformed = transformData([{
-      id: 999,
-      reference: "TEST",
-      descriptions: []
-    }]);
-    console.log('[DEBUG] Transform test:', testTransformed);
-    
   } catch (error) {
-    console.error('[DEBUG] Fetch error:', error);
     languages.value = [];
   }
 }
@@ -74,7 +65,6 @@ const fetchData = async ({ page, itemsPerPage }) => {
       params: { page, itemsPerPage }
     });
     rows.value = transformData(data.response.data);
-    console.log('Materials loaded:', rows.value);
     return data;
   } catch (error) {
     console.error('Error fetching data:', error);

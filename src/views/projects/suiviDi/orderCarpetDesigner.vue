@@ -619,7 +619,6 @@
             console.log('newValue', newValue);
         }
     );
-
     const applyCarpetStatus = (statusId) => {
         store.commit('setCarpetDesignOrderStatus', statusId);
         store.commit('setIsFinStatus', statusId === carpetStatus.finiId);

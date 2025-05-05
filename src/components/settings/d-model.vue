@@ -23,7 +23,6 @@
           itemsPerPage
         }
       });
-      console.log("Model:",data);
       return data;
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
@@ -49,7 +48,6 @@
   };
 
   const deleteData = async (row) => {
-    console.log(row);
     try {
       await axiosInstance.delete(`/api/models/${row.id}`);
       rows.value = rows.value.filter(item => item.id !== row.id); 

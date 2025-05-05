@@ -14,6 +14,7 @@
                 select-label=""
                 deselect-label=""
                 @update:model-value="handleChange($event)"
+                :disabled="disabled"
             ></multiselect>
             <div v-if="error" class="invalid-feedback">{{ $t("La langue est abligatoire.") }}</div>
         </div>
@@ -49,6 +50,10 @@
                 type: String,
                 default: ''
             },
+            disabled: {
+                type: Boolean,
+                default: false
+            }
         },
         data() {
             return {

@@ -27,7 +27,6 @@
         <d-modal-add-image :carpetDesignOrderId="props.carpetDesignOrderId" @onClose="handleClose"></d-modal-add-image>
         <div class="col-md-12">
             <div class="row justify-content-end pe-2">
-                <!--  -->
                 <div class="col-auto p-1">
                     <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" :disabled="props.disabled"
                         data-bs-toggle="modal" data-bs-target="#modalAddImage">
