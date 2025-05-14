@@ -1,5 +1,19 @@
 <template>
     <div class="col-lg-12 col-md-12 col-sm-12 pe-sm-0 w-100">
+        <div v-if="coherenceCheck.differences && !coherenceCheck.isCoherent"
+             class="alert alert-warning d-flex align-items-center mb-3">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span>Specifications differences detected!</span>
+            <button @click="showCoherenceAlert(coherenceCheck.differences)"
+                    class="btn btn-sm btn-outline-light ms-auto">
+                View Details
+            </button>
+        </div>
+        <div v-if="coherenceCheck.differences && coherenceCheck.isCoherent"
+             class="alert alert-success d-flex align-items-center mb-3">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span>Specifications is coherent!</span>
+        </div>
         <!-- FLEX CONTAINER for "Attribuer + Collection" and Image -->
         <div class="d-flex justify-content-between align-items-start mb-3 w-100">
             <!-- ATTRIBUER BUTTON + COLLECTION (TOP LEFT) -->
@@ -13,7 +27,8 @@
 
             <!-- IMAGE (MIDDLE FAR RIGHT) -->
             <div v-if="selectedRow" class="d-flex flex-column ms-auto">
-                <img :src="getImageUrl(selectedRow.image_name)" alt="Carpet Design" class="img-thumbnail" style="width: 125px; height: auto" />
+                <img :src="getImageUrl(selectedRow.image_name)" alt="Carpet Design" class="img-thumbnail"
+                     style="width: 125px; height: auto" />
             </div>
         </div>
 
@@ -25,7 +40,11 @@
                 <i class="bi bi-calendar-date position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"></i>
             </div>
         </div>
-
+        <a href="#" @click.prevent="checkCoherence" class="d-block mb-3">
+            <u>Contrôle de cohérence</u>
+            <i v-if="coherenceCheck.differences && !coherenceCheck.isCoherent"
+               class="bi bi-exclamation-triangle-fill text-warning ms-2"></i>
+        </a>
         <!-- Popup for selecting Contremarque / CarpetDesignOrders -->
         <div v-if="showPopup" class="popup">
             <div class="popup-content">
@@ -34,27 +53,29 @@
                 <div class="table-container">
                     <table class="table table-bordered">
                         <thead>
-                            <tr>
-                                <th>Sélection</th>
-                                <th>Nom Image</th>
-                                <th>Contremarque</th>
-                                <th>Num Maquette</th>
-                                <th>Client</th>
-                            </tr>
+                        <tr>
+                            <th>Sélection</th>
+                            <th>Nom Image</th>
+                            <th>Contremarque</th>
+                            <th>Num Maquette</th>
+                            <th>Client</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(row, index) in rows" :key="index">
-                                <td>
-                                    <input type="radio" v-model="selectedId" :value="row.order_design_id" class="form-check-input" />
-                                </td>
-                                <td>
-                                    <img v-if="row.image_name" :src="getImageUrl(row.image_name)" alt="Carpet Image" class="img-thumbnail" style="width: 80px; height: auto" />
-                                    <span v-else>Aucune image</span>
-                                </td>
-                                <td>{{ row.contremarque }}</td>
-                                <td>{{ row.diNumber }}</td>
-                                <td>{{ row.customer }}</td>
-                            </tr>
+                        <tr v-for="(row, index) in rows" :key="index">
+                            <td>
+                                <input type="radio" v-model="selectedId" :value="row.order_design_id"
+                                       class="form-check-input" />
+                            </td>
+                            <td>
+                                <img v-if="row.image_name" :src="getImageUrl(row.image_name)" alt="Carpet Image"
+                                     class="img-thumbnail" style="width: 80px; height: auto" />
+                                <span v-else>Aucune image</span>
+                            </td>
+                            <td>{{ row.contremarque }}</td>
+                            <td>{{ row.diNumber }}</td>
+                            <td>{{ row.customer }}</td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -80,7 +101,10 @@
         customerDate: { type: String, default: null } // New prop to receive customer date
 
     });
-
+    const coherenceCheck = ref({
+        isCoherent: true,
+        differences: null
+    });
     // Reactive References
     const showPopup = ref(false);
     const loading = ref(false);
@@ -93,10 +117,10 @@
     // The entire row object of the selected item
     const selectedRow = ref(null);
     const validationDate = ref(props.customerDate || ''); // Initialize with customerDate if not null
-// Watch for changes to the customerDate prop
-watch(() => props.customerDate, (newDate) => {
-    validationDate.value = newDate || ''; // If it's null, set to empty
-});
+    // Watch for changes to the customerDate prop
+    watch(() => props.customerDate, (newDate) => {
+        validationDate.value = newDate || ''; // If it's null, set to empty
+    });
     /**
      * Fetch the data from API
      */
@@ -131,7 +155,7 @@ watch(() => props.customerDate, (newDate) => {
 
     const carpetDesignOrderAttachment = ref({
         quoteDetailId: 0,
-        carpetDesignOrderId: 0,
+        carpetDesignOrderId: 0
     });
     /**
      * Called when user clicks "Confirmer"
@@ -157,12 +181,74 @@ watch(() => props.customerDate, (newDate) => {
             window.showMessage(e.message, 'error');
         }
     };
+    const checkCoherence = async () => {
+        try {
+            const response = await axiosInstance.get(
+                `/api/specificationCoherence?carpetDesignOrderId=${selectedRow.value?.order_design_id}&quoteDetailId=${props.quoteDetailId}`
+            );
+            coherenceCheck.value = response.data.response;
 
+
+        } catch (error) {
+            console.error('Error checking coherence:', error);
+        }
+    };
+
+    const showCoherenceAlert = (differences) => {
+        // Convert Proxy to plain object if needed
+        const diff = JSON.parse(JSON.stringify(differences));
+        console.log('Differences:', diff);
+
+        let message = 'Specifications are not coherent. Differences found in:\n';
+
+        for (const [field, comparison] of Object.entries(diff)) {
+            message += `\n- ${field}: `;
+
+            switch (field) {
+                case 'dimensions':
+                    // Get width and length for both versions
+                    const doWidth = diff.dimensions.carpetDesignOrder.Largeur?.[0]?.value;
+                    const doLength = diff.dimensions.carpetDesignOrder.Longueur?.[0]?.value;
+                    const qWidth = diff.dimensions.quoteDetail.Largeur?.[0]?.value;
+                    const qLength = diff.dimensions.quoteDetail.Longueur?.[0]?.value;
+
+                    // Format the values
+                    const formatValue = (val) => val ? parseFloat(val).toFixed(0) : 'N/A';
+
+                    message += `Design Order: ${formatValue(doWidth)}x${formatValue(doLength)} cm vs ` +
+                        `Quote: ${formatValue(qWidth)}x${formatValue(qLength)} cm`;
+                    break;
+
+                case 'materials':
+                    // Handle materials comparison
+                    const formatMaterials = (materials) => {
+                        return Object.values(materials || {})
+                            .sort((a, b) => b.reference.localeCompare(a.reference)) // Sort Silk first
+                            .map(m => `${parseFloat(m.rate).toFixed(0)}% of ${m.reference}`)
+                            .join(', ');
+                    };
+
+                    const doMaterials = formatMaterials(comparison.carpetDesignOrder);
+                    const qMaterials = formatMaterials(comparison.quoteDetail);
+
+                    message += `Design Order has (${doMaterials}) vs Quote has (${qMaterials})`;
+                    break;
+
+                default:
+                    // Handle simple value comparisons
+                    message += `Design Order: ${comparison.carpetDesignOrder} vs Quote: ${comparison.quoteDetail}`;
+            }
+        }
+        console.log(message);
+        window.alert(message);
+        // Or use your preferred notification system:
+        // window.showMessage(message, 'warning');
+    };
     /**
      * Convert image name to a direct path
      */
     const getImageUrl = (imageName) => {
-        return `https://diurne-api.webntricks.com/uploads/attachments/${imageName}`;
+        return `http://localhost:8741/uploads/attachments/${imageName}`;
     };
 
     onMounted(() => {
@@ -181,6 +267,7 @@ watch(() => props.customerDate, (newDate) => {
     .w-100 {
         width: 90% !important;
     }
+
     .popup {
         position: fixed;
         top: 50%;
