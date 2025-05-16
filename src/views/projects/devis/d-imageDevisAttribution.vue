@@ -86,6 +86,60 @@
                 </div>
             </div>
         </div>
+        <!-- Coherence Differences Modal -->
+        <div v-if="showCoherenceModal" class="modal fade show" tabindex="-1"
+             style="display: block; background: rgba(0,0,0,0.5)">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                            Specification Differences
+                        </h5>
+                        <button type="button" class="btn-close" @click="showCoherenceModal = false"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Design Order</th>
+                                <th>Quote</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(field, name) in coherenceDifferences" :key="name"
+                                :class="hasDifference(field) ? 'table-danger' : 'table-success'">
+                                <td class="fw-bold">{{ formatFieldName(name) }}</td>
+                                <td>
+                <span v-if="name === 'dimensions'">
+                  {{ formatDimensions(field.carpetDesignOrder) }}
+                </span>
+                                    <span v-else-if="name === 'materials'">
+                  {{ formatMaterials(field.carpetDesignOrder) }}
+                </span>
+                                    <span v-else>
+                  {{ field.carpetDesignOrder }}
+                </span>
+                                </td>
+                                <td>
+                <span v-if="name === 'dimensions'">
+                  {{ formatDimensions(field.quoteDetail) }}
+                </span>
+                                    <span v-else-if="name === 'materials'">
+                  {{ formatMaterials(field.quoteDetail) }}
+                </span>
+                                    <span v-else>
+                  {{ field.quoteDetail }}
+                </span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -110,7 +164,8 @@
     const loading = ref(false);
     const rows = ref([]);
     const total_rows = ref(0);
-
+    const showCoherenceModal = ref(false);
+    const coherenceDifferences = ref(null);
     // ID of the selected row (using order_design_id for selection)
     const selectedId = ref(null);
 
@@ -196,53 +251,59 @@
 
     const showCoherenceAlert = (differences) => {
         // Convert Proxy to plain object if needed
-        const diff = JSON.parse(JSON.stringify(differences));
-        console.log('Differences:', diff);
+        coherenceDifferences.value = JSON.parse(JSON.stringify(differences));
+        showCoherenceModal.value = true;
+    };
+    const formatFieldName = (name) => {
+        const names = {
+            'collection': 'Collection',
+            'quality': 'Quality',
+            'model': 'Model',
+            'dimensions': 'Dimensions',
+            'materials': 'Materials',
+            'location': 'Location'
+        };
+        return names[name] || name;
+    };
 
-        let message = 'Specifications are not coherent. Differences found in:\n';
+    const formatDimensions = (dimensions) => {
+        if (!dimensions) return 'N/A';
+        const width = dimensions.Largeur?.[0]?.value;
+        const length = dimensions.Longueur?.[0]?.value;
+        return width && length ? `${parseFloat(width)}x${parseFloat(length)} cm` : 'N/A';
+    };
 
-        for (const [field, comparison] of Object.entries(diff)) {
-            message += `\n- ${field}: `;
+    const formatMaterials = (materials) => {
+        if (!materials) return 'N/A';
+        return Object.values(materials)
+            .sort((a, b) => b.reference.localeCompare(a.reference))
+            .map(m => `${parseFloat(m.rate)}% ${m.reference}`)
+            .join(', ');
+    };
+    const hasDifference = (field) => {
+        if (field.carpetDesignOrder === undefined || field.quoteDetail === undefined) {
+            return false;
+        }
 
-            switch (field) {
-                case 'dimensions':
-                    // Get width and length for both versions
-                    const doWidth = diff.dimensions.carpetDesignOrder.Largeur?.[0]?.value;
-                    const doLength = diff.dimensions.carpetDesignOrder.Longueur?.[0]?.value;
-                    const qWidth = diff.dimensions.quoteDetail.Largeur?.[0]?.value;
-                    const qLength = diff.dimensions.quoteDetail.Longueur?.[0]?.value;
-
-                    // Format the values
-                    const formatValue = (val) => val ? parseFloat(val).toFixed(0) : 'N/A';
-
-                    message += `Design Order: ${formatValue(doWidth)}x${formatValue(doLength)} cm vs ` +
-                        `Quote: ${formatValue(qWidth)}x${formatValue(qLength)} cm`;
-                    break;
-
-                case 'materials':
-                    // Handle materials comparison
-                    const formatMaterials = (materials) => {
-                        return Object.values(materials || {})
-                            .sort((a, b) => b.reference.localeCompare(a.reference)) // Sort Silk first
-                            .map(m => `${parseFloat(m.rate).toFixed(0)}% of ${m.reference}`)
-                            .join(', ');
-                    };
-
-                    const doMaterials = formatMaterials(comparison.carpetDesignOrder);
-                    const qMaterials = formatMaterials(comparison.quoteDetail);
-
-                    message += `Design Order has (${doMaterials}) vs Quote has (${qMaterials})`;
-                    break;
-
-                default:
-                    // Handle simple value comparisons
-                    message += `Design Order: ${comparison.carpetDesignOrder} vs Quote: ${comparison.quoteDetail}`;
+        // Handle special cases for dimensions and materials
+        if (typeof field.carpetDesignOrder === 'object') {
+            if ('Largeur' in field.carpetDesignOrder) {
+                // Dimensions comparison
+                const doWidth = field.carpetDesignOrder.Largeur?.[0]?.value;
+                const qWidth = field.quoteDetail.Largeur?.[0]?.value;
+                const doLength = field.carpetDesignOrder.Longueur?.[0]?.value;
+                const qLength = field.quoteDetail.Longueur?.[0]?.value;
+                return doWidth !== qWidth || doLength !== qLength;
+            } else {
+                // Materials comparison
+                const doMaterials = JSON.stringify(field.carpetDesignOrder);
+                const qMaterials = JSON.stringify(field.quoteDetail);
+                return doMaterials !== qMaterials;
             }
         }
-        console.log(message);
-        window.alert(message);
-        // Or use your preferred notification system:
-        // window.showMessage(message, 'warning');
+
+        // Simple value comparison
+        return field.carpetDesignOrder !== field.quoteDetail;
     };
     /**
      * Convert image name to a direct path

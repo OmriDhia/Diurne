@@ -156,6 +156,17 @@
                                     </button>
                                 </div>
                             </div>
+                            <div class="row justify-content-center align-items-center mt-2">
+                                <div class="col-md-6">
+                                    <button
+                                        class="btn btn-custom font-size-0-7 text-uppercase"
+                                        @click="createCarpetOrder"
+                                        :disabled="!quote_id || loading"
+                                    >
+                                        créer un commande tapis
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-8 col-sm-12">
                             <div class="card p-0">
@@ -534,7 +545,29 @@
             window.showMessage(msg, 'error');
         }
     };
+    const createCarpetOrder = async () => {
+        try {
+            if (!quote_id) {
+                window.showMessage('Veuillez enregistrer le devis avant de créer une commande tapis', 'error');
+                return;
+            }
 
+            //loading.value = true;
+            const response = await axiosInstance.post('/api/carpetOrder', {
+                originalQuoteId: parseInt(quote_id),
+                clonedQuoteId: 1, // Assuming we're using the same quote for now
+                contremarqueId: contremarqueId.value
+            });
+
+            window.showMessage('Commande tapis créée avec succès');
+            // You might want to redirect or update the UI here
+        } catch (error) {
+            console.error('Error creating carpet order:', error);
+            window.showMessage('Erreur lors de la création de la commande tapis', 'error');
+        } finally {
+            loading.value = false;
+        }
+    };
     watch(
         () => [
             data.value.weight,
