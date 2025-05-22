@@ -606,6 +606,7 @@ const saveDevisDetails = async () => {
                 }
                 const res = await axiosInstance.put(`/api/Quote/${quote_id}/updateQuoteDetail/${quoteDetailId}`, dataToSent);
                 window.showMessage('Mise a jour avec succées.');
+                getQuoteDetails(quoteDetailId);
                 if (leave) {
                     setTimeout(() => {
                         goToDevis();
@@ -656,6 +657,7 @@ const getQuote = async (quote_id) => {
 };
 const changePrices = async (price) => {
     applyStopAutoSave();
+    await getQuoteDetails(quoteDetailId);
     if (price.tarif && price.grand_public) {
         prices.value = price;
     }
