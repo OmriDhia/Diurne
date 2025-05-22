@@ -221,16 +221,10 @@
                                                 Appliquer remise proposée
                                             </label>
                                         </div>
-                                    
-                                        <div class="input-group">
-                                            <d-input
-                                                v-model="data.quoteDetail.proposedDiscountRate"
-                                                :disabled="!data.quoteDetail.applyProposedDiscount"
-                                                class="form-control"
-                                            ></d-input>
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">%</span>
-                                            </div>
+                                        <div class="input-group mt-2">
+                                            <input type="text" class="form-control" v-model="data.quoteDetail.proposedDiscountRate"
+                                                   :disabled="!data.quoteDetail.applyProposedDiscount" />
+                                            <span class="input-group-text">%</span>
                                         </div>
                                     </div>
 
@@ -808,7 +802,7 @@ watch(
 watch(
     () => data.value.quoteDetail.TarifId, 
     async (newTarifId, oldTarifId) => {
-        if (quoteDetailId && !disableAutoSave && applyConfirmationTarifId) {
+        if (!disableAutoSave && applyConfirmationTarifId) {
             await confirmHandle()
         }
         applyConfirmationTarifId = true;

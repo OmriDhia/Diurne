@@ -150,8 +150,8 @@
                                                             <div v-if="error?.description || errorCarpetDesignOrder.description" class="invalid-feedback">La description est obligatoire.</div>
                                                         </div>
                                                     </div>
-                                                    <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && !hideForTrans">
-                                                        <d-transmis-studio @transmisStudio="updateCarpetDesignStatus($event)"></d-transmis-studio>
+                                                    <div class="row ps-2 mt-4 mb-2 justify-content-between">
+                                                        <d-transmis-studio @transmisStudio="updateCarpetDesignStatus($event)" :can-show="carpetDesignOrderId && !hideForTrans"></d-transmis-studio>
                                                     </div>
                                                     <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="!hideForTrans">
                                                         <div class="col-12" v-if="carpetSpecificationId">
