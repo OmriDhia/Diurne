@@ -53,7 +53,7 @@ const router = useRouter();
 
 const menu_collapse = ref('dashboard');
 const menus = userService.getUserMenu();
-
+console.log("menus : ", menus)
 const getPathByName = (name) => {
     try{
         const routeInfo = router.resolve({ name: name });

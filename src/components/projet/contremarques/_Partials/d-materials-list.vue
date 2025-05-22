@@ -129,13 +129,13 @@
             addMaterial(newMaterial) {
                 newMaterial.rate = parseFloat(newMaterial.rate);
                 this.materials.push(newMaterial);
-                this.rebalanceRates();
+                //this.rebalanceRates();
                 this.updateMaterialsInStore();
                 this.$emit('changeMaterials', this.materials);
             },
             handleDelete(index) {
                 this.materials.splice(index, 1);
-                this.rebalanceRates();
+                //this.rebalanceRates();
                 this.updateMaterialsInStore();
                 this.$emit('changeMaterials', this.materials);
             },
