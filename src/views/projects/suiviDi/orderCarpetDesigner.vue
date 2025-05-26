@@ -179,8 +179,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-12 col-xl-3 ps-1 d-flex flex-column" v-if="carpetDesignOrderId && !hideForTrans">
+                                    <div class="col-md-12 col-xl-3 ps-1 d-flex flex-column" v-if="carpetDesignOrderId">
                                         <d-designer-list
+                                            v-if="!hideForTrans || designerManagerAccess"
                                             :disabled="CommercialAccess"
                                             @endCarpetDesignOrder="updateCarpetDesignStatus($event,true)"
                                             :carpetDesignOrderId="carpetDesignOrderId"
@@ -189,17 +190,18 @@
                                             @designerAdded="handleDesignerAdded"
                                         ></d-designer-list>
                                         <d-images-list
+                                            v-if="!hideForTrans"
                                             :status="dataCarpetOrder.status_id"
                                             :disabled="!DesignerAccess"
                                             @imageTypesUpdated="updateDesignerList"
                                             :carpetDesignOrderId="carpetDesignOrderId"
                                         ></d-images-list>
                                         <d-designer-composition-list
+                                            v-if="!hideForTrans"
                                             :disabled="CommercialAccess"
                                             :designerComposition="designerComposition"
                                             :carpetSpecificationId="carpetSpecificationId"
                                             @updateMaterials="updateMaterials($event)"
-                                            v-if="carpetSpecificationId"
                                         ></d-designer-composition-list>
                                         <div class="row align-items-end mt-auto" v-if="displayFin  && !hideForTrans">
                                             <div class="col-md-12">
@@ -367,6 +369,9 @@
     });
     const DesignerAccess = computed(() => {
         return store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isSuperAdmin;
+    });
+    const designerManagerAccess = computed(() => {
+        return store.getters.isDesignerManager || store.getters.isSuperAdmin;
     });
     const disableForDesigner = computed(() => {
         return store.getters.isDesigner || store.getters.isDesignerManager || !store.getters.isNonTrasmisStatus;
