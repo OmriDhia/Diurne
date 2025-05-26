@@ -317,7 +317,7 @@ export const routes = [
         },
     }, //order-image
     {
-        path: '/tapis/order-image',
+        path: '/tapis/images',
         name: 'order-image',
         children: [
             {
@@ -331,9 +331,9 @@ export const routes = [
                 },
             },
             {
-                path: '/:id_commande',
-                name: 'images-commade',
-                component: () => import('../views/carpet/image-commande/imageCommande.vue'),
+                path: 'detail/:id',
+                name: 'imagesCommadeDetails',
+                component: () => import('../views/carpet/image-commande/orderImageDesigner.vue'),
                 meta: {
                     requiresAuth: true,
                     class: 'tapis',

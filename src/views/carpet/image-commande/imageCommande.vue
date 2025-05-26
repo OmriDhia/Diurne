@@ -71,33 +71,19 @@
                             <template #quality="data">
                                 {{ data.value.carpetDesignOrder.carpetSpecification.quality.name}}
                             </template>
-
+                            <template #image_name="data">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <vue-feather type="search"  stroke-width="1" class="cursor-pointer" @click="goToImageDetails(data.value.id)"></vue-feather>
+                                    </div>
+                                </div>
+                            </template>
                             <template #diNumber="data">
                                 <div class="d-flex justify-content-between">
                                     <strong>{{ data.value.diNumber}}</strong>
                                     <div>
                                         <vue-feather type="search"  stroke-width="1" class="cursor-pointer" @click="goToContreMarqueDetails(data.value.contremarque_id)"></vue-feather>
                                     </div>
-                                </div>
-                            </template>
-                            <template #diDate="data">
-                                <div class="d-flex justify-content-between">
-                                    {{ $Helper.FormatDate(data.value.diDate,"DD/MM/YYYY")}}
-                                </div>
-                            </template>
-                            <template #lastAssignmentDate="data">
-                                <div class="d-flex justify-content-between">
-                                    {{ $Helper.FormatDate(data.value.lastAssignmentDate,"DD/MM/YYYY")}}
-                                </div>
-                            </template>
-                            <template #deadline="data">
-                                <div class="d-flex justify-content-between">
-                                    {{ $Helper.FormatDate(data.value.deadline,"DD/MM/YYYY")}}
-                                </div>
-                            </template>
-                            <template #wrong_image="data">
-                                <div class="d-flex justify-content-between">
-                                    <div title="test" class="t-dot" :class="data.value.wrong_image === 0 ? 'bg-warning' :'bg-success'"></div>
                                 </div>
                             </template>
                         </vue3-datatable>
@@ -123,10 +109,11 @@ import { ref, reactive, onMounted } from 'vue';
 import {FILTER_SUIVI_DI_STORAGE_NAME, filterSuiviDi} from '../../../composables/constants';
 import { useMeta } from '/src/composables/use-meta';
 import { Helper } from "../../../composables/global-methods";
-import { useRoute } from "vue-router";
+import { useRoute,useRouter } from "vue-router";
 
 useMeta({ title: 'Contremarque' });
 const route = useRoute();
+const router = useRouter();
 const loading = ref(true);
 const loadingAttribution = ref(false);
 const total_rows = ref(0);
@@ -236,22 +223,13 @@ const doReset = () => {
     Helper.setStorage(FILTER_SUIVI_DI_STORAGE_NAME, filter.value);
     getDI();
 };
-const handleUpdateDI = async (diId) => {
-    selectedDiId.value = diId;
-};
-const goTodetails = (id_di,carperOrderId = 0) => {
-    location.href = `/projet/dis/model/${id_di}/update/${carperOrderId}`;
-}
-const goToContreMarqueDetails = (id_contremarque) => {
-    location.href = `/projet/contremarques/projectdis/${id_contremarque}`;
-}
-const handleClose = () => {
-    //selectedDiId.value = null;
-};
 
-const goToNewContremarque = () => {
-    location.href = "/projet/contremarques/manage"
-};
+const goToContreMarqueDetails = (id_contremarque) => {
+    router.push({name: "projectsListManage", params:{id: id_contremarque}})
+}
+const goToImageDetails = (id) => {
+    router.push({name: "imagesCommadeDetails", params:{id: id}})
+}
 
 </script>
 <style>
