@@ -258,7 +258,7 @@
     import dTransmisAdv from '../../../components/projet/contremarques/d-transmis-adv.vue';
     import moment from 'moment';
     import DSamples from "../../../components/projet/contremarques/samples/d-samples.vue";
-    // src/views/projects/suiviDi/orderCarpetDesigner.vue
+    // src/views/projects/suiviDi/orderImageDesigner.vue
     // src/composables/global-methods.js
     const selectedImageTypes = ref([]);
     const hideForTrans = ref(false);

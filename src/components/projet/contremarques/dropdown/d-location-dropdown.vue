@@ -1,5 +1,5 @@
 <template>
-    <div class="row align-items-center pt-2">
+    <div class="row align-items-center">
         <div class="col-4" v-if="!showOnlyDropdown">
             <label class="form-label">Emplacement<span class="required" v-if="required">*</span>:</label>
         </div>

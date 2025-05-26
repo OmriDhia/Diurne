@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="row align-items-center justify-content-end p-0 pt-2 mt-3">
+        <div class="row align-items-center justify-content-end p-0 pt-2 mt-3" v-if="!hideCalcul">
             <div class="col-auto">
                 <button class="btn btn-custom mb-2 font-size-0-7" @click="calculateInchesFeet" :disabled="disabled">Calculer</button>
             </div>
@@ -67,6 +67,10 @@
             type: Boolean,
         },
         disabled: {
+            type: Boolean,
+            default: false,
+        },
+        hideCalcul: {
             type: Boolean,
             default: false,
         },
