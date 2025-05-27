@@ -423,7 +423,7 @@
         <template v-slot:footer>
             <div class="row p-2 justify-content-between">
                 <div class="col-auto">
-                    <button class="btn btn-custom pe-5 ps-5" @click="goToDevis">Retour à la page devis</button>
+                    <button class="btn btn-custom pe-5 ps-5" @click="goToDevis">Retour à la page commande</button>
                 </div>
                 <div class="col-auto">
                     <div class="row">
