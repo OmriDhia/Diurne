@@ -52,7 +52,7 @@ export default {
                     title: 'Recherche Image',
                     image: 'image.png',
                     color: menuHomeColor.image,
-                    href: '/tapis/images',
+                    href: '/image',
                     permission: "read image",
                 },
                 {
