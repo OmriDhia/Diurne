@@ -314,6 +314,36 @@ export const routes = [
         meta: {
             requiresAuth: true,
             class: 'projects'
+        },
+    }, //order-image
+    {
+        path: '/tapis/images',
+        name: 'order-image',
+        children: [
+            {
+                path: '',
+                name: 'images',
+                component: () => import('../views/carpet/image-commande/imageCommande.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'tapis',
+                    permission: "read carpet",
+                },
+            },
+            {
+                path: 'detail/:id',
+                name: 'imagesCommadeDetails',
+                component: () => import('../views/carpet/image-commande/orderImageDesigner.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'tapis',
+                    permission: "read carpet",
+                },
+            },
+        ],
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
         }
     },
     {
