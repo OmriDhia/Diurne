@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="row align-items-center justify-content-end p-0 pt-2 mt-3" v-if="!hideCalcul">
+        <div class="row align-items-center justify-content-end p-0 pt-2 mt-3">
             <div class="col-auto">
                 <button class="btn btn-custom mb-2 font-size-0-7" @click="calculateInchesFeet" :disabled="disabled">Calculer</button>
             </div>
@@ -48,7 +48,7 @@
                     </div> -->
                 </div>
             </template>
-            <div v-if="error" class="invalid-feedback">{{ $t('Au moins une valeur de dimension doit être supérieure à 0.') }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t('tous Les champs sont obligatoire.') }}</div>
         </div>
     </div>
 </template>
@@ -67,10 +67,6 @@
             type: Boolean,
         },
         disabled: {
-            type: Boolean,
-            default: false,
-        },
-        hideCalcul: {
             type: Boolean,
             default: false,
         },

@@ -167,7 +167,7 @@
                                                                 :customerInstruction="currentCarpetObject?.customerInstruction"
                                                                 :id_di="id_di"
                                                                 :carpetDesignOrderId="carpetDesignOrderId"
-                                                                @transmisAdv="transmisAdv($event)"
+                                                                @transmisAdv="updateCarpetDesignStatus($event)"
                                                                 :disabled="!CommercialAccessADV"
                                                             ></d-transmis-adv>
                                                         </div>
@@ -621,7 +621,6 @@
     const updateCarpetDesignStatus = async (statusId,forced = false) => {
         ValidateBeforeTransmission();
         if (!errorTransmis.value || forced ) {
-            dataCarpetOrder.value.status_id = statusId;
             await saveCarpetOrder(statusId);
         }
     };

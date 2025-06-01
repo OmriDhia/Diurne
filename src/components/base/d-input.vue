@@ -1,5 +1,5 @@
 <template>
-    <div :class="{'pt-2' : pt, 'row align-items-center': true }">
+    <div class="row align-items-center pt-2">
         <div class="col-4" v-if="label"><label class="form-label" :for="computedId">{{ label }}<span class="required" v-if="required">*</span>:  </label></div>
         <div :class="{'col-5' : button && label,'col-8': !button && label, 'col-12': !label }">
             <input
@@ -69,10 +69,6 @@
             max: {
                 type: String,
                 default: null
-            },
-            pt: {
-                type: Boolean,
-                default: true
             }
         },
         computed: {
