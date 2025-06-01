@@ -22,9 +22,6 @@
                                     <div class="col-xl-4 col-md-12 font-size-0-7">
                                         {{ $Helper.FormatDate(designer.date_from) }}
                                     </div>
-                                    <!--div class="col-md-12 mt-1 font-size-0-8">
-                                        <d-designer-status :disabled="true" v-model="designer.status" @change="handleChange(index)"></d-designer-status>
-                                    </div-->
                                 </div>
                             </div>
                         </div>
@@ -33,7 +30,7 @@
             </perfect-scrollbar>
         </div>
         <d-modal-add-designer :carpetDesignOrderId="carpetOrderId" @addDesigner="addDesigner($event)"></d-modal-add-designer>
-        <div class="row ps-0 mt-2" v-if="canAddDesigner">
+        <div class="row ps-0 mt-2">
             <div class="col-auto">
                 <button class="btn ms-0 btn-outline-custom" data-bs-toggle="modal" data-bs-target="#modalAddDesigner">
                     Ajouter
@@ -49,7 +46,6 @@
     import dModalAddDesigner from './_Partials/d-modal-add-designer.vue';
     import VueFeather from 'vue-feather';
     import dDesignerDropdown from '../../common/d-designer-dropdown.vue';
-    import dDesignerStatus from './_Partials/d-designer-status.vue';
     import { designerStatusConst, carpetStatus } from '../../../composables/constants';
     import userService from '../../../Services/user-service';
     import { useRoute, useRouter } from 'vue-router';
@@ -57,7 +53,6 @@
 
     export default {
         components: {
-            dDesignerStatus,
             dDesignerDropdown,
             dModalAddDesigner,
             VueFeather,

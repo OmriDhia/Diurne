@@ -126,7 +126,7 @@
     const store = useStore();
     const customerInstructionId = ref(null);
     const emit = defineEmits(['transmisAdv']);
-    const canShowTransmisAdv = computed(() => (store.getters.isCommertial || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
+    const canShowTransmisAdv = computed(() => (store.getters.isCommertial || store.getters.isSuperAdmin || store.getters.isCommercialManager) && store.getters.isFinStatus);
     const canCreateVariation = computed(() => (store.getters.isDesigner || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
     
     const transmisAdv = () => {
@@ -138,8 +138,8 @@
             errorADV.value.customerComment = "Commentaire client est obligatoire.";  
         }
         
-        if(!errorADV.value){
-            emit('transmisAdv',carpetStatus.transmisAdvId); 
+        if(Object.keys(errorADV.value).length === 0){
+            emit('transmisAdv',data.value); 
         }
         
     };
