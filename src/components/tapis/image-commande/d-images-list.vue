@@ -50,7 +50,7 @@ import contremarqueService from '../../../Services/contremarque-service';
 import attachmentService from '../../../Services/attachment-service';
 import dModalAddImage from './_Partials/d-modal-add-image.vue';
 import axios from 'axios';
-import dImageTypeDropdown from './dropdown/d-image-type-dropdown.vue';
+import dImageTypeDropdown from '../../projet/contremarques/dropdown/d-image-type-dropdown.vue';
 import axiosInstance from '../../../config/http';
 
 const props = defineProps({
