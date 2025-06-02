@@ -152,15 +152,18 @@
                         this.designers[indexDesigner].inProgress = status === 'inProgress';
                         this.designers[indexDesigner].stopped = status === 'stopped';
                         const data = {
-                            dateFrom: designer.date_from,
-                            dateTo: designer.date_to,
+                            imageCommandId: this.imageCommandId,
+                            designerId: designer.id,
+                            reasonForStopping: "",
+                            from: designer.date_from,
+                            to: designer.date_to,
                             inProgress: status === 'inProgress',
                             stopped: status === 'stopped',
                             done: false,
                         };
                         const carpetStatusid = (status === 'inProgress') ? carpetStatus.enCoursId :  status === 'stopped' ? carpetStatus.enPauseId : carpetStatus.attribuId ;
                         try {
-                            const res = axiosInstance.put(`/api/designerAssignments/${designer.id}`, data);
+                            const res = axiosInstance.put(`/api/image-command/assign-designer/${designer.id}`, data);
                             this.$emit('endCarpetDesignOrder', carpetStatusid);
                             console.log('Mise à jour avec succées');
                         } catch (e) {
