@@ -3,8 +3,8 @@
         <div class="col-md-12 bg-theme text-center p-2">Chargement de la nouvelle image</div>
         <perfect-scrollbar tag="div" class="h-400-forced col-12 pt-2"
             :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 200, suppressScrollX: true }">
-            <div class="row row-cols-1 row-cols-md-2 g-4">
-                <div class="col" v-for="(item, index) in images" :key="index">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-4 col-sm-6" v-for="(item, index) in images" :key="index">
                     <div class="card border-0">
                         <!-- Checkbox for selecting image for deletion -->
                         <input type="checkbox" class="position-absolute top-0 end-0 m-2"
@@ -24,7 +24,7 @@
                 </div>
             </div>
         </perfect-scrollbar>
-        <d-modal-add-image :carpetDesignOrderId="props.carpetDesignOrderId" @onClose="handleClose"></d-modal-add-image>
+        <d-modal-add-image :imageCommandId="props.imageCommandId" @onClose="handleClose"></d-modal-add-image>
         <div class="col-md-12">
             <div class="row justify-content-end pe-2">
                 <div class="col-auto p-1">
@@ -54,7 +54,10 @@ import dImageTypeDropdown from '../../projet/contremarques/dropdown/d-image-type
 import axiosInstance from '../../../config/http';
 
 const props = defineProps({
-    carpetDesignOrderId: {
+    imagesProps: {
+        default: [],
+    },
+    imageCommandId: {
         type: Number,
     },
     disabled: {
@@ -77,23 +80,23 @@ const images = ref([]);
 const selectedImages = ref([]); // Array to hold the selected image IDs
 const emit = defineEmits(['imageTypesUpdated', 'imageLists']); // 🔥 Define emit correctly
 
-const getImages = async () => {
+const getImages = () => {
     try {
-        images.value = await contremarqueService.getCarpetDesignImages(props.carpetDesignOrderId);
+        images.value = props.imagesProps;
         emitSelectedImageTypes(); // Emit the image types when images are fetched
     } catch (e) {
         console.error(e.message);
     }
 };
-const handleClose = async () => {
-    await getImages();
+const handleClose = () => {
+    getImages();
 };
 const downloadImage = async (attachment) => {
     await attachmentService.downloadFile(attachment);
 };
 
-onMounted(async () => {
-    await getImages();
+onMounted( () => {
+    getImages();
 });
 
 const selectedImageTypes = ref([]); // Stores selected image type names
@@ -102,6 +105,14 @@ const selectedImageTypes = ref([]); // Stores selected image type names
 watch(images, () => {
     emitSelectedImageTypes();
 });
+watch(
+    () => props.imagesProps, 
+    (newID) => {
+        console.log('props.imagesProps', props.imagesProps);
+        getImages();
+    },
+    {deep: true}
+);
 const updateImageTypes = (index, name) => {
     selectedImageTypes.value[index] = name;
     // console.log(name);
@@ -135,11 +146,7 @@ const deleteSelectedImages = async () => {
             window.showMessage('Please select at least one image to delete.', 'error');
             return;
         }
-        const response = await axiosInstance.delete(`/api/image/delete`, {
-            data: {
-                imageIds: selectedImages.value, // Pass imageIds inside the 'data' property
-            },
-        });
+        const response = await axiosInstance.delete(`/api/technical-image/${selectedImages.value[0]}`);
         selectedImages.value = [];
         // Refresh the image list after deletion
         await getImages();

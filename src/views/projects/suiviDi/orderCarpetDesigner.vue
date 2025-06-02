@@ -167,7 +167,7 @@
                                                                 :customerInstruction="currentCarpetObject?.customerInstruction"
                                                                 :id_di="id_di"
                                                                 :carpetDesignOrderId="carpetDesignOrderId"
-                                                                @transmisAdv="updateCarpetDesignStatus($event)"
+                                                                @transmisAdv="transmisAdv($event)"
                                                                 :disabled="!CommercialAccessADV"
                                                             ></d-transmis-adv>
                                                         </div>
@@ -365,7 +365,7 @@
         return !store.getters.isNonTrasmisStatus;
     });
     const CommercialAccess = computed(() => {
-        return (store.getters.isCommertial || store.getters.isCommercialManager);
+        return (store.getters.isCommertial || store.getters.isCommercialManager || store.getters.isSuperAdmin);
     });
     const DesignerAccess = computed(() => {
         return store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isSuperAdmin;

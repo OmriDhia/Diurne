@@ -10,7 +10,7 @@
                         <div class="col mb-2" v-for="(designer, index) in designers" :key="index">
                             <div class="card">
                                 <div class="row align-items-center justify-content-between p-2">
-                                    <div class="col-xl-8 col-md-12">
+                                    <div class="col-xl-6 col-md-12">
                                         <d-designer-dropdown
                                             :disabled="disabled"
                                             class="font-size-0-7"
@@ -19,8 +19,11 @@
                                             @change="handleChange(index)"
                                         ></d-designer-dropdown>
                                     </div>
-                                    <div class="col-xl-4 col-md-12 font-size-0-7">
+                                    <div class="col-xl-2 col-md-12 font-size-0-7">
                                         {{ $Helper.FormatDate(designer.date_from) }}
+                                    </div>
+                                    <div class="col-xl-4 col-md-12 font-size-0-7">
+                                        <d-designer-status v-model="designer.status"></d-designer-status>
                                     </div>
                                 </div>
                             </div>
@@ -29,7 +32,7 @@
                 </div>
             </perfect-scrollbar>
         </div>
-        <d-modal-add-designer :carpetDesignOrderId="carpetOrderId" @addDesigner="addDesigner($event)"></d-modal-add-designer>
+        <d-modal-add-designer :imageCommandId="imageCommandId" @addDesigner="addDesigner($event)"></d-modal-add-designer>
         <div class="row ps-0 mt-2">
             <div class="col-auto">
                 <button class="btn ms-0 btn-outline-custom" data-bs-toggle="modal" data-bs-target="#modalAddDesigner">
@@ -50,9 +53,11 @@
     import userService from '../../../Services/user-service';
     import { useRoute, useRouter } from 'vue-router';
     import store from '../../../store';
+    import DDesignerStatus from "@/components/projet/contremarques/_Partials/d-designer-status.vue";
 
     export default {
         components: {
+            DDesignerStatus,
             dDesignerDropdown,
             dModalAddDesigner,
             VueFeather,
@@ -61,7 +66,7 @@
             designersProps: {
                 default: [],
             },
-            carpetDesignOrderId: {
+            imageCommandId: {
                 type: Number,
             },
             disabled: {

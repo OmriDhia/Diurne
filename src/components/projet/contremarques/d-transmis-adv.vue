@@ -42,7 +42,7 @@
                 </div>
                 <div class="row justify-content-between align-items-center mt-3">
                     <div class="col-lg-7 col-md-12">
-                        <d-input type="date" label="Validation client" v-model="data.customerValidationDate" :error="errorADV.dateCustomer"></d-input>
+                        <d-input type="datetime-local" label="Validation client" v-model="data.customerValidationDate" :error="errorADV.dateCustomer"></d-input>
                     </div>
                     <div class="col-lg-5 col-md-12 d-flex">
                         <div class="checkbox-default custom-control custom-checkbox">

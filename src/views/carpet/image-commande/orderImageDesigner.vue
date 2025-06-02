@@ -169,7 +169,7 @@
                     <div class="row p-2">
                         <div class="col-md-12">
                             <d-compositions
-                                :disabled="false"
+                                :disabled="true"
                                 :hideBtn="true"
                                 :compositionData="currentObject?.carpetSpecification?.carpedComposition"
                                 :carpetSpecificationId="currentObject?.carpetSpecification?.id"
@@ -191,12 +191,12 @@
                             </div>
                         </div>
                         <div class="col-md-12 col-lg-8">
-                            <d-designer-list></d-designer-list>
+                            <d-designer-list :imageCommandId="currentObject.id" :designers-props="currentObject.imageCommandDesignerAssignments"></d-designer-list>
                         </div>
                     </div>
                     <div class="row p-2">
                         <div class="col-md-12">
-                            <d-images-list :imageCommandeId="orderImageId"></d-images-list>
+                            <d-images-list :imagesProps="currentObject.technicalImages" :imageCommandId="currentObject.id"></d-images-list>
                         </div>
                     </div>
                 </div>
