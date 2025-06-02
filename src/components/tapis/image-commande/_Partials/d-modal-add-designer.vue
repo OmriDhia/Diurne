@@ -44,25 +44,25 @@
     //const designerStatus = ref(0);
     const error = ref({});
     const data = ref({
+        imageCommandId: 0,
         designerId: 0,
-        dateFrom: new Date() ,
-        dateTo: new Date(),
+        from: new Date() ,
+        to: new Date(),
         inProgress: false,
         stopped: false,
-        done: false
+        done: false,
+        reasonForStopping: ""
     });
     const emit = defineEmits(['onClose','addDesigner']);
     const addDesigner = async () => {
         try{
-            if(!props.carpetDesignOrderId){
-                window.showMessage('Id carpetDesignOrderId undefined', 'error');
+            if(!props.imageCommandId){
+                window.showMessage('Id imageCommandId undefined', 'error');
                 return ;
             }
-            /*data.value.inProgress = (designerStatus.value === designerStatusConst[0].id);
-            data.value.stopped = (designerStatus.value === designerStatusConst[1].id);
-            data.value.done = (designerStatus.value === designerStatusConst[2].id);*/
-            data.dateFrom = moment().format("YYYY-MM-DD HH:mm:ss");
-            const res = await axiosInstance.post(`/api/carpetDesignOrders/${props.carpetDesignOrderId}/designerAssignment`,data.value);
+            data.value.from = moment().format("YYYY-MM-DD HH:mm:ss");
+            data.value.imageCommandId = props.imageCommandId;
+            const res = await axiosInstance.post(`/api/image-command/assign-designer`,data.value);
             emit('addDesigner', res.data.response);
             window.showMessage("Ajout a jour avec succées.");
             document.querySelector("#modalAddDesigner .btn-close").click();

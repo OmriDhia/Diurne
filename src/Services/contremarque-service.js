@@ -145,4 +145,12 @@ export default {
             throw new Error(msg);
         }
     },
+    async getSamplesByCarpetDesignOrderId(carpetDesignOrderId){
+        try {
+            const res = await axiosInstance.get(`/api/samples/carpet-design-order/${carpetDesignOrderId}`);
+            return res.data.response;
+        } catch (error) {
+            throw new Error('Échec de récupération des échantillons');
+        }
+    },
 };
