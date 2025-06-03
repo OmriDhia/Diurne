@@ -333,9 +333,9 @@ const getOrderImage = async () => {
             qualityId.value = currentObject.value?.carpetSpecification.quality.id;
             customerInstruction.value = currentObject.value?.carpetDesignOrder.customerInstruction;
             status.value = currentObject.value?.status;
-            console.log('image-commande: ', currentObject.value);
-            console.log('image-commande carpetDesignOrder: ', currentObject.value?.carpetDesignOrder);
-            console.log('image-commande carpetSpecification: ', currentObject.value?.carpetSpecification);
+            // console.log('image-commande: ', currentObject.value);
+            // console.log('image-commande carpetDesignOrder: ', currentObject.value?.carpetDesignOrder);
+            // console.log('image-commande carpetSpecification: ', currentObject.value?.carpetSpecification);
             if (contremarqueId.value) {
                 contremarqueObject.value = await contremarqueService.getContremarqueById(contremarqueId.value)
                 customer.value = contremarqueObject.value.customer;

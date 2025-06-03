@@ -92,7 +92,7 @@
             updateLocation(location) {},
             getDesigners(designers) {
                 return designers?.map((d) => {
-                    const inProgress = d.in_progress || false;
+                    const inProgress = d.inProgress || false;
                     const stopped = d.stopped || false;
                     const done = d.done || false;
 
@@ -148,12 +148,13 @@
                 if (userId) {
                     const designer = this.designers.find((d) => d.designer === userId);
                     const indexDesigner = this.designers.findIndex((d) => d.designer === userId);
+                    console.log('designer', designer);
                     if (designer && !designer.done) {
                         this.designers[indexDesigner].inProgress = status === 'inProgress';
                         this.designers[indexDesigner].stopped = status === 'stopped';
                         const data = {
                             imageCommandId: this.imageCommandId,
-                            designerId: designer.id,
+                            designerId: designer.designer,
                             reasonForStopping: "",
                             from: designer.date_from,
                             to: designer.date_to,
