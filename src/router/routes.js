@@ -405,5 +405,55 @@ export const routes = [
             requiresAuth: true,
             class: 'projects'
         }
-    }
+    },
+    {
+        path: '/treasury',
+        name: 'treasury',
+        children: [{
+                path: '',
+                name: 'treasury_list',
+                component: () => import('../views/treasury/treasuryList.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: "read treasury",
+                },
+            },
+            {
+                path: 'create',
+                name: 'treasury_create',
+                component: () => import('../views/treasury/treasuryForm.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: "create treasury",
+                },
+            },
+            // {
+            //     path: 'update/:id',
+            //     name: 'treasury_update',
+            //     component: () => import('../views/treasury/treasuryForm.vue'),
+            //     meta: {
+            //         requiresAuth: true,
+            //         class: 'treasury',
+            //         permission: "update treasury",
+            //     },
+            // },
+            {
+                path: 'manage/:id',
+                name: 'treasury_view',
+                component: () => import('../views/treasury/treasuryView.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: "read treasury",
+                },
+            },
+        ],
+        meta: {
+            requiresAuth: true,
+            class: 'treasury'
+        },
+    },
+
 ];
