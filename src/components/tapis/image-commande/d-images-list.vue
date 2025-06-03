@@ -14,10 +14,10 @@
                             @click="downloadImage(item.attachment)" alt="Image Preview" />
                         <div class="card-body p-0 mt-2">
                             <div class="meta-info">
+                                <h6 class="card-title text-center p-1">{{ item.name }}</h6>
                                 <d-image-type-dropdown :disabled="props.disabled" v-model="item.imageType.id"
                                     :hideLabel="true" @imageTypeSelected="updateImageTypes(index, $event)"
-                                    @imageTypeUpdateSelected="UpdateImageReference(item.id, item.imageType.id)"></d-image-type-dropdown>
-                                <h6 class="card-title">{{ item.image_reference }}</h6>
+                                    ></d-image-type-dropdown>
                             </div>
                         </div>
                     </div>
@@ -89,7 +89,7 @@ const getImages = () => {
     }
 };
 const handleClose = () => {
-    getImages();
+    emit('imageLists',true);
 };
 const downloadImage = async (attachment) => {
     await attachmentService.downloadFile(attachment);
@@ -159,7 +159,12 @@ const deleteSelectedImages = async () => {
 </script>
 <style scoped>
 .card-img-top {
-    object-fit: cover;
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    padding: 5px;
 }
 
 .card-body {

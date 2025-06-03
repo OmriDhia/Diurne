@@ -11,10 +11,19 @@
                             <div class="col-6">
                                 <d-materials-dropdown :disabled="disabled" :hideLabel="true" v-model="material.material_id"></d-materials-dropdown>
                             </div>
-                            <div class="col-3 text-end font-size-0-7">
-                                {{ material.rate }}
+                            <div class="col-4 text-center font-size-0-7">
+                                <input
+                                    v-model.number="material.rate"
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    style="padding: 3px"
+                                    class="form-control form-control-sm"
+                                    @input="updateMaterialsInStore()"
+                                    :disabled="disabled"
+                                />
                             </div>
-                            <div class="col-3">
+                            <div class="col-2">
                                 <button :disabled="disabled" type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDelete(index)">
                                     <vue-feather type="x" :size="14"></vue-feather>
                                 </button>
