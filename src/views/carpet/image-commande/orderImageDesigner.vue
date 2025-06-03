@@ -76,7 +76,7 @@
                                                 <div class="checkbox-default custom-control custom-checkbox pt-4">
                                                     <input disabled type="checkbox" class="custom-control-input"
                                                            id="hasConstraints"
-                                                           v-model="customerInstruction.hasConstraints"/>
+                                                           v-model="customerInstruction.hasCustomerConstraints"/>
                                                     <label class="custom-control-label" for="hasConstraints">Contraintes et
                                                         remarque</label>
                                                 </div>
