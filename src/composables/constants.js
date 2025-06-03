@@ -4,6 +4,7 @@ export const TOKEN_STORAGE_NAME = "auth_token";
 export const USER_INFO_STORAGE_NAME = "user_info";
 export const CONTACT_SELECTION_STORAGE_NAME = "Selected_contact_menu";
 export const FILTER_CONTACT_STORAGE_NAME = "filterContact";
+export const FILTER_ORDER_PAYMENT_STORAGE_NAME = "filterOrderPayment";
 export const FILTER_EVENT_STORAGE_NAME = "filterEvent";
 export const FILTER_CONTREMARQUE_STORAGE_NAME = "filterContremarque";
 export const FILTER_DEVIS_STORAGE_NAME = "filterDevis";
@@ -29,27 +30,14 @@ export const intermediaryType ={
     agent: "Agent",
     perscripteur: "Prescripteur",
 }
-export const filterContact = {
-    lastname: null,
-    postCode: null,
-    rs: null,
-    city: null,
-    firstname: null,
-    tva_ce: null,
+export const filterOrderPayment = {
+    customer: null,
     commercial: null,
-    webSite: null,
-    country: null,
-    pres: null,
-    customerTypeId: null,
-    wrongAdd: null,
-    validAdd: null,
-    hasInvalidCommercial: null,
-    active: null,
-    hasOnlyOneContact: true,
-    mailingLanguageId: null,
-    contactMailing: null,
-    is_agent: null,
-    is_prescripteur: null,
+    contremarque: null,
+    prescriptor: null,
+    devis: null,
+    commande: null,
+    amount: null,
 };
 export const filterEvent = {
     firstname: null,
@@ -75,7 +63,28 @@ export const filterEvent = {
     pres: null,
     contact: null,
 };
-
+export const filterContact = {
+    lastname: null,
+    postCode: null,
+    rs: null,
+    city: null,
+    firstname: null,
+    tva_ce: null,
+    commercial: null,
+    webSite: null,
+    country: null,
+    pres: null,
+    customerTypeId: null,
+    wrongAdd: null,
+    validAdd: null,
+    hasInvalidCommercial: null,
+    active: null,
+    hasOnlyOneContact: true,
+    mailingLanguageId: null,
+    contactMailing: null,
+    is_agent: null,
+    is_prescripteur: null,
+};
 export const filterContremarque = {
     customer: null,
     contremarque: null,
