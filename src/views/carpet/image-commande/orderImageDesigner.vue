@@ -69,7 +69,7 @@
                                     <div class="col-md-6">
                                         <div class="row ps-2 mt-4 mb-2 justify-content-between">
                                             <div class="col-6">
-                                                <img :src="$Helper.getImagePath(currentObject?.images?.[0])" class="card-img-top cursor-pointer"
+                                                <img :src="$Helper.getImagePath(currentObject?.images?.[0]?.attachment)" class="card-img-top cursor-pointer"
                                                       alt="Image Preview" />
                                             </div>
                                             <div class="col-6">
