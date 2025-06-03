@@ -15,7 +15,7 @@
                         <div class="card-body p-0 mt-2">
                             <div class="meta-info">
                                 <h6 class="card-title text-center p-1">{{ item.name }}</h6>
-                                <d-image-type-dropdown :disabled="props.disabled" v-model="item.imageType.id"
+                                <d-image-type-dropdown :disabled="true" v-model="item.imageTypeId"
                                     :hideLabel="true" @imageTypeSelected="updateImageTypes(index, $event)"
                                     ></d-image-type-dropdown>
                             </div>
