@@ -332,7 +332,7 @@ const getOrderImage = async () => {
             modelId.value = currentObject.value?.carpetSpecification.model.id;
             qualityId.value = currentObject.value?.carpetSpecification.quality.id;
             customerInstruction.value = currentObject.value?.carpetDesignOrder.customerInstruction;
-            status.value = currentObject.value?.status;
+            status.value = currentObject.value?.status || {};
             // console.log('image-commande: ', currentObject.value);
             // console.log('image-commande carpetDesignOrder: ', currentObject.value?.carpetDesignOrder);
             // console.log('image-commande carpetSpecification: ', currentObject.value?.carpetSpecification);
@@ -390,6 +390,7 @@ const annulerImageCommande = async (id) => {
     if (orderImageId) {
         const res = await axiosInstance.put(`/api/cancelImageCommand/${orderImageId}`);
         window.showMessage('Image commande a été annuler avec succées.');
+        setTimeout(goToImages,2000)
     }
 }
 const imageToStudio = (id) => {

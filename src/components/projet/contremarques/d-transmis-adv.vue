@@ -8,7 +8,7 @@
                     </div>
                     <div class="col-lg-5 col-md-12 d-flex">
                         <div class="checkbox-default custom-control custom-checkbox">
-                            <input :disabled="disabled" type="checkbox" class="custom-control-input" id="hasConstraints" v-model="data.hasConstraints"/>
+                            <input :disabled="disabled" type="checkbox" class="custom-control-input" id="hasConstraints" @change="createUpdateCustomerInstruction" v-model="data.hasConstraints"/>
                             <label class="custom-control-label" for="hasConstraints"></label>
                         </div>
                         <d-btn-outlined :disabled="disabled" data-bs-toggle="modal" data-bs-target="#modalManageConstraint" label="Contraintes et remarque" icon="arrow-right" buttonClass="ps-1 font-size-0-6"></d-btn-outlined>
@@ -23,11 +23,11 @@
                 </div>
                 <div class="row justify-content-between align-items-center mt-3">
                     <div class="col-lg-7 col-md-12">
-                        <d-input :disabled="disabled" label="Transmi. ADV" v-model="data.transmi_adv"></d-input>
+                        <d-input :disabled="disabled" label="Transmi. ADV"  @change="createUpdateCustomerInstruction" v-model="data.transmi_adv"></d-input>
                     </div>
                     <div class="col-lg-5 col-md-12 d-flex">
                         <div class="checkbox-default custom-control custom-checkbox">
-                            <input :disabled="disabled" type="checkbox" class="custom-control-input" id="hasValidateSample" v-model="data.hasValidateSample"/>
+                            <input :disabled="disabled" type="checkbox" class="custom-control-input" id="hasValidateSample"  @change="createUpdateCustomerInstruction" v-model="data.hasValidateSample"/>
                             <label class="custom-control-label" for="hasValidateSample"></label>
                         </div>
                         <d-btn-outlined :disabled="disabled" data-bs-toggle="modal" data-bs-target="#modalManageValidatedSimple" label="Ech. Validée de ref" icon="arrow-right" buttonClass="ps-1 font-size-0-6"></d-btn-outlined>
@@ -42,11 +42,11 @@
                 </div>
                 <div class="row justify-content-between align-items-center mt-3">
                     <div class="col-lg-7 col-md-12">
-                        <d-input type="datetime-local" label="Validation client" v-model="data.customerValidationDate" :error="errorADV.dateCustomer"></d-input>
+                        <d-input type="datetime-local" label="Validation client"  @change="createUpdateCustomerInstruction" v-model="data.customerValidationDate" :error="errorADV.dateCustomer"></d-input>
                     </div>
                     <div class="col-lg-5 col-md-12 d-flex">
                         <div class="checkbox-default custom-control custom-checkbox">
-                            <input :disabled="disabled" type="checkbox" class="custom-control-input" id="hasFinitionInstruction" v-model="data.hasFinitionInstruction"/>
+                            <input :disabled="disabled" type="checkbox" class="custom-control-input" id="hasFinitionInstruction"  @change="createUpdateCustomerInstruction" v-model="data.hasFinitionInstruction"/>
                             <label :disabled="disabled" class="custom-control-label" for="hasFinitionInstruction"></label>
                         </div>
                         <d-btn-outlined :disabled="disabled" data-bs-toggle="modal" data-bs-target="#modalManageFinishing" label="Finition" icon="arrow-right" buttonClass="ps-1 font-size-0-8"></d-btn-outlined>
@@ -69,7 +69,8 @@
                         <textarea
                             :disabled="disabled"
                             :class="{ 'is-invalid': errorADV.customerComment }"
-                            class="w-100 h-130-forced block-custom-border" 
+                            class="w-100 h-130-forced block-custom-border"
+                            @change="createUpdateCustomerInstruction"
                             v-model="data.customerComment">
                         </textarea>
                     </div>
@@ -194,16 +195,7 @@
             data.value.constraintInstructionId,
         ],
         async (newCarpert, oldCarpet) => {
-            if(props.carpetDesignOrderId){
-                try{
-                    const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, data.value, customerInstructionId.value);
-                    if(!customerInstructionId.value){
-                        updateCustomerInstructionId(res.id);
-                    }
-                }catch(e){
-                    
-                }
-            }
+            
         },
         { deep: true }
     );
@@ -224,4 +216,30 @@
         },
         { deep: true }
     );
+    const createUpdateCustomerInstruction = async () => {
+        if(props.carpetDesignOrderId){
+            try{
+                const payload = {
+                    orderNumber: data.value.orderNumber,
+                    transmissionAdvice: data.value.transmi_adv,
+                    customerComment: data.value.customerComment,
+                    customerValidationDate: data.value.customerValidationDate,
+                    hasConstraints: data.value.hasConstraints,
+                    hasValidateSample: data.value.hasValidateSample,
+                    hasFinitionInstruction: data.value.hasFinitionInstruction,
+                    validatedSampleId: data.value.validatedSampleId,
+                    finitionInstructionId: data.value.finitionInstructionId,
+                    constraintInstructionId: data.value.constraintInstructionId,
+                    objectId: parseInt(props.carpetDesignOrderId),
+                    objectType: "CarpetDesignOrder"
+                }
+                const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, payload, customerInstructionId.value);
+                if(!customerInstructionId.value){
+                    updateCustomerInstructionId(res.id);
+                }
+            }catch(e){
+
+            }
+        }
+    }
 </script>
