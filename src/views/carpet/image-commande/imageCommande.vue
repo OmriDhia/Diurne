@@ -59,7 +59,7 @@
                                         @change="changeServer" class="advanced-table text-nowrap">
                             <template #image="data">
                                 <div class="d-flex justify-content-center">
-                                    <img :src="$Helper.getImagePathNew(data.value.image_path, data.value.image_name)" alt="Carpet Image" class="img-thumbnail" style="width: 80px; height: auto;">
+                                    <img :src="$Helper.getImagePath(data.value.images?.[0]?.attachment)" alt="Carpet Image" class="img-thumbnail" style="width: 80px; height: auto;">
                                 </div>
                             </template>
                             <template #collection="data">
@@ -72,19 +72,20 @@
                                 {{ data.value.carpetDesignOrder.carpetSpecification.quality.name}}
                             </template>
                             <template #image_name="data">
-                                <div class="d-flex justify-content-between">
+                                <div class="d-flex justify-content-between align-items-center">
+                                  <div>
+                                    {{ data.value.images?.[0]?.image_reference}}
+                                  </div>
                                     <div>
                                         <vue-feather type="search"  stroke-width="1" class="cursor-pointer" @click="goToImageDetails(data.value.id)"></vue-feather>
                                     </div>
                                 </div>
                             </template>
-                            <template #diNumber="data">
-                                <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.diNumber}}</strong>
-                                    <div>
-                                        <vue-feather type="search"  stroke-width="1" class="cursor-pointer" @click="goToContreMarqueDetails(data.value.contremarque_id)"></vue-feather>
-                                    </div>
-                                </div>
+                            <template #height="data">
+                                {{ data.value.carpetDesignOrder.carpetSpecification.carpetDimensions?.[1]?.[0].value }}
+                            </template>
+                            <template #width="data">
+                                {{ data.value.carpetDesignOrder.carpetSpecification.carpetDimensions?.[2]?.[0].value }}
                             </template>
                         </vue3-datatable>
                     </div>
@@ -143,8 +144,8 @@ const cols = ref([
     { field: 'collection', title: 'collection' },
     { field: 'model', title: 'Modèle'},
     { field: 'quality', title: 'Qualité' },
-    { field: 'height', title: 'Langueur'},
-    { field: 'width', title: 'largeur'},
+    { field: 'width', title: 'Longueur'},
+    { field: 'height', title: 'largeur'},
     { field: 'contremarque', title: 'contremarque'},
 ]) || [];
 const getImageUrl = (imageName) => {
@@ -183,6 +184,7 @@ const getDI = async () => {
         const data = response.data;
         total_rows.value = data.response.total;
         rows.value = data.response.items;
+        console.log(rows.value);
     } catch { }
 
     loading.value = false;
