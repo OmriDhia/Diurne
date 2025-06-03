@@ -149,7 +149,7 @@ const deleteSelectedImages = async () => {
         const response = await axiosInstance.delete(`/api/technical-image/${selectedImages.value[0]}`);
         selectedImages.value = [];
         // Refresh the image list after deletion
-        await getImages();
+        emit('imageLists',true);
         window.showMessage('Selected images deleted successfully.');
     } catch (e) {
         console.error('Error deleting images:', e.message);

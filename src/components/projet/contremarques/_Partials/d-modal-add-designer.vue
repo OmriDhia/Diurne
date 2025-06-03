@@ -96,15 +96,6 @@
 .modal {
     overflow: visible !important;
 }
-
-.modal-body {
-    overflow: visible !important;
-}
-
-.modal-content {
-    overflow: visible !important;
-}
-
 .d-designer-dropdown {
     position: relative;
     z-index: 1050; /* Ensure it’s above the modal-footer */

@@ -134,9 +134,9 @@ export default {
         try {
             let res = null;
             if(customerInstructionId){
-                res = await axiosInstance.put(`/api/carpetDesignOrder/${carpetDesignOrderId}/update-customer-instruction/${customerInstructionId}`, data);
+                res = await axiosInstance.put(`/api/update-customer-instruction/${customerInstructionId}`, data);
             }else{
-                res = await axiosInstance.post(`/api/carpetDesignOrder/${carpetDesignOrderId}/create-customer-instruction`, data);
+                res = await axiosInstance.post(`/api/create-customer-instruction`, data);
             }
             return res.data.response
         } catch (error) {
