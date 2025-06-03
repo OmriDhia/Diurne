@@ -1,27 +1,34 @@
-export const routes = [
-    {
+export const routes = [{
         path: '/',
         name: 'login',
         component: () => import('../views/auth/login.vue'),
-        meta: { layout: 'auth' }
+        meta: {
+            layout: 'auth'
+        },
     },
     {
         path: '/lockscreen',
         name: 'lockscreen',
         component: () => import('../views/auth/lockscreen.vue'),
-        meta: { layout: 'auth' }
+        meta: {
+            layout: 'auth'
+        },
     },
     {
         path: '/pass-recovery',
         name: 'pass-recovery',
         component: () => import('../views/auth/pass_recovery.vue'),
-        meta: { layout: 'auth' }
+        meta: {
+            layout: 'auth'
+        },
     },
     {
         path: '/pass-reset/:token',
         name: 'pass-reset',
         component: () => import('../views/auth/pass_reset.vue'),
-        meta: { layout: 'auth' }
+        meta: {
+            layout: 'auth'
+        },
     },
     {
         path: '/home',
@@ -30,7 +37,7 @@ export const routes = [
         meta: {
             layout: 'home',
             requiresAuth: true
-        }
+        },
     },
     {
         path: '/error/:code',
@@ -38,132 +45,147 @@ export const routes = [
         component: () => import('../views/pages/error.vue'),
         meta: {
             requiresAuth: true
-        }
+        },
     },
 
     //users
     {
         path: '/users',
         name: 'users',
-        children: [
-            {
+        children: [{
                 path: '',
                 name: 'users-manage',
                 component: () => import('../views/users/users.vue'),
                 meta: {
                     permission: 'read user'
-                }
+                },
             },
             {
                 path: 'account-setting/:id?',
                 name: 'account-setting',
                 component: () => import('../views/users/account_setting.vue'),
                 meta: {
-                    permission: 'create user'
-                }
+                    permission: 'create user',
+                },
             },
             {
                 path: 'profiles',
                 name: 'profiles',
                 component: () => import('../views/users/profiles.vue'),
                 meta: {
-                    permission: 'read profile'
-                }
+                    permission: 'read profile',
+                },
             },
             {
                 path: 'profile/:id',
                 name: 'profile',
                 component: () => import('../views/users/profile.vue'),
                 meta: {
-                    permission: 'update profile'
-                }
+                    permission: 'update profile',
+                },
             }
         ],
         meta: {
             requiresAuth: true
-        }
+        },
     },
     //users
     {
         path: '/settings',
         name: 'settings',
-        children: [
-            {
+        children: [{
                 path: '',
                 name: 'settings_home',
-                component: () => import('../views/settings/settings.vue')
+                component: () => import('../views/settings/settings.vue'),
             },
             {
                 path: 'collections-produits',
                 name: 'collections-produits',
                 component: () => import('../views/settings/d-collections-produits.vue'),
-                meta: { permission: 'create setting' }
+                meta: {
+                    permission: 'create setting'
+                }
             },
             {
                 path: 'transport-livraison',
                 name: 'transport-livraison',
                 component: () => import('../views/settings/d-transport-livraison.vue'),
-                meta: { permission: 'create setting' }
+                meta: {
+                    permission: 'create setting'
+                }
             },
             {
                 path: 'couleurs-materiaux',
                 name: 'couleurs-materiaux',
                 component: () => import('../views/settings/d-couleurs-materiaux.vue'),
-                meta: { permission: 'create setting' }
+                meta: {
+                    permission: 'create setting'
+                }
             },
             {
                 path: 'fabricants-qualite',
                 name: 'fabricants-qualite',
                 component: () => import('../views/settings/d-fabricants-qualite.vue'),
-                meta: { permission: 'create setting' }
+                meta: {
+                    permission: 'create setting'
+                }
             },
             {
                 path: 'tarification-taxes',
                 name: 'tarification-taxes',
                 component: () => import('../views/settings/d-tarification-taxes.vue'),
-                meta: { permission: 'create setting' }
+                meta: {
+                    permission: 'create setting'
+                }
             },
             {
                 path: 'payment-types',
                 name: 'payment-types',
                 component: () => import('../views/settings/d-payment-types.vue'),
-                meta: { permission: 'create setting' }
+                meta: {
+                    permission: 'create setting'
+                }
             },
             {
                 path: 'formes-traitements',
                 name: 'formes-traitements',
                 component: () => import('../views/settings/d-formes-traitements.vue'),
-                meta: { permission: 'create setting' }
+                meta: {
+                    permission: 'create setting'
+                }
             },
             {
                 path: 'images-models',
                 name: 'images-models',
                 component: () => import('../views/settings/d-images-models.vue'),
-                meta: { permission: 'create setting' }
+                meta: {
+                    permission: 'create setting'
+                }
             },
             {
                 path: 'attachment-types',
                 name: 'attachment-types',
                 component: () => import('../views/settings/d-attachment-types.vue'),
-                meta: { permission: 'create setting' }
-            }
+                meta: {
+                    permission: 'create setting'
+                }
+            },
         ],
         meta: {
             requiresAuth: true
-        }
+        },
     },
     {
         path: '/contacts',
         name: 'contacts',
-        children: [
-            {
+        children: [{
                 path: '',
                 name: 'contactsList',
                 component: () => import('../views/contacts/contacts.vue'),
                 meta: {
                     requiresAuth: true,
-                    permission: 'read contact'
-                }
+                    permission: "read contact",
+                },
             },
             {
                 path: 'manage/:id?',
@@ -171,14 +193,14 @@ export const routes = [
                 component: () => import('../views/contacts/addContact.vue'),
                 meta: {
                     requiresAuth: true,
-                    permission: 'create contact'
-                }
-            }
+                    permission: "create contact",
+                },
+            },
         ],
         meta: {
             requiresAuth: true,
             class: 'contacts'
-        }
+        },
     },
     {
         path: '/intermediaries',
@@ -186,23 +208,22 @@ export const routes = [
         component: () => import('../views/contacts/intermediares.vue'),
         meta: {
             requiresAuth: true,
-            permission: 'read contact',
+            permission: "read contact",
             class: 'contacts'
-        }
+        },
     },
     {
         path: '/projet/contremarques',
         name: 'contremarques',
-        children: [
-            {
+        children: [{
                 path: '',
                 name: 'projectsList',
                 component: () => import('../views/projects/contremarques/contremarques.vue'),
                 meta: {
                     requiresAuth: true,
                     class: 'projects',
-                    permission: 'read contremarque'
-                }
+                    permission: "read contremarque",
+                },
             },
             {
                 path: 'manage/:id?',
@@ -210,56 +231,9 @@ export const routes = [
                 component: () => import('../views/projects/contremarques/manage.vue'),
                 meta: {
                     requiresAuth: true,
-                    permission: 'create contremarque'
-                }
+                    permission: "create contremarque",
+                },
             },
-            {
-                path: 'projectdis/:id',
-                name: 'projectDIS',
-                component: () => import('../views/projects/contremarques/projectdis.vue'),
-                meta: {
-                    requiresAuth: true,
-                    permission: 'create contremarque'
-                }
-            }
-        ],
-        meta: {
-            requiresAuth: true,
-            class: 'projects'
-        }
-    },
-    {
-        path: '/projet/devis',
-        name: 'devis',
-        children: [
-            {
-                path: '',
-                name: 'devisList',
-                component: () => import('../views/projects/devis/devis.vue'),
-                meta: {
-                    requiresAuth: true,
-                    class: 'projects',
-                    permission: 'read quote'
-                }
-            },
-            {
-                path: 'manage/:id?',
-                name: 'devisManage',
-                component: () => import('../views/projects/devis/manage.vue'),
-                meta: {
-                    requiresAuth: true,
-                    permission: 'create quote'
-                }
-            },
-            {
-                path: ':qouteId/details/:id?',
-                name: 'devisDetails',
-                component: () => import('../views/projects/devis/devisDetails.vue'),
-                meta: {
-                    requiresAuth: true,
-                    permission: 'create quote'
-                }
-            }/*,
             {
                 path: 'projectdis/:id',
                 name: 'projectDIS',
@@ -268,27 +242,73 @@ export const routes = [
                     requiresAuth: true,
                     permission: "create contremarque",
                 },
-            },*/
+            },
         ],
         meta: {
             requiresAuth: true,
             class: 'projects'
-        }
+        },
+    },
+    {
+        path: '/projet/devis',
+        name: 'devis',
+        children: [{
+                path: '',
+                name: 'devisList',
+                component: () => import('../views/projects/devis/devis.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'projects',
+                    permission: "read quote",
+                },
+            },
+            {
+                path: 'manage/:id?',
+                name: 'devisManage',
+                component: () => import('../views/projects/devis/manage.vue'),
+                meta: {
+                    requiresAuth: true,
+                    permission: "create quote",
+                },
+            },
+            {
+                path: ':qouteId/details/:id?',
+                name: 'devisDetails',
+                component: () => import('../views/projects/devis/devisDetails.vue'),
+                meta: {
+                    requiresAuth: true,
+                    permission: "create quote",
+                },
+            }
+            /*,
+                        {
+                            path: 'projectdis/:id',
+                            name: 'projectDIS',
+                            component: () => import('../views/projects/contremarques/projectdis.vue'),
+                            meta: {
+                                requiresAuth: true,
+                                permission: "create contremarque",
+                            },
+                        },*/
+        ],
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        },
     },
     //Carpet Order
     {
         path: '/tapis/order',
         name: 'tapis',
-        children: [
-            {
+        children: [{
                 path: '',
                 name: 'carpetOrderList',
                 component: () => import('../views/carpet/order/carpetOrders.vue'),
                 meta: {
                     requiresAuth: true,
                     class: 'tapis',
-                    permission: 'read carpet'
-                }
+                    permission: "read carpet",
+                },
             },
             {
                 path: 'manage/:id?',
@@ -297,8 +317,8 @@ export const routes = [
                 meta: {
                     requiresAuth: true,
                     class: 'tapis',
-                    permission: 'read carpet'
-                }
+                    permission: "read carpet",
+                },
             },
             {
                 path: ':carpetOrder/details/:id?',
@@ -307,8 +327,8 @@ export const routes = [
                 meta: {
                     requiresAuth: true,
                     class: 'tapis',
-                    permission: 'create quote'
-                }
+                    permission: "create quote",
+                },
             }
         ],
         meta: {
@@ -317,10 +337,9 @@ export const routes = [
         },
     }, //order-image
     {
-        path: '/tapis/images',
+        path: '/tapis/order-image',
         name: 'order-image',
-        children: [
-            {
+        children: [{
                 path: '',
                 name: 'images',
                 component: () => import('../views/carpet/image-commande/imageCommande.vue'),
@@ -331,9 +350,9 @@ export const routes = [
                 },
             },
             {
-                path: 'detail/:id',
-                name: 'imagesCommadeDetails',
-                component: () => import('../views/carpet/image-commande/orderImageDesigner.vue'),
+                path: '/:id_commande',
+                name: 'images-commade',
+                component: () => import('../views/carpet/image-commande/imageCommande.vue'),
                 meta: {
                     requiresAuth: true,
                     class: 'tapis',
@@ -344,21 +363,20 @@ export const routes = [
         meta: {
             requiresAuth: true,
             class: 'projects'
-        }
+        },
     },
     {
         path: '/projet/dis',
         name: 'suiviDI',
-        children: [
-            {
+        children: [{
                 path: '',
                 name: 'di_list',
                 component: () => import('../views/projects/suiviDi/suiviDi.vue'),
                 meta: {
                     requiresAuth: true,
                     class: 'projects',
-                    permission: 'read contremarque'
-                }
+                    permission: "read contremarque",
+                },
             },
             {
                 path: 'model/:id_di/create',
@@ -367,8 +385,8 @@ export const routes = [
                 meta: {
                     requiresAuth: true,
                     class: 'projects',
-                    permission: 'read contremarque'
-                }
+                    permission: "read contremarque",
+                },
             },
             {
                 path: 'model/:id_di/update/:carpetDesignOrderId',
@@ -377,33 +395,63 @@ export const routes = [
                 meta: {
                     requiresAuth: true,
                     class: 'projects',
-                    permission: 'read contremarque'
-                }
-            }
+                    permission: "read contremarque",
+                },
+            },
         ],
         meta: {
             requiresAuth: true,
             class: 'projects'
-        }
+        },
     },
     {
-        path: '/projet/commande',
-        name: 'commande client',
-        children: [
-            {
+        path: '/treasury',
+        name: 'treasury',
+        children: [{
                 path: '',
-                name: 'orders',
-                component: () => import('../views/carpet/order/carpetOrders.vue'),
+                name: 'treasury_list',
+                component: () => import('../views/treasury/treasuryList.vue'),
                 meta: {
                     requiresAuth: true,
-                    class: 'projects',
-                    permission: 'read order'
-                }
-            }
+                    class: 'treasury',
+                    permission: "read treasury",
+                },
+            },
+            {
+                path: 'create',
+                name: 'treasury_create',
+                component: () => import('../views/treasury/treasuryForm.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: "create treasury",
+                },
+            },
+            // {
+            //     path: 'update/:id',
+            //     name: 'treasury_update',
+            //     component: () => import('../views/treasury/treasuryForm.vue'),
+            //     meta: {
+            //         requiresAuth: true,
+            //         class: 'treasury',
+            //         permission: "update treasury",
+            //     },
+            // },
+            {
+                path: 'manage/:id',
+                name: 'treasury_view',
+                component: () => import('../views/treasury/treasuryView.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: "read treasury",
+                },
+            },
         ],
         meta: {
             requiresAuth: true,
-            class: 'projects'
-        }
-    }
+            class: 'treasury'
+        },
+    },
+
 ];
