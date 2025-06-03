@@ -483,7 +483,7 @@
                 objectId: parseInt(carpetDesignOrderId),
                 objectType: "CarpetDesignOrder",
                 customerValidationDate:  moment().format('YYYY-MM-DD HH:mm:ss'),
-                status_id: carpetStatus.enCoursId
+                status_id: carpetStatus.finiId
             }
             const res = await axiosInstance.post(`/api/transmettre-object/to-adv`, d);
             await saveCarpetOrder(carpetStatus.transmisAdvId)
