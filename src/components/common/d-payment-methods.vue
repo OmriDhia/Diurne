@@ -1,6 +1,5 @@
 <template>
   <div class="form-group">
-    <!-- Using showLabel prop for consistency with other d- components -->
     <label v-if="showLabel && finalLabel" :for="inputName" class="form-label">
       {{ finalLabel }} <span v-if="required" class="text-danger">*</span>
     </label>
@@ -15,7 +14,7 @@
     >
       <option :value="nullValue" disabled>{{ placeholderText }}</option>
       <option v-for="method in paymentMethodsList" :key="method.id" :value="method.id">
-        {{ method.label }} <!-- API returns 'label', not 'name' for the text -->
+        {{ method.label }}
       </option>
     </select>
     <div v-if="error" class="invalid-feedback">{{ error }}</div>
@@ -27,15 +26,15 @@
 
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
-import axiosInstance from '../../config/http'; // Make sure this path is correct
+import axiosInstance from '../../config/http'; 
 
 const props = defineProps({
-    modelValue: [String, Number, null], // Allow null for the placeholder
+    modelValue: [String, Number, null], 
     label: {
         type: String,
-        default: 'Mode de Paiement'
+        default: 'Type'
     },
-    name: { // for id and for attribute
+    name: { 
         type: String,
         default: 'payment_method_id'
     },

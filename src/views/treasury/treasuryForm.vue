@@ -11,26 +11,14 @@
 
                     <div class="row p-3 align-items-center">
                         <div class="col-md-3 col-sm-6">
-                            <d-input
-                                label="Date"
-                                type="date"
-                                v-model="paymentData.date"
-                                :error="errors.paymentDate"
-                            />
+                            <d-input-secondary label="Date" type="date" v-model="paymentData.date" :error="errors.paymentDate" />
                         </div>
                         <div class="col-md-3 col-sm-6">
-                            <d-payment-methods
-                                v-model="paymentData.paymentMethodId"
-                                :error="errors.paymentMethodId"
-                            />
+                            <d-payment-methods v-model="paymentData.paymentMethodId" :error="errors.paymentMethodId" />
                         </div>
                         <div class="col-md-3 col-sm-6">
-                            <d-input
-                                label="Montant"
-                                v-model="paymentData.paymentAmountHt"
-                                class="text-end"
-                                :error="errors.paymentAmountHt"
-                            />
+                            <d-input-secondary label="Montant" v-model="paymentData.paymentAmountHt" class="text-end"
+                                :error="errors.paymentAmountHt" />
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <d-currency v-model="paymentData.currencyId" />
@@ -38,76 +26,65 @@
                     </div>
 
                     <div class="row p-3 align-items-center">
+
                         <div class="col-md-6">
-                            <d-input
-                                label="Référence transaction"
-                                v-model="paymentData.transactionNumber"
-                                :error="errors.transactionNumber"
-                            />
+                            <d-textarea label="Libellé sur compte" v-model="paymentData.accountLabel"
+                                :error="errors.accountLabel" />
+                            <d-input label="Référence transaction" v-model="paymentData.transactionNumber"
+                                :error="errors.transactionNumber" />
                         </div>
                         <div class="col-md-6">
-                            <d-input
-                                label="Libellé sur compte"
-                                v-model="paymentData.accountLabel"
-                                :error="errors.accountLabel"
-                            />
+
+                            <div class="row p-3 align-items-center">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Affectation</label>
+                                        <select class="form-select" v-model="allocationType">
+                                            <option value="quote">Devis</option>
+                                            <option value="order">Facture</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6" v-if="allocationType === 'quote'">
+                                    <d-quote-dropdown v-model="selectedQuoteObject" label="Devis"
+                                        @selected="handleQuoteSelection" />
+                                </div>
+
+                                <div class="col-md-6" v-if="allocationType === 'order'">
+                                    <d-order-dropdown v-model="selectedOrderObject" label="Facture"
+                                        @selected="handleOrderSelection" />
+                                </div>
+                            </div>
+                          
                         </div>
                     </div>
 
-                    <d-panel-title title="Affectation du règlement" class-name="ps-2 mt-4" />
-
-                    <div class="row p-3 align-items-center">
-                        <div class="col-md-auto">
-                            <div class="form-group">
-                                <label class="form-label">Type d'affectation</label>
-                                <select
-                                    class="form-select"
-                                    v-model="allocationType"
-                                    style="width: 150px;"
-                                >
-                                    <option value="quote">Devis</option>
-                                    <option value="order">Facture</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3" v-if="allocationType === 'quote'">
-                            <d-quote-dropdown
-                                v-model="selectedQuoteObject"
-                                label="Devis"
-                                @selected="handleQuoteSelection"
-                            />
-                        </div>
-
-                        <div class="col-md-3" v-if="allocationType === 'order'">
-                            <d-order-dropdown
-                                v-model="selectedOrderObject"
-                                label="Facture" 
-                                @selected="handleOrderSelection"
-                            />
-                        </div>
+                    <d-panel-title title="Produit" class-name="ps-2 mt-4" />
+                    <div class="col-md-3 col-sm-6">
+                            <d-input-secondary type="date" />
                     </div>
 
                     <div class="row px-3 mt-3">
                         <div class="col-md-12">
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover table-sm">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Projet</th>
-                                            <th>Emplacement</th>
-                                            <th>Devis</th>
-                                            <th>Commande</th>
-                                            <th>RN</th>
-                                            <th>Facture</th>
-                                            <th class="text-end">Repartit.(%)</th>
-                                            <th class="text-end">Affect. TTC</th>
-                                            <th class="text-end">Total Doc. TTC</th>
-                                            <th class="text-end">Restant TTC</th>
-                                            <th class="text-end">Affect. HT</th>
-                                            <th class="text-end">TVA</th>
-                                            <th class="text-center">Soldé</th>
-                                            <th class="text-center">Actions</th>
+                                    <thead class="">
+                                        <tr class="border-top text-black bg-black">
+                                            <th class="border-start border-end text-white">Projet</th>
+                                            <th class="border-start border-end text-white">Emplacement</th>
+                                            <th class="border-start border-end text-white">Devis</th>
+                                            <th class="border-start border-end text-white">Commande</th>
+                                            <th class="border-start border-end text-white">RN</th>
+                                            <th class="border-start border-end text-white">Facture</th>
+                                            <th class="border-start border-end text-white">Repartit.(%)</th>
+                                            <th class="border-start border-end text-white">Affect. TTC</th>
+                                            <th class="border-start border-end text-white">Total Doc. TTC</th>
+                                            <th class="border-start border-end text-white">Restant TTC</th>
+                                            <th class="border-start border-end text-white">Affect. HT</th>
+                                            <th class="border-start border-end text-white">TVA</th>
+                                            <th class="border-start border-end text-white">Soldé</th>
+                                            <th class="border-start border-end text-white"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -115,141 +92,91 @@
                                             <!-- Projet -->
                                             <td>
                                                 <d-collections-dropdown
-                                                    v-if="allocation.carpetSpecification?.collection"
-                                                    :disabled="true"
+                                                    v-if="allocation.carpetSpecification?.collection" :disabled="true"
                                                     :show-only-dropdown="true"
-                                                    v-model="allocation.carpetSpecification.collection.id"
-                                                />
+                                                    v-model="allocation.carpetSpecification.collection.id" />
                                             </td>
-                                            
+
                                             <!-- Emplacement -->
                                             <td>
-                                                <d-location-dropdown
-                                                    v-if="allocation.location"
-                                                    :show-only-dropdown="true"
-                                                    :disabled="true"
+                                                <d-location-dropdown v-if="allocation.location"
+                                                    :show-only-dropdown="true" :disabled="true"
                                                     :contremarque-id="contremarqueId"
-                                                    v-model="allocation.location.location_id"
-                                                /> 
+                                                    v-model="allocation.location.location_id" />
                                             </td>
-                                            
+
                                             <!-- Devis -->
                                             <td>
-                                                <input
-                                                    type="text"
-                                                    class="form-control form-control-sm" 
-                                                    v-model="allocation.devis"
-                                                    @change="updateDevis(index)"
-                                                />
+                                                <input type="text" class="form-control form-control-sm"
+                                                    v-model="allocation.devis" @change="updateDevis(index)" />
                                             </td>
-                                            
+
                                             <!-- Commande -->
                                             <td>
-                                                <input
-                                                    type="text"
-                                                    class="form-control form-control-sm" 
+                                                <input type="text" class="form-control form-control-sm"
                                                     v-model="allocation.commande_ref"
-                                                    @change="updateCommandeRef(index)"
-                                                />
+                                                    @change="updateCommandeRef(index)" />
                                             </td>
-                                            
+
                                             <!-- RN -->
                                             <td>
-                                                <input
-                                                    type="text"
-                                                    class="form-control form-control-sm" 
-                                                    v-model="allocation.rn"
-                                                    @change="updateRN(index)"
-                                                    placeholder="RN-XXXXX"
-                                                />
+                                                <input type="text" class="form-control form-control-sm"
+                                                    v-model="allocation.rn" @change="updateRN(index)"
+                                                    placeholder="RN-XXXXX" />
                                             </td>
-                                            
+
                                             <!-- Facture -->
                                             <td>
-                                                <input
-                                                    type="text"
-                                                    class="form-control form-control-sm" 
-                                                    v-model="allocation.facture"
-                                                    @change="updateFacture(index)"
-                                                />
+                                                <input type="text" class="form-control form-control-sm"
+                                                    v-model="allocation.facture" @change="updateFacture(index)" />
                                             </td>
-                                            
+
                                             <!-- Repartition (%) -->
                                             <td class="text-end">
-                                                <input
-                                                    type="number"
-                                                    class="form-control form-control-sm text-end" 
+                                                <input type="number" class="form-control form-control-sm text-end"
                                                     v-model="allocation.distribution"
-                                                    @change="updateAllocationAmount(index)"
-                                                    step="0.01"
-                                                    min="0"
-                                                    max="100"
-                                                />
+                                                    @change="updateAllocationAmount(index)" step="0.01" min="0"
+                                                    max="100" />
                                             </td>
-                                            
-                                           <td class="text-end">
-                                            <input
-                                                type="number"
-                                                class="form-control form-control-sm text-end"
-                                                v-model="allocation.allocatedAmountTtc"
-                                                @change="updateAllocationFromAmount(index, 'allocatedAmountTtc')"
-                                                step="0.01"
-                                                min="0"
-                                            />
-                                        </td>
-                                        <td class="text-end">
-                                            <input
-                                                type="number"
-                                                class="form-control form-control-sm text-end"
-                                                v-model="allocation.totalAmountTtc"
-                                                @change="updateAllocationFromAmount(index, 'totalAmountTtc')"
-                                                step="0.01"
-                                                min="0"
-                                                :readonly="true"
-                                            />
-                                        </td>
-                                        <td class="text-end">
-                                            <input
-                                                type="number"
-                                                class="form-control form-control-sm text-end"
-                                                v-model="allocation.remainingAmountTtc"
-                                                @change="updateAllocationFromAmount(index, 'remainingAmountTtc')"
-                                                step="0.01"
-                                                min="0"
-                                                :readonly="true"
-                                            />
-                                        </td>
-                                        <td class="text-end">
-                                            <input
-                                                type="number"
-                                                class="form-control form-control-sm text-end"
-                                                v-model="allocation.allocatedAmountHt"
-                                                @change="updateAllocationFromAmount(index, 'allocatedAmountHt')"
-                                                step="0.01"
-                                                min="0"
-                                            />
-                                        </td>
-                                        <td class="text-end">
-                                            <input
-                                                type="number"
-                                                class="form-control form-control-sm text-end"
-                                                v-model="allocation.tva"
-                                                @change="updateAllocationFromAmount(index, 'tva')"
-                                                step="0.01"
-                                                min="0"
-                                            />
-                                        </td>
-                                            
+
+                                            <td class="text-end">
+                                                <input type="number" class="form-control form-control-sm text-end"
+                                                    v-model="allocation.allocatedAmountTtc"
+                                                    @change="updateAllocationFromAmount(index, 'allocatedAmountTtc')"
+                                                    step="0.01" min="0" />
+                                            </td>
+                                            <td class="text-end">
+                                                <input type="number" class="form-control form-control-sm text-end"
+                                                    v-model="allocation.totalAmountTtc"
+                                                    @change="updateAllocationFromAmount(index, 'totalAmountTtc')"
+                                                    step="0.01" min="0" :readonly="true" />
+                                            </td>
+                                            <td class="text-end">
+                                                <input type="number" class="form-control form-control-sm text-end"
+                                                    v-model="allocation.remainingAmountTtc"
+                                                    @change="updateAllocationFromAmount(index, 'remainingAmountTtc')"
+                                                    step="0.01" min="0" :readonly="true" />
+                                            </td>
+                                            <td class="text-end">
+                                                <input type="number" class="form-control form-control-sm text-end"
+                                                    v-model="allocation.allocatedAmountHt"
+                                                    @change="updateAllocationFromAmount(index, 'allocatedAmountHt')"
+                                                    step="0.01" min="0" />
+                                            </td>
+                                            <td class="text-end">
+                                                <input type="number" class="form-control form-control-sm text-end"
+                                                    v-model="allocation.tva"
+                                                    @change="updateAllocationFromAmount(index, 'tva')" step="0.01"
+                                                    min="0" />
+                                            </td>
+
                                             <!-- Soldé -->
                                             <td class="text-center">
-                                                <input
-                                                    type="checkbox"
-                                                    class="form-check-input" 
+                                                <input type="checkbox" class="form-check-input"
                                                     v-model="allocation.cleared"
-                                                    @change="handlePaidStatusChange(index)"
-                                                />
+                                                    @change="handlePaidStatusChange(index)" />
                                             </td>
-                                            
+
                                             <!-- Actions -->
                                             <td class="text-center">
                                                 <div class="col-auto p-1" @click="removeAllocation(index)">
@@ -273,12 +200,7 @@
                                 <span class="fw-bold me-2">Total affecté TTC:</span>
                                 <span>{{ formatNumber(totalAllocatedTtc) }}</span>
                             </div>
-                            <div class="d-inline-block">
-                                <span class="fw-bold me-2">Reste à affecter:</span>
-                                <span :class="{ 'text-danger': remainingAmount < 0, 'text-success': remainingAmount === 0 }">
-                                    {{ formatNumber(remainingAmount) }}
-                                </span>
-                            </div>
+                            
                         </div>
                     </div>
                 </template>
@@ -293,11 +215,7 @@
                     </button>
                 </div>
                 <div class="col-auto">
-                    <button
-                        class="btn btn-primary pe-5 ps-5"
-                        @click="savePayment"
-                        :disabled="loading || !isFormValid"
-                    >
+                    <button class="btn btn-primary pe-5 ps-5" @click="savePayment" :disabled="loading || !isFormValid">
                         <i class="fas fa-save me-1"></i> Enregistrer
                     </button>
                 </div>
@@ -316,6 +234,8 @@ import dPageTitle from '../../components/common/d-page-title.vue';
 import dPanel from '../../components/common/d-panel.vue';
 import dPanelTitle from '../../components/common/d-panel-title.vue';
 import dInput from '../../components/base/d-input.vue';
+import dInputSecondary from '../../components/base/d-input-secondary.vue';
+import dTextarea from '../../components/base/d-textarea.vue';
 import dPaymentMethods from '../../components/common/d-payment-methods.vue';
 import dCurrency from '../../components/common/d-currency.vue';
 import dQuoteDropdown from '../../components/common/d-quote-dropdown.vue';
@@ -338,7 +258,7 @@ const paymentData = ref({
     customerId: null,
     commercialId: null,
     currencyId: null,
-    taxRuleId: 1, 
+    taxRuleId: 1,
     accountLabel: '',
     transactionNumber: '',
     paymentAmountHt: 0,
@@ -369,14 +289,14 @@ const handleQuoteSelection = async (quoteFullObject) => {
         loading.value = true;
         const response = await axiosInstance.get(`/api/quote/${quoteFullObject.quote_id}`);
         const quoteWithDetails = response.data.response;
-        
+
         if (!quoteWithDetails.quoteData?.quoteDetails?.length) {
             window.showMessage('Ce devis ne contient aucun détail.', 'warning');
             return;
         }
 
         contremarqueId.value = quoteFullObject.contremarque_id;
-        
+
         quoteWithDetails.quoteData.quoteDetails.forEach(quoteDetail => {
             const allocation = createAllocationObject(quoteFullObject, quoteDetail);
             updateAllocationForNewItem(allocation);
@@ -400,14 +320,14 @@ const createAllocationObject = (quoteFullObject, quoteDetail) => {
         quoteId: quoteFullObject.quote_id,
         quoteDetailId: quoteDetail.id,
         orderId: null,
-        orderInvoiceId: null, 
+        orderInvoiceId: null,
         projetId: quoteDetail.location?.location_id || null,
         emplacementId: quoteDetail.location?.location_id || quoteFullObject.deliveryAddress?.id || null,
         carpetSpecification: quoteDetail?.carpetSpecification || null,
         location: quoteDetail?.location || null,
         devis: quoteFullObject.reference || '',
         commande_ref: quoteDetail.reference || '',
-        rn: DEFAULT_RN_PREFIX + Math.random().toString(36).substring(2, 7).toUpperCase(), 
+        rn: DEFAULT_RN_PREFIX + Math.random().toString(36).substring(2, 7).toUpperCase(),
         facture: '',
         distribution: DEFAULT_DISTRIBUTION,
         allocatedAmountTtc: 0,
@@ -427,10 +347,10 @@ const handleOrderSelection = (orderFullObject) => {
 };
 
 const updateAllocationForNewItem = (allocation) => {
-    const taxRate = allocation.type === 'quote' ? 
-        (selectedQuoteObject.value?.taxRule?.taxRate || 0.20) : 
+    const taxRate = allocation.type === 'quote' ?
+        (selectedQuoteObject.value?.taxRule?.taxRate || 0.20) :
         (paymentData.value.taxRule?.taxRate || 0.20);
-    
+
     const allocatedTtc = (allocation.totalAmountTtc * parseFloat(allocation.distribution) / 100).toFixed(2);
     allocation.allocatedAmountTtc = Helper.FormatNumber(allocatedTtc);
     const allocatedHt = allocatedTtc / (1 + taxRate);
@@ -458,19 +378,19 @@ const updateFacture = (index) => {
 const updateAllocationAmount = (index) => {
     const allocation = allocations.value[index];
     const distribution = Math.min(100, Math.max(0, parseFloat(allocation.distribution) || 0));
-    allocation.distribution = distribution.toFixed(2); 
-    
+    allocation.distribution = distribution.toFixed(2);
+
     const totalTtcOfDocument = parseFloat(allocation.totalAmountTtc) || 0;
     const allocatedTtc = (totalTtcOfDocument * distribution / 100);
-    
+
     const taxRate = getTaxRateForAllocation(allocation);
-    
+
     allocation.allocatedAmountTtc = Helper.FormatNumber(allocatedTtc);
     const allocatedHt = allocatedTtc / (1 + taxRate);
     allocation.allocatedAmountHt = Helper.FormatNumber(allocatedHt);
     allocation.tva = Helper.FormatNumber(allocatedTtc - allocatedHt);
     allocation.remainingAmountTtc = Helper.FormatNumber(totalTtcOfDocument - allocatedTtc);
-    
+
     if (allocation.cleared) {
         handlePaidStatusChange(index);
     }
@@ -483,7 +403,7 @@ const getTaxRateForAllocation = (allocation) => {
     if (allocation.type === 'order' && paymentData.value.taxRule?.taxRate) {
         return parseFloat(paymentData.value.taxRule.taxRate);
     }
-    return 0.20; 
+    return 0.20;
 };
 
 const handlePaidStatusChange = (index) => {
@@ -533,11 +453,11 @@ const isFormValid = computed(() => {
 const updateAllocationFromAmount = (index, field) => {
     const allocation = allocations.value[index];
     const taxRate = getTaxRateForAllocation(allocation);
-    
+
     allocation.allocatedAmountTtc = parseFloat(allocation.allocatedAmountTtc) || 0;
     allocation.allocatedAmountHt = parseFloat(allocation.allocatedAmountHt) || 0;
     allocation.tva = parseFloat(allocation.tva) || 0;
-    
+
     if (field === 'allocatedAmountTtc') {
         allocation.allocatedAmountHt = allocation.allocatedAmountTtc / (1 + taxRate);
         allocation.tva = allocation.allocatedAmountTtc - allocation.allocatedAmountHt;
@@ -547,20 +467,20 @@ const updateAllocationFromAmount = (index, field) => {
     } else if (field === 'tva') {
         allocation.allocatedAmountHt = allocation.allocatedAmountTtc - allocation.tva;
     }
-    
+
     if (allocation.totalAmountTtc > 0) {
         allocation.distribution = ((allocation.allocatedAmountTtc / allocation.totalAmountTtc) * 100).toFixed(2);
     }
-    
+
     allocation.remainingAmountTtc = allocation.totalAmountTtc - allocation.allocatedAmountTtc;
-    
-    allocations.value[index] = {...allocation};
+
+    allocations.value[index] = { ...allocation };
 };
 
 const savePayment = async () => {
     if (!isFormValid.value) {
         let errorMsg = "Formulaire invalide. Vérifiez les champs: ";
-        if (!paymentData.value.paymentMethodId) errorMsg += "Mode de paiement, ";
+        if (!paymentData.value.paymentMethodId) errorMsg += "Type, ";
         if (!paymentData.value.customerId) errorMsg += "Client, ";
         if (allocations.value.length === 0) errorMsg += "Aucune affectation, ";
         if (Math.abs(remainingAmount.value) >= 0.01) errorMsg += `Reste à affecter non nul (${formatNumber(remainingAmount.value)}), `;
@@ -574,7 +494,7 @@ const savePayment = async () => {
     try {
         const paymentPayload = createPaymentPayload();
         const paymentResponse = await axiosInstance.post('/api/order-payment', paymentPayload);
-        const paymentId = paymentResponse.data.response.id; 
+        const paymentId = paymentResponse.data.response.id;
         await saveAllocationDetails(paymentId);
 
         window.showMessage('Règlement enregistré avec succès');
@@ -619,13 +539,13 @@ const createAllocationDetailPayload = (paymentId, allocation) => {
         projetId: allocation.projetId ? parseInt(allocation.projetId) : null,
         emplacementId: allocation.emplacementId ? parseInt(allocation.emplacementId) : null,
         devis: allocation.devis || '',
-        commandNumber: allocation.commande_ref || '', 
+        commandNumber: allocation.commande_ref || '',
         rn: allocation.rn || '',
         facture: allocation.facture || '',
-        distribution: parseFloat(allocation.distribution).toFixed(2), 
+        distribution: parseFloat(allocation.distribution).toFixed(2),
         allocatedAmountTtc: parseFloat(allocation.allocatedAmountTtc).toFixed(2),
         remainingAmountTtc: parseFloat(allocation.remainingAmountTtc).toFixed(2),
-        totalAmountTtc: parseFloat(allocation.totalAmountTtc).toFixed(2), 
+        totalAmountTtc: parseFloat(allocation.totalAmountTtc).toFixed(2),
         tva: parseFloat(allocation.tva).toFixed(2),
         allocatedAmountHt: parseFloat(allocation.allocatedAmountHt).toFixed(2),
         cleared: allocation.cleared,
@@ -663,7 +583,7 @@ watch(() => allocationType.value, (newType) => {
 });
 
 watch(
-    [() => paymentData.value.paymentAmountHt, () => paymentData.value.taxRuleId], 
+    [() => paymentData.value.paymentAmountHt, () => paymentData.value.taxRuleId],
     () => {
         const ht = parseFloat(paymentData.value.paymentAmountHt) || 0;
         const taxRate = getCurrentTaxRate();
@@ -710,7 +630,7 @@ const getCurrentTaxRate = () => {
     display: flex;
 }
 
-.row > [class*='col-'] {
+.row>[class*='col-'] {
     display: flex;
     flex-direction: column;
 }
@@ -730,8 +650,21 @@ const getCurrentTaxRate = () => {
     text-align: right;
 }
 
-.btn-small .btn.rounded-circle{
-    height: 20px!important;
-    width: 20px!important;
+.btn-small .btn.rounded-circle {
+    height: 20px !important;
+    width: 20px !important;
+}
+
+.form-group{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0px;
+}
+
+.bg-black {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-black-rgb), var(--bs-bg-opacity)) !important;
 }
 </style>
