@@ -11,13 +11,13 @@
 
                     <div class="row p-3 align-items-center">
                         <div class="col-md-3 col-sm-6">
-                            <d-input label="Date" type="date" v-model="paymentData.date" :error="errors.paymentDate" />
+                            <d-input-secondary label="Date" type="date" v-model="paymentData.date" :error="errors.paymentDate" />
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <d-payment-methods v-model="paymentData.paymentMethodId" :error="errors.paymentMethodId" />
                         </div>
                         <div class="col-md-3 col-sm-6">
-                            <d-input label="Montant" v-model="paymentData.paymentAmountHt" class="text-end"
+                            <d-input-secondary label="Montant" v-model="paymentData.paymentAmountHt" class="text-end"
                                 :error="errors.paymentAmountHt" />
                         </div>
                         <div class="col-md-3 col-sm-6">
@@ -27,59 +27,61 @@
 
                     <div class="row p-3 align-items-center">
                         <div class="col-md-6">
+                            <d-textarea label="Libellé sur compte" v-model="paymentData.accountLabel"
+                                :error="errors.accountLabel" />
                             <d-input label="Référence transaction" v-model="paymentData.transactionNumber"
                                 :error="errors.transactionNumber" />
                         </div>
                         <div class="col-md-6">
-                            <d-input label="Libellé sur compte" v-model="paymentData.accountLabel"
-                                :error="errors.accountLabel" />
+                            <div class="row p-3 align-items-center">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Affectation</label>
+                                        <select class="form-select" v-model="allocationType">
+                                            <option value="quote">Devis</option>
+                                            <option value="order">Facture</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6" v-if="allocationType === 'quote'">
+                                    <d-quote-dropdown v-model="selectedQuoteObject" label="Devis"
+                                        @selected="handleQuoteSelection" />
+                                </div>
+
+                                <div class="col-md-6" v-if="allocationType === 'order'">
+                                    <d-order-dropdown v-model="selectedOrderObject" label="Facture"
+                                        @selected="handleOrderSelection" />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <d-panel-title title="Affectation du règlement" class-name="ps-2 mt-4" />
-
-                    <div class="row p-3 align-items-center">
-                        <div class="col-md-auto">
-                            <div class="form-group">
-                                <label class="form-label">Type d'affectation</label>
-                                <select class="form-select" v-model="allocationType" style="width: 150px;">
-                                    <option value="quote">Devis</option>
-                                    <option value="order">Facture</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3" v-if="allocationType === 'quote'">
-                            <d-quote-dropdown v-model="selectedQuoteObject" label="Devis"
-                                @selected="handleQuoteSelection" />
-                        </div>
-
-                        <div class="col-md-3" v-if="allocationType === 'order'">
-                            <d-order-dropdown v-model="selectedOrderObject" label="Facture"
-                                @selected="handleOrderSelection" />
-                        </div>
+                    <d-panel-title title="Produit" class-name="ps-2 mt-4" />
+                    <div class="col-md-3 col-sm-6">
+                        <d-input-secondary type="date" />
                     </div>
 
                     <div class="row px-3 mt-3">
                         <div class="col-md-12">
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover table-sm">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Projet</th>
-                                            <th>Emplacement</th>
-                                            <th>Devis</th>
-                                            <th>Commande</th>
-                                            <th>RN</th>
-                                            <th>Facture</th>
-                                            <th class="text-end">Repartit.(%)</th>
-                                            <th class="text-end">Affect. TTC</th>
-                                            <th class="text-end">Total Doc. TTC</th>
-                                            <th class="text-end">Restant TTC</th>
-                                            <th class="text-end">Affect. HT</th>
-                                            <th class="text-end">TVA</th>
-                                            <th class="text-center">Soldé</th>
-                                            <th class="text-center">Actions</th>
+                                    <thead class="">
+                                        <tr class="border-top text-black bg-black">
+                                            <th class="border-start border-end text-white">Projet</th>
+                                            <th class="border-start border-end text-white">Emplacement</th>
+                                            <th class="border-start border-end text-white">Devis</th>
+                                            <th class="border-start border-end text-white">Commande</th>
+                                            <th class="border-start border-end text-white">RN</th>
+                                            <th class="border-start border-end text-white">Facture</th>
+                                            <th class="border-start border-end text-white">Repartit.(%)</th>
+                                            <th class="border-start border-end text-white">Affect. TTC</th>
+                                            <th class="border-start border-end text-white">Total Doc. TTC</th>
+                                            <th class="border-start border-end text-white">Restant TTC</th>
+                                            <th class="border-start border-end text-white">Affect. HT</th>
+                                            <th class="border-start border-end text-white">TVA</th>
+                                            <th class="border-start border-end text-white">Soldé</th>
+                                            <th class="border-start border-end text-white"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -138,28 +140,31 @@
                                                 <input type="number" class="form-control form-control-sm text-end"
                                                     v-model="allocation.allocatedAmountTtc"
                                                     @change="updateAllocationFromAmount(index, 'allocatedAmountTtc')"
-                                                    step="0.01" min="0" :readonly="!isEditMode" />
+                                                    step="0.01" min="0" />
                                             </td>
                                             <td class="text-end">
                                                 <input type="number" class="form-control form-control-sm text-end"
-                                                    v-model="allocation.totalAmountTtc" step="0.01" min="0" readonly />
+                                                    v-model="allocation.totalAmountTtc"
+                                                    @change="updateAllocationFromAmount(index, 'totalAmountTtc')"
+                                                    step="0.01" min="0" :readonly="true" />
                                             </td>
                                             <td class="text-end">
                                                 <input type="number" class="form-control form-control-sm text-end"
-                                                    v-model="allocation.remainingAmountTtc" step="0.01" min="0"
-                                                    readonly />
+                                                    v-model="allocation.remainingAmountTtc"
+                                                    @change="updateAllocationFromAmount(index, 'remainingAmountTtc')"
+                                                    step="0.01" min="0" :readonly="true" />
                                             </td>
                                             <td class="text-end">
                                                 <input type="number" class="form-control form-control-sm text-end"
                                                     v-model="allocation.allocatedAmountHt"
                                                     @change="updateAllocationFromAmount(index, 'allocatedAmountHt')"
-                                                    step="0.01" min="0" :readonly="!isEditMode" />
+                                                    step="0.01" min="0" />
                                             </td>
                                             <td class="text-end">
                                                 <input type="number" class="form-control form-control-sm text-end"
                                                     v-model="allocation.tva"
                                                     @change="updateAllocationFromAmount(index, 'tva')" step="0.01"
-                                                    min="0" :readonly="!isEditMode" />
+                                                    min="0" />
                                             </td>
 
                                             <!-- Soldé -->
@@ -226,6 +231,8 @@ import dPageTitle from '../../components/common/d-page-title.vue';
 import dPanel from '../../components/common/d-panel.vue';
 import dPanelTitle from '../../components/common/d-panel-title.vue';
 import dInput from '../../components/base/d-input.vue';
+import dInputSecondary from '../../components/base/d-input-secondary.vue';
+import dTextarea from '../../components/base/d-textarea.vue';
 import dPaymentMethods from '../../components/common/d-payment-methods.vue';
 import dCurrency from '../../components/common/d-currency.vue';
 import dQuoteDropdown from '../../components/common/d-quote-dropdown.vue';
@@ -739,6 +746,7 @@ const getCurrentTaxRate = () => {
 };
 </script>
 
+
 <style scoped>
 .table th {
     font-size: 0.75rem;
@@ -783,5 +791,23 @@ const getCurrentTaxRate = () => {
 
 .text-end .form-control-sm {
     text-align: right;
+}
+
+.btn-small .btn.rounded-circle {
+    height: 20px !important;
+    width: 20px !important;
+}
+
+.form-group{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0px;
+}
+
+.bg-black {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-black-rgb), var(--bs-bg-opacity)) !important;
 }
 </style>
