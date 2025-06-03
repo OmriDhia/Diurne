@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-start p-2 bg-white" id="fullscreen">
-        <div class="col-12 mb-2 mt-3 p-0" v-if="canManageComposition && !props.disabled">
+        <div class="col-12 mb-2 mt-3 p-0" v-if="canManageComposition && !props.disabled && !hideBtn">
             <d-composition-thread v-if="carpetCompositionId" :threadCount="dynamicColumns.length"
                 :layerCount="rows.length" :carpetCompositionId="carpetCompositionId"
                 :carpetSpecificationId="props.carpetSpecificationId"
@@ -44,7 +44,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-12" v-if="dynamicColumns.length && canManageComposition">
+        <div class="col-12" v-if="dynamicColumns.length && canManageComposition && !hideBtn">
             <div class="row justify-content-end">
                 <div class="col-auto">
                     <button :disabled="props.disabled" class="btn ms-0 btn-outline-custom"
@@ -88,6 +88,10 @@ const props = defineProps({
         type: Array,
     },
     disabled: {
+        type: Boolean,
+        default: false,
+    },
+    hideBtn: {
         type: Boolean,
         default: false,
     }

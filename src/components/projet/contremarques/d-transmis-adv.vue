@@ -42,7 +42,7 @@
                 </div>
                 <div class="row justify-content-between align-items-center mt-3">
                     <div class="col-lg-7 col-md-12">
-                        <d-input type="date" label="Validation client" v-model="data.customerValidationDate" :error="errorADV.dateCustomer"></d-input>
+                        <d-input type="datetime-local" label="Validation client" v-model="data.customerValidationDate" :error="errorADV.dateCustomer"></d-input>
                     </div>
                     <div class="col-lg-5 col-md-12 d-flex">
                         <div class="checkbox-default custom-control custom-checkbox">
@@ -126,7 +126,7 @@
     const store = useStore();
     const customerInstructionId = ref(null);
     const emit = defineEmits(['transmisAdv']);
-    const canShowTransmisAdv = computed(() => (store.getters.isCommertial || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
+    const canShowTransmisAdv = computed(() => (store.getters.isCommertial || store.getters.isSuperAdmin || store.getters.isCommercialManager) && store.getters.isFinStatus);
     const canCreateVariation = computed(() => (store.getters.isDesigner || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
     
     const transmisAdv = () => {
@@ -138,8 +138,8 @@
             errorADV.value.customerComment = "Commentaire client est obligatoire.";  
         }
         
-        if(!errorADV.value){
-            emit('transmisAdv',carpetStatus.transmisAdvId); 
+        if(Object.keys(errorADV.value).length === 0){
+            emit('transmisAdv',data.value); 
         }
         
     };

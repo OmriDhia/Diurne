@@ -4,26 +4,17 @@
             <h6 class="w-100 p-0">Matière demandés <span class="required">*</span></h6>
         </div>
         <div class="card p-0" :class="{ 'border border-danger shadow-sm': error }">
-            <perfect-scrollbar tag="div" class="h-130-forced p-0" :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 130, suppressScrollX: false }">
+            <perfect-scrollbar tag="div" class="h-130-forced p-0" :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 130, suppressScrollX: true }">
                 <div class="card-body p-0 ps-2 mt-2">
                     <template v-for="(material, index) in materials">
                         <div class="row align-items-center justify-content-between ps-0">
                             <div class="col-6">
                                 <d-materials-dropdown :disabled="disabled" :hideLabel="true" v-model="material.material_id"></d-materials-dropdown>
                             </div>
-                            <div class="col-4 text-center font-size-0-7">
-                                <input
-                                    v-model.number="material.rate"
-                                    type="number"
-                                    min="0"
-                                    max="100"
-                                    style="padding: 3px"
-                                    class="form-control form-control-sm"
-                                    @input="rebalanceRates(index)"
-                                    :disabled="disabled"
-                                />
+                            <div class="col-3 text-end font-size-0-7">
+                                {{ material.rate }}
                             </div>
-                            <div class="col-2">
+                            <div class="col-3">
                                 <button :disabled="disabled" type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDelete(index)">
                                     <vue-feather type="x" :size="14"></vue-feather>
                                 </button>
@@ -129,64 +120,17 @@
             addMaterial(newMaterial) {
                 newMaterial.rate = parseFloat(newMaterial.rate);
                 this.materials.push(newMaterial);
-                //this.rebalanceRates();
                 this.updateMaterialsInStore();
                 this.$emit('changeMaterials', this.materials);
             },
             handleDelete(index) {
                 this.materials.splice(index, 1);
-                //this.rebalanceRates();
                 this.updateMaterialsInStore();
                 this.$emit('changeMaterials', this.materials);
             },
             updateMaterialsInStore() {
                 this.$store.commit('setMaterials', this.materials);
             },
-            rebalanceRates(changedIndex = null) {
-                if (this.materials.length === 0) return;
-
-                if (changedIndex === null) {
-                    const egal = 100 / this.materials.length;
-                    this.materials.forEach(m => m.rate = egal);
-                    return;
-                }
-
-                // Nettoyage des taux invalides
-                this.materials.forEach(m => {
-                    if (isNaN(m.rate) || m.rate < 0) m.rate = 0;
-                    if (m.rate > 100) m.rate = 100;
-                });
-
-                const fixed = this.materials[changedIndex].rate;
-                const reste = 100 - fixed;
-
-                const autres = this.materials
-                    .map((m, i) => ({ m, i }))
-                    .filter(({ i }) => i !== changedIndex);
-
-                const totalAutres = autres.reduce((sum, { m }) => sum + m.rate, 0);
-
-                if (totalAutres === 0) {
-                    const egal = reste / autres.length;
-                    autres.forEach(({ i }) => this.materials[i].rate = egal);
-                } else {
-                    autres.forEach(({ m, i }) => {
-                        const proportion = m.rate / totalAutres;
-                        this.materials[i].rate = proportion * reste;
-                    });
-                }
-
-                // Correction fine pour s'assurer que le total est bien 100
-                const currentTotal = this.materials.reduce((sum, m) => sum + m.rate, 0);
-                const delta = 100 - currentTotal;
-
-                if (Math.abs(delta) > 0.001) {
-                    const firstAdjustable = this.materials.find((_, i) => i !== changedIndex);
-                    if (firstAdjustable) {
-                        firstAdjustable.rate += delta;
-                    }
-                }
-            }
         },
         watch: {
             materialsProps() {

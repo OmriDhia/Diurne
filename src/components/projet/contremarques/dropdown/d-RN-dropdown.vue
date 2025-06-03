@@ -43,15 +43,15 @@
             <button
                 class="px-6 py-2 bg-black text-white rounded"
                 @click="cancelRnAttribution"
-                :disabled="!currentAttribution"
-                v-if="!!currentAttribution"
+
+                v-if="currentAttribution"
             >
                 ANNULÉ RN
             </button>
             <button
                 class="px-6 py-2 bg-black text-white rounded"
                 @click="createRnAttribution"
-                :disabled="!!currentAttribution || !selectedValue"
+
                 v-if="!currentAttribution"
             >
                 Associer à un RN
@@ -111,18 +111,20 @@
     const data = ref([]);
     const selectedValue = ref(null);
     const isLoading = ref(false);
-    const currentAttribution = ref(null);
+    const currentAttribution = ref([]);
     const canceldAttribution = ref(null);
     // Méthodes
 
     // Separate function to fetch attribution
     const fetchAttribution = async () => {
+        console.log('fetchAttribution');
         console.log(props.carpetOrderDetailsId);
         if (!props.carpetOrderDetailsId) return;
 
         try {
             const response = await axiosInstance.get(`/api/rnAttributions/${props.carpetOrderDetailsId}`);
             if (response.data.response.active && !response.data.response.active.canceledAt) {
+                console.log('currentAttribution', response.data.response.active);
                 currentAttribution.value = response.data.response.active;
                 // Set selected RN if attribution exists
                 selectedValue.value = data.value.find(item => item.id === currentAttribution.value.carpet) || null;
@@ -137,6 +139,7 @@
             console.error('Error fetching attribution:', error);
             currentAttribution.value = null;
         }
+        console.log(currentAttribution.value);
     };
 
     // Modified fetchData to only get RN options
@@ -179,6 +182,7 @@
     };
 
     const cancelRnAttribution = async () => {
+        console.log('clicked', currentAttribution.value.id);
         if (!currentAttribution.value) return;
 
         isLoading.value = true;

@@ -346,7 +346,7 @@ export const routes = [{
                 meta: {
                     requiresAuth: true,
                     class: 'tapis',
-                    permission: "read carpet",
+                    permission: "read image",
                 },
             },
             {
@@ -356,7 +356,7 @@ export const routes = [{
                 meta: {
                     requiresAuth: true,
                     class: 'tapis',
-                    permission: "read carpet",
+                    permission: "read image",
                 },
             },
         ],

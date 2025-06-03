@@ -221,10 +221,16 @@
                                                 Appliquer remise proposée
                                             </label>
                                         </div>
-                                        <div class="input-group mt-2">
-                                            <input type="text" class="form-control" v-model="data.quoteDetail.proposedDiscountRate"
-                                                   :disabled="!data.quoteDetail.applyProposedDiscount" />
-                                            <span class="input-group-text">%</span>
+                                    
+                                        <div class="input-group">
+                                            <d-input
+                                                v-model="data.quoteDetail.proposedDiscountRate"
+                                                :disabled="!data.quoteDetail.applyProposedDiscount"
+                                                class="form-control"
+                                            ></d-input>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">%</span>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -606,7 +612,6 @@ const saveDevisDetails = async () => {
                 }
                 const res = await axiosInstance.put(`/api/Quote/${quote_id}/updateQuoteDetail/${quoteDetailId}`, dataToSent);
                 window.showMessage('Mise a jour avec succées.');
-                getQuoteDetails(quoteDetailId);
                 if (leave) {
                     setTimeout(() => {
                         goToDevis();
@@ -657,7 +662,6 @@ const getQuote = async (quote_id) => {
 };
 const changePrices = async (price) => {
     applyStopAutoSave();
-    await getQuoteDetails(quoteDetailId);
     if (price.tarif && price.grand_public) {
         prices.value = price;
     }
@@ -804,7 +808,7 @@ watch(
 watch(
     () => data.value.quoteDetail.TarifId, 
     async (newTarifId, oldTarifId) => {
-        if (!disableAutoSave && applyConfirmationTarifId) {
+        if (quoteDetailId && !disableAutoSave && applyConfirmationTarifId) {
             await confirmHandle()
         }
         applyConfirmationTarifId = true;

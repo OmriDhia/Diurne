@@ -158,10 +158,8 @@
                             stopped: status === 'stopped',
                             done: false,
                         };
-                        const carpetStatusid = (status === 'inProgress') ? carpetStatus.enCoursId :  status === 'stopped' ? carpetStatus.enPauseId : carpetStatus.attribuId ;
                         try {
                             const res = axiosInstance.put(`/api/designerAssignments/${designer.id}`, data);
-                            this.$emit('endCarpetDesignOrder', carpetStatusid);
                             console.log('Mise à jour avec succées');
                         } catch (e) {
                             console.log('Erreur mise a jour', e);
@@ -173,7 +171,7 @@
         mounted() {
             if (this.designersProps && this.designersProps.length > 0) {
                 this.designers = this.getDesigners(this.designersProps);
-                this.updateDesignerStatus('inProgress');
+                // this.updateDesignerStatus('inProgress');
             }
         },
         unmounted() {
@@ -187,7 +185,7 @@
                 // }
                 if (newDesigners && newDesigners.length > 0) {
                     this.designers = this.getDesigners(newDesigners);
-                    this.updateDesignerStatus('inProgress');
+                    // this.updateDesignerStatus('inProgress');
                 }
             },
         },

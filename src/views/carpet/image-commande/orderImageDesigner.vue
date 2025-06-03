@@ -166,6 +166,39 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row p-2">
+                        <div class="col-md-12">
+                            <d-compositions
+                                :disabled="true"
+                                :hideBtn="true"
+                                :compositionData="currentObject?.carpetSpecification?.carpedComposition"
+                                :carpetSpecificationId="currentObject?.carpetSpecification?.id"
+                            ></d-compositions>
+                        </div>
+                    </div>
+                    <div class="row p-2">
+                        <div class="col-md-12 col-lg-4">
+                            <div class="row ps-2 mt-4 mb-2 justify-content-between">
+                                <div class="col-12">
+                                    <div class="text-black p-0 pb-2">Commentaire studio</div>
+                                </div>
+                                <div class="col-12">
+                                                        <textarea
+                                                            v-model="currentObject.studioComment"
+                                                            class="w-100 h-130-forced block-custom-border"
+                                                        ></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-8">
+                            <d-designer-list :imageCommandId="currentObject.id" :designers-props="currentObject.imageCommandDesignerAssignments"></d-designer-list>
+                        </div>
+                    </div>
+                    <div class="row p-2">
+                        <div class="col-md-12">
+                            <d-images-list :imagesProps="currentObject.technicalImages" :imageCommandId="currentObject.id"></d-images-list>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -199,27 +232,19 @@ import axiosInstance from '../../../config/http';
 import {useRoute, useRouter} from 'vue-router';
 import {useStore} from 'vuex';
 import {ref, onMounted, watch, computed} from 'vue';
-import {carpetStatus, filterContremarque} from '../../../composables/constants';
+import {carpetStatus} from '../../../composables/constants';
 import contremarqueService from '../../../Services/contremarque-service';
-import dCarpetStatusDropdown from '../../../components/common/d-carpet-status-dropdown.vue';
 import dMeasurementsDi from '../../../components/projet/contremarques/d-mesurement-di.vue';
 import {useMeta} from '/src/composables/use-meta';
 import {Helper, formatErrorViolations} from '../../../composables/global-methods';
 import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
 import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
 import dQualitiesDropdown from '../../../components/projet/contremarques/dropdown/d-qualities-dropdown.vue';
-import dMaterialsDropdown from '../../../components/projet/contremarques/dropdown/d-materials-dropdown.vue';
-import dMaterialsList from '../../../components/projet/contremarques/_Partials/d-materials-list.vue';
-import dDesignerList from '../../../components/projet/contremarques/d-designer-list.vue';
-import dImagesList from '../../../components/projet/contremarques/d-images-list.vue';
+import dDesignerList from '../../../components/tapis/image-commande/d-designer-list.vue';
+import dImagesList from '../../../components/tapis/image-commande/d-images-list.vue';
 import dLocationDropdown from '../../../components/projet/contremarques/dropdown/d-location-dropdown.vue';
 import dCompositions from '../../../components/projet/contremarques/d-compositions.vue';
-import dDesignerCompositionList from '../../../components/projet/contremarques/d-designer-composition-list.vue';
-import dAttachments from '../../../components/projet/contremarques/_Partials/d-attachments.vue';
-import dTransmisStudio from '../../../components/projet/contremarques/d-transmis-studio.vue';
-import dTransmisAdv from '../../../components/projet/contremarques/d-transmis-adv.vue';
 import moment from 'moment';
-import DSamples from "../../../components/projet/contremarques/samples/d-samples.vue";
 import dImages from "../../../components/tapis/image-commande/d-images.vue";
 // src/views/projects/suiviDi/orderImageDesigner.vue
 // src/composables/global-methods.js

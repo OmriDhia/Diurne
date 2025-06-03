@@ -167,7 +167,7 @@
                                                                 :customerInstruction="currentCarpetObject?.customerInstruction"
                                                                 :id_di="id_di"
                                                                 :carpetDesignOrderId="carpetDesignOrderId"
-                                                                @transmisAdv="updateCarpetDesignStatus($event)"
+                                                                @transmisAdv="transmisAdv($event)"
                                                                 :disabled="!CommercialAccessADV"
                                                             ></d-transmis-adv>
                                                         </div>
@@ -365,7 +365,7 @@
         return !store.getters.isNonTrasmisStatus;
     });
     const CommercialAccess = computed(() => {
-        return store.getters.isCommertial || store.getters.isCommercialManager || store.getters.isSuperAdmin;
+        return (store.getters.isCommertial || store.getters.isCommercialManager || store.getters.isSuperAdmin);
     });
     const DesignerAccess = computed(() => {
         return store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isSuperAdmin;
@@ -469,10 +469,35 @@
             // Handle error, show an error message to the user
         }
     };
-
+    const transmisAdv = async (data)=> {
+        try {
+            const d = {
+                commandNumber: "",
+                commercialComment: "",
+                advComment: "",
+                rn: "",
+                studioComment: "",
+                orderNumber: data.orderNumber,
+                transmi_adv: data.transmi_adv,
+                customerComment: data.customerComment,
+                objectId: parseInt(carpetDesignOrderId),
+                objectType: "CarpetDesignOrder",
+                customerValidationDate:  moment().format('YYYY-MM-DD HH:mm:ss'),
+                status_id: carpetStatus.enCoursId
+            }
+            const res = await axiosInstance.post(`/api/transmettre-object/to-adv`, d);
+            await saveCarpetOrder(carpetStatus.transmisAdvId)
+            window.showMessage("Project di transmis a l'adv avec succées.");
+        } catch (e) {
+            console.log(e);
+        }
+    }
     const saveCarpetOrder = async (statusId) => {
         try {
             if (carpetDesignOrderId) {
+                if(statusId){
+                    dataCarpetOrder.value.status_id = statusId;
+                }
                 const res = await axiosInstance.put(`/api/carpet-design-order/${carpetDesignOrderId}`, dataCarpetOrder.value);
                 window.showMessage('Mise à jour avec succées.');
                 transDate.value = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -597,7 +622,6 @@
         ValidateBeforeTransmission();
         if (!errorTransmis.value || forced ) {
             await saveCarpetOrder(statusId);
-            dataCarpetOrder.value.status_id = statusId;
         }
     };
     //dataCarpetOrder.location_id
