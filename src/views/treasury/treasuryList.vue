@@ -550,7 +550,7 @@ const doReset = async () => {
 };
 
 const goToNewReglement = () => {
-  router.push({ name: 'treasury_create' });
+  router.push({ name: 'reglement_create' });
 };
 
 const handleView = (row) => {
@@ -559,7 +559,7 @@ const handleView = (row) => {
     console.error('Invalid row data:', row);
     return;
   }
-  router.push({ name: 'treasury_view', params: { id: row.id } });
+  router.push({ name: 'reglement_view', params: { id: row.id } });
 };
 
 const handleSortChange = (sort) => {

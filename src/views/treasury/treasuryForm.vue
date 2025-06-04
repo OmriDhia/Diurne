@@ -498,7 +498,7 @@ const savePayment = async () => {
         await saveAllocationDetails(paymentId);
 
         window.showMessage('Règlement enregistré avec succès');
-        router.push({ name: 'treasury_list' });
+        router.push({ name: 'reglement_list' });
     } catch (error) {
         handleSavePaymentError(error);
     } finally {
