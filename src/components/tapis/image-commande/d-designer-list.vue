@@ -23,7 +23,7 @@
                                         {{ $Helper.FormatDate(designer.date_from) }}
                                     </div>
                                     <div class="col-xl-4 col-md-12 font-size-0-7">
-                                        <d-designer-status v-model="designer.status"></d-designer-status>
+                                        <d-designer-status v-model="designer.status" @handleClick="updateDesignerStatus($event,index)"></d-designer-status>
                                     </div>
                                 </div>
                             </div>
@@ -142,16 +142,22 @@
                     window.showMessage('Erreur mise a jour');
                 }
             },
-            updateDesignerStatus(status) {
+            updateDesignerStatus(status, index = null) {
                 const user = userService.getUserInfo();
                 const userId = parseInt(user.id);
                 if (userId) {
-                    const designer = this.designers.find((d) => d.designer === userId);
-                    const indexDesigner = this.designers.findIndex((d) => d.designer === userId);
-                    console.log('designer', designer);
-                    if (designer && !designer.done) {
+                    let designer = null;
+                    let indexDesigner = index;
+                    if (index || index === 0){
+                        designer = this.designers[index];
+                    } else{
+                        designer = this.designers.find((d) => d.designer === userId);
+                        indexDesigner = this.designers.findIndex((d) => d.designer === userId);
+                    }
+                    if (designer) {
                         this.designers[indexDesigner].inProgress = status === 'inProgress';
                         this.designers[indexDesigner].stopped = status === 'stopped';
+                        this.designers[indexDesigner].done = status === 3;
                         const data = {
                             imageCommandId: this.imageCommandId,
                             designerId: designer.designer,
@@ -160,7 +166,7 @@
                             to: designer.date_to,
                             inProgress: status === 'inProgress',
                             stopped: status === 'stopped',
-                            done: false,
+                            done: status === 3,
                         };
                         const carpetStatusid = (status === 'inProgress') ? carpetStatus.enCoursId :  status === 'stopped' ? carpetStatus.enPauseId : carpetStatus.attribuId ;
                         try {
@@ -194,6 +200,7 @@
                     this.updateDesignerStatus('inProgress');
                 }
             },
+            
         },
     };
 </script>

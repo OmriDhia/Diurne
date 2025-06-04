@@ -4,7 +4,7 @@
             <div class="col-auto pe-1 ps-2">
                 <div class="custom-control custom-radio">
                     <input type="radio" class="custom-control-input" :id="computedId+'-'+item.id" v-model="status"
-                           :name="'designerStatus-'+computedId" :value="item.id" :disabled="disabled" @change="handleChange(item.id)"/>
+                           :name="'designerStatus-'+computedId" :value="item.id" :disabled="disabled || item.id < 3 ? true : false" @change="handleChange(item.id)" @click="handleClick(item.id)"/>
                     <label class="custom-control-label text-black" :for="computedId+'-'+item.id">
                         {{item.label}} </label>
                 </div>
@@ -48,6 +48,9 @@
         methods: {
             handleChange(value) {
                 this.$emit('update:modelValue', parseInt(value));
+            },
+            handleClick(value) {
+                this.$emit('handleClick', parseInt(value));
             }
         },
         mounted() {
