@@ -447,8 +447,7 @@ const isFormValid = computed(() => {
         paymentData.value.currencyId &&
         paymentData.value.taxRuleId &&
         paymentAmountNum > 0 &&
-        allocations.value.length > 0 &&
-        Math.abs(remainingAmount.value) < 0.01;
+        allocations.value.length > 0;
 });
 
 const updateAllocationFromAmount = (index, field) => {
