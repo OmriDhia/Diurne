@@ -176,7 +176,7 @@
 
                                             <!-- Actions -->
                                             <td class="text-center">
-                                                <div class="col-auto p-1" @click="removeAllocation(index)">
+                                                <div class="col-auto p-1 regleement" @click="removeAllocation(index)">
                                                     <d-delete :api="`/api/order-payment-details/${allocation.id}`"
                                                         class="btn-small" @deleted="removeAllocation(index)"></d-delete>
                                                 </div>
@@ -205,15 +205,15 @@
         </template>
 
         <template #footer>
-            <div class="row p-2 justify-content-between">
+            <div class="row p-2 justify-content-end regleement-submit">
                 <div class="col-auto">
-                    <button class="btn btn-secondary pe-5 ps-5" @click="goBack">
-                        <i class="fas fa-arrow-left me-1"></i> Retour
+                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="savePayment">
+                        <vue-feather type="save" :size="20"></vue-feather>
                     </button>
                 </div>
                 <div class="col-auto">
-                    <button class="btn btn-primary pe-5 ps-5" @click="savePayment" :disabled="loading || !isFormValid">
-                        <i class="fas fa-save me-1"></i> Enregistrer
+                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="goBack">
+                        <vue-feather type="x" :size="20"></vue-feather>
                     </button>
                 </div>
             </div>
@@ -224,6 +224,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import VueFeather from 'vue-feather';
 import axiosInstance from '../../config/http';
 import { Helper } from '../../composables/global-methods';
 import dBasePage from '../../components/base/d-base-page.vue';
@@ -293,9 +294,9 @@ const loadPaymentData = async () => {
             taxRuleId: data.taxRuleId || 1,
             accountLabel: data.accountLabel,
             transactionNumber: data.transactionNumber,
-            paymentAmountHt: data.paymentAmountHt,
-            taxAmount: data.taxAmount,
-            paymentAmountTtc: data.paymentAmountTtc,
+            paymentAmountHt: Helper.FormatNumber(data.paymentAmountHt || 0), // Format
+            taxAmount: Helper.FormatNumber(data.taxAmount || 0),             // Format
+            paymentAmountTtc: Helper.FormatNumber(data.paymentAmountTtc || 0),// Format
             affectationNote: data.affectationNote
         };
 
@@ -322,16 +323,16 @@ const loadPaymentData = async () => {
                             commande_ref: item.commandNumber || '',
                             rn: item.rn || DEFAULT_RN_PREFIX + Math.random().toString(36).substring(2, 7).toUpperCase(),
                             facture: item.facture || '',
-                            distribution: item.distribution || DEFAULT_DISTRIBUTION,
-                            allocatedAmountTtc: item.allocatedAmountTtc || 0,
-                            totalAmountTtc: item.totalAmountTtc || 0,
-                            remainingAmountTtc: item.remainingAmountTtc || 0,
-                            allocatedAmountHt: item.allocatedAmountHt || 0,
-                            tva: item.tva || 0,
+                            distribution: Helper.FormatNumber(item.distribution || parseFloat(DEFAULT_DISTRIBUTION)), // Format (DEFAULT_DISTRIBUTION is already '100.00')
+                            allocatedAmountTtc: Helper.FormatNumber(item.allocatedAmountTtc || 0),      // Format
+                            totalAmountTtc: Helper.FormatNumber(item.totalAmountTtc || 0),              // Format
+                            remainingAmountTtc: Helper.FormatNumber(item.remainingAmountTtc || 0),    // Format
+                            allocatedAmountHt: Helper.FormatNumber(item.allocatedAmountHt || 0),       // Format
+                            tva: Helper.FormatNumber(item.tva || 0),                                  // Format
                             cleared: item.cleared || false,
                             type: 'quote',
-                            areaSquareMeter: item.areaSquareMeter || 0,
-                            areaSquareFeet: item.areaSquareFeet || 0
+                            areaSquareMeter: item.areaSquareMeter || 0, // Assuming these are not currency
+                            areaSquareFeet: item.areaSquareFeet || 0   // Assuming these are not currency
                         };
                     } catch (error) {
                         console.error(`Erreur lors du chargement du devis ${item.quote}:`, error);
@@ -610,7 +611,7 @@ const isFormValid = computed(() => {
 });
 
 const savePayment = async () => {
-    console.log(paymentData)
+    //console.log(paymentData)
     if (!isFormValid.value) {
         let errorMsg = "Formulaire invalide. Vérifiez les champs: ";
         if (!paymentData.value.paymentMethodId) errorMsg += "Mode de paiement, ";
@@ -716,7 +717,7 @@ const formatErrorViolations = (violations) => {
 };
 
 const goBack = () => {
-    router.go(-1);
+    router.push({ name: 'reglement_list' });
 };
 
 watch(() => allocationType.value, (newType) => {
@@ -791,11 +792,6 @@ const getCurrentTaxRate = () => {
 
 .text-end .form-control-sm {
     text-align: right;
-}
-
-.btn-small .btn.rounded-circle {
-    height: 20px !important;
-    width: 20px !important;
 }
 
 .form-group{

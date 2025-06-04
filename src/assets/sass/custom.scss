@@ -93,6 +93,37 @@ label, .text-black{
     box-shadow: none !important;
 }
 
+.regleement .btn-small .btn.rounded-circle{
+    height: 20px;
+    width: 20px;
+    background-color:black;
+    border-color:black;
+    padding: 0;
+    svg{
+        width: 12px;
+    }
+}
+
+.regleement-submit .btn.rounded-circle{
+    height: 40px;
+    width: 40px;
+    background-color:black;
+    border-color:black;
+    padding: 0;
+    svg{
+        width: 20px;
+    }
+}
+
+
+.align-reglement .btn.rounded-circle{
+    height: 25px;
+    width: 25px;
+    padding: 0;
+    svg{
+        width: 14px;
+    }
+}
 
 @mixin menuCategoryStyles($color) {
     .header-container {
@@ -179,6 +210,7 @@ label, .text-black{
             width: 12px;
         }
     }
+
     .btn.rounded-circle{
         background-color: $color !important;
         border-color: $color !important;
