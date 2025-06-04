@@ -77,7 +77,7 @@ export const Helper = {
             const baseUrl = attachment.path.replace('/var/www/html/api_diurne/public', FILE_URL);
             return baseUrl + '/' + attachment.file;
         }
-        return '/assets/images/projet/no-image.png';
+        return '/assets/images/No-Image-Placeholder.svg';
     },
     getImagePathNew: (path, name = "") => {
         const noImage = '/assets/images/No-Image-Placeholder.svg';
