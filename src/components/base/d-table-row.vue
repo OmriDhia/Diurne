@@ -1,7 +1,7 @@
 <template>
   <tr>
     <EditableCell v-for="column in columns" :key="column.key" :row="row" :column="column" :isEditing="isEditing" />
-    <td>
+    <td class="align-reglement">
       <template v-if="isEditing">
         <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="saveEdit(row)">
           <vue-feather type="save" :size="14"></vue-feather>
@@ -24,6 +24,10 @@
           <vue-feather type="eye" :size="14"></vue-feather>
         </button>
       </template>
+      <button v-if="showViewButton" type="button" class="btn btn-dark mb-1 me-2" @click="alertCommercial(row)">
+          Alerte commercial
+      </button>
+      <div v-if="showViewButton"  class="t-dot bg-success reglement"></div>
     </td>
   </tr>
 </template>
@@ -57,6 +61,10 @@ const startView = (row) => {
   emit('view', row);
 };
 
+const alertCommercial = (row) => {
+  /*to do */
+};
+
 const deleteRow = (row) => {
   Swal.fire({
     title: "Êtes-vous sûr ?",
@@ -74,3 +82,20 @@ const deleteRow = (row) => {
   });
 };
 </script>
+
+<style lang="css" scoped>
+
+.align-reglement{
+    display: flex;
+    align-items: center;
+}
+
+.reglement.t-dot {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 0 auto;
+}
+
+</style>

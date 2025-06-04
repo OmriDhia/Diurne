@@ -4,13 +4,7 @@
 
     <div class="row layout-top-spacing mt-3 p-2">
       <div class="panel br-6 p-2">
-        <div class="row p-2">
-          <div class="col-auto">
-            <button class="btn btn-primary pe-5 ps-5" @click="goToNewReglement">
-              Nouveau Réglement
-            </button>
-          </div>
-        </div>
+        
         <div class="row d-flex justify-content-center align-items-start p-2">
           <div class="col-md-6 col-sm-12">
             <div class="row">
@@ -53,6 +47,13 @@
       </div>
 
       <div class="panel br-6 p-2 mt-3" id="fullscreen">
+      <div class="row p-2">
+          <div class="col-auto">
+            <button class="btn btn-primary pe-5 ps-5" @click="goToNewReglement">
+              Nouveau Réglement
+            </button>
+          </div>
+        </div>
         <d-data-grid ref="dataGrid" :fetchData="fetchData" :saveData="saveData" :addData="addData" :disableAddNew="true"
           :deleteData="deleteData" :columns="processedColumns" :rows="rows" title="Règlements" rowKey="id" :showViewButton="true"
           @view="handleView"  :isServerMode="true" :initialSort="{ field: params.orderBy, direction: params.orderWay }"
@@ -550,7 +551,7 @@ const doReset = async () => {
 };
 
 const goToNewReglement = () => {
-  router.push({ name: 'treasury_create' });
+  router.push({ name: 'reglement_create' });
 };
 
 const handleView = (row) => {
@@ -559,7 +560,7 @@ const handleView = (row) => {
     console.error('Invalid row data:', row);
     return;
   }
-  router.push({ name: 'treasury_view', params: { id: row.id } });
+  router.push({ name: 'reglement_view', params: { id: row.id } });
 };
 
 const handleSortChange = (sort) => {

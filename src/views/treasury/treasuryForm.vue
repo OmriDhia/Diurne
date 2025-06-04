@@ -179,7 +179,7 @@
 
                                             <!-- Actions -->
                                             <td class="text-center">
-                                                <div class="col-auto p-1" @click="removeAllocation(index)">
+                                                <div class="col-auto p-1 regleement" @click="removeAllocation(index)">
                                                     <d-delete :api="''" class="btn-small"></d-delete>
                                                 </div>
                                             </td>
@@ -208,15 +208,15 @@
         </template>
 
         <template #footer>
-            <div class="row p-2 justify-content-between">
+            <div class="row p-2 justify-content-end regleement-submit">
                 <div class="col-auto">
-                    <button class="btn btn-secondary pe-5 ps-5" @click="goBack">
-                        <i class="fas fa-arrow-left me-1"></i> Retour
+                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="savePayment" :disabled="loading || !isFormValid">
+                        <vue-feather type="save" :size="20"></vue-feather>
                     </button>
                 </div>
                 <div class="col-auto">
-                    <button class="btn btn-primary pe-5 ps-5" @click="savePayment" :disabled="loading || !isFormValid">
-                        <i class="fas fa-save me-1"></i> Enregistrer
+                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="goBack">
+                        <vue-feather type="x" :size="20"></vue-feather>
                     </button>
                 </div>
             </div>
@@ -227,6 +227,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import VueFeather from 'vue-feather';
 import axiosInstance from '../../config/http';
 import { Helper } from '../../composables/global-methods';
 import dBasePage from '../../components/base/d-base-page.vue';
@@ -498,7 +499,7 @@ const savePayment = async () => {
         await saveAllocationDetails(paymentId);
 
         window.showMessage('Règlement enregistré avec succès');
-        router.push({ name: 'treasury_list' });
+        router.push({ name: 'reglement_list' });
     } catch (error) {
         handleSavePaymentError(error);
     } finally {
@@ -574,7 +575,7 @@ const formatErrorViolations = (violations) => {
 };
 
 const goBack = () => {
-    router.go(-1);
+    router.push({ name: 'reglement_list' });
 };
 
 watch(() => allocationType.value, (newType) => {
@@ -648,11 +649,6 @@ const getCurrentTaxRate = () => {
 
 .text-end .form-control-sm {
     text-align: right;
-}
-
-.btn-small .btn.rounded-circle {
-    height: 20px !important;
-    width: 20px !important;
 }
 
 .form-group{
