@@ -309,7 +309,7 @@
      * Convert image name to a direct path
      */
     const getImageUrl = (imageName) => {
-        return `http://localhost:8741/uploads/attachments/${imageName}`;
+        return `https://diurne-api.webntricks.com/uploads/attachments/${imageName}`;
     };
 
     onMounted(() => {
