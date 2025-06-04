@@ -135,7 +135,7 @@ const columns = ref([
       isCommercial: true
     }
   },
-  { key: "paymentAmountTtc", label: "Montant", type: "number", editable: true },
+  { key: "paymentAmountHt", label: "Montant", type: "number", editable: true },
   {
     key: "currency",
     label: "Devise",
@@ -375,7 +375,7 @@ async function transformPayment(payment) {
     dateOfReceipt: rawPayment.dateOfReceipt?.date,
     paymentMethod: paymentMethod,
     accountLabel: rawPayment.accountLabel,
-    paymentAmountTtc: parseFloat(rawPayment.paymentAmountTtc),
+    paymentAmountHt: parseFloat(rawPayment.paymentAmountHt),
     currency: currencyData,
     customer: customerData,
     commercial: commercialData
@@ -455,8 +455,8 @@ const saveData = async (row) => {
       dateOfReceipt: row.dateOfReceipt || null,
       paymentMethod: row.paymentMethod?.id ?? row.paymentMethod ?? null, 
       accountLabel: row.accountLabel || null,
-      paymentAmountTtc: row.paymentAmountTtc !== null && row.paymentAmountTtc !== undefined
-        ? String(row.paymentAmountTtc)
+      paymentAmountHt: row.paymentAmountHt !== null && row.paymentAmountHt !== undefined
+        ? String(row.paymentAmountHt)
         : null,
       currency: row.currency?.id ?? row.currency ?? null,
       customerId: row.customer?.id ?? null,
@@ -477,8 +477,8 @@ const addData = async (row) => {
       dateOfReceipt: row.dateOfReceipt || null,
       paymentMethod: row.paymentMethod || null,
       accountLabel: row.accountLabel || null,
-      paymentAmountTtc: row.paymentAmountTtc !== null && row.paymentAmountTtc !== undefined
-        ? String(row.paymentAmountTtc)
+      paymentAmountHt: row.paymentAmountHt !== null && row.paymentAmountHt !== undefined
+        ? String(row.paymentAmountHt)
         : null,
       currency: row.currency?.id ?? row.currency ?? null,
       customer: row.customer?.customerId ?? row.customer ?? null,
