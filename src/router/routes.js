@@ -407,6 +407,15 @@ export const routes = [
         }
     },
     {
+        path: '/checking-progress/list',
+        name: 'checkingList',
+        component: () => import('../views/checkingProgress/checkingList.vue'),
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
         path: '/treasury',
         name: 'treasury',
         component: () => import('../views/treasury/treasuryList.vue'),
