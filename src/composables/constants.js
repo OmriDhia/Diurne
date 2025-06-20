@@ -9,6 +9,7 @@ export const FILTER_EVENT_STORAGE_NAME = "filterEvent";
 export const FILTER_CONTREMARQUE_STORAGE_NAME = "filterContremarque";
 export const FILTER_DEVIS_STORAGE_NAME = "filterDevis";
 export const FILTER_SUIVI_DI_STORAGE_NAME = "filterSuiviDi";
+export const FILTER_WORKSHOP_STORAGE_NAME = "filterWorkshop";
 export const DESIGNER_MANAGER_ROLE_NAME = "Designer manager";
 export const DESIGNER_ROLE_NAME = "Designer";
 export const COMMERCIAL_ROLE_NAME = "Commercial";
@@ -88,6 +89,18 @@ export const filterContact = {
 export const filterContremarque = {
     customer: null,
     contremarque: null,
+    commercial: null,
+    endDate: null,
+    prescriptor: null,
+    pendingProject: null,
+    projectRelance: null,
+    projectRelanceX: null,
+    projectWithoutRelance: null,
+    allProjects: null,
+};
+export const filterWorkshop = {
+    customer: null,
+    workshop: null,
     commercial: null,
     endDate: null,
     prescriptor: null,
