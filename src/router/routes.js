@@ -277,7 +277,7 @@ export const routes = [
     },
     //Carpet Order
     {
-        path: '/tapis/order',
+        path: '/tapis',
         name: 'tapis',
         children: [
             {
@@ -464,6 +464,36 @@ export const routes = [
         meta: {
             requiresAuth: true,
             class: 'treasury'
+        },
+    },
+    {
+        path: '/tapis/workshop',
+        name: 'carpetWorkshop',
+        children: [
+            /*{
+                path: '',
+                name: 'carpetOrderList',
+                component: () => import('../views/carpet/order/carpetOrders.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'tapis',
+                    permission: 'read carpet'
+                }
+            },*/
+            {
+                path: ':imagesCommadeId/create',
+                name: 'createCarpetWorkshop',
+                component: () => import('../views/workshop/workshop-info.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'tapis',
+                    permission: 'create workshop'
+                }
+            }
+        ],
+        meta: {
+            requiresAuth: true,
+            class: 'tapis'
         },
     },
 

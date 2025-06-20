@@ -54,7 +54,7 @@
                         </div>
                         <vue3-datatable :rows="rows" :columns="cols" :loading="loading" :isServerMode="true" :sortColumn="params.orderBy" :sortDirection="params.orderWay"
                                         :totalRows="total_rows" :page="params.current_page" :pageSize="params.pagesize"
-                                        :pageSizeOptions="[10, 25, 50, 75, 100]" noDataContent="Aucun contact trouvé."
+                                        :pageSizeOptions="[10, 25, 50, 75, 100]" noDataContent="Aucun Image commande trouvé."
                                         paginationInfo="Affichage de {0} à {1} sur {2} entrées" :sortable="true"
                                         @change="changeServer" class="advanced-table text-nowrap">
                             <template #image="data">
@@ -63,13 +63,13 @@
                                 </div>
                             </template>
                             <template #collection="data">
-                                {{ data.value.carpetDesignOrder.carpetSpecification.collection.reference}}
+                                {{ data.value.carpetDesignOrder?.carpetSpecification?.collection?.reference}}
                             </template>
                             <template #model="data">
-                                {{ data.value.carpetDesignOrder.carpetSpecification.model.code}}
+                                {{ data.value.carpetDesignOrder?.carpetSpecification?.model?.code}}
                             </template>
                             <template #quality="data">
-                                {{ data.value.carpetDesignOrder.carpetSpecification.quality.name}}
+                                {{ data.value.carpetDesignOrder?.carpetSpecification?.quality?.name}}
                             </template>
                             <template #image_name="data">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -81,11 +81,20 @@
                                     </div>
                                 </div>
                             </template>
-                            <template #height="data">
-                                {{ data.value.carpetDesignOrder.carpetSpecification.carpetDimensions?.[1]?.[0].value }}
-                            </template>
                             <template #width="data">
-                                {{ data.value.carpetDesignOrder.carpetSpecification.carpetDimensions?.[2]?.[0].value }}
+                                {{ data.value.carpetDesignOrder.carpetSpecification?.dimensions?.[1]?.[0].value }}
+                            </template>
+                            <template #height="data">
+                                {{ data.value.carpetDesignOrder.carpetSpecification?.dimensions?.[0]?.[0].value }}
+                            </template>
+                            
+                            <template #contremarque="data">
+                                <div class="d-flex justify-content-between">
+                                    <strong>{{ data.value.carpetDesignOrder.contremarque}}</strong>
+                                    <router-link :to="'/projet/contremarques/manage/' + data.value.carpetDesignOrder.contremarque_id"  v-if="$hasPermission('update contremarque')">
+                                        <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    </router-link>
+                                </div>
                             </template>
                         </vue3-datatable>
                     </div>
@@ -182,9 +191,9 @@ const getDI = async () => {
         //url += getFilterParams();
         const response = await axiosInstance.get(url);
         const data = response.data;
-        total_rows.value = data.response.total;
-        rows.value = data.response.items;
-        console.log(rows.value);
+        total_rows.value = data.response.meta.total;
+        rows.value = data.response.data;
+        console.log(rows.value[0]);
     } catch { }
 
     loading.value = false;

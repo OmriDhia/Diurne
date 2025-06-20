@@ -41,53 +41,6 @@
     </div>
 
 </template>
-
-<style scoped lang="scss">
-    .tapis-container {
-
-        margin: 0 auto;
-        font-family: Arial, sans-serif;
-    }
-
-    .header {
-        padding: 15px 0;
-        border-bottom: 1px solid #eaeaea;
-
-        h1 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 600;
-            text-align: center;
-        }
-    }
-
-    .content {
-        display: flex;
-        padding: 20px 0;
-        gap: 20px;
-    }
-
-    .main-content {
-        flex: 1;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
-
-    .tab-content {
-        padding: 20px;
-        background-color: white;
-        border-width: 0 2px 2px;
-        border-style: solid;
-        border-color: #a7a7a7;
-        border-radius: 2px;
-    }
-
-    @media (max-width: 768px) {
-        .content {
-            flex-direction: column;
-        }
-    }
-</style>
 <script setup>
     import { ref } from 'vue';
     import TabNavigation from './TabNavigation.vue';
@@ -114,3 +67,48 @@
         activeTab.value = tabId;
     };
 </script>
+<style scoped lang="scss">
+.tapis-container {
+
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    padding: 15px 0;
+    border-bottom: 1px solid #eaeaea;
+
+    h1 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        text-align: center;
+    }
+}
+
+.content {
+    display: flex;
+    padding: 20px 0;
+    gap: 20px;
+}
+
+.main-content {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.tab-content {
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #E0E6ED;
+    border-top: none;
+    border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column;
+    }
+}
+</style>
