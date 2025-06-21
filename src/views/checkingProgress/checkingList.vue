@@ -73,7 +73,8 @@
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Réparation" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.repairValidation" :options="validationOptions" />
+                                        <d-radio-validation v-model="form.repairValidation"
+                                                            :options="validationOptions" />
                                         <d-textarea label="" v-model="form.repairComment" />
                                     </fieldset>
                                 </div>
@@ -114,7 +115,8 @@
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Corps/Ondu/Coins"
                                                        link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.bodyWaveCorners" :options="validationOptions" />
+                                        <d-radio-validation v-model="form.bodyWaveCorners"
+                                                            :options="validationOptions" />
                                         <d-textarea label="" v-model="form.bodyWaveCornersComment" />
                                     </fieldset>
                                 </div>
@@ -122,7 +124,8 @@
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Auteur du velour"
                                                        link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.velourAuthorValidation" :options="validationOptions" />
+                                        <d-radio-validation v-model="form.velourAuthorValidation"
+                                                            :options="validationOptions" />
                                         <d-textarea label="" v-model="form.velourAuthorComment" />
                                     </fieldset>
                                 </div>
@@ -139,14 +142,16 @@
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Cleaning" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.cleaningValidation" :options="validationOptions" />
+                                        <d-radio-validation v-model="form.cleaningValidation"
+                                                            :options="validationOptions" />
                                         <d-textarea label="" v-model="form.cleaningComment" />
                                     </fieldset>
                                 </div>
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Carving" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.carvingValidation" :options="validationOptions" />
+                                        <d-radio-validation v-model="form.carvingValidation"
+                                                            :options="validationOptions" />
                                         <d-textarea label="" v-model="form.carvingComment" />
                                     </fieldset>
                                 </div>
@@ -163,14 +168,16 @@
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Frange" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.fringeRepairValidation" :options="validationOptions" />
+                                        <d-radio-validation v-model="form.fringeRepairValidation"
+                                                            :options="validationOptions" />
                                         <d-textarea label="" v-model="form.fringeRepairComment" />
                                     </fieldset>
                                 </div>
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Frange" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.fringeShapeValidation" :options="validationOptions" />
+                                        <d-radio-validation v-model="form.fringeShapeValidation"
+                                                            :options="validationOptions" />
                                         <d-textarea label="" v-model="form.fringeShapeComment" />
                                     </fieldset>
                                 </div>
@@ -187,14 +194,16 @@
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Signature" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.signatureValidation" :options="validationOptions" />
+                                        <d-radio-validation v-model="form.signatureValidation"
+                                                            :options="validationOptions" />
                                         <d-textarea label="" v-model="form.signatureComment" />
                                     </fieldset>
                                 </div>
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Sans backing" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.sansBackingValidation" :options="validationOptions" />
+                                        <d-radio-validation v-model="form.sansBackingValidation"
+                                                            :options="validationOptions" />
                                         <d-textarea label="" v-model="form.sansBackingComment" />
                                     </fieldset>
                                 </div>
@@ -411,67 +420,67 @@
         diagonalA: '',
         diagonalB: '',
         shapeComment: '',
-        shapeValidation: false,
-        graphicValidation: false,
+        shapeValidation: null,
+        graphicValidation: null,
         graphicComment: '',
-        instructionRespect: false,
+        instructionRespect: null,
         instructionComment: '',
-        repairValidation: false,
+        repairValidation: null,
         repairComment: '',
-        tighteningValidation: false,
+        tighteningValidation: null,
         tighteningComment: '',
-        woolQuality: false,
+        woolQuality: null,
         woolComment: '',
-        specialShape: false,
+        specialShape: null,
         specialShapeComment: '',
-        silkQuality: false,
+        silkQuality: null,
         silkComment: '',
-        bodyWaveCorners: false,
+        bodyWaveCorners: null,
         bodyWaveCornersComment: '',
-        velourAuthorValidation: false,
+        velourAuthorValidation: null,
         velourAuthorComment: '',
-        washingValidation: false,
+        washingValidation: null,
         washingComment: '',
-        cleaningValidation: false,
+        cleaningValidation: null,
         cleaningComment: '',
-        carvingValidation: false,
+        carvingValidation: null,
         carvingComment: '',
-        tissueColorValidation: false,
+        tissueColorValidation: null,
         tissueColorComment: '',
-        fringeRepairValidation: false,
+        fringeRepairValidation: null,
         fringeRepairComment: '',
-        fringeShapeValidation: false,
+        fringeShapeValidation: null,
         fringeShapeComment: '',
-        nonBindingValidation: false,
+        nonBindingValidation: null,
         nonBindingComment: '',
-        signatureValidation: false,
+        signatureValidation: null,
         signatureComment: '',
-        sansBackingValidation: false,
+        sansBackingValidation: null,
         sansBackingComment: '',
         productionEnd: '',
         globalComment: '',
         shapeProgress: '',
-        respectPlanValidation: false,
+        respectPlanValidation: null,
         respectPlanComment: '',
-        respectHeightValidation: false,
+        respectHeightValidation: null,
         respectHeightComment: '',
-        respectPitValidation: false,
+        respectPitValidation: null,
         respectPitComment: '',
-        respectOtherCarpetValidation: false,
+        respectOtherCarpetValidation: null,
         respectOtherCarpetComment: '',
-        respectLengthValidation: false,
-        respectWidthValidation: false,
-        distanceTopValidation: false,
-        distanceBottomValidation: false,
-        distanceRightValidation: false,
-        distanceLeftValidation: false,
-        respectColorValidation: false,
+        respectLengthValidation: null,
+        respectWidthValidation: null,
+        distanceTopValidation: null,
+        distanceBottomValidation: null,
+        distanceRightValidation: null,
+        distanceLeftValidation: null,
+        respectColorValidation: null,
         respectColorComment: '',
-        respectMaterialValidation: false,
+        respectMaterialValidation: null,
         respectMaterialComment: '',
-        respectVelvetValidation: false,
+        respectVelvetValidation: null,
         respectVelvetComment: '',
-        respectNoteValidation: false,
+        respectNoteValidation: null,
         respectNoteComment: ''
     });
 </script>
