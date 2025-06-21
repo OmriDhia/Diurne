@@ -1,10 +1,18 @@
 <script setup lang="ts">
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
     import SelectInput from '../ui/SelectInput.vue';
     import RadioButton from '../ui/RadioButton.vue';
     import dInput from '../../../components/base/d-input.vue';
     import DCurrency from '@/components/common/d-currency.vue';
     import DPanelTitle from '@/components/common/d-panel-title.vue';
+    import checkingListService from '@/Services/checkingList-service.js';
+
+    const props = defineProps({
+        orderId: {
+            type: Number,
+            required: true
+        }
+    });
     // Form data
     const formData = ref({
         infoCommande: {
@@ -64,11 +72,15 @@
         { value: 'Hemp', label: 'Hemp' }
     ];
 
-    const checkingLists = [
-        { id: '551', label: 'Checking List n° 551' },
-        { id: '691', label: 'Checking List n° 691' },
-        { id: '6951', label: 'Checking List n° 6951' }
-    ];
+    const checkingLists = ref([]);
+
+    const loadCheckingLists = async () => {
+        try {
+            checkingLists.value = await checkingListService.getCheckingListsByOrder(props.orderId);
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     // Methods
     const generateRN = () => {
@@ -99,9 +111,18 @@
         console.log('Workshop command...');
     };
 
-    const createNewCheckingList = () => {
-        console.log('Creating new checking list...');
+    const createNewCheckingList = async () => {
+        try {
+            const newList = await checkingListService.createCheckingList(props.orderId);
+            if (newList) {
+                checkingLists.value.push(newList);
+            }
+        } catch (e) {
+            console.error(e);
+        }
     };
+
+    onMounted(loadCheckingLists);
 </script>
 
 <template>
