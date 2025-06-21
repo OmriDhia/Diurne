@@ -73,8 +73,8 @@
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Réparation" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.repair" :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.woolComment" />
+                                        <d-radio-validation v-model="form.repairValidation" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.repairComment" />
                                     </fieldset>
                                 </div>
                             </div>
@@ -82,16 +82,16 @@
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Serrage" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.tightening"
+                                        <d-radio-validation v-model="form.tighteningValidation"
                                                             :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.generalComment" />
+                                        <d-textarea label="" v-model="form.tighteningComment" />
                                     </fieldset>
                                 </div>
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Qualité laine " link=""></d-panel-title>
                                         <d-radio-validation v-model="form.woolQuality" :options="pertinentOptions" />
-                                        <d-textarea label="" v-model="form.repairComment" />
+                                        <d-textarea label="" v-model="form.woolComment" />
                                     </fieldset>
                                 </div>
                                 <div class="col-md-4">
@@ -106,26 +106,24 @@
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Qualité soie" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.silkQuality"
-                                                            :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.generalComment" />
+                                        <d-radio-validation v-model="form.silkQuality" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.silkComment" />
                                     </fieldset>
                                 </div>
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Corps/Ondu/Coins"
                                                        link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.bodyWaveCorners"
-                                                            :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.repairComment" />
+                                        <d-radio-validation v-model="form.bodyWaveCorners" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.bodyWaveCornersComment" />
                                     </fieldset>
                                 </div>
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Auteur du velour"
                                                        link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.specialShape" :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.specialShapeComment" />
+                                        <d-radio-validation v-model="form.velourAuthorValidation" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.velourAuthorComment" />
                                     </fieldset>
                                 </div>
                             </div>
@@ -133,23 +131,23 @@
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Washing" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.instructionRespect"
+                                        <d-radio-validation v-model="form.washingValidation"
                                                             :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.generalComment" />
+                                        <d-textarea label="" v-model="form.washingComment" />
                                     </fieldset>
                                 </div>
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Cleaning" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.repair" :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.repairComment" />
+                                        <d-radio-validation v-model="form.cleaningValidation" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.cleaningComment" />
                                     </fieldset>
                                 </div>
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Carving" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.specialShape" :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.specialShapeComment" />
+                                        <d-radio-validation v-model="form.carvingValidation" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.carvingComment" />
                                     </fieldset>
                                 </div>
                             </div>
@@ -157,23 +155,23 @@
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Couleur tissue" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.instructionRespect"
+                                        <d-radio-validation v-model="form.tissueColorValidation"
                                                             :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.generalComment" />
+                                        <d-textarea label="" v-model="form.tissueColorComment" />
                                     </fieldset>
                                 </div>
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Frange" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.repair" :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.repairComment" />
+                                        <d-radio-validation v-model="form.fringeRepairValidation" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.fringeRepairComment" />
                                     </fieldset>
                                 </div>
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Frange" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.specialShape" :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.specialShapeComment" />
+                                        <d-radio-validation v-model="form.fringeShapeValidation" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.fringeShapeComment" />
                                     </fieldset>
                                 </div>
                             </div>
@@ -181,23 +179,23 @@
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Non binding" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.instructionRespect"
+                                        <d-radio-validation v-model="form.nonBindingValidation"
                                                             :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.generalComment" />
+                                        <d-textarea label="" v-model="form.nonBindingComment" />
                                     </fieldset>
                                 </div>
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Signature" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.repair" :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.repairComment" />
+                                        <d-radio-validation v-model="form.signatureValidation" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.signatureComment" />
                                     </fieldset>
                                 </div>
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Sans backing" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.specialShape" :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.specialShapeComment" />
+                                        <d-radio-validation v-model="form.sansBackingValidation" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.sansBackingComment" />
                                     </fieldset>
                                 </div>
                             </div>
@@ -219,9 +217,9 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.respectPlanValidation"
                                                     :options="pertinentOptions" />
-                                <d-textarea label="" v-model="form.graphicComment" />
+                                <d-textarea label="" v-model="form.respectPlanComment" />
                             </fieldset>
                         </div>
                         <div class="col-md-3">
@@ -231,9 +229,9 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.respectHeightValidation"
                                                     :options="pertinentOptions" />
-                                <d-textarea label="" v-model="form.graphicComment" />
+                                <d-textarea label="" v-model="form.respectHeightComment" />
                             </fieldset>
                         </div>
                         <div class="col-md-3">
@@ -243,9 +241,9 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.respectPitValidation"
                                                     :options="pertinentOptions" />
-                                <d-textarea label="" v-model="form.graphicComment" />
+                                <d-textarea label="" v-model="form.respectPitComment" />
                             </fieldset>
                         </div>
                         <div class="col-md-3">
@@ -255,9 +253,9 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.respectOtherCarpetValidation"
                                                     :options="pertinentOptions" />
-                                <d-textarea label="" v-model="form.graphicComment" />
+                                <d-textarea label="" v-model="form.respectOtherCarpetComment" />
                             </fieldset>
                         </div>
                         <div class="col-md-3">
@@ -267,7 +265,7 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.respectLengthValidation"
                                                     :options="pertinentOptions" />
                             </fieldset>
                         </div>
@@ -278,7 +276,7 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.respectWidthValidation"
                                                     :options="pertinentOptions" />
                             </fieldset>
                         </div>
@@ -289,7 +287,7 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.distanceTopValidation"
                                                     :options="pertinentOptions" />
                             </fieldset>
                         </div>
@@ -300,7 +298,7 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.distanceBottomValidation"
                                                     :options="pertinentOptions" />
                             </fieldset>
                         </div>
@@ -311,7 +309,7 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.distanceRightValidation"
                                                     :options="pertinentOptions" />
                             </fieldset>
                         </div>
@@ -322,7 +320,7 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.distanceLeftValidation"
                                                     :options="pertinentOptions" />
                             </fieldset>
                         </div>
@@ -333,9 +331,9 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.respectColorValidation"
                                                     :options="pertinentOptions" />
-                                <d-textarea label="" v-model="form.graphicComment" />
+                                <d-textarea label="" v-model="form.respectColorComment" />
                             </fieldset>
                         </div>
                         <div class="col-md-3">
@@ -345,9 +343,9 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.respectMaterialValidation"
                                                     :options="pertinentOptions" />
-                                <d-textarea label="" v-model="form.graphicComment" />
+                                <d-textarea label="" v-model="form.respectMaterialComment" />
                             </fieldset>
                         </div>
                         <div class="col-md-3">
@@ -357,9 +355,9 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.respectVelvetValidation"
                                                     :options="pertinentOptions" />
-                                <d-textarea label="" v-model="form.graphicComment" />
+                                <d-textarea label="" v-model="form.respectVelvetComment" />
                             </fieldset>
                         </div>
                         <div class="col-md-3">
@@ -369,9 +367,9 @@
                                 <div class="col-auto pe-0">
                                     <slot name="extraBtn"></slot>
                                 </div>
-                                <d-radio-validation v-model="form.graphicValidation"
+                                <d-radio-validation v-model="form.respectNoteValidation"
                                                     :options="pertinentOptions" />
-                                <d-textarea label="" v-model="form.graphicComment" />
+                                <d-textarea label="" v-model="form.respectNoteComment" />
                             </fieldset>
                         </div>
                     </div>
@@ -418,18 +416,62 @@
         graphicComment: '',
         instructionRespect: false,
         instructionComment: '',
-        tightening: false,
-        generalComment: '',
+        repairValidation: false,
+        repairComment: '',
+        tighteningValidation: false,
+        tighteningComment: '',
         woolQuality: false,
         woolComment: '',
-        repair: false,
-        repairComment: '',
         specialShape: false,
         specialShapeComment: '',
         silkQuality: false,
+        silkComment: '',
         bodyWaveCorners: false,
+        bodyWaveCornersComment: '',
+        velourAuthorValidation: false,
+        velourAuthorComment: '',
+        washingValidation: false,
+        washingComment: '',
+        cleaningValidation: false,
+        cleaningComment: '',
+        carvingValidation: false,
+        carvingComment: '',
+        tissueColorValidation: false,
+        tissueColorComment: '',
+        fringeRepairValidation: false,
+        fringeRepairComment: '',
+        fringeShapeValidation: false,
+        fringeShapeComment: '',
+        nonBindingValidation: false,
+        nonBindingComment: '',
+        signatureValidation: false,
+        signatureComment: '',
+        sansBackingValidation: false,
+        sansBackingComment: '',
         productionEnd: '',
         globalComment: '',
-        shapeProgress: ''
+        shapeProgress: '',
+        respectPlanValidation: false,
+        respectPlanComment: '',
+        respectHeightValidation: false,
+        respectHeightComment: '',
+        respectPitValidation: false,
+        respectPitComment: '',
+        respectOtherCarpetValidation: false,
+        respectOtherCarpetComment: '',
+        respectLengthValidation: false,
+        respectWidthValidation: false,
+        distanceTopValidation: false,
+        distanceBottomValidation: false,
+        distanceRightValidation: false,
+        distanceLeftValidation: false,
+        respectColorValidation: false,
+        respectColorComment: '',
+        respectMaterialValidation: false,
+        respectMaterialComment: '',
+        respectVelvetValidation: false,
+        respectVelvetComment: '',
+        respectNoteValidation: false,
+        respectNoteComment: ''
     });
 </script>
