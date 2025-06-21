@@ -1,12 +1,11 @@
 <template>
-    <div class="">
-        <label v-for="option in options" :key="option.value" class="me-3">
+    <div>
+        <label v-for="(option, index) in options" :key="index" class="me-3">
             <input
-                class=""
                 type="radio"
-                :value="option.value"
-                :checked="modelValue === option.value"
-                @change="$emit('update:modelValue', option.value)"
+                :value="index === 0"
+                :checked="modelValue === (index === 0)"
+                @change="$emit('update:modelValue', index === 0)"
             />
             {{ option.label }}
         </label>
@@ -15,7 +14,7 @@
 
 <script setup>
     defineProps({
-        modelValue: [String, Number],
-        options: Array
+        modelValue: Boolean,
+        options: { type: Array, required: true }
     });
 </script>
