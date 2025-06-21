@@ -467,4 +467,35 @@ export const routes = [
         },
     },
 
+    {
+        path: '/facture-client',
+        name: 'clientInvoice',
+        children: [
+            {
+                path: '',
+                name: 'client-invoice-list',
+                component: () => import('../views/invoices/clientInvoiceList.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: 'read invoice',
+                },
+            },
+            {
+                path: 'create',
+                name: 'client-invoice-create',
+                component: () => import('../views/invoices/clientInvoiceCreate.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: 'create invoice',
+                },
+            },
+        ],
+        meta: {
+            requiresAuth: true,
+            class: 'treasury'
+        },
+    },
+
 ];
