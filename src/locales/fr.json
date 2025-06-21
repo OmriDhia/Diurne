@@ -82,6 +82,7 @@
     "DI": "DI",
     "Image": "Image",
     "Invoice": "Facture",
+    "Customer Invoice": "Facture Client",
     "Order": "Commande",
     "Permission": "Permission",
     "Profile": "Profil",
