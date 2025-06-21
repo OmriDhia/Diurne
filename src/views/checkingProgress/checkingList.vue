@@ -1,214 +1,433 @@
 <template>
-  <d-base-page>
-    <template #title>
-      <d-page-title title="Checking List"></d-page-title>
-    </template>
+    <d-base-page>
+        <template #title>
+            <d-page-title title="Checking List" />
+        </template>
 
-    <template #body>
-      <d-panel>
-        <template #panel-header>
-          <d-panel-title title="Informations g\u00e9n\u00e9rales"></d-panel-title>
-        </template>
-        <template #panel-body>
-          <div class="row">
-            <div class="col-md-4 col-sm-12">
-              <d-input label="RN" v-model="form.rn" />
-            </div>
-            <div class="col-md-4 col-sm-12">
-              <d-input type="date" label="Date de fin de production" v-model="form.productionEndDate" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-4 col-sm-12">
-              <d-input label="Largeur r\u00e9elle" v-model="form.largeurReelle" />
-            </div>
-            <div class="col-md-4 col-sm-12">
-              <d-input label="Longueur r\u00e9elle" v-model="form.longueurReelle" />
-            </div>
-            <div class="col-md-4 col-sm-12">
-              <d-input label="Surface" v-model="form.surface" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-4 col-sm-12">
-              <d-input label="Diagonale A" v-model="form.diagonaleA" />
-            </div>
-            <div class="col-md-4 col-sm-12">
-              <d-input label="Diagonale B" v-model="form.diagonaleB" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <d-textarea label="Commentaire" v-model="form.commentaire1" :rows="3" />
-            </div>
-          </div>
-        </template>
-      </d-panel>
+        <template #body>
+            <d-panel>
+                <template #panel-header>
+                    <d-panel-title title="Informations générales" />
+                </template>
 
-      <d-panel class="mt-3">
-        <template #panel-header>
-          <d-panel-title title="Contr\u00f4les"></d-panel-title>
-        </template>
-        <template #panel-body>
-          <div class="row" v-for="item in validationFields" :key="item.key">
-            <div class="col-md-6 col-sm-12 py-1">
-              {{ item.label }}
-            </div>
-            <div class="col-md-6 col-sm-12 py-1">
-              <div class="d-flex radio-group">
-                <div class="custom-control custom-radio me-3">
-                  <input :id="item.key + '-yes'" type="radio" class="custom-control-input" :name="item.key" :value="true" v-model="form[item.key]" />
-                  <label class="custom-control-label" :for="item.key + '-yes'">{{ item.yesLabel || 'Valid\u00e9e' }}</label>
-                </div>
-                <div class="custom-control custom-radio">
-                  <input :id="item.key + '-no'" type="radio" class="custom-control-input" :name="item.key" :value="false" v-model="form[item.key]" />
-                  <label class="custom-control-label" :for="item.key + '-no'">{{ item.noLabel || 'Non valid\u00e9e' }}</label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <hr />
-          <div class="row" v-for="item in pertinenceFields" :key="item.key">
-            <div class="col-md-6 col-sm-12 py-1">
-              {{ item.label }}
-            </div>
-            <div class="col-md-6 col-sm-12 py-1">
-              <div class="d-flex radio-group">
-                <div class="custom-control custom-radio me-3">
-                  <input :id="item.key + '-yes'" type="radio" class="custom-control-input" :name="item.key" :value="true" v-model="form[item.key]" />
-                  <label class="custom-control-label" :for="item.key + '-yes'">{{ item.yesLabel || 'Pertinent' }}</label>
-                </div>
-                <div class="custom-control custom-radio">
-                  <input :id="item.key + '-no'" type="radio" class="custom-control-input" :name="item.key" :value="false" v-model="form[item.key]" />
-                  <label class="custom-control-label" :for="item.key + '-no'">{{ item.noLabel || 'Non pertinent' }}</label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col-md-12">
-              <d-textarea label="Commentaire" v-model="form.commentaire2" :rows="3" />
-            </div>
-          </div>
-        </template>
-      </d-panel>
-    </template>
+                <template #panel-body>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <d-input label="RN" v-model="form.rn" />
+                        </div>
+                        <div class="col-md-4">
+                            <d-input label="Auteur" type="date" v-model="form.auteur" />
+                        </div>
+                        <div class="col-md-4">
+                            <d-input label="Date" type="date" v-model="form.date" />
+                        </div>
+                    </div>
 
-    <template #footer>
-      <div class="row p-2 justify-content-between">
-        <div class="col-auto">
-          <router-link to="/home" class="btn btn-custom">Retour</router-link>
-        </div>
-        <div class="col-auto">
-          <button class="btn btn-custom" @click="save">Enregistrer</button>
-        </div>
-      </div>
-    </template>
-  </d-base-page>
+                    <!-- Validation Sections -->
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Validation forme" link=""></d-panel-title>
+                                <d-radio-validation v-model="form.validationForme" :options="validationOptions" />
+                                <d-input label="Largeur réelle" v-model="form.largeurReelle" />
+                                <d-input label="Longueur réelle" v-model="form.longueurReelle" />
+                                <d-input label="Surface" v-model="form.surface" />
+                                <d-input label="Diagonale A" v-model="form.diagonaleA" />
+                                <d-input label="Diagonale B" v-model="form.diagonaleB" />
+                                <d-textarea label="" v-model="form.commentaireForme" />
+                                <label>Date de fin de production</label>
+                                <d-input label="" type="date" v-model="form.finProduction" />
+                                <label>commentaire</label>
+                                <d-textarea label="" v-model="form.commentaireGlobal" />
+                                <label>Forme / progress / Report / Couche</label>
+                                <d-textarea label="" v-model="form.formeProgress" />
+
+
+                            </fieldset>
+                        </div>
+
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Validation graphique"
+                                                       link=""></d-panel-title>
+                                        <div class="col-auto pe-0">
+                                            <slot name="extraBtn"></slot>
+                                        </div>
+                                        <d-radio-validation v-model="form.validationGraphique"
+                                                            :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireGraphique" />
+                                    </fieldset>
+
+                                </div>
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Respect des instructions"
+                                                       link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.respectInstructions"
+                                                            :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireSerrage" />
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Réparation" link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.reparation" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireLaine" />
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Serrage" link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.serrage"
+                                                            :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireInstructions" />
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Qualité laine " link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.qualiteLaine" :options="pertinentOptions" />
+                                        <d-textarea label="" v-model="form.commentaireReparation" />
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Forme spéciale" link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.formeSpeciale" :options="pertinentOptions" />
+                                        <d-textarea label="" v-model="form.commentaireFormeSpeciale" />
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Qualité soie" link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.qualiteSoie"
+                                                            :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireInstructions" />
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Corps/Ondu/Coins"
+                                                       link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.corpsOnduCoins"
+                                                            :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireReparation" />
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Auteur du velour"
+                                                       link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.formeSpeciale" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireFormeSpeciale" />
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Washing" link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.respectInstructions"
+                                                            :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireInstructions" />
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Cleaning" link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.reparation" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireReparation" />
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Carving" link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.formeSpeciale" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireFormeSpeciale" />
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Couleur tissue" link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.respectInstructions"
+                                                            :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireInstructions" />
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Frange" link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.reparation" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireReparation" />
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Frange" link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.formeSpeciale" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireFormeSpeciale" />
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Non binding" link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.respectInstructions"
+                                                            :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireInstructions" />
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Signature" link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.reparation" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireReparation" />
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <d-panel-title class-name="ps-2" title="Sans backing" link=""></d-panel-title>
+                                        <d-radio-validation v-model="form.formeSpeciale" :options="validationOptions" />
+                                        <d-textarea label="" v-model="form.commentaireFormeSpeciale" />
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col">
+                                    <label class="mb-0">Commentaire:</label>
+                                    <d-textarea label="" v-model="form.formeProgress" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!--       ####### Respect section  #######           -->
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Respect plan"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                                <d-textarea label="" v-model="form.commentaireGraphique" />
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Respect hauteur de port"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                                <d-textarea label="" v-model="form.commentaireGraphique" />
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Respect fosse"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                                <d-textarea label="" v-model="form.commentaireGraphique" />
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Respect autre tapis"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                                <d-textarea label="" v-model="form.commentaireGraphique" />
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Respect longeur Max/Min"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Respect largeur Max/Min"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Distance mur/haut"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Distance mur/bas"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Distance mur/droite"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Distance mur/gauche"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Respect couleur"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                                <d-textarea label="" v-model="form.commentaireGraphique" />
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Respect matière"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                                <d-textarea label="" v-model="form.commentaireGraphique" />
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Respect velour"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                                <d-textarea label="" v-model="form.commentaireGraphique" />
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <d-panel-title class-name="ps-2" title="Respect remarque"
+                                               link=""></d-panel-title>
+                                <div class="col-auto pe-0">
+                                    <slot name="extraBtn"></slot>
+                                </div>
+                                <d-radio-validation v-model="form.validationGraphique"
+                                                    :options="pertinentOptions" />
+                                <d-textarea label="" v-model="form.commentaireGraphique" />
+                            </fieldset>
+                        </div>
+                    </div>
+                    <!-- Additional Fields & Comments -->
+
+                </template>
+            </d-panel>
+        </template>
+    </d-base-page>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import dBasePage from '@/components/base/d-base-page.vue';
-import dInput from '@/components/base/d-input.vue';
-import dTextarea from '@/components/base/d-textarea.vue';
-import dPanel from '@/components/common/d-panel.vue';
-import dPanelTitle from '@/components/common/d-panel-title.vue';
-import dPageTitle from '@/components/common/d-page-title.vue';
+    import { ref } from 'vue';
+    import dBasePage from '@/components/base/d-base-page.vue';
+    import dInput from '@/components/base/d-input.vue';
+    import dTextarea from '@/components/base/d-textarea.vue';
+    import dPanel from '@/components/common/d-panel.vue';
+    import dPanelTitle from '@/components/common/d-panel-title.vue';
+    import dPageTitle from '@/components/common/d-page-title.vue';
+    import DRadioValidation from '@/components/checkingProgress/d-radio-validation.vue';
 
-const form = ref({
-  rn: '',
-  productionEndDate: '',
-  largeurReelle: '',
-  longueurReelle: '',
-  surface: '',
-  diagonaleA: '',
-  diagonaleB: '',
-  commentaire1: '',
-  commentaire2: '',
-  validationForme: true,
-  validationGraphique: true,
-  serrage: true,
-  qualiteSoie: true,
-  washing: true,
-  respectInstructions: true,
-  qualiteLaine: true,
-  corpsOnduCoins: true,
-  cleaning: true,
-  frangeValidation: true,
-  auteurVelour: true,
-  carving: true,
-  frange2: true,
-  respectPlan: true,
-  respectLongueur: true,
-  distanceMurDroite: true,
-  etatCommande: true,
-  couleurTissue: true,
-  nonBinding: true,
-  respectHauteurPorte: true,
-  respectLargeur: true,
-  distanceMurGauche: true,
-  signature: true,
-  respectFosse: true,
-  distanceMurHaut: true,
-  respectCouleur: true,
-  respectVelour: true,
-  reparation: true,
-  formeSpeciale: true,
-  sansBacking: true,
-  respectAutreTapis: true,
-  distanceMurBas: true,
-  respectMatiere: true,
-  respectRemarque: true
-});
+    const validationOptions = [
+        { label: 'Validée', value: 'validee' },
+        { label: 'Non validée', value: 'non_validee' }
+    ];
 
-const validationFields = [
-  { key: 'validationForme', label: 'Validation forme' },
-  { key: 'validationGraphique', label: 'Validation graphique' },
-  { key: 'serrage', label: 'Serrage' },
-  { key: 'qualiteSoie', label: 'Qualit\u00e9 soie' },
-  { key: 'washing', label: 'Washing' },
-  { key: 'respectInstructions', label: 'Respect des instructions' },
-  { key: 'qualiteLaine', label: 'Qualit\u00e9 laine' },
-  { key: 'corpsOnduCoins', label: 'Corps / Ondu / Coins' },
-  { key: 'cleaning', label: 'Cleaning' },
-  { key: 'frangeValidation', label: 'Frange' },
-  { key: 'auteurVelour', label: 'Auteur du velour' },
-  { key: 'carving', label: 'Carving' },
-  { key: 'frange2', label: 'Frange' }
-];
+    const pertinentOptions = [
+        { label: 'Pertinent', value: 'pertinent' },
+        { label: 'Non pertinent', value: 'non_pertinent' }
+    ];
 
-const pertinenceFields = [
-  { key: 'respectPlan', label: 'Respect plan' },
-  { key: 'respectLongueur', label: 'Respect longueur MAX / MIN' },
-  { key: 'distanceMurDroite', label: 'Distance mur / droite' },
-  { key: 'etatCommande', label: 'Etat commande', yesLabel: 'Envoy\u00e9e', noLabel: 'Non envoy\u00e9e' },
-  { key: 'couleurTissue', label: 'Couleur tissue' },
-  { key: 'nonBinding', label: 'Non binding' },
-  { key: 'respectHauteurPorte', label: 'Respect hauteur de porte' },
-  { key: 'respectLargeur', label: 'Respect largeur MAX / MIN' },
-  { key: 'distanceMurGauche', label: 'Distance mur / gauche' },
-  { key: 'signature', label: 'Signature' },
-  { key: 'respectFosse', label: 'Respect fosse' },
-  { key: 'distanceMurHaut', label: 'Distance mur / haut' },
-  { key: 'respectCouleur', label: 'Respect couleur' },
-  { key: 'respectVelour', label: 'Respect velour' },
-  { key: 'reparation', label: 'Reparation' },
-  { key: 'formeSpeciale', label: 'Forme sp\u00e9ciale' },
-  { key: 'sansBacking', label: 'Sans backing' },
-  { key: 'respectAutreTapis', label: 'Respect autre tapis' },
-  { key: 'distanceMurBas', label: 'Distance mur / bas' },
-  { key: 'respectMatiere', label: 'Respect mati\u00e8re' },
-  { key: 'respectRemarque', label: 'Respect remarque' }
-];
-
-const save = () => {
-  console.log(form.value);
-};
+    const form = ref({
+        rn: '',
+        auteur: '',
+        date: '',
+        largeurReelle: '',
+        longueurReelle: '',
+        surface: '',
+        diagonaleA: '',
+        diagonaleB: '',
+        commentaireForme: '',
+        validationForme: '',
+        validationGraphique: '',
+        commentaireGraphique: '',
+        serrage: '',
+        commentaireSerrage: '',
+        qualiteLaine: '',
+        commentaireLaine: '',
+        respectInstructions: '',
+        commentaireInstructions: '',
+        reparation: '',
+        commentaireReparation: '',
+        formeSpeciale: '',
+        commentaireFormeSpeciale: '',
+        finProduction: '',
+        commentaireGlobal: '',
+        formeProgress: ''
+    });
 </script>
-
-<style scoped>
-.radio-group .custom-control {
-  margin-right: 1rem;
-}
-</style>
