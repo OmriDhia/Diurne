@@ -285,7 +285,7 @@ const fetchData = async ({ page, itemsPerPage, sort }) => {
     url += getFilterParams();
 
     const response = await axiosInstance.get(url);
-    const data = response.data.response.orderPayments;
+    const data = response.data.response;
     const payments = data.data || data.orderPayments || data;
 
     // Utilisation de Promise.all avec un nombre limité de requêtes simultanées
