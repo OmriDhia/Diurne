@@ -595,7 +595,84 @@
             return;
         }
         try {
-            await checkingListService.updateCheckingList(checkingListId, form.value);
+            await checkingListService.updateCheckingList(checkingListId, {
+                dateEndProd: form.value.productionEnd,
+                comment: form.value.globalComment,
+                shapeProgress: form.value.shapeProgress
+            });
+
+            await checkingListService.updateShapeValidation(checkingListId, {
+                shape_validation: form.value.shapeValidation,
+                real_width: form.value.realWidth,
+                real_length: form.value.realLength,
+                surface: form.value.surface,
+                diagonal_a: form.value.diagonalA,
+                diagonal_b: form.value.diagonalB,
+                comment: form.value.shapeComment
+            });
+
+            await checkingListService.updateQualityCheck(checkingListId, {
+                graphic_validation: form.value.graphicValidation,
+                graphic_comment: form.value.graphicComment,
+                instruction_compliance_validation: form.value.instructionRespect,
+                instruction_comment: form.value.instructionComment,
+                repair_relevant_validation: form.value.repairValidation,
+                repair_comment: form.value.repairComment,
+                tightness_validation: form.value.tighteningValidation,
+                tightness_comment: form.value.tighteningComment,
+                wool_quality_validation: form.value.woolQuality,
+                wool_comment: form.value.woolComment,
+                silk_quality_validation: form.value.silkQuality,
+                silk_comment: form.value.silkComment,
+                special_shape_relevant_validation: form.value.specialShape,
+                special_shape_comment: form.value.specialShapeComment,
+                corps_ondu_coins_validation: form.value.bodyWaveCorners,
+                corps_ondu_coins_comment: form.value.bodyWaveCornersComment,
+                velour_author_validation: form.value.velourAuthorValidation,
+                velour_comment: form.value.velourAuthorComment,
+                washing_validation: form.value.washingValidation,
+                waching_comment: form.value.washingComment,
+                cleaning_validation: form.value.cleaningValidation,
+                cleaning_comment: form.value.cleaningComment,
+                carving_validation: form.value.carvingValidation,
+                carving_comment: form.value.carvingComment,
+                fabric_color_validation: form.value.tissueColorValidation,
+                fabric_color_comment: form.value.tissueColorComment,
+                frange_validation: form.value.fringeRepairValidation,
+                frang_comment: form.value.fringeRepairComment,
+                no_binding_validation: form.value.nonBindingValidation,
+                no_binding_comment: form.value.nonBindingComment,
+                signature_validation: form.value.signatureValidation,
+                signature_comment: form.value.signatureComment,
+                without_backing_validation: form.value.sansBackingValidation,
+                without_backing_comment: form.value.sansBackingComment
+            });
+
+            await checkingListService.updateQualityRespect(checkingListId, {
+                respect_plan_valid: form.value.respectPlanValidation,
+                respect_plan_comment: form.value.respectPlanComment,
+                respect_door_height_valid: form.value.respectHeightValidation,
+                respect_door_height_comment: form.value.respectHeightComment,
+                respect_max_min_length_valid: form.value.respectLengthValidation,
+                respect_max_min_width_valid: form.value.respectWidthValidation,
+                respectwall_distance_right_valid: form.value.distanceRightValidation,
+                respectwall_distance_left_valid: form.value.distanceLeftValidation,
+                respect_foss_valide: form.value.respectPitValidation,
+                respect_foss_comment: form.value.respectPitComment,
+                respect_other_carpet_valid: form.value.respectOtherCarpetValidation,
+                respect_other_carpet_comment: form.value.respectOtherCarpetComment,
+                respect_color_valid: form.value.respectColorValidation,
+                respect_color_comment: form.value.respectColorComment,
+                respect_material_valid: form.value.respectMaterialValidation,
+                respect_material_comment: form.value.respectMaterialComment,
+                respect_remark_valid: form.value.respectNoteValidation,
+                respect_remark_comment: form.value.respectNoteComment,
+                respect_velour_valid: form.value.respectVelvetValidation,
+                respect_velour_comment: form.value.respectVelvetComment,
+                wall_distance_top_valid: form.value.distanceTopValidation,
+                wall_distance_bottom_valid: form.value.distanceBottomValidation
+            });
+
             window.showMessage('Mise à jour avec succées.');
         } catch (e) {
             console.error('Failed to update checking list:', e);
