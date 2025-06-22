@@ -1,258 +1,212 @@
 <template>
-    <div class="layout-px-spacing mt-4">
-        <d-page-title icon="file-text" :title="'Commande'"></d-page-title>
+  <div class="layout-px-spacing mt-4">
+    <d-page-title :title="'Commande Tapis'"></d-page-title>
 
-        <div class="row layout-top-spacing mt-3 p-2">
-            <div class="panel br-6 p-2">
-                <div class="row p-2">
-                    <div class="col-auto">
-                        <button class="btn btn-custom pe-5 ps-5" @click="goToNewDevis">Nouveau Devis</button>
-                    </div>
-                </div>
-                <div class="row d-flex justify-content-center align-items-start p-2">
-                    <div class="col-md-6 col-sm-12">
-                        <div class="row">
-                            <d-input label="Client" v-model="filter.customer"></d-input>
-                        </div>
-                        <div class="row">
-                            <d-input label="Contremarque" v-model="filter.contremarque"></d-input>
-                        </div>
-                        <div class="row">
-                            <d-input label="Commercial" v-model="filter.commercial"></d-input>
-                        </div>
-                        <div class="row">
-                            <d-input label="Devis" type="text" v-model="filter.devis"></d-input>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-sm-12">
-                        <div class="row mt-2">
-                            <div class="col-auto" v-if="filterActive">
-                                <button class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">
-                                    Reset filtre
-                                </button>
-                            </div>
-                            <div class="col-auto me-2">
-                                <button class="btn btn-custom pe-3 ps-3" @click.prevent="doSearch">Recherche</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="panel br-6 p-2 mt-3" id="fullscreen">
-                <div class="row mt-2 mb-4">
-                    <div class="vue3-datatable w-100">
-                        <div class="row mb-4 relative align-items-center justify-content-between">
-                            <div class="col-auto">
-                                <div class="btn-group custom-dropdown me-2 btn-group-lg">
-                                    <button class="btn btn-outline-custom p-2 dropdown-toggle" type="button"
-                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Cacher / Montrer Colonnes
-                                    </button>
-                                    <ul class="dropdown-menu p-2">
-                                        <li v-for="col in cols" :key="col.field">
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" :checked="!col.hide"
-                                                       :id="col.field" @change="col.hide = !$event.target.checked"
-                                                       :name="col.field" />
-                                                <label class="custom-control-label text-black" :for="col.field">
-                                                    {{ col.title }} </label>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <d-btn-fullscreen></d-btn-fullscreen>
-                        </div>
-                        <vue3-datatable :rows="rows"
-                                        :columns="cols" :loading="loading"
-                                        :isServerMode="true" :sortColumn="params.orderBy"
-                                        :sortDirection="params.orderWay"
-                                        :totalRows="total_rows" :page="params.current_page"
-                                        :pageSize="params.pagesize"
-                                        :pageSizeOptions="[10, 25, 50, 75, 100]"
-                                        noDataContent="Aucun devis trouvé."
-                                        paginationInfo="Affichage de {0} à {1} sur {2} entrées" :sortable="true"
-                                        @change="changeServer" class="advanced-table text-nowrap">
-                            <template #reference="data">
-                                <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.reference }}</strong>
-                                    <router-link :to="'/tapis/order/manage/' + data.value.cloned_quote"
-                                                 v-if="$hasPermission('update carpet')">
-                                        <vue-feather type="search" stroke-width="1"
-                                                     class="cursor-pointer"></vue-feather>
-                                    </router-link>
-                                </div>
-                            </template>
-                            <template #contremarque="data">
-                                <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.designation }}</strong>
-                                    <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id"
-                                                 v-if="$hasPermission('update contremarque')">
-                                        <vue-feather type="search" stroke-width="1"
-                                                     class="cursor-pointer"></vue-feather>
-                                    </router-link>
-                                </div>
-                            </template>
-                            <template #customer="data">
-                                <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.customer }}</strong>
-                                    <router-link :to="'/contacts/manage/' + data.value.customer_id"
-                                                 v-if="$hasPermission('update contremarque')">
-                                        <vue-feather type="search" stroke-width="1"
-                                                     class="cursor-pointer"></vue-feather>
-                                    </router-link>
-                                </div>
-                            </template>
-                            <template #creationDate="data">
-                                <div class="d-flex justify-content-between">
-                                    {{ (data.value.created_at) ? $Helper.FormatDate(data.value.created_at) : '' }}
-                                </div>
-                            </template>
-                            <template #validationDate="data">
-                                <div class="d-flex justify-content-between">
-                                    {{ data.value.validated_at ? $Helper.FormatDate(data.value.validated_at) : '' }}
-                                </div>
-                            </template>
-                        </vue3-datatable>
-                    </div>
-                </div>
-            </div>
-            <d-modal-event :customerId="selectedCustomerId" :contramarqueId="selectedContremarqueId"></d-modal-event>
-        </div>
+    <!-- Radio Filter Section -->
+    <div class="d-flex flex-wrap justify-content-start gap-4 mb-4">
+      <label class="fw-normal"><input type="radio" name="type" /> Échantillon</label>
+      <label class="fw-normal"><input type="radio" name="type" /> Tapis</label>
+      <label class="fw-normal"><input type="radio" name="type" /> Tous</label>
+      <label class="fw-normal"><input type="radio" name="type" /> Dispo. vente</label>
+      <label class="fw-normal"><input type="radio" name="type" /> État prod</label>
+      <label class="fw-normal"><input type="radio" name="type" /> État stock</label>
     </div>
+
+    <div class="row layout-top-spacing mt-2 p-2">
+      <div class="panel br-6 p-3 mt-1" id="fullscreen">
+        <!-- FILTER FORM -->
+        <div class="row g-3 mb-3">
+          <div
+            v-for="(field, index) in fields"
+            :key="index"
+            class="col-md-4"
+          >
+            <d-input
+              :label="field.label"
+              v-model="filter[field.model]"
+              :as="field.as || 'input'"
+            >
+              <template v-if="field.model === 'etatTapis'">
+                <option value="">--</option>
+                <option value="cmd_atelier">Cmd. atelier</option>
+              </template>
+            </d-input>
+          </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="d-flex justify-content-end gap-2 mb-3">
+          <button class="btn btn-dark" @click="doSearch">RECHERCHER</button>
+          <button class="btn btn-outline-secondary">IMPORTER MAJ TAPIS STOCK (EXCEL)</button>
+          <button class="btn btn-outline-dark">IMPORTER PR</button>
+        </div>
+
+        <!-- TABLE SECTION -->
+        <div class="table-responsive">
+          <table class="table table-bordered text-nowrap align-middle">
+            <thead class="bg-dark text-white text-center">
+              <tr>
+                <th>Image</th>
+                <th>Contremarque/ Emplacement</th>
+                <th>RN</th>
+                <th>Commande / Devis</th>
+                <th>Client/Commercial/Prescripteur</th>
+                <th>État</th>
+                <th>Emp. stock</th>
+                <th>Dispo</th>
+                <th>
+                  <div>Total :</div>
+                  <div><input class="form-control form-control-sm" /></div>
+                  <div>Prix de vente</div>
+                </th>
+                <th>
+                  <div>Total :</div>
+                  <div><input class="form-control form-control-sm" /></div>
+                  <div>Prix d'achat</div>
+                </th>
+                <th>
+                  <div>Début :</div>
+                  <input type="date" class="form-control form-control-sm mb-1" />
+                  <div>Fin :</div>
+                  <input type="date" class="form-control form-control-sm" />
+                </th>
+                <th>
+                  <div>Début :</div>
+                  <input type="date" class="form-control form-control-sm mb-1" />
+                  <div>Fin :</div>
+                  <input type="date" class="form-control form-control-sm" />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="order in rows" :key="order.id">
+                <td class="text-center">
+                  <img src="/label-image.jpg" alt="Carpet" style="width: 60px" />
+                </td>
+                <td>
+                  <strong>Contremarque :</strong> {{ order.designation }}<br />
+                  <strong>Emplacement :</strong> {{ order.location || '-' }}
+                </td>
+                <td>{{ order.reference }}</td>
+                <td>
+                  <strong>Commande :</strong> {{ order.cloned_quote_reference }}<br />
+                  <strong>Devis :</strong> {{ order.original_quote_reference }}
+                </td>
+                <td>
+                  <strong>Client :</strong> {{ order.customer }}<br />
+                  <strong>Commercial :</strong> {{ order.commercial }}<br />
+                  <strong>Prescripteur :</strong> {{ order.prescripteur || '-' }}
+                </td>
+                <td>{{ order.state || '-' }}</td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-outline-secondary">+</button>
+                </td>
+                <td class="text-center">
+                  <input type="checkbox" />
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <pagination
+          v-if="totalRows > paginationData.itemsPerPage"
+          :current-page="paginationData.currentPage"
+          :total-pages="totalPages"
+          :total-items="totalRows"
+          :items-per-page="paginationData.itemsPerPage"
+          @page-change="changePage"
+          @page-size-change="changePageSize"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-    import dInput from '../../../components/base/d-input.vue';
-    import dBtnFullscreen from '../../../components/base/d-btn-fullscreen.vue';
-    import dCustomerDropdown from '../../../components/common/d-customer-dropdown.vue';
-    import dPageTitle from '../../../components/common/d-page-title.vue';
-    import VueFeather from 'vue-feather';
-    import Vue3Datatable from '@bhplugin/vue3-datatable';
-    import axiosInstance from '../../../config/http';
-    import { ref, reactive, onMounted } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
-    import { filterDevis, FILTER_DEVIS_STORAGE_NAME } from '../../../composables/constants';
-    import moment from 'moment';
-    import { Helper } from '../../../composables/global-methods';
-    import dModalEvent from '../../../components/projet/contremarques/_Partials/d-modal-event.vue';
+import { ref, reactive, onMounted, computed } from 'vue';
+import dInput from '../../../components/base/d-input.vue';
+import dPageTitle from '../../../components/common/d-page-title.vue';
+import pagination from '../../../components/base/Pagination/d-pagination.vue';
+import axiosInstance from '../../../config/http';
 
-    import { useMeta } from '/src/composables/use-meta';
+const filter = ref({
+  client: '',
+  rn: '',
+  collection: '',
+  contremarque: '',
+  etatTapis: '',
+  modele: '',
+  commercial: '',
+  atelier: '',
+  commande: '',
+  devis: '',
+  prescripteur: ''
+});
 
-    useMeta({ title: 'Tapis' });
+const fields = [
+  { label: 'Client :', model: 'client' },
+  { label: 'RN :', model: 'rn' },
+  { label: 'Collection :', model: 'collection' },
+  { label: 'Contremarque :', model: 'contremarque' },
+  { label: 'Etat du tapis :', model: 'etatTapis', as: 'select' },
+  { label: 'Modèle :', model: 'modele' },
+  { label: 'Commercial :', model: 'commercial' },
+  { label: 'Atelier :', model: 'atelier' },
+  { label: 'Commande :', model: 'commande' },
+  { label: 'Devis :', model: 'devis' },
+  { label: 'Prescripteur :', model: 'prescripteur' }
+];
 
-    const loading = ref(true);
-    const loadingAttribution = ref(false);
-    const total_rows = ref(0);
-    const route = useRoute();
-    const router = useRouter();
+const rows = ref([]);
+const totalRows = ref(0);
 
-    const params = reactive({
-        current_page: 1,
-        pagesize: 50,
-        orderBy: '',
-        orderWay: ''
-    });
+const paginationData = reactive({
+  currentPage: 1,
+  itemsPerPage: 5
+});
 
-    const filter = ref(Object.assign({}, filterDevis));
-    const filterActive = ref(false);
-    const rows = ref(null);
+const totalPages = computed(() =>
+  Math.ceil(totalRows.value / paginationData.itemsPerPage)
+);
 
-    const cols = ref([
-        { field: 'reference', title: 'Numéro devis' },
-        { field: 'contremarque', title: 'Contremarque' },
-        { field: 'customer', title: 'Client' },
-        { field: 'commercial', title: 'Commercial' },
-        { field: 'creationDate', title: 'Date création' },
-        { field: 'validationDate', title: 'Date validation' }
-    ]) || [];
+const getOrders = async () => {
+  try {
+    const url = `/api/carpetOrders?page=${paginationData.currentPage}&limit=${paginationData.itemsPerPage}`;
+    const res = await axiosInstance.get(url);
+    rows.value = res.data.carpetOrders || [];
+    totalRows.value = res.data.count || 0;
+  } catch (e) {
+    console.error(e);
+  }
+};
 
-    onMounted(() => {
-        const f = Helper.getStorage(FILTER_DEVIS_STORAGE_NAME);
-        if (f && Helper.hasDefinedValue(f)) {
-            filter.value = f;
-            filterActive.value = true;
-        }
-        getCarpetOrders();
-    });
+const changePage = (page) => {
+  paginationData.currentPage = page;
+  getOrders();
+};
 
-    const getCarpetOrders = async () => {
-        try {
-            loading.value = true;
-            let url = `/api/carpetOrders?page=${params.current_page}&limit=${params.pagesize}`;
-            if (params.orderBy) {
-                url += `&orderBy=${params.orderBy}`;
-            }
-            if (params.orderWay) {
-                url += `&orderWay=${params.orderWay}`;
-            }
-            if (route.query.contremarqueId) {
-                url += `&contremarqueId=${route.query.contremarqueId}`;
-            }
-            if (route.query.locationId) {
-                url += `&locationId=${route.query.locationId}`;
-            }
-            url += getFilterParams();
-            const response = await axiosInstance.get(url);
-            const data = response.data;
-            total_rows.value = data.count;
-            rows.value = data.carpetOrders;
-        } catch {
-        }
+const changePageSize = (size) => {
+  paginationData.itemsPerPage = size;
+  paginationData.currentPage = 1;
+  getOrders();
+};
 
-        loading.value = false;
-    };
+const doSearch = () => {
+  paginationData.currentPage = 1;
+  getOrders();
+};
 
-    const changeServer = (data) => {
-        params.current_page = data.current_page;
-        params.pagesize = data.pagesize;
-        params.orderBy = data.sort_column;
-        params.orderWay = data.sort_direction;
-        getCarpetOrders();
-    };
-
-    const doSearch = () => {
-        filterActive.value = true;
-        Helper.setStorage(FILTER_DEVIS_STORAGE_NAME, filter.value);
-        getCarpetOrders();
-    };
-
-    const getFilterParams = () => {
-
-        let param = '';
-        if (filter.value.customer) {
-            param += '&customer=' + filter.value.customer;
-        }
-        if (filter.value.contremarque) {
-            param += '&contremarque=' + filter.value.contremarque;
-        }
-        if (filter.value.devis) {
-            param += '&reference=' + filter.value.devis;
-        }
-        if (filter.value.commercial) {
-            param += '&commercial=' + filter.value.commercial;
-        }
-        return param;
-    };
-
-    const doReset = () => {
-        filterActive.value = false;
-        filter.value = Object.assign({}, filterDevis);
-        Helper.setStorage(FILTER_DEVIS_STORAGE_NAME, filter.value);
-        getCarpetOrders();
-    };
-
-    const goToNewDevis = () => {
-        if (route.query.contremarqueId) {
-            router.push({ name: 'devisManage', query: { contremarqueId: route.query.contremarqueId } });
-        } else {
-            router.push({ name: 'devisManage' });
-        }
-    };
-
+onMounted(() => {
+  getOrders();
+});
 </script>
-<style>
-    .text-size-16 {
-        font-size: 16px !important;
-    }
+
+<style scoped>
+th input {
+  min-width: 100px;
+}
 </style>
