@@ -51,7 +51,9 @@
                         </div>
                         <div class="row mt-4">
                             <div class="col-auto">
-                                <button class="btn btn-custom" @click="save">{{ route.params.id ? 'Update' : 'Enregistrer' }}</button>
+                                <button class="btn btn-custom" @click="save">
+                                    {{ route.params.id ? 'Update' : 'Enregistrer' }}
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -91,24 +93,29 @@
         stopWeave: '',
         eventFinition: '',
         stopFinition: ''
-
-
     });
-    console.log('test');
+
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+    };
+
     const loadCalendar = async (id) => {
         try {
             loading.value = true;
             const data = await provisionalCalendarService.getById(id);
             calendar.value = data;
+
             form.value = {
                 rn: data.rn,
                 workshopOrderId: data.workshopOrderId,
                 deadlinPreparation: data.deadlinPreparation,
-                dateFinPreparation: data.dateFinPreparation,
+                dateFinPreparation: formatDateForInput(data.dateEndPreparation),
                 deadlinWeave: data.deadlinWeave,
-                dateFinWeave: data.dateFinWeave,
+                dateFinWeave: formatDateForInput(data.dateEndWeave),
                 deadlinFinition: data.deadlinFinition,
-                dateFinFinition: data.dateFinFinition,
+                dateFinFinition: formatDateForInput(data.dateEndFinition),
                 eventPreparation: data.eventPreparation,
                 stopPreparation: data.stopPreparation,
                 eventWeave: data.eventWeave,
@@ -127,11 +134,24 @@
         try {
             loading.value = true;
             if (route.params.id) {
-                await provisionalCalendarService.update(route.params.id, { ...form.value });
-                window.showMessage('Mise a jour avec succées.');
+                await provisionalCalendarService.update(route.params.id, {
+                    ...form.value,
+                    deadlinPreparation: parseInt(form.value.deadlinPreparation),
+                    deadlinWeave: parseInt(form.value.deadlinWeave),
+                    deadlinFinition: parseInt(form.value.deadlinFinition)
+                });
+                window.showMessage('Mise à jour avec succès.');
+
+                // Force reload the data
+                await loadCalendar(route.params.id);
             } else {
-                const res = await provisionalCalendarService.create({ ...form.value });
-                window.showMessage('Ajout avec succées.');
+                const res = await provisionalCalendarService.create({
+                    ...form.value,
+                    deadlinPreparation: parseInt(form.value.deadlinPreparation),
+                    deadlinWeave: parseInt(form.value.deadlinWeave),
+                    deadlinFinition: parseInt(form.value.deadlinFinition)
+                });
+                window.showMessage('Ajout avec succès.');
                 router.push({ name: 'provisionalCalendarView', params: { id: res.id } });
             }
         } catch (e) {
