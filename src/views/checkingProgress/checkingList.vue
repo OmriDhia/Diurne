@@ -385,18 +385,14 @@
                 </template>
             </d-panel>
         </template>
-        <template>
-            <div class="row p-2 justify-content-between">
+        <template v-slot:footer>
+            <div class="row p-2 justify-content-end ">
                 <div class="col-auto">
                     <button class="btn btn-custom pe-5 ps-5" @click="goToWorkshop">Retour à la workShop</button>
+
                 </div>
                 <div class="col-auto">
-                    <div class="row">
-                        <div class="col-auto" v-if="quote_id">
-                            <button class="btn btn-custom pe-5 ps-5" @click="saveCheckingList">Enregistrer
-                            </button>
-                        </div>
-                    </div>
+                    <button class="btn btn-custom pe-5 ps-5" @click="saveCheckingList">Enregistrer</button>
                 </div>
             </div>
 
@@ -583,7 +579,9 @@
     };
 
     const loadCheckingList = async () => {
-        if (!checkingListId) { return; }
+        if (!checkingListId) {
+            return;
+        }
         try {
             const data = await checkingListService.getCheckingListById(checkingListId);
             fillForm(data);
@@ -593,7 +591,9 @@
     };
 
     const saveCheckingList = async () => {
-        if (!checkingListId) { return; }
+        if (!checkingListId) {
+            return;
+        }
         try {
             await checkingListService.updateCheckingList(checkingListId, form.value);
             window.showMessage('Mise à jour avec succées.');
