@@ -11,7 +11,7 @@
                 />
 
                 <div class="tab-content">
-                    <InformationAtelier v-if="activeTab === 'information'" />
+                    <InformationAtelier ref="infoTab" :imageCommandId="imageCommandId" v-if="activeTab === 'information'" />
                     <ImageTab v-if="activeTab === 'image'" />
                     <HistoriqueTab v-if="activeTab === 'historique'" />
                 </div>
@@ -43,6 +43,7 @@
 </template>
 <script setup>
     import { ref } from 'vue';
+    import { useRoute } from 'vue-router';
     import TabNavigation from './TabNavigation.vue';
     import InformationAtelier from '../../components/workshop/tabs/InformationAtelier.vue';
     import ImageTab from '../../components/workshop/tabs/ImageTab.vue';
@@ -52,6 +53,9 @@
     import RadioButton from '@/components/workshop/ui/RadioButton.vue';
 
     const activeTab = ref('information');
+    const route = useRoute();
+    const imageCommandId = parseInt(route.params.imagesCommadeId, 10);
+    const infoTab = ref(null);
 
     const tabs = [
         { id: 'information', label: 'Information atelier' },
@@ -65,6 +69,14 @@
     });
     const changeTab = (tabId) => {
         activeTab.value = tabId;
+    };
+
+    const enregistrer = () => {
+        infoTab.value?.saveWorkshopInformation();
+    };
+
+    const commandeAtelier = () => {
+        infoTab.value?.commandeAtelier();
     };
 </script>
 <style scoped lang="scss">

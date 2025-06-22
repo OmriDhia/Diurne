@@ -1,10 +1,13 @@
 <script setup lang="ts">
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
     import SelectInput from '../ui/SelectInput.vue';
     import RadioButton from '../ui/RadioButton.vue';
     import dInput from '../../../components/base/d-input.vue';
     import DCurrency from '@/components/common/d-currency.vue';
     import DPanelTitle from '@/components/common/d-panel-title.vue';
+    import workshopService from '@/Services/workshop-service.js';
+
+    const props = defineProps<{ imageCommandId: number }>();
     // Form data
     const formData = ref({
         infoCommande: {
@@ -58,6 +61,22 @@
         receptionParis: true
     });
 
+    const manufacturers = ref<Array<{ value: number|string, label: string }>>([]);
+
+    const fetchManufacturers = async () => {
+        try {
+            const data = await workshopService.getManufacturers({ page: 0, itemsPerPage: 50 });
+            const list = data.response?.data || data.data || [];
+            manufacturers.value = list.map((m: any) => ({ value: m.id, label: m.name }));
+        } catch (e) {
+            console.error('Failed to load manufacturers', e);
+        }
+    };
+
+    onMounted(() => {
+        fetchManufacturers();
+    });
+
     const materialOptions = [
         { value: 'Wool', label: 'Wool' },
         { value: 'Silk', label: 'Silk' },
@@ -71,8 +90,14 @@
     ];
 
     // Methods
-    const generateRN = () => {
-        console.log('Generating RN...');
+    const generateRN = async () => {
+        try {
+            const manufacturerId = formData.value.tapisDuProjet.fabricant;
+            const data = await workshopService.generateRN(manufacturerId, props.imageCommandId);
+            formData.value.tapisDuProjet.rn = data.response?.Rn || data.response?.rn || '';
+        } catch (e) {
+            console.error('Failed to generate RN', e);
+        }
     };
 
     const controlCoherence = () => {
@@ -91,13 +116,52 @@
         console.log('Attributing...');
     };
 
-    const enregistrer = () => {
-        console.log('Saving form...');
+    const saveWorkshopInformation = async () => {
+        const payload = {
+            launchDate: formData.value.infoCommande.dateCmdAtelier,
+            expectedEndDate: formData.value.infoCommande.dateFinTheo,
+            productionTime: Number(formData.value.infoCommande.delaisProd) || 0,
+            orderSilkPercentage: formData.value.infoCommande.pourcentCommande,
+            orderedWidth: formData.value.infoCommande.largeurCmd,
+            orderedHeight: formData.value.infoCommande.longueurCmd,
+            realWidth: formData.value.infoCommande.largeurReelle,
+            realHeight: formData.value.infoCommande.longueurReelle,
+            realSurface: formData.value.infoCommande.srfReelle,
+            idTarifGroup: Number(formData.value.infoCommande.anneeGrilleTarif) || 0,
+            reductionRate: formData.value.reductionTapis,
+            hasComplixityWorkshop: formData.value.complexiteAtelier,
+            hasMultilevelWorkshop: formData.value.multiLevelAtelier,
+            hasSpecialShape: formData.value.formeSpeciale,
+            carpetPurchasePricePerM2: formData.value.prixAchatTapis.auM2,
+            carpetPurchasePriceCmd: formData.value.prixAchatTapis.cmd,
+            carpetPurchasePriceTheoretical: formData.value.prixAchatTapis.theorique,
+            carpetPurchasePriceInvoice: formData.value.prixAchatTapis.facture,
+            penalty: formData.value.others.penalite,
+            shipping: formData.value.others.transport,
+            tva: formData.value.others.taxe,
+            grossMargin: formData.value.others.margeBrute,
+            referenceOnInvoice: formData.value.others.referenceSurFacture,
+            invoiceNumber: formData.value.others.numeroDuFacture,
+            manufacturerId: formData.value.tapisDuProjet.fabricant,
+            Rn: formData.value.tapisDuProjet.rn,
+        };
+        try {
+            await workshopService.createWorkshopInformation(payload);
+            console.log('Saved workshop information');
+        } catch (e) {
+            console.error('Failed to save workshop information', e);
+        }
     };
 
     const commandeAtelier = () => {
         console.log('Workshop command...');
     };
+
+    defineExpose({
+        saveWorkshopInformation,
+        commandeAtelier,
+        generateRN
+    });
 
     const createNewCheckingList = () => {
         console.log('Creating new checking list...');
@@ -339,7 +403,7 @@
                 <div class="form-row row py-2 align-items-center">
                     <div class="col-4"><label>Fabricant :</label></div>
                     <div class="col-8">
-                        <SelectInput v-model="formData.tapisDuProjet.fabricant" rootClass="pink-bg" />
+                        <SelectInput v-model="formData.tapisDuProjet.fabricant" :options="manufacturers" rootClass="pink-bg" />
                     </div>
                 </div>
                 <div class="form-row row py-2">
