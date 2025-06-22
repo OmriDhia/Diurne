@@ -12,17 +12,17 @@
         <!-- Radio Filter Section -->
 
         <div class="d-flex flex-wrap justify-content-start gap-4 mb-4">
-          <label class="fw-normal"><input type="radio" name="type" /> Échantillon</label>
-          <label class="fw-normal"><input type="radio" name="type" /> Tapis</label>
-          <label class="fw-normal"><input type="radio" name="type" /> Tous</label>
-          <label class="fw-normal"><input type="radio" name="type" /> Dispo. vente</label>
-          <label class="fw-normal"><input type="radio" name="type" /> État prod</label>
-          <label class="fw-normal"><input type="radio" name="type" /> État stock</label>
+          <label class="fw-normal"><input type="radio" name="type" value="echantillon" v-model="filter.type" /> Échantillon</label>
+          <label class="fw-normal"><input type="radio" name="type" value="tapis" v-model="filter.type" /> Tapis</label>
+          <label class="fw-normal"><input type="radio" name="type" value="tous" v-model="filter.type" /> Tous</label>
+          <label class="fw-normal"><input type="radio" name="type" value="dispo_vente" v-model="filter.type" /> Dispo. vente</label>
+          <label class="fw-normal"><input type="radio" name="type" value="etat_prod" v-model="filter.type" /> État prod</label>
+          <label class="fw-normal"><input type="radio" name="type" value="etat_stock" v-model="filter.type" /> État stock</label>
         </div>
         <!-- FILTER FORM -->
         <div class="row g-3 mb-3">
           <div v-for="(field, index) in fields" :key="index" class="col-md-4">
-            <d-input :label="field.label" v-model="filter[field.model]" :as="field.as || 'input'">
+            <d-input :label="field.label" :type="field.type || 'text'" v-model="filter[field.model]" :as="field.as || 'input'">
               <template v-if="field.model === 'etatTapis'">
                 <option value="">--</option>
                 <option value="cmd_atelier">Cmd. atelier</option>
@@ -165,7 +165,11 @@ const fields = [
   { label: 'Atelier', model: 'atelier' },
   { label: 'Commande', model: 'commande' },
   { label: 'Devis', model: 'devis' },
-  { label: 'Prescripteur', model: 'prescripteur' }
+  { label: 'Prescripteur', model: 'prescripteur' },
+  { label: 'Date cmd. client du', model: 'orderDate_from', type: 'date' },
+  { label: 'Date cmd. client au', model: 'orderDate_to', type: 'date' },
+  { label: 'Date facture client du', model: 'invoiceDate_from', type: 'date' },
+  { label: 'Date facture client au', model: 'invoiceDate_to', type: 'date' }
 ];
 
 const cols = ref([
@@ -251,6 +255,11 @@ const getFilterParams = () => {
   if (filter.value.commande) param += `&commande=${filter.value.commande}`;
   if (filter.value.devis) param += `&devis=${filter.value.devis}`;
   if (filter.value.prescripteur) param += `&prescripteur=${filter.value.prescripteur}`;
+  if (filter.value.orderDate_from) param += `&orderDateFrom=${filter.value.orderDate_from}`;
+  if (filter.value.orderDate_to) param += `&orderDateTo=${filter.value.orderDate_to}`;
+  if (filter.value.invoiceDate_from) param += `&invoiceDateFrom=${filter.value.invoiceDate_from}`;
+  if (filter.value.invoiceDate_to) param += `&invoiceDateTo=${filter.value.invoiceDate_to}`;
+  if (filter.value.type) param += `&type=${filter.value.type}`;
   return param;
 };
 
