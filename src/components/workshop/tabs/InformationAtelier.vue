@@ -65,7 +65,7 @@
 
     const fetchManufacturers = async () => {
         try {
-            const data = await workshopService.getManufacturers({ page: 0, itemsPerPage: 50 });
+            const data = await workshopService.getManufacturers({ page: 1, itemsPerPage: 50 });
             const list = data.response?.data || data.data || [];
             manufacturers.value = list.map((m: any) => ({ value: m.id, label: m.name }));
         } catch (e) {
@@ -92,9 +92,9 @@
     // Methods
     const generateRN = async () => {
         try {
-            const manufacturerId = formData.value.tapisDuProjet.fabricant;
+            const manufacturerId = parseInt(formData.value.tapisDuProjet.fabricant);
             const data = await workshopService.generateRN(manufacturerId, props.imageCommandId);
-            formData.value.tapisDuProjet.rn = data.response?.Rn || data.response?.rn || '';
+            formData.value.tapisDuProjet.rn = data.response?.rnNumber || data.response?.rnNumber || '';
         } catch (e) {
             console.error('Failed to generate RN', e);
         }
