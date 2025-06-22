@@ -4,165 +4,138 @@
 
     <!-- Radio Filter Section -->
 
-
-    <div class="row layout-top-spacing mt-2 p-2">
-      <div class="panel br-6 p-3 mt-1" id="fullscreen">
-
-        <div class="d-flex flex-wrap justify-content-start gap-4 mb-4">
-          <label class="fw-normal"><input type="radio" name="type" /> Échantillon</label>
-          <label class="fw-normal"><input type="radio" name="type" /> Tapis</label>
-          <label class="fw-normal"><input type="radio" name="type" /> Tous</label>
-          <label class="fw-normal"><input type="radio" name="type" /> Dispo. vente</label>
-          <label class="fw-normal"><input type="radio" name="type" /> État prod</label>
-          <label class="fw-normal"><input type="radio" name="type" /> État stock</label>
-        </div>
-        <!-- FILTER FORM -->
-        <div class="row g-3 mb-3">
+      <div class="panel br-6 p-2">
           <div v-for="(field, index) in fields" :key="index" class="col-md-4">
             <d-input :label="field.label" v-model="filter[field.model]" :as="field.as || 'input'">
-              <template v-if="field.model === 'etatTapis'">
-                <option value="">--</option>
-                <option value="cmd_atelier">Cmd. atelier</option>
-              </template>
-            </d-input>
-          </div>
         </div>
-
-        <!-- ACTION BUTTONS -->
-        <div class="d-flex justify-content-end gap-2 mb-3 custom-align">
-          <button v-if="filterActive" class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">Reset
-            filtre</button>
-          <button class="btn btn-custom pe-3 ps-3" @click.prevent="doSearch">Recherche</button>
-          <button class="btn btn-outline-secondary">IMPORTER MAJ TAPIS STOCK (EXCEL)</button>
-          <button class="btn btn-outline-dark">IMPORTER PR</button>
-        </div>
-
-        <!-- TABLE SECTION -->
-        <div class="table-responsive">
-          <table class="table table-bordered text-nowrap align-middle">
-            <thead class="bg-dark text-white text-center">
-              <tr>
-                <th>Image</th>
-                <th>Contremarque/ Emplacement</th>
-                <th>RN</th>
-                <th>Commande / Devis</th>
-                <th>Client/Commercial/Prescripteur</th>
-                <th>État</th>
-                <th>Emp. stock</th>
-                <th>Dispo</th>
-                <th>
-                  <div>Total :</div>
-                  <div><input class="form-control form-control-sm" /></div>
-                  <div>Prix de vente</div>
-                </th>
-                <th>
-                  <div>Total :</div>
-                  <div><input class="form-control form-control-sm" /></div>
-                  <div>Prix d'achat</div>
-                </th>
-                <th>
-                  <div>Début :</div>
-                  <input type="date" class="form-control form-control-sm mb-1" />
-                  <div>Fin :</div>
-                  <input type="date" class="form-control form-control-sm" />
-                </th>
-                <th>
-                  <div>Début :</div>
-                  <input type="date" class="form-control form-control-sm mb-1" />
-                  <div>Fin :</div>
-                  <input type="date" class="form-control form-control-sm" />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="order in rows" :key="order.id">
-                <td class="text-center">
-                  <img src="/label-image.jpg" alt="Carpet" style="width: 60px" />
-                </td>
-                <td>
-                  <strong>Contremarque :</strong> {{ order.designation }}<br />
-                  <strong>Emplacement :</strong> {{ order.location || '-' }}
-                </td>
-                <td>{{ order.reference }}</td>
-                <td>
-                  <strong>Commande :</strong> {{ order.cloned_quote_reference }}<br />
-                  <strong>Devis :</strong> {{ order.original_quote_reference }}
-                </td>
-                <td>
-                  <strong>Client :</strong> {{ order.customer }}<br />
-                  <strong>Commercial :</strong> {{ order.commercial }}<br />
-                  <strong>Prescripteur :</strong> {{ order.prescripteur || '-' }}
-                </td>
-                <td>{{ order.state || '-' }}</td>
-                <td class="text-center">
-                  <button class="btn btn-sm btn-outline-secondary">+</button>
-                </td>
-                <td class="text-center">
-                  <input type="checkbox" />
-                </td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <pagination v-if="totalRows > paginationData.itemsPerPage" :current-page="paginationData.currentPage"
-          :total-pages="totalPages" :total-items="totalRows" :items-per-page="paginationData.itemsPerPage"
-          @page-change="changePage" @page-size-change="changePageSize" />
       </div>
-    </div>
-  </div>
-</template>
+      <div class="panel br-6 p-2 mt-3" id="fullscreen">
+        <div class="row mt-2 mb-4">
+          <div class="vue3-datatable w-100">
+            <div class="row mb-4 relative align-items-center justify-content-between">
+              <div class="col-auto">
+                <div class="btn-group custom-dropdown me-2 btn-group-lg">
+                  <button class="btn btn-outline-custom p-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Cacher / Montrer Colonnes
+                  </button>
+                  <ul class="dropdown-menu p-2">
+                    <li v-for="col in cols" :key="col.field">
+                      <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" :checked="!col.hide" :id="col.field" @change="col.hide = !$event.target.checked" :name="col.field"/>
+                        <label class="custom-control-label text-black" :for="col.field"> {{ col.title }} </label>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <d-btn-fullscreen></d-btn-fullscreen>
+            </div>
+            <vue3-datatable
+              :rows="rows"
+              :columns="cols" :loading="loading"
+              :isServerMode="true" :sortColumn="params.orderBy"
+              :sortDirection="params.orderWay"
+              :totalRows="total_rows" :page="params.current_page"
+              :pageSize="params.pagesize"
+              :pageSizeOptions="[10, 25, 50, 75, 100]"
+              noDataContent="Aucune commande trouvée."
+              paginationInfo="Affichage de {0} à {1} sur {2} entrées" :sortable="true"
+              @change="changeServer" class="advanced-table text-nowrap">
+              <template #reference="data">
+                <div class="d-flex justify-content-between">
+                  <strong>{{ data.value.reference }}</strong>
+                  <router-link :to="'/tapis/order/manage/' + data.value.cloned_quote" v-if="$hasPermission('update carpet')">
+                    <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                  </router-link>
+                </div>
+              </template>
+              <template #designation="data">
+                <div class="d-flex justify-content-between">
+                  <strong>{{ data.value.designation }}</strong>
+                  <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id" v-if="$hasPermission('update contremarque')">
+                    <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                  </router-link>
+                </div>
+              </template>
+              <template #customer="data">
+                <div class="d-flex justify-content-between">
+                  <strong>{{ data.value.customer }}</strong>
+                </div>
+              </template>
+              <template #creationDate="data">
+                <div class="d-flex justify-content-between">
+                  {{ data.value.created_at ? $Helper.FormatDate(data.value.created_at) : '' }}
+                </div>
+              </template>
+            </vue3-datatable>
+          </div>
+import { ref, reactive, onMounted } from 'vue';
+import dBtnFullscreen from '../../../components/base/d-btn-fullscreen.vue';
+import VueFeather from 'vue-feather';
+import Vue3Datatable from '@bhplugin/vue3-datatable';
+const loading = ref(true);
+const total_rows = ref(0);
 
-<script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
-import dInput from '../../../components/base/d-input.vue';
-import dPageTitle from '../../../components/common/d-page-title.vue';
-import pagination from '../../../components/base/Pagination/d-pagination.vue';
-import axiosInstance from '../../../config/http';
-import { filterCarpetOrder, FILTER_CARPET_ORDER_STORAGE_NAME } from '../../../composables/constants';
-import { Helper } from '../../../composables/global-methods';
-
-const filter = ref(Object.assign({}, filterCarpetOrder));
-const filterActive = ref(false);
-
-const fields = [
-  { label: 'Client', model: 'client' },
-  { label: 'RN', model: 'rn' },
-  { label: 'Collection', model: 'collection' },
-  { label: 'Contremarque', model: 'contremarque' },
-  { label: 'Etat du tapis', model: 'etatTapis', as: 'select' },
-  { label: 'Modèle', model: 'modele' },
-  { label: 'Commercial', model: 'commercial' },
-  { label: 'Atelier', model: 'atelier' },
-  { label: 'Commande', model: 'commande' },
-  { label: 'Devis', model: 'devis' },
-  { label: 'Prescripteur', model: 'prescripteur' }
-];
-
-const rows = ref([]);
-const totalRows = ref(0);
-
-const paginationData = reactive({
-  currentPage: 1,
-  itemsPerPage: 5
+const params = reactive({
+  current_page: 1,
+  pagesize: 50,
+  orderBy: '',
+  orderWay: ''
 });
 
-const totalPages = computed(() =>
-  Math.ceil(totalRows.value / paginationData.itemsPerPage)
-);
+const rows = ref(null);
 
-const getOrders = async () => {
-  try {
-    let url = `/api/carpetOrders?page=${paginationData.currentPage}&limit=${paginationData.itemsPerPage}`;
-    url += getFilterParams();
-    const res = await axiosInstance.get(url);
-    rows.value = res.data.carpetOrders || [];
-    totalRows.value = res.data.count || 0;
-  } catch (e) {
-    console.error(e);
+const cols = ref([
+  { field: 'reference', title: 'Numéro commande' },
+  { field: 'designation', title: 'Contremarque' },
+  { field: 'customer', title: 'Client' },
+  { field: 'commercial', title: 'Commercial' },
+  { field: 'creationDate', title: 'Date création' }
+]) || [];
+onMounted(() => {
+  const saved = Helper.getStorage(FILTER_CARPET_ORDER_STORAGE_NAME);
+  if (saved && Helper.hasDefinedValue(saved)) {
+    filter.value = saved;
+    filterActive.value = true;
+  }
+  getCarpetOrders();
+const getCarpetOrders = async () => {
+    loading.value = true;
+    let url = `/api/carpetOrders?page=${params.current_page}&limit=${params.pagesize}`;
+    if (params.orderBy) {
+      url += `&orderBy=${params.orderBy}`;
+    }
+    if (params.orderWay) {
+      url += `&orderWay=${params.orderWay}`;
+    }
+    const response = await axiosInstance.get(url);
+    const data = response.data;
+    total_rows.value = data.count;
+    rows.value = data.carpetOrders;
+  loading.value = false;
+const changeServer = (data) => {
+  params.current_page = data.current_page;
+  params.pagesize = data.pagesize;
+  params.orderBy = data.sort_column;
+  params.orderWay = data.sort_direction;
+  getCarpetOrders();
+  getCarpetOrders();
+
+  let param = '';
+  const f = filter.value;
+  if (f.client) param += `&client=${f.client}`;
+  if (f.rn) param += `&rn=${f.rn}`;
+  if (f.collection) param += `&collection=${f.collection}`;
+  if (f.contremarque) param += `&contremarque=${f.contremarque}`;
+  if (f.etatTapis) param += `&etatTapis=${f.etatTapis}`;
+  if (f.modele) param += `&modele=${f.modele}`;
+  if (f.commercial) param += `&commercial=${f.commercial}`;
+  if (f.atelier) param += `&atelier=${f.atelier}`;
+  if (f.commande) param += `&commande=${f.commande}`;
+  if (f.devis) param += `&devis=${f.devis}`;
+  if (f.prescripteur) param += `&prescripteur=${f.prescripteur}`;
+  return param;
+  getCarpetOrders();
   }
 };
 
