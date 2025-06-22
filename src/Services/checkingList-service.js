@@ -28,5 +28,25 @@ export default {
             console.error('Error creating checking list:', error);
             throw error;
         }
+    },
+
+    async getCheckingListById(id) {
+        try {
+            const res = await axiosInstance.get(`/api/checkingLists/${id}`);
+            return res.data?.response || {};
+        } catch (error) {
+            console.error('Error fetching checking list:', error);
+            throw error;
+        }
+    },
+
+    async updateCheckingList(id, payload) {
+        try {
+            const res = await axiosInstance.put(`/api/checkingLists/${id}`, payload);
+            return res.data?.data;
+        } catch (error) {
+            console.error('Error updating checking list:', error);
+            throw error;
+        }
     }
 };
