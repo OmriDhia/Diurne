@@ -384,6 +384,7 @@
                                 :hideBtn="true"
                                 :compositionData="data.workShopOrder.imageCommand.carpetSpecification.carpedComposition"
                                 :carpetSpecificationId="data.workShopOrder.imageCommand.carpetSpecification.id"
+                                :layersValidations="layersValidations"
                             ></d-compositions>
                         </div>
                     </div>
@@ -420,6 +421,7 @@
     import DCompositions from '@/components/projet/contremarques/d-compositions.vue';
 
     const data = ref(null);
+    const layersValidations = ref([]);
     const validationOptions = [
         { label: 'Validée' },
         { label: 'Non validée' }
@@ -514,6 +516,7 @@
         form.value.author = data.author || '';
         form.value.date = data.date?.date?.split(' ')[0] || '';
         form.value.productionEnd = data.dateEndProd?.date?.split(' ')[0] || '';
+        layersValidations.value = data.layersValidations || [];
         if (data.shapeValidation) {
             console.log(data.shapeValidation.id);
             form.value.shapeValidationId = data.shapeValidation.id;
