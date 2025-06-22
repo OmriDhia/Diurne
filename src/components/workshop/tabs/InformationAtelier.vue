@@ -5,7 +5,7 @@
     import dInput from '../../../components/base/d-input.vue';
     import DCurrency from '@/components/common/d-currency.vue';
     import DPanelTitle from '@/components/common/d-panel-title.vue';
-    import checkingListService from '@/Services/checkingList-service.js';
+    import checkingListService from '../../../Services/checkingList-service';
 
     const props = defineProps({
         orderId: {
@@ -112,13 +112,18 @@
     };
 
     const createNewCheckingList = async () => {
+        const staticOrderId = 187;
         try {
-            const newList = await checkingListService.createCheckingList(props.orderId);
+            const newList = await checkingListService.createCheckingList(
+                //    props.orderId
+                staticOrderId
+            );
             if (newList) {
                 checkingLists.value.push(newList);
             }
         } catch (e) {
-            console.error(e);
+            console.error('Failed to create checking list:', e);
+
         }
     };
 

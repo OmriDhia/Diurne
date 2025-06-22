@@ -4,22 +4,22 @@
             <d-page-title title="Checking List" />
         </template>
 
-        <template #body>
+        <template v-slot:body>
             <d-panel>
-                <template #panel-header>
+                <template v-slot:panel-header>
                     <d-panel-title title="Informations générales" />
                 </template>
 
-                <template #panel-body>
+                <template v-slot:panel-body>
                     <div class="row">
                         <div class="col-md-4">
-                            <d-input label="RN" v-model="form.rn" />
+                            <d-input label="RN" v-model="form.rn" disabled />
                         </div>
                         <div class="col-md-4">
-                            <d-input label="Auteur" type="date" v-model="form.author" />
+                            <d-input label="Auteur" type="text" v-model="form.author" disabled />
                         </div>
                         <div class="col-md-4">
-                            <d-input label="Date" type="date" v-model="form.date" />
+                            <d-input label="Date" type="date" v-model="form.date" disabled />
                         </div>
                     </div>
 
@@ -382,10 +382,35 @@
                             </fieldset>
                         </div>
                     </div>
-                    <!-- Additional Fields & Comments -->
-
                 </template>
             </d-panel>
+        </template>
+        ss
+        <template>
+            <div class="row p-2 justify-content-between">
+                <div class="col-auto">
+                    <button class="btn btn-custom pe-5 ps-5" @click="goToDevisList">Retour à la liste</button>
+                </div>
+                <div class="col-auto">
+                    <div class="row">
+                        <div class="col-auto" v-if="quote_id">
+                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevis(false)">Enregistrer &
+                                Rester
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevis(false)">Enregistrer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <d-btn-outlined label="B1234" icon="arrow-right"
+                                    buttonClass="ps-2 d-none">tesst
+                    </d-btn-outlined>
+                </div>
+            </div>
+
         </template>
     </d-base-page>
 </template>
@@ -399,6 +424,7 @@
     import dPanelTitle from '@/components/common/d-panel-title.vue';
     import dPageTitle from '@/components/common/d-page-title.vue';
     import DRadioValidation from '@/components/checkingProgress/d-radio-validation.vue';
+    import DBtnOutlined from '@/components/base/d-btn-outlined.vue';
 
     const validationOptions = [
         { label: 'Validée' },

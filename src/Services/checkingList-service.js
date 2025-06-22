@@ -1,22 +1,32 @@
 import axiosInstance from '../config/http';
 
 export default {
-    async getCheckingListsByOrder(orderId){
+    async getCheckingListsByOrder(orderId) {
         try {
-            const res = await axiosInstance.get(`/api/checkingList/${orderId}`);
-            return res.data.response?.checkingLists || [];
+            const res = await axiosInstance.get(`/api/checkingLists?orderId=${orderId}`);
+            return res.data?.data || []; // Adjust based on actual API response
         } catch (error) {
             console.error('Error fetching checking lists:', error);
-            throw new Error('Erreur lors de la récupération des checking lists');
+            throw error; // Throw the original error for better debugging
         }
     },
-    async createCheckingList(orderId){
+
+    async createCheckingList(orderId, payload = {}) {
         try {
-            const res = await axiosInstance.post('/api/checkingList/create', { orderId });
-            return res.data.response?.checkingList;
+            const defaultPayload = {
+                workshopOrderId: orderId,
+                authorId: 1, // Should come from auth/user system
+                date: new Date().toISOString().split('T')[0],
+                dateEndProd: '',
+                comment: 'qsd'
+            };
+            const finalPayload = { ...defaultPayload, ...payload };
+
+            const res = await axiosInstance.post('/api/checkingLists', finalPayload);
+            return res.data?.data; // Adjust based on actual API response
         } catch (error) {
             console.error('Error creating checking list:', error);
-            throw new Error('Erreur lors de la création de la checking list');
+            throw error;
         }
     }
 };
