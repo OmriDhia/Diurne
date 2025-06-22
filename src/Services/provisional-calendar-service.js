@@ -8,5 +8,14 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async getById(id) {
+        try {
+            const res = await axiosInstance.get(`/api/provisionalCalendar/${id}`);
+            return res.data.response;
+        } catch (error) {
+            throw error;
+        }
     }
 };
