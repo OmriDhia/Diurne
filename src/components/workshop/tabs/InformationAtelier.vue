@@ -1,10 +1,19 @@
 <script setup lang="ts">
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
+    import { useRouter } from 'vue-router';
     import SelectInput from '../ui/SelectInput.vue';
     import RadioButton from '../ui/RadioButton.vue';
     import dInput from '../../../components/base/d-input.vue';
     import DCurrency from '@/components/common/d-currency.vue';
     import DPanelTitle from '@/components/common/d-panel-title.vue';
+    import checkingListService from '../../../Services/checkingList-service';
+
+    const props = defineProps({
+        orderId: {
+            type: Number,
+            required: true
+        }
+    });
     // Form data
     const formData = ref({
         infoCommande: {
@@ -64,11 +73,18 @@
         { value: 'Hemp', label: 'Hemp' }
     ];
 
-    const checkingLists = [
-        { id: '551', label: 'Checking List n° 551' },
-        { id: '691', label: 'Checking List n° 691' },
-        { id: '6951', label: 'Checking List n° 6951' }
-    ];
+    const checkingLists = ref([]);
+    const router = useRouter();
+    const staticOrderId = 189;
+    const loadCheckingLists = async () => {
+        try {
+            const response = await checkingListService.getCheckingListsByOrder(staticOrderId);
+            checkingLists.value = response || [];
+            console.log('Loaded checking lists:', checkingLists.value); // Debug log
+        } catch (e) {
+            console.error('Error loading checking lists:', e);
+        }
+    };
 
     // Methods
     const generateRN = () => {
@@ -99,9 +115,23 @@
         console.log('Workshop command...');
     };
 
-    const createNewCheckingList = () => {
-        console.log('Creating new checking list...');
+    const createNewCheckingList = async () => {
+        try {
+            const newList = await checkingListService.createCheckingList(
+                //    props.orderId
+                staticOrderId
+            );
+            console.log(newList);
+            if (newList) {
+                checkingLists.value.push(newList);
+                router.push(`/checking-progress/list/${newList.id}`);
+            }
+        } catch (e) {
+            console.error('Failed to create checking list:', e);
+        }
     };
+    console.log(checkingLists.value);
+    onMounted(loadCheckingLists);
 </script>
 
 <template>
@@ -294,9 +324,16 @@
 
                 <div class="checking-lists">
                     <div class="list-links">
-                        <a href="#" v-for="list in checkingLists" :key="list.id" class="checking-link">
-                            <span class="text-decoration-underline  me-2">{{ list.label }}</span>
-                        </a>
+                        <router-link
+                            v-for="list in checkingLists"
+                            :key="list.id"
+                            :to="`/checking-progress/list/${list.id}`"
+                            class="checking-link"
+                        >
+        <span class="text-decoration-underline me-2">
+            Checking List n°{{ list.id }}
+        </span>
+                        </router-link>
                     </div>
                     <button class="new-list-btn btn btn-custom  text-uppercase my-2"
                             @click="createNewCheckingList">NOUVELLE CHECKING LIST

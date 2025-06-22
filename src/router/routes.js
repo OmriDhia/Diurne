@@ -407,6 +407,42 @@ export const routes = [
         }
     },
     {
+        path: '/checking-progress/list/:id',
+        name: 'checkingList',
+        component: () => import('../views/checkingProgress/checkingList.vue'),
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
+        path: '/checking-progress/provisional',
+        name: 'provisionalCalendar',
+        component: () => import('../views/checkingProgress/provisionalCalendar.vue'),
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
+        path: '/checking-progress/provisional/:id',
+        name: 'provisionalCalendarView',
+        component: () => import('../views/checkingProgress/provisionalCalendar.vue'),
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
+        path: '/checking-progress/progress',
+        name: 'progressReport',
+        component: () => import('../views/checkingProgress/progressReport.vue'),
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
         path: '/treasury',
         name: 'treasury',
         component: () => import('../views/treasury/treasuryList.vue'),
