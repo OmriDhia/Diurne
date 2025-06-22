@@ -122,7 +122,7 @@
                   <button class="btn btn-sm btn-outline-secondary">+</button>
                 </td>
                 <td v-if="!cols.find(c => c.field === 'dispo')?.hide" class="text-center">
-                  <input type="checkbox" />
+                  <input type="radio" />
                 </td>
                 <td v-if="!cols.find(c => c.field === 'prixVente')?.hide"></td>
                 <td v-if="!cols.find(c => c.field === 'prixAchat')?.hide"></td>
@@ -302,5 +302,9 @@ th input {
 .bh-table-responsive table thead tr th.bh-sticky,
 .bh-table-responsive table tbody tr td.bh-sticky {
   background: #eff5ff !important;
+}
+input[type="radio"]{
+    position: unset;
+    opacity: 1;
 }
 </style>
