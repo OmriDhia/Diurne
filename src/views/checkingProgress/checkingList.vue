@@ -385,29 +385,18 @@
                 </template>
             </d-panel>
         </template>
-        ss
         <template>
             <div class="row p-2 justify-content-between">
                 <div class="col-auto">
-                    <button class="btn btn-custom pe-5 ps-5" @click="goToDevisList">Retour à la liste</button>
+                    <button class="btn btn-custom pe-5 ps-5" @click="goToWorkshop">Retour à la workShop</button>
                 </div>
                 <div class="col-auto">
                     <div class="row">
                         <div class="col-auto" v-if="quote_id">
-                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevis(false)">Enregistrer &
-                                Rester
-                            </button>
-                        </div>
-                        <div class="col-auto">
-                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevis(false)">Enregistrer
+                            <button class="btn btn-custom pe-5 ps-5" @click="saveCheckingList(false)">Enregistrer
                             </button>
                         </div>
                     </div>
-                </div>
-                <div class="col-auto">
-                    <d-btn-outlined label="B1234" icon="arrow-right"
-                                    buttonClass="ps-2 d-none">tesst
-                    </d-btn-outlined>
                 </div>
             </div>
 
