@@ -103,7 +103,7 @@
                                     </button>
                                 </div>
                                 <div class="col-md-6">
-                                    <button class="btn btn-custom font-size-0-7 text-uppercase">rattacher un règlement
+                                    <button class="btn btn-custom font-size-0-7 text-uppercase" @click="goToAttachReglement">rattacher un règlement
                                     </button>
                                 </div>
                             </div>
@@ -471,9 +471,17 @@
         }
     });
 
-    const goToDevisList = () => {
-        router.push({ name: 'carpetOrderList' });
-    };
+const goToDevisList = () => {
+    router.push({ name: 'carpetOrderList' });
+};
+
+const goToAttachReglement = () => {
+    if (!quote_id) {
+        window.showMessage('Veuillez enregistrer la commande avant de rattacher un règlement', 'error');
+        return;
+    }
+    router.push({ name: 'reglement_attach_list', params: { quoteId: quote_id } });
+};
     const calculateTotal = async (quote_id) => {
         try {
             const res = await quoteService.calculateQuote(quote_id, {
