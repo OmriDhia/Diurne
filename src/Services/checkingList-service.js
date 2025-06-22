@@ -48,5 +48,35 @@ export default {
             console.error('Error updating checking list:', error);
             throw error;
         }
+    },
+
+    async updateShapeValidation(id, payload) {
+        try {
+            const res = await axiosInstance.put(`/api/shapeValidations/${id}`, payload);
+            return res.data?.data;
+        } catch (error) {
+            console.error('Error updating shape validation:', error);
+            throw error;
+        }
+    },
+
+    async updateQualityCheck(id, payload) {
+        try {
+            const res = await axiosInstance.put(`/api/qualityChecks/${id}`, payload);
+            return res.data?.data;
+        } catch (error) {
+            console.error('Error updating quality check:', error);
+            throw error;
+        }
+    },
+
+    async updateQualityRespect(id, payload) {
+        try {
+            const res = await axiosInstance.put(`/api/qualityRespects/${id}`, payload);
+            return res.data?.data;
+        } catch (error) {
+            console.error('Error updating quality respect:', error);
+            throw error;
+        }
     }
 };
