@@ -121,6 +121,7 @@
                 //    props.orderId
                 staticOrderId
             );
+            console.log(newList);
             if (newList) {
                 checkingLists.value.push(newList);
                 router.push(`/checking-progress/list/${newList.id}`);
@@ -324,7 +325,6 @@
                 <div class="checking-lists">
                     <div class="list-links">
                         <router-link
-                            target="_blank"
                             v-for="list in checkingLists"
                             :key="list.id"
                             :to="`/checking-progress/list/${list.id}`"

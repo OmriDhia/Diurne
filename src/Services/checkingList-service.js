@@ -23,7 +23,7 @@ export default {
             const finalPayload = { ...defaultPayload, ...payload };
 
             const res = await axiosInstance.post('/api/checkingLists', finalPayload);
-            return res.data?.data;
+            return res.data?.response;
         } catch (error) {
             console.error('Error creating checking list:', error);
             throw error;

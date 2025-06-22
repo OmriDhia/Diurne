@@ -175,22 +175,15 @@
                                 </div>
                                 <div class="col-md-4">
                                     <fieldset>
-                                        <d-panel-title class-name="ps-2" title="Frange" link=""></d-panel-title>
-                                        <d-radio-validation v-model="form.fringeShapeValidation"
-                                                            :options="validationOptions" />
-                                        <d-textarea label="" v-model="form.fringeShapeComment" />
-                                    </fieldset>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <fieldset>
                                         <d-panel-title class-name="ps-2" title="Non binding" link=""></d-panel-title>
                                         <d-radio-validation v-model="form.nonBindingValidation"
                                                             :options="validationOptions" />
                                         <d-textarea label="" v-model="form.nonBindingComment" />
                                     </fieldset>
                                 </div>
+                            </div>
+                            <div class="row">
+
                                 <div class="col-md-4">
                                     <fieldset>
                                         <d-panel-title class-name="ps-2" title="Signature" link=""></d-panel-title>
@@ -508,6 +501,9 @@
         form.value.date = data.date?.date?.split(' ')[0] || '';
         form.value.productionEnd = data.dateEndProd?.date?.split(' ')[0] || '';
         if (data.shapeValidation) {
+            console.log(data.shapeValidation.id);
+            form.value.shapeValidationId = data.shapeValidation.id;
+            form.value.shapeValidation = data.shapeValidation.shapeValidation;
             form.value.realWidth = data.shapeValidation.realWidth || '';
             form.value.realLength = data.shapeValidation.realLength || '';
             form.value.surface = data.shapeValidation.surface || '';
@@ -517,6 +513,8 @@
             form.value.shapeValidation = data.shapeValidation.shapeValidation;
         }
         if (data.qualityCheck) {
+            console.log(data.qualityCheck.id);
+            form.value.qualityCheckId = data.qualityCheck.id;
             form.value.graphicValidation = data.qualityCheck.graphicValidation;
             form.value.graphicComment = data.qualityCheck.graphicComment || '';
             form.value.instructionRespect = data.qualityCheck.instructionComplianceValidation;
@@ -553,6 +551,8 @@
             form.value.sansBackingComment = data.qualityCheck.withoutBackingComment || '';
         }
         if (data.qualityRespect) {
+            console.log(data.qualityRespect.id);
+            form.value.qualityRespectId = data.qualityRespect.id;
             form.value.respectPlanValidation = data.qualityRespect.respectPlanValid;
             form.value.respectPlanComment = data.qualityRespect.respectPlanComment || '';
             form.value.respectHeightValidation = data.qualityRespect.respectDoorHeightValid;
@@ -601,7 +601,7 @@
                 shapeProgress: form.value.shapeProgress
             });
 
-            await checkingListService.updateShapeValidation(checkingListId, {
+            await checkingListService.updateShapeValidation(form.value.shapeValidationId, {
                 shape_validation: form.value.shapeValidation,
                 real_width: form.value.realWidth,
                 real_length: form.value.realLength,
@@ -611,7 +611,7 @@
                 comment: form.value.shapeComment
             });
 
-            await checkingListService.updateQualityCheck(checkingListId, {
+            await checkingListService.updateQualityCheck(form.value.qualityCheckId, {
                 graphic_validation: form.value.graphicValidation,
                 graphic_comment: form.value.graphicComment,
                 instruction_compliance_validation: form.value.instructionRespect,
@@ -648,7 +648,7 @@
                 without_backing_comment: form.value.sansBackingComment
             });
 
-            await checkingListService.updateQualityRespect(checkingListId, {
+            await checkingListService.updateQualityRespect(form.value.qualityRespectId, {
                 respect_plan_valid: form.value.respectPlanValidation,
                 respect_plan_comment: form.value.respectPlanComment,
                 respect_door_height_valid: form.value.respectHeightValidation,
