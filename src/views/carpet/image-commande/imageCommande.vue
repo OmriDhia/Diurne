@@ -36,7 +36,8 @@
 
         <!-- ACTION BUTTONS -->
         <div class="d-flex justify-content-end gap-2 mb-3">
-          <button class="btn btn-dark" @click="doSearch">RECHERCHER</button>
+          <button v-if="filterActive" class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">Reset filtre</button>
+          <button class="btn btn-custom" @click.prevent="doSearch">Recherche</button>
           <button class="btn btn-outline-secondary">IMPORTER MAJ TAPIS STOCK (EXCEL)</button>
           <button class="btn btn-outline-dark">IMPORTER PR</button>
         </div>
@@ -133,36 +134,29 @@ import dPageTitle from '../../../components/common/d-page-title.vue';
 import pagination from '../../../components/base/Pagination/d-pagination.vue';
 import axiosInstance from '../../../config/http';
 
-const filter = ref({
-  client: '',
-  rn: '',
-  collection: '',
-  contremarque: '',
-  etatTapis: '',
-  modele: '',
-  commercial: '',
-  atelier: '',
-  commande: '',
-  devis: '',
-  prescripteur: ''
-});
+import { Helper } from '../../../composables/global-methods';
+import { filterImageCommande, FILTER_IMAGE_COMMANDE_STORAGE_NAME } from '../../../composables/constants';
+
+const filter = ref(Object.assign({}, filterImageCommande));
+const filterActive = ref(false);
 
 const fields = [
-  { label: 'Client :', model: 'client' },
-  { label: 'RN :', model: 'rn' },
-  { label: 'Collection :', model: 'collection' },
-  { label: 'Contremarque :', model: 'contremarque' },
-  { label: 'Etat du tapis :', model: 'etatTapis', as: 'select' },
-  { label: 'Modèle :', model: 'modele' },
-  { label: 'Commercial :', model: 'commercial' },
-  { label: 'Atelier :', model: 'atelier' },
-  { label: 'Commande :', model: 'commande' },
-  { label: 'Devis :', model: 'devis' },
-  { label: 'Prescripteur :', model: 'prescripteur' }
+  { label: 'Client', model: 'client' },
+  { label: 'RN', model: 'rn' },
+  { label: 'Collection', model: 'collection' },
+  { label: 'Contremarque', model: 'contremarque' },
+  { label: 'Etat du tapis', model: 'etatTapis', as: 'select' },
+  { label: 'Modèle', model: 'modele' },
+  { label: 'Commercial', model: 'commercial' },
+  { label: 'Atelier', model: 'atelier' },
+  { label: 'Commande', model: 'commande' },
+  { label: 'Devis', model: 'devis' },
+  { label: 'Prescripteur', model: 'prescripteur' }
 ];
 
 const rows = ref([]);
 const totalRows = ref(0);
+const loading = ref(false);
 
 const paginationData = reactive({
   currentPage: 1,
@@ -175,13 +169,16 @@ const totalPages = computed(() =>
 
 const getOrders = async () => {
   try {
-    const url = `/api/carpetOrders?page=${paginationData.currentPage}&limit=${paginationData.itemsPerPage}`;
+    loading.value = true;
+    let url = `/api/carpetOrders?page=${paginationData.currentPage}&limit=${paginationData.itemsPerPage}`;
+    url += getFilterParams();
     const res = await axiosInstance.get(url);
     rows.value = res.data.carpetOrders || [];
     totalRows.value = res.data.count || 0;
   } catch (e) {
     console.error(e);
   }
+  loading.value = false;
 };
 
 const changePage = (page) => {
@@ -196,11 +193,42 @@ const changePageSize = (size) => {
 };
 
 const doSearch = () => {
+  filterActive.value = true;
+  Helper.setStorage(FILTER_IMAGE_COMMANDE_STORAGE_NAME, filter.value);
   paginationData.currentPage = 1;
   getOrders();
 };
 
+const doReset = () => {
+  filterActive.value = false;
+  filter.value = Object.assign({}, filterImageCommande);
+  Helper.setStorage(FILTER_IMAGE_COMMANDE_STORAGE_NAME, filter.value);
+  paginationData.currentPage = 1;
+  getOrders();
+};
+
+const getFilterParams = () => {
+  let p = '';
+  if (filter.value.client) p += `&client=${filter.value.client}`;
+  if (filter.value.rn) p += `&rn=${filter.value.rn}`;
+  if (filter.value.collection) p += `&collection=${filter.value.collection}`;
+  if (filter.value.contremarque) p += `&contremarque=${filter.value.contremarque}`;
+  if (filter.value.etatTapis) p += `&etatTapis=${filter.value.etatTapis}`;
+  if (filter.value.modele) p += `&modele=${filter.value.modele}`;
+  if (filter.value.commercial) p += `&commercial=${filter.value.commercial}`;
+  if (filter.value.atelier) p += `&atelier=${filter.value.atelier}`;
+  if (filter.value.commande) p += `&commande=${filter.value.commande}`;
+  if (filter.value.devis) p += `&devis=${filter.value.devis}`;
+  if (filter.value.prescripteur) p += `&prescripteur=${filter.value.prescripteur}`;
+  return p;
+};
+
 onMounted(() => {
+  const f = Helper.getStorage(FILTER_IMAGE_COMMANDE_STORAGE_NAME);
+  if (f && Helper.hasDefinedValue(f)) {
+    filter.value = f;
+    filterActive.value = true;
+  }
   getOrders();
 });
 </script>
