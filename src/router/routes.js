@@ -41,36 +41,36 @@ export const routes = [
         }
     },
 
-    {
-        path: '/facture-client',
-        name: 'facture_client',
-        children: [
-            {
-                path: '',
-                name: 'facture_client_list',
-                component: () => import('../views/factureClient/factureClientList.vue'),
-                meta: {
-                    requiresAuth: true,
-                    class: 'treasury',
-                    permission: 'read invoice',
-                }
-            },
-            {
-                path: 'manage/:id?',
-                name: 'facture_client_manage',
-                component: () => import('../views/factureClient/factureClientForm.vue'),
-                meta: {
-                    requiresAuth: true,
-                    class: 'treasury',
-                    permission: 'create invoice',
-                }
-            }
-        ],
-        meta: {
-            requiresAuth: true,
-            class: 'treasury'
-        },
-    },
+    // {
+    //     path: '/facture-client',
+    //     name: 'facture_client',
+    //     children: [
+    //         {
+    //             path: '',
+    //             name: 'facture_client_list',
+    //             component: () => import('../views/factureClient/factureClientList.vue'),
+    //             meta: {
+    //                 requiresAuth: true,
+    //                 class: 'treasury',
+    //                 permission: 'read invoice',
+    //             }
+    //         },
+    //         {
+    //             path: 'manage/:id?',
+    //             name: 'facture_client_manage',
+    //             component: () => import('../views/factureClient/factureClientForm.vue'),
+    //             meta: {
+    //                 requiresAuth: true,
+    //                 class: 'treasury',
+    //                 permission: 'create invoice',
+    //             }
+    //         }
+    //     ],
+    //     meta: {
+    //         requiresAuth: true,
+    //         class: 'treasury'
+    //     },
+    // },
     //users
     {
         path: '/users',
@@ -437,6 +437,36 @@ export const routes = [
         }
     },
     {
+        path: '/projet/invoices',
+        name: 'clientInvoice',
+        children: [
+            {
+                path: '',
+                name: 'client-invoice-list',
+                component: () => import('../views/projects/factureClient/clientInvoiceList.vue'),
+                meta: {
+                    requiresAuth: true,
+                   class: 'projects',
+                    permission: 'read invoice',
+                },
+            },
+            {
+                path: 'create',
+                name: 'client-invoice-create',
+                component: () => import('../views/projects/factureClient/clientInvoiceCreate.vue'),
+                meta: {
+                    requiresAuth: true,
+                   class: 'projects',
+                    permission: 'create invoice',
+                },
+            },
+        ],
+       meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
         path: '/treasury',
         name: 'treasury',
         component: () => import('../views/treasury/treasuryList.vue'),
@@ -496,5 +526,7 @@ export const routes = [
             class: 'treasury'
         },
     },
+
+    
 
 ];

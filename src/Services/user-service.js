@@ -89,7 +89,7 @@ export default {
     getUserMenu(){
         const info = this.getUserInfo();
         const menu = (info && info.menus) ? info.menus : [];
-        return menu.map(m => {
+        const mapped = menu.map(m => {
             switch (m.name) {
                 case 'Contacts':
                     m.icon = 'icon-contacts';
@@ -109,6 +109,13 @@ export default {
             }
             return m;
         });
+
+        // const hasInvoice = mapped.some(m => m.name === 'Facture Client');
+        // if (!hasInvoice) {
+        //     mapped.push({ id: 'clientInvoice', name: 'Facture Client', route: 'clientInvoice', children: [], icon: 'icon-projects' });
+        // }
+
+        return mapped;
     },
     affectUserRoles(userInfo){
         if(userInfo){
