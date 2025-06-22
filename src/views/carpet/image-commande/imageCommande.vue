@@ -238,4 +238,5 @@ const goToImageDetails = (id) => {
 .text-size-16{
     font-size: 16px !important;
 }
+
 </style>

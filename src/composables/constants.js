@@ -122,6 +122,21 @@ export const filterClientInvoice = {
     contremarque: null,
 };
 
+export const FILTER_CARPET_ORDER_STORAGE_NAME = "filterCarpetOrder";
+export const filterCarpetOrder = {
+    client: null,
+    rn: null,
+    collection: null,
+    contremarque: null,
+    etatTapis: null,
+    modele: null,
+    commercial: null,
+    atelier: null,
+    commande: null,
+    devis: null,
+    prescripteur: null,
+};
+
 export const customerInstructionObject = {
     orderNumber: "",
     transmi_adv: "",
