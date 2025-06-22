@@ -407,7 +407,7 @@ export const routes = [
         }
     },
     {
-        path: '/checking-progress/list',
+        path: '/checking-progress/list/:id',
         name: 'checkingList',
         component: () => import('../views/checkingProgress/checkingList.vue'),
         meta: {

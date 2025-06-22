@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import { ref, onMounted } from 'vue';
+    import { useRouter } from 'vue-router';
     import SelectInput from '../ui/SelectInput.vue';
     import RadioButton from '../ui/RadioButton.vue';
     import dInput from '../../../components/base/d-input.vue';
@@ -73,6 +74,7 @@
     ];
 
     const checkingLists = ref([]);
+    const router = useRouter();
     const staticOrderId = 187;
     const loadCheckingLists = async () => {
         try {
@@ -114,7 +116,6 @@
     };
 
     const createNewCheckingList = async () => {
-
         try {
             const newList = await checkingListService.createCheckingList(
                 //    props.orderId
@@ -122,10 +123,10 @@
             );
             if (newList) {
                 checkingLists.value.push(newList);
+                router.push(`/checking-progress/list/${newList.id}`);
             }
         } catch (e) {
             console.error('Failed to create checking list:', e);
-
         }
     };
     console.log(checkingLists.value);

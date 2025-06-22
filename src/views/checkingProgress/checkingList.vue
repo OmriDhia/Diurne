@@ -393,7 +393,7 @@
                 <div class="col-auto">
                     <div class="row">
                         <div class="col-auto" v-if="quote_id">
-                            <button class="btn btn-custom pe-5 ps-5" @click="saveCheckingList(false)">Enregistrer
+                            <button class="btn btn-custom pe-5 ps-5" @click="saveCheckingList">Enregistrer
                             </button>
                         </div>
                     </div>
@@ -405,7 +405,9 @@
 </template>
 
 <script setup>
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
+    import checkingListService from '@/Services/checkingList-service';
     import dBasePage from '@/components/base/d-base-page.vue';
     import dInput from '@/components/base/d-input.vue';
     import dTextarea from '@/components/base/d-textarea.vue';
@@ -424,6 +426,11 @@
         { label: 'Pertinent' },
         { label: 'Non pertinent' }
     ];
+
+    const route = useRoute();
+    const router = useRouter();
+    const checkingListId = route.params.id;
+    const quote_id = route.query.quote_id || null;
 
     const form = ref({
         rn: '',
@@ -498,4 +505,107 @@
         respectNoteValidation: null,
         respectNoteComment: ''
     });
+
+    const fillForm = (data) => {
+        form.value.rn = data.workShopOrder?.workshopInformation?.rn || '';
+        form.value.author = data.author || '';
+        form.value.date = data.date?.date?.split(' ')[0] || '';
+        form.value.productionEnd = data.dateEndProd?.date?.split(' ')[0] || '';
+        if (data.shapeValidation) {
+            form.value.realWidth = data.shapeValidation.realWidth || '';
+            form.value.realLength = data.shapeValidation.realLength || '';
+            form.value.surface = data.shapeValidation.surface || '';
+            form.value.diagonalA = data.shapeValidation.diagonalA || '';
+            form.value.diagonalB = data.shapeValidation.diagonalB || '';
+            form.value.shapeComment = data.shapeValidation.comment || '';
+            form.value.shapeValidation = data.shapeValidation.shapeValidation;
+        }
+        if (data.qualityCheck) {
+            form.value.graphicValidation = data.qualityCheck.graphicValidation;
+            form.value.graphicComment = data.qualityCheck.graphicComment || '';
+            form.value.instructionRespect = data.qualityCheck.instructionComplianceValidation;
+            form.value.instructionComment = data.qualityCheck.instructionComment || '';
+            form.value.repairValidation = data.qualityCheck.repairRelevantValidation;
+            form.value.repairComment = data.qualityCheck.repairComment || '';
+            form.value.tighteningValidation = data.qualityCheck.tightnessValidation;
+            form.value.tighteningComment = data.qualityCheck.tightnessComment || '';
+            form.value.woolQuality = data.qualityCheck.woolQualityValidation;
+            form.value.woolComment = data.qualityCheck.woolComment || '';
+            form.value.silkQuality = data.qualityCheck.silkQualityValidation;
+            form.value.silkComment = data.qualityCheck.silkComment || '';
+            form.value.specialShape = data.qualityCheck.specialShapeRelevantValidation;
+            form.value.specialShapeComment = data.qualityCheck.specialShapeComment || '';
+            form.value.bodyWaveCorners = data.qualityCheck.corpsOnduCoinsValidation;
+            form.value.bodyWaveCornersComment = data.qualityCheck.corpsOnduCoinsComment || '';
+            form.value.velourAuthorValidation = data.qualityCheck.velourAuthorValidation;
+            form.value.velourAuthorComment = data.qualityCheck.velourComment || '';
+            form.value.washingValidation = data.qualityCheck.washingValidation;
+            form.value.washingComment = data.qualityCheck.wachingComment || '';
+            form.value.cleaningValidation = data.qualityCheck.cleaningValidation;
+            form.value.cleaningComment = data.qualityCheck.cleaningComment || '';
+            form.value.carvingValidation = data.qualityCheck.carvingValidation;
+            form.value.carvingComment = data.qualityCheck.carvingComment || '';
+            form.value.tissueColorValidation = data.qualityCheck.fabricColorValidation;
+            form.value.tissueColorComment = data.qualityCheck.fabricColorComment || '';
+            form.value.fringeRepairValidation = data.qualityCheck.frangeValidation;
+            form.value.fringeRepairComment = data.qualityCheck.frangComment || '';
+            form.value.nonBindingValidation = data.qualityCheck.noBindingValidation;
+            form.value.nonBindingComment = data.qualityCheck.noBindingComment || '';
+            form.value.signatureValidation = data.qualityCheck.signatureValidation;
+            form.value.signatureComment = data.qualityCheck.signatureComment || '';
+            form.value.sansBackingValidation = data.qualityCheck.withoutBackingValidation;
+            form.value.sansBackingComment = data.qualityCheck.withoutBackingComment || '';
+        }
+        if (data.qualityRespect) {
+            form.value.respectPlanValidation = data.qualityRespect.respectPlanValid;
+            form.value.respectPlanComment = data.qualityRespect.respectPlanComment || '';
+            form.value.respectHeightValidation = data.qualityRespect.respectDoorHeightValid;
+            form.value.respectHeightComment = data.qualityRespect.respectDoorHeightComment || '';
+            form.value.respectPitValidation = data.qualityRespect.respectFossValide;
+            form.value.respectPitComment = data.qualityRespect.respectFossComment || '';
+            form.value.respectOtherCarpetValidation = data.qualityRespect.respectOtherCarpetValid;
+            form.value.respectOtherCarpetComment = data.qualityRespect.respectOtherCarpetComment || '';
+            form.value.respectLengthValidation = data.qualityRespect.respectMaxMinLengthValid;
+            form.value.respectWidthValidation = data.qualityRespect.respectMaxMinWidthValid;
+            form.value.distanceRightValidation = data.qualityRespect.respectwallDistanceRightValid;
+            form.value.distanceLeftValidation = data.qualityRespect.respectwallDistanceLeftValid;
+            form.value.distanceTopValidation = data.qualityRespect.wallDistanceTopValid;
+            form.value.distanceBottomValidation = data.qualityRespect.wallDistanceBottomValid;
+            form.value.respectColorValidation = data.qualityRespect.respectColorValid;
+            form.value.respectColorComment = data.qualityRespect.respectColorComment || '';
+            form.value.respectMaterialValidation = data.qualityRespect.respectMaterialValid;
+            form.value.respectMaterialComment = data.qualityRespect.respectMaterialComment || '';
+            form.value.respectVelvetValidation = data.qualityRespect.respectVelourValid;
+            form.value.respectVelvetComment = data.qualityRespect.respectVelourComment || '';
+            form.value.respectNoteValidation = data.qualityRespect.respectRemarkValid;
+            form.value.respectNoteComment = data.qualityRespect.respectRemarkComment || '';
+        }
+    };
+
+    const loadCheckingList = async () => {
+        if (!checkingListId) { return; }
+        try {
+            const data = await checkingListService.getCheckingListById(checkingListId);
+            fillForm(data);
+        } catch (e) {
+            console.error('Failed to load checking list:', e);
+        }
+    };
+
+    const saveCheckingList = async () => {
+        if (!checkingListId) { return; }
+        try {
+            await checkingListService.updateCheckingList(checkingListId, form.value);
+            window.showMessage('Mise à jour avec succées.');
+        } catch (e) {
+            console.error('Failed to update checking list:', e);
+            window.showMessage('Erreur mise à jour', 'error');
+        }
+    };
+
+    const goToWorkshop = () => {
+        router.back();
+    };
+
+    onMounted(loadCheckingList);
 </script>
