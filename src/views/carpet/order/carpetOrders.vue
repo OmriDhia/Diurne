@@ -185,19 +185,14 @@ const doSearch = () => {
 };
 
 const getFilterParams = () => {
-  let param = '';
-  if (filter.value.client) param += `&client=${filter.value.client}`;
-  if (filter.value.rn) param += `&rn=${filter.value.rn}`;
-  if (filter.value.collection) param += `&collection=${filter.value.collection}`;
-  if (filter.value.contremarque) param += `&contremarque=${filter.value.contremarque}`;
-  if (filter.value.etatTapis) param += `&etatTapis=${filter.value.etatTapis}`;
-  if (filter.value.modele) param += `&modele=${filter.value.modele}`;
-  if (filter.value.commercial) param += `&commercial=${filter.value.commercial}`;
-  if (filter.value.atelier) param += `&atelier=${filter.value.atelier}`;
-  if (filter.value.commande) param += `&commande=${filter.value.commande}`;
-  if (filter.value.devis) param += `&devis=${filter.value.devis}`;
-  if (filter.value.prescripteur) param += `&prescripteur=${filter.value.prescripteur}`;
-  return param;
+  const params = new URLSearchParams();
+  Object.entries(filter.value).forEach(([key, val]) => {
+    if (val) {
+      params.append(key, val);
+    }
+  });
+  const query = params.toString();
+  return query ? `&${query}` : '';
 };
 
 const doReset = () => {
@@ -221,6 +216,15 @@ onMounted(() => {
 <style scoped>
 th input {
   min-width: 100px;
+}
+.custom-align {
+  justify-content: end;
+  flex-direction: column;
+  align-items: end;
+}
+
+.custom-align button {
+  width: 350px;
 }
 
 .btn-reset {
