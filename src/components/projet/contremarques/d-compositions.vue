@@ -20,6 +20,8 @@
                             <th class="border-end-1" :style="{ backgroundColor: col.hexCode }"> %{{ index + 1 }}A </th>
                         </template>
                         <th class="border-end bg-gradient-dark text-white">Remarque</th>
+                        <th class="border-end bg-gradient-dark text-white">Validation</th>
+                        <th class="border-end bg-gradient-dark text-white">Commentaire</th>
                         <!--th  class="border-end bg-gradient-dark text-white">Actions</th-->
                     </tr>
                 </thead>
@@ -39,6 +41,16 @@
                         </template>
                         <td class="border-end"><textarea :disabled="props.disabled" class="form-control w-auto"
                                 v-model="row.remarque"></textarea></td>
+                        <td class="border-end">
+                            <d-radio-validation
+                                v-model="layerValidationMap[row.id].validation"
+                                :options="[{ label: 'Oui' }, { label: 'Non' }]"
+                            />
+                        </td>
+                        <td class="border-end">
+                            <d-textarea :rows="1" :disabled="props.disabled"
+                                v-model="layerValidationMap[row.id].comment" />
+                        </td>
                         <!--td width="50"  class="border-end"></td-->
                     </tr>
                 </tbody>
@@ -79,6 +91,8 @@ import contremarqueService from "../../../Services/contremarque-service";
 import axios from 'axios';
 import axiosInstance from '../../../config/http';
 import { nextTick } from 'vue';
+import DRadioValidation from '../../checkingProgress/d-radio-validation.vue';
+import DTextarea from '../../base/d-textarea.vue';
 
 const props = defineProps({
     carpetSpecificationId: {
@@ -94,6 +108,10 @@ const props = defineProps({
     hideBtn: {
         type: Boolean,
         default: false,
+    },
+    layersValidations: {
+        type: Array,
+        default: () => []
     }
 });
 
@@ -102,6 +120,7 @@ const rows = ref([]);
 const dynamicColumns = ref([]);
 const carpetCompositionId = ref(null);
 const canManageComposition = store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isSuperAdmin;
+const layerValidationMap = ref({});
 
 const addColumn = async ($event) => {
     const newColumnIndex = dynamicColumns.value.length + 1;
@@ -188,6 +207,8 @@ const formatData = (compositionData) => {
             const row = formatDataLayers(data);
             return row
         });
+
+        initializeLayerValidations();
     }
 };
 
@@ -227,6 +248,39 @@ const watchRowLayerDetails = (row) => {
         { deep: true }
     );
 };
+
+const initializeLayerValidations = () => {
+    layerValidationMap.value = {};
+    if (props.layersValidations && props.layersValidations.length) {
+        props.layersValidations.forEach(lv => {
+            layerValidationMap.value[lv.layer] = {
+                validation: lv.layerValidation,
+                comment: lv.layerComment || ''
+            };
+        });
+    }
+    rows.value.forEach(row => {
+        if (!layerValidationMap.value[row.id]) {
+            layerValidationMap.value[row.id] = { validation: null, comment: '' };
+        }
+    });
+};
+
+watch(
+    () => props.layersValidations,
+    () => {
+        initializeLayerValidations();
+    },
+    { deep: true }
+);
+
+watch(
+    layerValidationMap,
+    (val) => {
+        console.log('Layer validations updated', val);
+    },
+    { deep: true }
+);
 
 const selectedLayerIds = ref([]);
 
