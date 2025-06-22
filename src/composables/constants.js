@@ -10,7 +10,6 @@ export const FILTER_CONTREMARQUE_STORAGE_NAME = "filterContremarque";
 export const FILTER_DEVIS_STORAGE_NAME = "filterDevis";
 export const FILTER_SUIVI_DI_STORAGE_NAME = "filterSuiviDi";
 export const FILTER_CLIENT_INVOICE_STORAGE_NAME = "filterClientInvoice";
-export const FILTER_IMAGE_COMMANDE_STORAGE_NAME = "filterImageCommande";
 export const DESIGNER_MANAGER_ROLE_NAME = "Designer manager";
 export const DESIGNER_ROLE_NAME = "Designer";
 export const COMMERCIAL_ROLE_NAME = "Commercial";
@@ -123,7 +122,8 @@ export const filterClientInvoice = {
     contremarque: null,
 };
 
-export const filterImageCommande = {
+export const FILTER_CARPET_ORDER_STORAGE_NAME = "filterCarpetOrder";
+export const filterCarpetOrder = {
     client: null,
     rn: null,
     collection: null,

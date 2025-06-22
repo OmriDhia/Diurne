@@ -36,7 +36,8 @@
 
         <!-- ACTION BUTTONS -->
         <div class="d-flex justify-content-end gap-2 mb-3">
-          <button class="btn btn-dark" @click="doSearch">RECHERCHER</button>
+          <button v-if="filterActive" class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">Reset filtre</button>
+          <button class="btn btn-custom pe-3 ps-3" @click.prevent="doSearch">Recherche</button>
           <button class="btn btn-outline-secondary">IMPORTER MAJ TAPIS STOCK (EXCEL)</button>
           <button class="btn btn-outline-dark">IMPORTER PR</button>
         </div>
@@ -132,33 +133,24 @@ import dInput from '../../../components/base/d-input.vue';
 import dPageTitle from '../../../components/common/d-page-title.vue';
 import pagination from '../../../components/base/Pagination/d-pagination.vue';
 import axiosInstance from '../../../config/http';
+import { filterCarpetOrder, FILTER_CARPET_ORDER_STORAGE_NAME } from '../../../composables/constants';
+import { Helper } from '../../../composables/global-methods';
 
-const filter = ref({
-  client: '',
-  rn: '',
-  collection: '',
-  contremarque: '',
-  etatTapis: '',
-  modele: '',
-  commercial: '',
-  atelier: '',
-  commande: '',
-  devis: '',
-  prescripteur: ''
-});
+const filter = ref(Object.assign({}, filterCarpetOrder));
+const filterActive = ref(false);
 
 const fields = [
-  { label: 'Client :', model: 'client' },
-  { label: 'RN :', model: 'rn' },
-  { label: 'Collection :', model: 'collection' },
-  { label: 'Contremarque :', model: 'contremarque' },
-  { label: 'Etat du tapis :', model: 'etatTapis', as: 'select' },
-  { label: 'Modèle :', model: 'modele' },
-  { label: 'Commercial :', model: 'commercial' },
-  { label: 'Atelier :', model: 'atelier' },
-  { label: 'Commande :', model: 'commande' },
-  { label: 'Devis :', model: 'devis' },
-  { label: 'Prescripteur :', model: 'prescripteur' }
+  { label: 'Client', model: 'client' },
+  { label: 'RN', model: 'rn' },
+  { label: 'Collection', model: 'collection' },
+  { label: 'Contremarque', model: 'contremarque' },
+  { label: 'Etat du tapis', model: 'etatTapis', as: 'select' },
+  { label: 'Modèle', model: 'modele' },
+  { label: 'Commercial', model: 'commercial' },
+  { label: 'Atelier', model: 'atelier' },
+  { label: 'Commande', model: 'commande' },
+  { label: 'Devis', model: 'devis' },
+  { label: 'Prescripteur', model: 'prescripteur' }
 ];
 
 const rows = ref([]);
@@ -175,7 +167,8 @@ const totalPages = computed(() =>
 
 const getOrders = async () => {
   try {
-    const url = `/api/carpetOrders?page=${paginationData.currentPage}&limit=${paginationData.itemsPerPage}`;
+    let url = `/api/carpetOrders?page=${paginationData.currentPage}&limit=${paginationData.itemsPerPage}`;
+    url += getFilterParams();
     const res = await axiosInstance.get(url);
     rows.value = res.data.carpetOrders || [];
     totalRows.value = res.data.count || 0;
@@ -196,11 +189,42 @@ const changePageSize = (size) => {
 };
 
 const doSearch = () => {
+  filterActive.value = true;
+  paginationData.currentPage = 1;
+  Helper.setStorage(FILTER_CARPET_ORDER_STORAGE_NAME, filter.value);
+  getOrders();
+};
+
+const getFilterParams = () => {
+  let param = '';
+  if (filter.value.client) param += `&client=${filter.value.client}`;
+  if (filter.value.rn) param += `&rn=${filter.value.rn}`;
+  if (filter.value.collection) param += `&collection=${filter.value.collection}`;
+  if (filter.value.contremarque) param += `&contremarque=${filter.value.contremarque}`;
+  if (filter.value.etatTapis) param += `&etatTapis=${filter.value.etatTapis}`;
+  if (filter.value.modele) param += `&modele=${filter.value.modele}`;
+  if (filter.value.commercial) param += `&commercial=${filter.value.commercial}`;
+  if (filter.value.atelier) param += `&atelier=${filter.value.atelier}`;
+  if (filter.value.commande) param += `&commande=${filter.value.commande}`;
+  if (filter.value.devis) param += `&devis=${filter.value.devis}`;
+  if (filter.value.prescripteur) param += `&prescripteur=${filter.value.prescripteur}`;
+  return param;
+};
+
+const doReset = () => {
+  filterActive.value = false;
+  filter.value = Object.assign({}, filterCarpetOrder);
+  Helper.setStorage(FILTER_CARPET_ORDER_STORAGE_NAME, filter.value);
   paginationData.currentPage = 1;
   getOrders();
 };
 
 onMounted(() => {
+  const saved = Helper.getStorage(FILTER_CARPET_ORDER_STORAGE_NAME);
+  if (saved && Helper.hasDefinedValue(saved)) {
+    filter.value = saved;
+    filterActive.value = true;
+  }
   getOrders();
 });
 </script>
@@ -208,5 +232,13 @@ onMounted(() => {
 <style scoped>
 th input {
   min-width: 100px;
+}
+.btn-reset {
+  box-shadow: none !important;
+  margin-right: 5px;
+}
+.dropdown-item:active,
+.dropdown-item:hover {
+  background: none !important;
 }
 </style>
