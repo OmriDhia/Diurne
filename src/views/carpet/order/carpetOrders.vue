@@ -159,7 +159,10 @@ const doSearch = () => {
 
 const getFilterParams = () => {
   const params = new URLSearchParams();
+  params.current_page = 1;
   Object.entries(filter.value).forEach(([key, val]) => {
+  params.current_page = 1;
+  rows.value = [];
     if (val) {
       params.append(key, val);
     }
