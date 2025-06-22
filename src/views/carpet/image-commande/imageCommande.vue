@@ -219,6 +219,22 @@ const getFilterParams = () => {
     return param;
 };
 
+const getFilterParams = () => {
+  let p = '';
+  if (filter.value.client) p += `&client=${filter.value.client}`;
+  if (filter.value.rn) p += `&rn=${filter.value.rn}`;
+  if (filter.value.collection) p += `&collection=${filter.value.collection}`;
+  if (filter.value.contremarque) p += `&contremarque=${filter.value.contremarque}`;
+  if (filter.value.etatTapis) p += `&etatTapis=${filter.value.etatTapis}`;
+  if (filter.value.modele) p += `&modele=${filter.value.modele}`;
+  if (filter.value.commercial) p += `&commercial=${filter.value.commercial}`;
+  if (filter.value.atelier) p += `&atelier=${filter.value.atelier}`;
+  if (filter.value.commande) p += `&commande=${filter.value.commande}`;
+  if (filter.value.devis) p += `&devis=${filter.value.devis}`;
+  if (filter.value.prescripteur) p += `&prescripteur=${filter.value.prescripteur}`;
+  return p;
+};
+
 const doReset = () => {
     filterActive.value = false;
     filter.value = Object.assign({}, filterSuiviDi);
