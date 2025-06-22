@@ -6,13 +6,29 @@
         <template #body>
             <d-panel>
                 <template #panel-header>
-                    <d-panel-title title="Create provisional calendar" />
+                    <d-panel-title :title="route.params.id ? 'Provisional Calendar' : 'Create provisional calendar'" />
                 </template>
                 <template #panel-body>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <d-input type="number" label="RN" v-model="form.rn" />
+                    <div v-if="route.params.id && calendar">
+                        <div class="row mb-2">
+                            <div class="col-md-4"><strong>RN:</strong> {{ calendar.rn }}</div>
+                            <div class="col-md-4"><strong>Deadline preparation:</strong> {{ calendar.deadlinPreparation }}</div>
+                            <div class="col-md-4"><strong>Date end preparation:</strong> {{ calendar.dateEndPreparation }}</div>
                         </div>
+                        <div class="row mb-2">
+                            <div class="col-md-4"><strong>Deadline weave:</strong> {{ calendar.deadlinWeave }}</div>
+                            <div class="col-md-4"><strong>Date end weave:</strong> {{ calendar.dateEndWeave }}</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-4"><strong>Deadline finition:</strong> {{ calendar.deadlinFinition }}</div>
+                            <div class="col-md-4"><strong>Date end finition:</strong> {{ calendar.dateEndFinition }}</div>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <d-input type="number" label="RN" v-model="form.rn" />
+                            </div>
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-4">
@@ -47,9 +63,10 @@
 
                         </div>
                     </div>
-                    <div class="row mt-4">
-                        <div class="col-auto">
-                            <button class="btn btn-custom" @click="save">Enregistrer</button>
+                        <div class="row mt-4">
+                            <div class="col-auto">
+                                <button class="btn btn-custom" @click="save">Enregistrer</button>
+                            </div>
                         </div>
                     </div>
                 </template>
@@ -59,7 +76,8 @@
 </template>
 
 <script setup>
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
     import dBasePage from '@/components/base/d-base-page.vue';
     import dInput from '@/components/base/d-input.vue';
     import dPanel from '@/components/common/d-panel.vue';
@@ -68,6 +86,10 @@
     import provisionalCalendarService from '@/Services/provisional-calendar-service';
 
     const loading = ref(false);
+    const route = useRoute();
+    const router = useRouter();
+    const calendar = ref(null);
+
     const form = ref({
         rn: '',
         workshopOrderId: 189,
@@ -87,17 +109,35 @@
 
     });
 
-    const save = async () => {
+    const loadCalendar = async (id) => {
         try {
             loading.value = true;
-            await provisionalCalendarService.create({ ...form.value });
-            window.showMessage('Ajout avec succées.');
+            calendar.value = await provisionalCalendarService.getById(id);
         } catch (e) {
             window.showMessage(e.message, 'error');
         } finally {
             loading.value = false;
         }
     };
+
+    const save = async () => {
+        try {
+            loading.value = true;
+            const res = await provisionalCalendarService.create({ ...form.value });
+            window.showMessage('Ajout avec succées.');
+            router.push({ name: 'provisionalCalendarView', params: { id: res.id } });
+        } catch (e) {
+            window.showMessage(e.message, 'error');
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    onMounted(() => {
+        if (route.params.id) {
+            loadCalendar(route.params.id);
+        }
+    });
 </script>
 
 <style scoped></style>

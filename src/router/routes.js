@@ -425,6 +425,15 @@ export const routes = [
         }
     },
     {
+        path: '/checking-progress/provisional/:id',
+        name: 'provisionalCalendarView',
+        component: () => import('../views/checkingProgress/provisionalCalendar.vue'),
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
         path: '/checking-progress/progress',
         name: 'progressReport',
         component: () => import('../views/checkingProgress/progressReport.vue'),
