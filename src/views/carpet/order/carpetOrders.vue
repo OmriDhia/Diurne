@@ -3,29 +3,23 @@
     <d-page-title :title="'Commande Tapis'"></d-page-title>
 
     <!-- Radio Filter Section -->
-    <div class="d-flex flex-wrap justify-content-start gap-4 mb-4">
-      <label class="fw-normal"><input type="radio" name="type" /> Échantillon</label>
-      <label class="fw-normal"><input type="radio" name="type" /> Tapis</label>
-      <label class="fw-normal"><input type="radio" name="type" /> Tous</label>
-      <label class="fw-normal"><input type="radio" name="type" /> Dispo. vente</label>
-      <label class="fw-normal"><input type="radio" name="type" /> État prod</label>
-      <label class="fw-normal"><input type="radio" name="type" /> État stock</label>
-    </div>
+
 
     <div class="row layout-top-spacing mt-2 p-2">
       <div class="panel br-6 p-3 mt-1" id="fullscreen">
+
+        <div class="d-flex flex-wrap justify-content-start gap-4 mb-4">
+          <label class="fw-normal"><input type="radio" name="type" /> Échantillon</label>
+          <label class="fw-normal"><input type="radio" name="type" /> Tapis</label>
+          <label class="fw-normal"><input type="radio" name="type" /> Tous</label>
+          <label class="fw-normal"><input type="radio" name="type" /> Dispo. vente</label>
+          <label class="fw-normal"><input type="radio" name="type" /> État prod</label>
+          <label class="fw-normal"><input type="radio" name="type" /> État stock</label>
+        </div>
         <!-- FILTER FORM -->
         <div class="row g-3 mb-3">
-          <div
-            v-for="(field, index) in fields"
-            :key="index"
-            class="col-md-4"
-          >
-            <d-input
-              :label="field.label"
-              v-model="filter[field.model]"
-              :as="field.as || 'input'"
-            >
+          <div v-for="(field, index) in fields" :key="index" class="col-md-4">
+            <d-input :label="field.label" v-model="filter[field.model]" :as="field.as || 'input'">
               <template v-if="field.model === 'etatTapis'">
                 <option value="">--</option>
                 <option value="cmd_atelier">Cmd. atelier</option>
@@ -35,8 +29,9 @@
         </div>
 
         <!-- ACTION BUTTONS -->
-        <div class="d-flex justify-content-end gap-2 mb-3">
-          <button v-if="filterActive" class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">Reset filtre</button>
+        <div class="d-flex justify-content-end gap-2 mb-3 custom-align">
+          <button v-if="filterActive" class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">Reset
+            filtre</button>
           <button class="btn btn-custom pe-3 ps-3" @click.prevent="doSearch">Recherche</button>
           <button class="btn btn-outline-secondary">IMPORTER MAJ TAPIS STOCK (EXCEL)</button>
           <button class="btn btn-outline-dark">IMPORTER PR</button>
@@ -113,15 +108,9 @@
             </tbody>
           </table>
         </div>
-        <pagination
-          v-if="totalRows > paginationData.itemsPerPage"
-          :current-page="paginationData.currentPage"
-          :total-pages="totalPages"
-          :total-items="totalRows"
-          :items-per-page="paginationData.itemsPerPage"
-          @page-change="changePage"
-          @page-size-change="changePageSize"
-        />
+        <pagination v-if="totalRows > paginationData.itemsPerPage" :current-page="paginationData.currentPage"
+          :total-pages="totalPages" :total-items="totalRows" :items-per-page="paginationData.itemsPerPage"
+          @page-change="changePage" @page-size-change="changePageSize" />
       </div>
     </div>
   </div>
@@ -233,12 +222,25 @@ onMounted(() => {
 th input {
   min-width: 100px;
 }
+
 .btn-reset {
   box-shadow: none !important;
   margin-right: 5px;
 }
+
 .dropdown-item:active,
 .dropdown-item:hover {
   background: none !important;
 }
+
+.custom-align{
+    justify-content: end;
+    flex-direction: column;
+    align-items: end;
+}
+
+.custom-align button{
+      width: 350px;
+}
+
 </style>

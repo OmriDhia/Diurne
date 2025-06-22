@@ -92,12 +92,20 @@
                 </div>
                 <d-modal-manage-di :diId="selectedDiId" @onClose="handleClose"></d-modal-manage-di>
             </div>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import dInput from '../../../components/base/d-input.vue';
 import dBtnFullscreen from '../../../components/base/d-btn-fullscreen.vue';
 import dCustomerDropdown from '../../../components/common/d-customer-dropdown.vue';
 import dCarpetStatusDropdown from '../../../components/common/d-carpet-status-dropdown.vue';
+import dPageTitle from '../../../components/common/d-page-title.vue';
 import VueFeather from 'vue-feather';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
 import dModalManageDi from "../../../components/projet/contremarques/_Partials/d-modal-manage-di.vue"
+import axiosInstance from '../../../config/http';
 import { ref, reactive, onMounted } from 'vue';
 import {FILTER_SUIVI_DI_STORAGE_NAME, filterSuiviDi} from '../../../composables/constants';
 import { useMeta } from '/src/composables/use-meta';
@@ -121,7 +129,9 @@ const truncateText = (text, length) => {
     if (!text) return '';
     return text.length > length ? text.substring(0, length) + '...' : text;
 };
+
 const filter = ref(Object.assign({}, filterSuiviDi));
+const filterActive = ref(false);
 const rows = ref(null);
 const selectedDiId = ref(0);
 const contremarqueId = ref(null);
@@ -150,6 +160,7 @@ onMounted(() => {
     }
     contremarqueId.value = route.query.contremarqueId || null;
     getDI();
+});
 const getDI = async () => {
     try {
         loading.value = true;
@@ -177,17 +188,21 @@ const getDI = async () => {
     } catch { }
 
     loading.value = false;
+};
 const changeServer = (data) => {
     params.current_page = data.current_page;
     params.pagesize = data.pagesize;
     params.orderBy = data.sort_column;
     params.orderWay = data.sort_direction;
     getDI();
+};
 const doSearch = () => {
     filterActive.value = true;
     Helper.setStorage(FILTER_SUIVI_DI_STORAGE_NAME, filter.value);
     getDI();
+};
 const getFilterParams = () => {
+
     let param = "";
     if (filter.value.customer) {
         param += "&filter[customer]=" + filter.value.customer
@@ -202,38 +217,6 @@ const getFilterParams = () => {
         param += "&filter[statusId]=" + filter.value.carpetStatus
     }
     return param;
-    filterActive.value = false;
-    filter.value = Object.assign({}, filterSuiviDi);
-    Helper.setStorage(FILTER_SUIVI_DI_STORAGE_NAME, filter.value);
-    getDI();
-const goToContreMarqueDetails = (id_contremarque) => {
-    router.push({name: "projectsListManage", params:{id: id_contremarque}})
-}
-const goToImageDetails = (id) => {
-    router.push({name: "imagesCommadeDetails", params:{id: id}})
-}
-
-<style>
-.text-size-16{
-    font-size: 16px !important;
-    }
-    return param;
-};
-
-const getFilterParams = () => {
-  let p = '';
-  if (filter.value.client) p += `&client=${filter.value.client}`;
-  if (filter.value.rn) p += `&rn=${filter.value.rn}`;
-  if (filter.value.collection) p += `&collection=${filter.value.collection}`;
-  if (filter.value.contremarque) p += `&contremarque=${filter.value.contremarque}`;
-  if (filter.value.etatTapis) p += `&etatTapis=${filter.value.etatTapis}`;
-  if (filter.value.modele) p += `&modele=${filter.value.modele}`;
-  if (filter.value.commercial) p += `&commercial=${filter.value.commercial}`;
-  if (filter.value.atelier) p += `&atelier=${filter.value.atelier}`;
-  if (filter.value.commande) p += `&commande=${filter.value.commande}`;
-  if (filter.value.devis) p += `&devis=${filter.value.devis}`;
-  if (filter.value.prescripteur) p += `&prescripteur=${filter.value.prescripteur}`;
-  return p;
 };
 
 const doReset = () => {
