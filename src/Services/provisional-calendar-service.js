@@ -17,5 +17,14 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+
+    async update(id, data) {
+        try {
+            const res = await axiosInstance.put(`/api/provisionalCalendar/${id}`, data);
+            return res.data.response;
+        } catch (error) {
+            throw error;
+        }
     }
 };

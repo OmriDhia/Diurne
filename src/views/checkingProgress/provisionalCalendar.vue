@@ -9,28 +9,7 @@
                     <d-panel-title :title="route.params.id ? 'Provisional Calendar' : 'Create provisional calendar'" />
                 </template>
                 <template #panel-body>
-                    <div v-if="route.params.id && calendar">
-                        <div class="row mb-2">
-                            <div class="col-md-4"><strong>RN:</strong> {{ calendar.rn }}</div>
-                            <div class="col-md-4"><strong>Deadline preparation:</strong> {{ calendar.deadlinPreparation
-                                }}
-                            </div>
-                            <div class="col-md-4"><strong>Date end preparation:</strong> {{ calendar.dateEndPreparation
-                                }}
-                            </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-md-4"><strong>Deadline weave:</strong> {{ calendar.deadlinWeave }}</div>
-                            <div class="col-md-4"><strong>Date end weave:</strong> {{ calendar.dateEndWeave }}</div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-md-4"><strong>Deadline finition:</strong> {{ calendar.deadlinFinition }}
-                            </div>
-                            <div class="col-md-4"><strong>Date end finition:</strong> {{ calendar.dateEndFinition }}
-                            </div>
-                        </div>
-                    </div>
-                    <div v-else>
+                    <div>
                         <div class="row">
                             <div class="col-md-4">
                                 <d-input type="number" label="RN" v-model="form.rn" />
@@ -72,7 +51,7 @@
                         </div>
                         <div class="row mt-4">
                             <div class="col-auto">
-                                <button class="btn btn-custom" @click="save">Enregistrer</button>
+                                <button class="btn btn-custom" @click="save">{{ route.params.id ? 'Update' : 'Enregistrer' }}</button>
                             </div>
                         </div>
                     </div>
@@ -119,7 +98,24 @@
     const loadCalendar = async (id) => {
         try {
             loading.value = true;
-            calendar.value = await provisionalCalendarService.getById(id);
+            const data = await provisionalCalendarService.getById(id);
+            calendar.value = data;
+            form.value = {
+                rn: data.rn,
+                workshopOrderId: data.workshopOrderId,
+                deadlinPreparation: data.deadlinPreparation,
+                dateFinPreparation: data.dateFinPreparation,
+                deadlinWeave: data.deadlinWeave,
+                dateFinWeave: data.dateFinWeave,
+                deadlinFinition: data.deadlinFinition,
+                dateFinFinition: data.dateFinFinition,
+                eventPreparation: data.eventPreparation,
+                stopPreparation: data.stopPreparation,
+                eventWeave: data.eventWeave,
+                stopWeave: data.stopWeave,
+                eventFinition: data.eventFinition,
+                stopFinition: data.stopFinition
+            };
         } catch (e) {
             window.showMessage(e.message, 'error');
         } finally {
@@ -130,9 +126,14 @@
     const save = async () => {
         try {
             loading.value = true;
-            const res = await provisionalCalendarService.create({ ...form.value });
-            window.showMessage('Ajout avec succées.');
-            router.push({ name: 'provisionalCalendarView', params: { id: res.id } });
+            if (route.params.id) {
+                await provisionalCalendarService.update(route.params.id, { ...form.value });
+                window.showMessage('Mise a jour avec succées.');
+            } else {
+                const res = await provisionalCalendarService.create({ ...form.value });
+                window.showMessage('Ajout avec succées.');
+                router.push({ name: 'provisionalCalendarView', params: { id: res.id } });
+            }
         } catch (e) {
             window.showMessage(e.message, 'error');
         } finally {
