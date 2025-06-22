@@ -73,12 +73,14 @@
     ];
 
     const checkingLists = ref([]);
-
+    const staticOrderId = 187;
     const loadCheckingLists = async () => {
         try {
-            checkingLists.value = await checkingListService.getCheckingListsByOrder(props.orderId);
+            const response = await checkingListService.getCheckingListsByOrder(staticOrderId);
+            checkingLists.value = response || [];
+            console.log('Loaded checking lists:', checkingLists.value); // Debug log
         } catch (e) {
-            console.error(e);
+            console.error('Error loading checking lists:', e);
         }
     };
 
@@ -112,7 +114,7 @@
     };
 
     const createNewCheckingList = async () => {
-        const staticOrderId = 187;
+
         try {
             const newList = await checkingListService.createCheckingList(
                 //    props.orderId
@@ -126,7 +128,7 @@
 
         }
     };
-
+    console.log(checkingLists.value);
     onMounted(loadCheckingLists);
 </script>
 
@@ -320,9 +322,17 @@
 
                 <div class="checking-lists">
                     <div class="list-links">
-                        <a href="#" v-for="list in checkingLists" :key="list.id" class="checking-link">
-                            <span class="text-decoration-underline  me-2">{{ list.label }}</span>
-                        </a>
+                        <router-link
+                            target="_blank"
+                            v-for="list in checkingLists"
+                            :key="list.id"
+                            :to="`/checking-progress/list/${list.id}`"
+                            class="checking-link"
+                        >
+        <span class="text-decoration-underline me-2">
+            Checking List n°{{ list.id }}
+        </span>
+                        </router-link>
                     </div>
                     <button class="new-list-btn btn btn-custom  text-uppercase my-2"
                             @click="createNewCheckingList">NOUVELLE CHECKING LIST
