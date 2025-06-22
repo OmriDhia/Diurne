@@ -2,64 +2,21 @@
   <div class="layout-px-spacing mt-4">
     <d-page-title icon="dollar-sign" :title="'Reglement'"></d-page-title>
 
-    <div class="row layout-top-spacing mt-3 p-2">
-      <div class="panel br-6 p-2">
-        
-        <div class="row d-flex justify-content-center align-items-start p-2">
-          <div class="col-md-6 col-sm-12">
-            <div class="row">
-              <d-input label="Client" v-model="filter.customer"></d-input>
-            </div>
-            <div class="row">
-              <d-input label="Commercial" v-model="filter.commercial"></d-input>
-            </div>
-            <div class="row">
-              <d-input label="Contermarque" v-model="filter.contremarque"></d-input>
-            </div>
-            <div class="row">
-              <d-input label="Devis" v-model="filter.devis"></d-input>
-            </div>
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <div class="row">
-              <d-input label="Prescripteur" v-model="filter.prescriptor"></d-input>
-            </div>
-            <div class="row">
-              <d-input label="Commande" v-model="filter.commande"></d-input>
-            </div>
-            <div class="row">
-              <d-input label="Montant" v-model="filter.amount"></d-input>
-            </div>
-            <div class="row mt-2 justify-content-center">
-              <div class="col-auto" v-if="filterActive">
-                <button class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">
-                  Reset filtre
-                </button>
-              </div>
-              <div class="col-auto me-2">
-                <button class="btn btn-primary pe-3 ps-3" @click.prevent="doSearch">
-                  Recherche
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel br-6 p-2 mt-3" id="fullscreen">
+  <div class="row layout-top-spacing mt-3 p-2">
+    <div class="panel br-6 p-2 mt-3" id="fullscreen">
       <div class="row p-2">
-          <div class="col-auto">
-            <button class="btn btn-primary pe-5 ps-5" @click="goToNewReglement">
-              Nouveau Réglement
-            </button>
-          </div>
+        <div class="col-auto">
+          <button class="btn btn-primary pe-5 ps-5" @click="goToAllReglement">
+            Tous Les Réglements
+          </button>
         </div>
-        <d-data-grid ref="dataGrid" :fetchData="fetchData" :saveData="saveData" :addData="addData" :disableAddNew="true"
-          :deleteData="deleteData" :columns="processedColumns" :rows="rows" title="Règlements" rowKey="id" :showViewButton="true"
-          @view="handleView"  :isServerMode="true" :initialSort="{ field: params.orderBy, direction: params.orderWay }"
-          @sort-change="handleSortChange" :loading="loading" />
       </div>
+      <d-data-grid ref="dataGrid" :fetchData="fetchData" :saveData="saveData" :addData="addData" :disableAddNew="true"
+        :deleteData="deleteData" :columns="processedColumns" :rows="rows" title="Règlements" rowKey="id" :showRattacherButton="true"
+        @rattacher="handleRattacher" :isServerMode="true" :initialSort="{ field: params.orderBy, direction: params.orderWay }"
+        @sort-change="handleSortChange" :loading="loading" />
     </div>
+  </div>
   </div>
 </template>
 
@@ -69,7 +26,7 @@ import dDataGrid from "../../components/base/d-data-grid.vue";
 import dInput from "../../components/base/d-input.vue";
 import dPageTitle from "../../components/common/d-page-title.vue";
 import axiosInstance from "../../config/http";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import {
   filterOrderPayment,
   FILTER_ORDER_PAYMENT_STORAGE_NAME,
@@ -83,6 +40,8 @@ const customers = ref([]);
 const commercials = ref([]);
 const dataGrid = ref(null);
 const router = useRouter();
+const route = useRoute();
+const quoteId = route.params.quoteId;
 const paymentTypes = ref([]);
 
 const customersCache = ref(new Map());
@@ -550,18 +509,15 @@ const doReset = async () => {
   }
 };
 
-const goToNewReglement = () => {
-  router.push({ name: 'reglement_create' });
+const goToAllReglement = () => {
+  router.push({ name: 'reglement_list' });
 };
 
-const handleView = (row) => {
-  console.log('View clicked, row:', row); 
-  if (!row?.id) {
-    console.error('Invalid row data:', row);
-    return;
-  }
-  router.push({ name: 'reglement_view', params: { id: row.id } });
+const handleRattacher = (row) => {
+  if (!row?.id) return;
+  router.push({ name: 'reglement_rattacher', params: { quoteId: quoteId, id: row.id } });
 };
+
 
 const handleSortChange = (sort) => {
   params.orderBy = sort.field;

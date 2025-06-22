@@ -11,7 +11,7 @@
                 />
 
                 <div class="tab-content">
-                    <InformationAtelier ref="infoTab" :imageCommandId="imageCommandId" v-if="activeTab === 'information'" />
+                    <InformationAtelier :order-id="staticOrderId" ref="infoTab" :imageCommandId="imageCommandId" v-if="activeTab === 'information'" />
                     <ImageTab v-if="activeTab === 'image'" />
                     <HistoriqueTab v-if="activeTab === 'historique'" />
                 </div>
@@ -54,6 +54,7 @@
 
     const activeTab = ref('information');
     const route = useRoute();
+    const staticOrderId = 1;
     const imageCommandId = parseInt(route.params.imagesCommadeId, 10);
     const infoTab = ref(null);
 

@@ -407,6 +407,42 @@ export const routes = [
         }
     },
     {
+        path: '/checking-progress/list/:id',
+        name: 'checkingList',
+        component: () => import('../views/checkingProgress/checkingList.vue'),
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
+        path: '/checking-progress/provisional',
+        name: 'provisionalCalendar',
+        component: () => import('../views/checkingProgress/provisionalCalendar.vue'),
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
+        path: '/checking-progress/provisional/:id',
+        name: 'provisionalCalendarView',
+        component: () => import('../views/checkingProgress/provisionalCalendar.vue'),
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
+        path: '/checking-progress/progress',
+        name: 'progressReport',
+        component: () => import('../views/checkingProgress/progressReport.vue'),
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
         path: '/treasury',
         name: 'treasury',
         component: () => import('../views/treasury/treasuryList.vue'),
@@ -424,6 +460,16 @@ export const routes = [
                 path: '',
                 name: 'reglement_list',
                 component: () => import('../views/treasury/treasuryList.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: "read treasury",
+                },
+            },
+            {
+                path: 'attach/:quoteId',
+                name: 'reglement_attach_list',
+                component: () => import('../views/treasury/treasuryAttachList.vue'),
                 meta: {
                     requiresAuth: true,
                     class: 'treasury',
@@ -458,6 +504,47 @@ export const routes = [
                     requiresAuth: true,
                     class: 'treasury',
                     permission: "read treasury",
+                },
+            },
+            {
+                path: 'rattacher/:quoteId/:id',
+                name: 'reglement_rattacher',
+                component: () => import('../views/treasury/treasuryView.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: "update treasury",
+                },
+            },
+        ],
+        meta: {
+            requiresAuth: true,
+            class: 'treasury'
+        },
+    },
+
+    {
+        path: '/facture-client',
+        name: 'clientInvoice',
+        children: [
+            {
+                path: '',
+                name: 'client-invoice-list',
+                component: () => import('../views/invoices/clientInvoiceList.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: 'read invoice',
+                },
+            },
+            {
+                path: 'create',
+                name: 'client-invoice-create',
+                component: () => import('../views/invoices/clientInvoiceCreate.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: 'create invoice',
                 },
             },
         ],
