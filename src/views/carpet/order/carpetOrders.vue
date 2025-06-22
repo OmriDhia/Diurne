@@ -95,7 +95,7 @@ const cols = ref([
 onMounted(() => {
   const saved = Helper.getStorage(FILTER_CARPET_ORDER_STORAGE_NAME);
   if (saved && Helper.hasDefinedValue(saved)) {
-    filter.value = saved;
+const rows = ref([]);
     filterActive.value = true;
   }
   getCarpetOrders();
@@ -164,20 +164,12 @@ const getFilterParams = () => {
       params.append(key, val);
     }
   });
+  const params = new URLSearchParams();
+  Object.entries(filter.value).forEach(([key, val]) => {
+    if (val) params.append(key, val);
+  });
   const query = params.toString();
   return query ? `&${query}` : '';
-};
-
-const doReset = () => {
-  filterActive.value = false;
-  filter.value = Object.assign({}, filterCarpetOrder);
-  Helper.setStorage(FILTER_CARPET_ORDER_STORAGE_NAME, filter.value);
-  paginationData.currentPage = 1;
-  getOrders();
-};
-
-onMounted(() => {
-  const saved = Helper.getStorage(FILTER_CARPET_ORDER_STORAGE_NAME);
   if (saved && Helper.hasDefinedValue(saved)) {
     filter.value = saved;
     filterActive.value = true;
