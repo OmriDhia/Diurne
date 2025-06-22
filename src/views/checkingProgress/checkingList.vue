@@ -384,7 +384,7 @@
                                 :hideBtn="true"
                                 :compositionData="data.workShopOrder.imageCommand.carpetSpecification.carpedComposition"
                                 :carpetSpecificationId="data.workShopOrder.imageCommand.carpetSpecification.id"
-                                :layersValidations="layersValidations"
+                                :layersValidations="layersValidations? layersValidations:null"
                             ></d-compositions>
                         </div>
                     </div>
