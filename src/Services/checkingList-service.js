@@ -78,5 +78,15 @@ export default {
             console.error('Error updating quality respect:', error);
             throw error;
         }
+    },
+
+    async updateLayerValidation(id, payload) {
+        try {
+            const res = await axiosInstance.put(`/api/layersValidations/${id}`, payload);
+            return res.data?.data;
+        } catch (error) {
+            console.error('Error updating layer validation:', error);
+            throw error;
+        }
     }
 };

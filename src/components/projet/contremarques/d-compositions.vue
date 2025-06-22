@@ -21,7 +21,7 @@
                         <th class="border-end-1" :style="{ backgroundColor: col.hexCode }"> %{{ index + 1 }}A</th>
                     </template>
                     <th class="border-end bg-gradient-dark text-white">Remarque</th>
-                    <th v-if="layersValidations" class="border-end bg-gradient-dark text-white">Checking</th>
+                    <th v-if="hasLayersValidations" class="border-end bg-gradient-dark text-white">Checking</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -44,7 +44,7 @@
                     </template>
                     <td class="border-end"><textarea :disabled="props.disabled" class="form-control w-auto"
                                                      v-model="row.remarque"></textarea></td>
-                    <td class="border-end">
+                    <td v-if="hasLayersValidations" class="border-end">
                         <d-radio-validation
                             v-model="layerValidationMap[row.id].validation"
                             :options="[{ label: 'Validée' }, { label: 'Non validée' }]"
@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-    import { ref, watch, onMounted } from 'vue';
+    import { ref, watch, onMounted, computed } from 'vue';
     import { useStore } from 'vuex';
     import VueFeather from 'vue-feather';
     import dCompositionThread from './_Partials/d-composition-thread.vue';
@@ -94,6 +94,7 @@
     import { nextTick } from 'vue';
     import DRadioValidation from '../../checkingProgress/d-radio-validation.vue';
     import DTextarea from '../../base/d-textarea.vue';
+    import checkingListService from '../../../Services/checkingList-service.js';
 
     const props = defineProps({
         carpetSpecificationId: {
@@ -121,6 +122,9 @@
     const carpetCompositionId = ref(null);
     const canManageComposition = store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isSuperAdmin;
     const layerValidationMap = ref({});
+    const previousLayerValidationMap = ref({});
+    let isInitializingLayerValidations = false;
+    const hasLayersValidations = computed(() => props.layersValidations && props.layersValidations.length > 0);
 
     const addColumn = async ($event) => {
         const newColumnIndex = dynamicColumns.value.length + 1;
@@ -250,10 +254,12 @@
     };
 
     const initializeLayerValidations = () => {
+        isInitializingLayerValidations = true;
         layerValidationMap.value = {};
         if (props.layersValidations && props.layersValidations.length) {
             props.layersValidations.forEach(lv => {
                 layerValidationMap.value[lv.layer] = {
+                    id: lv.id,
                     validation: lv.layerValidation,
                     comment: lv.layerComment || ''
                 };
@@ -261,9 +267,11 @@
         }
         rows.value.forEach(row => {
             if (!layerValidationMap.value[row.id]) {
-                layerValidationMap.value[row.id] = { validation: null, comment: '' };
+                layerValidationMap.value[row.id] = { id: null, validation: null, comment: '' };
             }
         });
+        previousLayerValidationMap.value = JSON.parse(JSON.stringify(layerValidationMap.value));
+        isInitializingLayerValidations = false;
     };
 
     watch(
@@ -276,8 +284,22 @@
 
     watch(
         layerValidationMap,
-        (val) => {
-            console.log('Layer validations updated', val);
+        async (val) => {
+            if (isInitializingLayerValidations) return;
+            for (const [layerId, lv] of Object.entries(val)) {
+                const prev = previousLayerValidationMap.value[layerId] || {};
+                if (lv.id && (lv.validation !== prev.validation || lv.comment !== prev.comment)) {
+                    try {
+                        await checkingListService.updateLayerValidation(lv.id, {
+                            layer_validation: lv.validation,
+                            layer_comment: lv.comment
+                        });
+                    } catch (e) {
+                        console.error('Error updating layer validation', e);
+                    }
+                }
+            }
+            previousLayerValidationMap.value = JSON.parse(JSON.stringify(val));
         },
         { deep: true }
     );
