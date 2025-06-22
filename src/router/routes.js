@@ -431,6 +431,16 @@ export const routes = [
                 },
             },
             {
+                path: 'attach/:quoteId',
+                name: 'reglement_attach_list',
+                component: () => import('../views/treasury/treasuryAttachList.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: "read treasury",
+                },
+            },
+            {
                 path: 'create',
                 name: 'reglement_create',
                 component: () => import('../views/treasury/treasuryForm.vue'),
@@ -458,6 +468,16 @@ export const routes = [
                     requiresAuth: true,
                     class: 'treasury',
                     permission: "read treasury",
+                },
+            },
+            {
+                path: 'rattacher/:quoteId/:id',
+                name: 'reglement_rattacher',
+                component: () => import('../views/treasury/treasuryView.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: "update treasury",
                 },
             },
         ],
