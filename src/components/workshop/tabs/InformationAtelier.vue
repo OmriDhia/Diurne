@@ -75,7 +75,7 @@
 
     const checkingLists = ref([]);
     const router = useRouter();
-    const staticOrderId = 187;
+    const staticOrderId = 189;
     const loadCheckingLists = async () => {
         try {
             const response = await checkingListService.getCheckingListsByOrder(staticOrderId);

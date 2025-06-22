@@ -375,6 +375,18 @@
                             </fieldset>
                         </div>
                     </div>
+
+                    <div class="row p-2">
+                        <div class="col-md-12">
+                            <d-compositions
+                                v-if="data?.workShopOrder?.imageCommand?.carpetSpecification"
+                                :disabled="true"
+                                :hideBtn="true"
+                                :compositionData="data.workShopOrder.imageCommand.carpetSpecification.carpedComposition"
+                                :carpetSpecificationId="data.workShopOrder.imageCommand.carpetSpecification.id"
+                            ></d-compositions>
+                        </div>
+                    </div>
                 </template>
             </d-panel>
         </template>
@@ -405,7 +417,9 @@
     import dPageTitle from '@/components/common/d-page-title.vue';
     import DRadioValidation from '@/components/checkingProgress/d-radio-validation.vue';
     import DBtnOutlined from '@/components/base/d-btn-outlined.vue';
+    import DCompositions from '@/components/projet/contremarques/d-compositions.vue';
 
+    const data = ref(null);
     const validationOptions = [
         { label: 'Validée' },
         { label: 'Non validée' }
@@ -583,8 +597,9 @@
             return;
         }
         try {
-            const data = await checkingListService.getCheckingListById(checkingListId);
-            fillForm(data);
+            data.value = await checkingListService.getCheckingListById(checkingListId);
+            console.log(data.value.workShopOrder.imageCommand.carpetSpecification.carpedComposition);
+            fillForm(data.value);
         } catch (e) {
             console.error('Failed to load checking list:', e);
         }

@@ -3,7 +3,7 @@ import axiosInstance from '../config/http';
 export default {
     async getCheckingListsByOrder(orderId) {
         try {
-            const res = await axiosInstance.get(`/api/checkingLists?orderId=${orderId}`);
+            const res = await axiosInstance.get(`/api/checkingLists?workshopOrderId=${orderId}`);
             return res.data?.response || [];
         } catch (error) {
             console.error('Error fetching checking lists:', error);
