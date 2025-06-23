@@ -13,32 +13,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Important pour avoir l'historique complet
 
       - name: Check branch and commit
         run: |
           git branch --show-current
           git log -1
-
-      - name: Prepare server directory
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.DIURNE_HOST }}
-          username: ${{ secrets.DIURNE_USERNAME }}
-          password: ${{ secrets.DIURNE_PASSWORD }}
-          port: 22
-          script: |
-            sudo mkdir -p /var/www/html/diurne_vuejs
-            sudo chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
-            sudo chmod -R 775 /var/www/html/diurne_vuejs
-
-      - name: Create clean archive (excluding unwanted files)
-        run: |
-          tar --exclude='.git' \
-              --exclude='.github' \
-              --exclude='.gitignore' \
-              -czf /tmp/deploy.tar.gz *
 
       - name: Copy source code to server
         uses: appleboy/scp-action@master
@@ -47,12 +26,11 @@ jobs:
           username: ${{ secrets.DIURNE_USERNAME }}
           password: ${{ secrets.DIURNE_PASSWORD }}
           port: 22
-          source: "/tmp/deploy.tar.gz"
+          source: "./*"
           target: "/var/www/html/diurne_vuejs/"
-          rm: true
-          overwrite: true
+          strip_components: 0
 
-      - name: Extract and build on server
+      - name: Build and configure on server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DIURNE_HOST }}
@@ -61,11 +39,9 @@ jobs:
           port: 22
           script: |
             cd /var/www/html/diurne_vuejs
-            tar -xzf deploy.tar.gz
-            rm deploy.tar.gz
-            npm install
+            sudo chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
+            # Installation explicite de Vite et des dépendances
+            npm install vite --no-audit
+            npm install --no-audit
             npm run build
-            sudo chown -R www-data:www-data /var/www/html/diurne_vuejs
-            sudo find /var/www/html/diurne_vuejs -type d -exec chmod 755 {} \;
-            sudo find /var/www/html/diurne_vuejs -type f -exec chmod 644 {} \;
             sudo systemctl restart apache2
