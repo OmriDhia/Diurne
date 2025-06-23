@@ -557,16 +557,16 @@ export const routes = [
         path: '/tapis/workshop',
         name: 'carpetWorkshop',
         children: [
-            /*{
+            {
                 path: '',
                 name: 'carpetWorkshopList',
-                component: () => import('../views/carpet/order/carpetOrders.vue'),
+                component: () => import('../views/workshop/workshops.vue'),
                 meta: {
                     requiresAuth: true,
                     class: 'tapis',
                     permission: 'read carpet'
                 }
-            },*/
+            },
             {
                 path: ':imagesCommadeId/create',
                 name: 'createCarpetWorkshop',
