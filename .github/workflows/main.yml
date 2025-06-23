@@ -1,4 +1,4 @@
-name: diurne_secure_deploy
+name: diurne_api_dev
 
 on:
   push:
