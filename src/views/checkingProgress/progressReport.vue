@@ -71,7 +71,9 @@
     import dBaseDropdown from '@/components/base/d-base-dropdown.vue';
     import dUsersDropdown from '@/components/common/d-users-dropdown.vue';
     import progressReportService from '@/Services/progress-report-service';
+    import {useRoute} from "vue-router";
 
+    const route = useRoute();
     const loading = ref(false);
     const form = ref({
         authorId: [],
@@ -83,7 +85,7 @@
         dateWorkshop: '',
         tissage: '',
         statusId: null,
-        provisionalCalendarId: ''
+        provisionalCalendarId: parseInt(route.params.provisionalCalendarId),
     });
     const statuses = ref([]);
     console.log(statuses);

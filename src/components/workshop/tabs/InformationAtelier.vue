@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, watch} from 'vue';
 import {useRouter} from 'vue-router';
 import SelectInput from '../ui/SelectInput.vue';
 import RadioButton from '../ui/RadioButton.vue';
 import dInput from '../../../components/base/d-input.vue';
 import DCurrency from '@/components/common/d-currency.vue';
+import { Helper, formatErrorViolations, formatErrorViolationsComposed } from '@/composables/global-methods';
 import DPanelTitle from '@/components/common/d-panel-title.vue';
 import checkingListService from '../../../Services/checkingList-service';
 import workshopService from '@/Services/workshop-service.js';
@@ -17,6 +18,10 @@ const props = defineProps({
     },
     workshopInfoId: {
         type: Number,
+        required: false
+    },
+    workshopInfo: {
+        type: Object,
         required: false
     },
     imageCommandId: {
@@ -101,6 +106,7 @@ const materialOptions = [
 
 const checkingLists = ref([]);
 const router = useRouter();
+const error = ref({});
 const loadCheckingLists = async () => {
     try {
         const response = await checkingListService.getCheckingListsByOrder(props.orderId);
@@ -114,11 +120,15 @@ const loadCheckingLists = async () => {
 // Methods
 const generateRN = async () => {
     try {
+        error.value = {}
         const manufacturerId = parseInt(formData.value.tapisDuProjet.fabricant);
         const data = await workshopService.generateRN(manufacturerId, props.imageCommandId);
         formData.value.tapisDuProjet.rn = data.response?.rnNumber || data.response?.rnNumber || '';
     } catch (e) {
-        console.error('Failed to generate RN', e);
+        if (e.response.data.violations) {
+            error.value = formatErrorViolations(e.response.data.violations);
+        }
+        window.showMessage('Erreur de génération RN','error');
     }
 };
 
@@ -126,8 +136,12 @@ const controlCoherence = () => {
     console.log('Controlling coherence...');
 };
 
-const updatePrixTapis = () => {
-    console.log('Updating tapis price...');
+const updatePrixTapis = async() => {
+    try{
+        const prices = await workshopService.calculatePrices(props.workshopInfoId);  
+    }catch(e){
+        window.showMessage('Erreur au niveau de calcule des prix','error');
+    }
 };
 
 const voir = () => {
@@ -139,6 +153,7 @@ const attribuer = () => {
 };
 
 const saveWorkshopInformation = async () => {
+    error.value = {}
     const payload = {
         launchDate: formData.value.infoCommande.dateCmdAtelier || "",
         expectedEndDate: formData.value.infoCommande.dateFinTheo || "",
@@ -185,7 +200,10 @@ const saveWorkshopInformation = async () => {
         }
         console.log('Saved workshop information');
     } catch (e) {
-        console.error('Failed to save workshop information', e);
+        if (e.response.data.violations) {
+            error.value = formatErrorViolations(e.response.data.violations);
+        }
+        window.showMessage(e.message, 'error');
     }
 };
 
@@ -199,6 +217,39 @@ defineExpose({
     generateRN
 });
 
+const setDataForUpdate = () => {
+    formData.value.infoCommande.dateCmdAtelier = props.workshopInfo.launchDate;
+    formData.value.infoCommande.dateFinTheo = props.workshopInfo.expectedEndDate;
+    formData.value.infoCommande.delaisProd = props.workshopInfo.productionTime?.toString() || "";
+    formData.value.infoCommande.pourcentCommande = props.workshopInfo.orderSilkPercentage;
+    formData.value.infoCommande.largeurCmd = props.workshopInfo.orderedWidth;
+    formData.value.infoCommande.longueurCmd = props.workshopInfo.orderedHeigh;
+    formData.value.infoCommande.srfCmd = props.workshopInfo.orderedSurface;
+    formData.value.infoCommande.largeurReelle = props.workshopInfo.realWidth;
+    formData.value.infoCommande.longueurReelle = props.workshopInfo.realHeight;
+    formData.value.infoCommande.srfReelle = props.workshopInfo.realSurface;
+    formData.value.infoCommande.anneeGrilleTarif = props.workshopInfo.idTarifGroup?.toString() || "";
+
+    formData.value.reductionTapis = props.workshopInfo.reductionRate;
+    formData.value.complexiteAtelier = props.workshopInfo.hasComplixityWorkshop;
+    formData.value.multiLevelAtelier = props.workshopInfo.hasMultilevelWorkshop;
+    formData.value.formeSpeciale = props.workshopInfo.hasSpecialShape;
+
+    formData.value.prixAchatTapis.auM2 = props.workshopInfo.carpetPurchasePricePerM2;
+    formData.value.prixAchatTapis.cmd = props.workshopInfo.carpetPurchasePriceCmd;
+    formData.value.prixAchatTapis.theorique = props.workshopInfo.carpetPurchasePriceTheoretical;
+    formData.value.prixAchatTapis.facture = props.workshopInfo.carpetPurchasePriceInvoice;
+
+    formData.value.others.penalite = props.workshopInfo.penalty;
+    formData.value.others.transport = props.workshopInfo.shipping;
+    formData.value.others.taxe = props.workshopInfo.tva;
+    formData.value.others.margeBrute = props.workshopInfo.grossMargin;
+    formData.value.others.referenceSurFacture = props.workshopInfo.referenceOnInvoice;
+    formData.value.others.numeroDuFacture = props.workshopInfo.invoiceNumber;
+
+    formData.value.tapisDuProjet.fabricant = props.workshopInfo.manufacturerId?.toString() || "";
+    formData.value.tapisDuProjet.rn = props.workshopInfo.rn;
+}
 const createNewCheckingList = async () => {
     try {
         const newList = await checkingListService.createCheckingList(
@@ -214,8 +265,14 @@ const createNewCheckingList = async () => {
         console.error('Failed to create checking list:', e);
     }
 };
-console.log(checkingLists.value);
 onMounted(loadCheckingLists);
+watch(
+    () => props.workshopInfo,
+    () => {
+        setDataForUpdate()
+    },
+    { deep: true }
+);
 </script>
 
 <template>
@@ -229,12 +286,12 @@ onMounted(loadCheckingLists);
                     <div class="col-6">
 
                         <div class="form-row">
-                            <d-input label="Date de cmd. atelier" type="date"
+                            <d-input label="Date de cmd. atelier" type="datetime-local"
                                      v-model="formData.infoCommande.dateCmdAtelier"/>
                         </div>
 
                         <div class="form-row">
-                            <d-input label="Date fin atelier Prev" type="date"
+                            <d-input label="Date fin atelier Prev" type="datetime-local"
                                      v-model="formData.infoCommande.dateFinAtelierPrev"
                                      rootClass="pink-bg"/>
                         </div>
@@ -259,7 +316,7 @@ onMounted(loadCheckingLists);
                         </div>
 
                         <div class="form-row row ">
-                            <d-tarifs v-model="formData.infoCommande.anneeGrilleTarif" rootClass="pink-bg"/>
+                            <d-tarifs v-model="formData.infoCommande.anneeGrilleTarif" rootClass="pink-bg" :error="error.idTarifGroup"/>
                         </div>
 
                         <div class="form-row special-tarif row py-3">
@@ -292,7 +349,7 @@ onMounted(loadCheckingLists);
                     <div class="col-6">
                         <div class="theoretical-section">
                             <div class="form-row">
-                                <d-input label="Date fin Théo" type="date"
+                                <d-input label="Date fin Théo" type="datetime-local"
                                          v-model="formData.infoCommande.dateFinTheo"/>
                             </div>
 
@@ -342,7 +399,7 @@ onMounted(loadCheckingLists);
                 </div>
 
 
-                <div class="row">
+                <div class="row" v-if="props.workshopInfoId">
                     <div class="col-6 ps-0">
                         <div class="price-row">
                             <d-input label="Prix d'achat tapis au m² " v-model="formData.prixAchatTapis.auM2"/>
@@ -390,7 +447,7 @@ onMounted(loadCheckingLists);
                 </div>
 
 
-                <div class="details-row d-flex justify-content-center align-items-center py-2">
+                <div class="details-row d-flex justify-content-center align-items-center py-2"  v-if="props.workshopInfoId">
                     <div class="col-4"><label>Détails prix tapis</label></div>
                     <div class="col-4">
                         <button class="btn btn-outline-dark  text-uppercase" @click="updatePrixTapis">
@@ -445,7 +502,7 @@ onMounted(loadCheckingLists);
                 <button class="btn btn-custom  text-uppercase w-100" @click="attribuer">ATTRIBUER</button>
 
                 <div class="form-row">
-                    <d-input label="Date validation client" type="date" v-model="formData.dateValidationClient"/>
+                    <d-input label="Date validation client" type="datetime-local" v-model="formData.dateValidationClient"/>
                 </div>
 
                 <button class="coherence-btn btn btn-custom  text-uppercase w-100 py-2"
@@ -455,8 +512,9 @@ onMounted(loadCheckingLists);
                 <div class="form-row row py-2 align-items-center">
                     <div class="col-4"><label>Fabricant :</label></div>
                     <div class="col-8">
-                        <SelectInput v-model="formData.tapisDuProjet.fabricant" :options="manufacturers"
+                        <SelectInput v-model="formData.tapisDuProjet.fabricant" :options="manufacturers"  :error="error.manufacturerId"
                                      rootClass="pink-bg"/>
+                        <div v-if="error.manufacturerId" class="invalid-feedback">{{ $t("Le champ fabricant est abligatoire.") }}</div>
                     </div>
                 </div>
                 <div class="form-row row py-2">

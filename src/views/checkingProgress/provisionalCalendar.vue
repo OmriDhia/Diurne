@@ -12,7 +12,7 @@
                     <div>
                         <div class="row">
                             <div class="col-md-4">
-                                <d-input type="number" label="RN" v-model="form.rn" />
+                                <d-input type="text" label="RN" :disabled="true" v-model="form.rn" />
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -72,15 +72,18 @@
     import dPanelTitle from '@/components/common/d-panel-title.vue';
     import dPageTitle from '@/components/common/d-page-title.vue';
     import provisionalCalendarService from '@/Services/provisional-calendar-service';
+    import workshopService from "@/Services/workshop-service.js";
 
     const loading = ref(false);
     const route = useRoute();
     const router = useRouter();
     const calendar = ref(null);
+    
+    const workshopOrderId = route.params.workshopOrderId
 
     const form = ref({
         rn: '',
-        workshopOrderId: 189,
+        workshopOrderId: parseInt(workshopOrderId),
         deadlinPreparation: '',
         dateFinPreparation: '',
         deadlinWeave: '',
@@ -99,6 +102,12 @@
         if (!dateString) return '';
         const date = new Date(dateString);
         return date.toISOString().split('T')[0];
+    };
+    const getworkshopOrder = async () => {
+        if (workshopOrderId) {
+            const res = await workshopService.getWorkshopOrder(workshopOrderId);
+            form.value.rn = res.workshopInformation.rn
+        }
     };
 
     const loadCalendar = async (id) => {
@@ -152,7 +161,7 @@
                     deadlinFinition: parseInt(form.value.deadlinFinition)
                 });
                 window.showMessage('Ajout avec succès.');
-                router.push({ name: 'provisionalCalendarView', params: { id: res.id } });
+                router.push({ name: 'provisionalCalendarView', params: { workshopOrderId, id: res.id } });
             }
         } catch (e) {
             window.showMessage(e.message, 'error');
@@ -162,6 +171,7 @@
     };
 
     onMounted(() => {
+        getworkshopOrder()
         if (route.params.id) {
             loadCalendar(route.params.id);
         }
