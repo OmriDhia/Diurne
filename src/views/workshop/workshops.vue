@@ -106,9 +106,21 @@
                   <img src="/label-image.jpg" alt="Carpet" style="width: 60px" />
                 </td>
                 <td v-if="!cols.find(c => c.field === 'contremarque')?.hide">
-                  <strong>Contremarque :</strong> {{ order.designation }}<br />
+                  <strong>Contremarque :</strong> {{ order.designation }}
+                    <router-link :to="'/projet/contremarques/manage/' + order.contremarque_id"  v-if="$hasPermission('update contremarque')">
+                        <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
+                    </router-link>
+                    <br />
                   <strong>Emplacement :</strong> {{ order.location || '-' }}
                 </td>
+                  <td v-if="!cols.find(c => c.field === 'rn')?.hide" class="text-center">
+                      <div class="d-flex justify-content-between">
+                          <strong>{{ order.rn}}</strong>
+                          <router-link :to="'/workshop/details/' + order.id"  v-if="$hasPermission('update contremarque')">
+                              <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
+                          </router-link>
+                      </div>
+                  </td>
                 <td v-if="!cols.find(c => c.field === 'rn')?.hide">{{ order.reference }}</td>
                 <td v-if="!cols.find(c => c.field === 'commande')?.hide">
                   <strong>Commande :</strong> {{ order.cloned_quote_reference }}<br />
@@ -150,6 +162,7 @@ import pagination from '../../components/base/Pagination/d-pagination.vue';
 import axiosInstance from '../../config/http';
 import { filterCarpetOrder, FILTER_CARPET_ORDER_STORAGE_NAME } from '../../composables/constants';
 import { Helper } from '../../composables/global-methods';
+import VueFeather from "vue-feather";
 
 const filter = ref(Object.assign({}, filterCarpetOrder));
 const filterActive = ref(false);
