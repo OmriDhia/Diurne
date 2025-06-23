@@ -225,8 +225,21 @@ const getOrders = async () => {
 
     url += getFilterParams();
     const res = await axiosInstance.get(url);
-    rows.value = res.data?.response?.workshopOrder || [];
-    totalRows.value = res.data?.response?.total || 0;
+    const data = res.data?.response || {};
+    rows.value = (data.workshopOrder || []).map((order) => ({
+      ...order,
+      rn: order.workshopInfo?.rn,
+      designation: order.carpetDesignOrder?.contremarque,
+      contremarque_id: order.carpetDesignOrder?.contremarque_id,
+      location: order.carpetDesignOrder?.location,
+      cloned_quote_reference: order.imageCommand?.commandNumber,
+      original_quote_reference: order.carpetDesignOrder?.diNumber,
+      customer: order.carpetDesignOrder?.customer,
+      commercial: order.Commercial?.commercial,
+      prescripteur: order.carpetDesignOrder?.designer,
+      state: order.carpetDesignOrder?.status,
+    }));
+    totalRows.value = data.total || 0;
   } catch (e) {
     console.error(e);
   } finally {
