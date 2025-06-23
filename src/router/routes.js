@@ -554,12 +554,12 @@ export const routes = [
         },
     },
     {
-        path: '/tapis/workshop',
+        path: '/workshop',
         name: 'carpetWorkshop',
         children: [
             {
                 path: '',
-                name: 'carpetWorkshopList',
+                name: 'work_shop',
                 component: () => import('../views/workshop/workshops.vue'),
                 meta: {
                     requiresAuth: true,
