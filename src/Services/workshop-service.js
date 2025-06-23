@@ -13,6 +13,10 @@ export default {
         const res = await axiosInstance.post('/api/workshopOrders', data);
         return res.data;
     },
+    async getWorkshopOrder(id) {
+        const res = await axiosInstance.get(`/api/workshopOrders/${id}`);
+        return res.data.response;
+    },
     async generateRN(manufacturerId, imageCommandId) {
         const res = await axiosInstance.post('/api/carpet', {
             manufacturerId,

@@ -63,13 +63,13 @@
                                 </div>
                             </template>
                             <template #collection="data">
-                                {{ data.value.carpetDesignOrder?.carpetSpecification?.collection?.reference}}
+                                {{ data.value.carpetSpecification?.collection}}
                             </template>
                             <template #model="data">
-                                {{ data.value.carpetDesignOrder?.carpetSpecification?.model?.code}}
+                                {{ data.value.carpetSpecification?.model}}
                             </template>
                             <template #quality="data">
-                                {{ data.value.carpetDesignOrder?.carpetSpecification?.quality?.name}}
+                                {{ data.value.carpetSpecification?.quality}}
                             </template>
                             <template #image_name="data">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -82,10 +82,10 @@
                                 </div>
                             </template>
                             <template #width="data">
-                                {{ data.value.carpetDesignOrder.carpetSpecification?.dimensions?.[1]?.[0].value }}
+                                {{ data.value.carpetSpecification?.dimensions?.[1]?.values[0].value }}
                             </template>
                             <template #height="data">
-                                {{ data.value.carpetDesignOrder.carpetSpecification?.dimensions?.[0]?.[0].value }}
+                                {{ data.value.carpetSpecification?.dimensions?.[0]?.values[0].value }}
                             </template>
                             
                             <template #contremarque="data">
