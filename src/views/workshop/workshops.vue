@@ -214,7 +214,7 @@ const totalPages = computed(() =>
 const getOrders = async () => {
   try {
     loading.value = true;
-    let url = `/api/carpetOrders?page=${paginationData.currentPage}&limit=${paginationData.itemsPerPage}`;
+    let url = `/api/workshopOrders?page=${paginationData.currentPage}&limit=${paginationData.itemsPerPage}`;
 
     if (paginationData.orderBy) {
       url += `&orderBy=${paginationData.orderBy}`;
@@ -225,8 +225,8 @@ const getOrders = async () => {
 
     url += getFilterParams();
     const res = await axiosInstance.get(url);
-    rows.value = res.data.carpetOrders || [];
-    totalRows.value = res.data.count || 0;
+    rows.value = res.data?.response?.workshopOrder || [];
+    totalRows.value = res.data?.response?.total || 0;
   } catch (e) {
     console.error(e);
   } finally {
