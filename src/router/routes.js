@@ -584,6 +584,36 @@ export const routes = [
         },
     },
     {
+        path: '/tapis/invoices',
+        name: 'supplier_invoices',
+        children: [
+            {
+                path: '',
+                name: 'fournisseur-invoice-list',
+                component: () => import('../views/carpet/factureFournisseur/fournisseurInvoiceList.vue'),
+                meta: {
+                    requiresAuth: true,
+                   class: 'tapis',
+                    permission: 'read invoice',
+                },
+            },
+            {
+                path: 'create',
+                name: 'fournisseur-invoice-create',
+                component: () => import('../views/carpet/factureFournisseur/fournisseurInvoiceCreate.vue'),
+                meta: {
+                    requiresAuth: true,
+                   class: 'tapis',
+                    permission: 'create invoice',
+                },
+            },
+        ],
+        meta: {
+            requiresAuth: true,
+            class: 'tapis'
+        }
+    },
+    {
         path: '/tapis/workshop',
         name: 'carpetWorkshop',
         children: [
