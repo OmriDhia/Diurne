@@ -158,13 +158,13 @@
                             <div class="col-md-12">
                                 <div class="row p-2 align-items-center">
                                     <div class="col-auto">
-                                        <button class="btn btn-custom pe-5 ps-5">Créer un RN</button>
+                                        <button class="btn btn-custom pe-5 ps-5" @click="goToGenerateRn">Créer un RN</button>
                                     </div>
                                     <div class="col-3">
-                                        <d-input label="RN" v-model="currentObject.rn" :pt="false"></d-input>
+                                        <d-input label="RN" v-model="currentObject.rn" :pt="false" disabled></d-input>
                                     </div>
                                     <div class="col-xl-1 col-md-2">
-                                        <d-input v-model="currentObject.rn" :pt="false"></d-input>
+                                        <d-input v-model="currentObject.rn" :pt="false" disabled></d-input>
                                     </div>
                                     <div class="col-auto">
                                         <button class="btn btn-custom pe-5 ps-5">Voir RN</button>
@@ -395,6 +395,10 @@ const annulerImageCommande = async (id) => {
 }
 const imageToStudio = (id) => {
     updateImageCommand(carpetStatus.transmisId);
+}
+
+const goToGenerateRn = () => {
+    router.push({name: 'createCarpetWorkshop', params:{imagesCommadeId: orderImageId}});
 }
 </script>
 

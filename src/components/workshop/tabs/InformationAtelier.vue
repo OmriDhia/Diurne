@@ -1,137 +1,221 @@
 <script setup lang="ts">
-    import { ref, onMounted } from 'vue';
-    import { useRouter } from 'vue-router';
-    import SelectInput from '../ui/SelectInput.vue';
-    import RadioButton from '../ui/RadioButton.vue';
-    import dInput from '../../../components/base/d-input.vue';
-    import DCurrency from '@/components/common/d-currency.vue';
-    import DPanelTitle from '@/components/common/d-panel-title.vue';
-    import checkingListService from '../../../Services/checkingList-service';
+import {ref, onMounted} from 'vue';
+import {useRouter} from 'vue-router';
+import SelectInput from '../ui/SelectInput.vue';
+import RadioButton from '../ui/RadioButton.vue';
+import dInput from '../../../components/base/d-input.vue';
+import DCurrency from '@/components/common/d-currency.vue';
+import DPanelTitle from '@/components/common/d-panel-title.vue';
+import checkingListService from '../../../Services/checkingList-service';
+import workshopService from '@/Services/workshop-service.js';
+import DTarifs from "@/components/common/d-tarifs.vue";
 
-    const props = defineProps({
-        orderId: {
-            type: Number,
-            required: true
-        }
-    });
-    // Form data
-    const formData = ref({
-        infoCommande: {
-            dateCmdAtelier: '24-10-2021',
-            dateFinTheo: '24-10-2021',
-            dateFinAtelierPrev: '',
-            delaisProd: '2',
-            pourcentCommande: '0.00',
-            deviseAchat: '',
-            largeurCmd: '30',
-            largeurReelle: '0',
-            longueurCmd: '30',
-            longueurReelle: '0',
-            srfCmd: '0.9',
-            srfReelle: '0',
-            anneeGrilleTarif: ''
-        },
-        tarifSpecial: true,
-        prixAchat: [
-            { material: 'Wool', price: '32' },
-            { material: 'Silk', price: '32' },
-            { material: 'Hemp', price: '32' }
-        ],
-        reductionTapis: '',
-        complexiteAtelier: false,
-        multiLevelAtelier: true,
-        formeSpeciale: true,
-        tapisDuProjet: {
-            fabricant: '',
-            typeCommande: '',
-            rn: 'M0025',
-            exemplaire: '3'
-        },
-        prixAchatTapis: {
-            auM2: '32',
-            cmd: '2.88',
-            theorique: '2.88',
-            facture: '0'
-        },
-        others: {
-            penalite: '0',
-            transport: '0',
-            taxe: '0',
-            margeBrute: '0',
-            referenceSurFacture: '0',
-            numeroDuFacture: '0'
-        },
-        dateValidationClient: '24-10-2021',
-        disponibleVente: false,
-        envoye: false,
-        receptionParis: true
-    });
+const props = defineProps({
+    orderId: {
+        type: Number,
+        required: false
+    },
+    workshopInfoId: {
+        type: Number,
+        required: false
+    },
+    imageCommandId: {
+        type: Number,
+        required: true
+    }
+});
+// Form data
+const formData = ref({
+    infoCommande: {
+        dateCmdAtelier: '24-10-2021',
+        dateFinTheo: '24-10-2021',
+        dateFinAtelierPrev: '',
+        delaisProd: '2',
+        pourcentCommande: '0.00',
+        deviseAchat: '',
+        largeurCmd: '30',
+        largeurReelle: '0',
+        longueurCmd: '30',
+        longueurReelle: '0',
+        srfCmd: '0.9',
+        srfReelle: '0',
+        anneeGrilleTarif: ''
+    },
+    tarifSpecial: true,
+    prixAchat: [
+        {material: 'Wool', price: '32'},
+        {material: 'Silk', price: '32'},
+        {material: 'Hemp', price: '32'}
+    ],
+    reductionTapis: '',
+    complexiteAtelier: false,
+    multiLevelAtelier: true,
+    formeSpeciale: true,
+    tapisDuProjet: {
+        fabricant: '',
+        typeCommande: '',
+        rn: 'M0025',
+        exemplaire: '3'
+    },
+    prixAchatTapis: {
+        auM2: '32',
+        cmd: '2.88',
+        theorique: '2.88',
+        facture: '0'
+    },
+    others: {
+        penalite: '0',
+        transport: '0',
+        taxe: '0',
+        margeBrute: '0',
+        referenceSurFacture: '0',
+        numeroDuFacture: '0'
+    },
+    dateValidationClient: '24-10-2021',
+    disponibleVente: false,
+    envoye: false,
+    receptionParis: true
+});
 
-    const materialOptions = [
-        { value: 'Wool', label: 'Wool' },
-        { value: 'Silk', label: 'Silk' },
-        { value: 'Hemp', label: 'Hemp' }
-    ];
+const manufacturers = ref<Array<{ value: number | string, label: string }>>([]);
 
-    const checkingLists = ref([]);
-    const router = useRouter();
-    const staticOrderId = 189;
-    const loadCheckingLists = async () => {
-        try {
-            const response = await checkingListService.getCheckingListsByOrder(staticOrderId);
-            checkingLists.value = response || [];
-            console.log('Loaded checking lists:', checkingLists.value); // Debug log
-        } catch (e) {
-            console.error('Error loading checking lists:', e);
-        }
+const fetchManufacturers = async () => {
+    try {
+        const data = await workshopService.getManufacturers({page: 1, itemsPerPage: 50});
+        const list = data.response?.data || data.data || [];
+        manufacturers.value = list.map((m: any) => ({value: m.id, label: m.name}));
+    } catch (e) {
+        console.error('Failed to load manufacturers', e);
+    }
+};
+
+onMounted(() => {
+    fetchManufacturers();
+});
+
+const materialOptions = [
+    {value: 'Wool', label: 'Wool'},
+    {value: 'Silk', label: 'Silk'},
+    {value: 'Hemp', label: 'Hemp'}
+];
+
+const checkingLists = ref([]);
+const router = useRouter();
+const loadCheckingLists = async () => {
+    try {
+        const response = await checkingListService.getCheckingListsByOrder(props.orderId);
+        checkingLists.value = response || [];
+        console.log('Loaded checking lists:', checkingLists.value); // Debug log
+    } catch (e) {
+        console.error('Error loading checking lists:', e);
+    }
+};
+
+// Methods
+const generateRN = async () => {
+    try {
+        const manufacturerId = parseInt(formData.value.tapisDuProjet.fabricant);
+        const data = await workshopService.generateRN(manufacturerId, props.imageCommandId);
+        formData.value.tapisDuProjet.rn = data.response?.rnNumber || data.response?.rnNumber || '';
+    } catch (e) {
+        console.error('Failed to generate RN', e);
+    }
+};
+
+const controlCoherence = () => {
+    console.log('Controlling coherence...');
+};
+
+const updatePrixTapis = () => {
+    console.log('Updating tapis price...');
+};
+
+const voir = () => {
+    console.log('Viewing DI commande...');
+};
+
+const attribuer = () => {
+    console.log('Attributing...');
+};
+
+const saveWorkshopInformation = async () => {
+    const payload = {
+        launchDate: formData.value.infoCommande.dateCmdAtelier || "",
+        expectedEndDate: formData.value.infoCommande.dateFinTheo || "",
+        productionTime: Number(formData.value.infoCommande.delaisProd) || 0,
+        orderSilkPercentage: formData.value.infoCommande.pourcentCommande,
+        orderedWidth: formData.value.infoCommande.largeurCmd,
+        orderedHeigh: formData.value.infoCommande.longueurCmd,
+        orderedSurface: formData.value.infoCommande.srfCmd,
+        realWidth: formData.value.infoCommande.largeurReelle,
+        realHeight: formData.value.infoCommande.longueurReelle,
+        realSurface: formData.value.infoCommande.srfReelle,
+        idTarifGroup: Number(formData.value.infoCommande.anneeGrilleTarif) || 0,
+        reductionRate: formData.value.reductionTapis,
+        hasComplixityWorkshop: formData.value.complexiteAtelier,
+        hasMultilevelWorkshop: formData.value.multiLevelAtelier,
+        hasSpecialShape: formData.value.formeSpeciale,
+        carpetPurchasePricePerM2: formData.value.prixAchatTapis.auM2,
+        carpetPurchasePriceCmd: formData.value.prixAchatTapis.cmd,
+        carpetPurchasePriceTheoretical: formData.value.prixAchatTapis.theorique,
+        carpetPurchasePriceInvoice: formData.value.prixAchatTapis.facture,
+        penalty: formData.value.others.penalite,
+        shipping: formData.value.others.transport,
+        tva: formData.value.others.taxe,
+        grossMargin: formData.value.others.margeBrute,
+        referenceOnInvoice: formData.value.others.referenceSurFacture,
+        invoiceNumber: formData.value.others.numeroDuFacture,
+        manufacturerId: parseInt(formData.value.tapisDuProjet.fabricant),
+        Rn: formData.value.tapisDuProjet.rn,
     };
-
-    // Methods
-    const generateRN = () => {
-        console.log('Generating RN...');
-    };
-
-    const controlCoherence = () => {
-        console.log('Controlling coherence...');
-    };
-
-    const updatePrixTapis = () => {
-        console.log('Updating tapis price...');
-    };
-
-    const voir = () => {
-        console.log('Viewing DI commande...');
-    };
-
-    const attribuer = () => {
-        console.log('Attributing...');
-    };
-
-    const enregistrer = () => {
-        console.log('Saving form...');
-    };
-
-    const commandeAtelier = () => {
-        console.log('Workshop command...');
-    };
-
-    const createNewCheckingList = async () => {
-        try {
-            const newList = await checkingListService.createCheckingList(
-                //    props.orderId
-                staticOrderId
-            );
-            console.log(newList);
-            if (newList) {
-                checkingLists.value.push(newList);
-                router.push(`/checking-progress/list/${newList.id}`);
+    try {
+        if(props.workshopInfoId){
+            const res = await workshopService.updateWorkshopInformation(props.workshopInfoId,payload);
+        } else {
+            const res = await workshopService.createWorkshopInformation(payload);
+            
+            if(res?.response?.id){
+                const resWorkshopOrder = await workshopService.createWorkshopOrder({
+                    reference: formData.value.tapisDuProjet.rn,
+                    image_command_id: props.imageCommandId,
+                    workshop_information_id: res?.response?.id
+                })
+                router.push({name: "updateCarpetWorkshop",params:{workshopOrderId:resWorkshopOrder?.response?.id}})
             }
-        } catch (e) {
-            console.error('Failed to create checking list:', e);
         }
-    };
-    console.log(checkingLists.value);
-    onMounted(loadCheckingLists);
+        console.log('Saved workshop information');
+    } catch (e) {
+        console.error('Failed to save workshop information', e);
+    }
+};
+
+const commandeAtelier = () => {
+    console.log('Workshop command...');
+};
+
+defineExpose({
+    saveWorkshopInformation,
+    commandeAtelier,
+    generateRN
+});
+
+const createNewCheckingList = async () => {
+    try {
+        const newList = await checkingListService.createCheckingList(
+            //    props.orderId
+            props.orderId
+        );
+        console.log(newList);
+        if (newList) {
+            checkingLists.value.push(newList);
+            router.push(`/checking-progress/list/${newList.id}`);
+        }
+    } catch (e) {
+        console.error('Failed to create checking list:', e);
+    }
+};
+console.log(checkingLists.value);
+onMounted(loadCheckingLists);
 </script>
 
 <template>
@@ -146,46 +230,41 @@
 
                         <div class="form-row">
                             <d-input label="Date de cmd. atelier" type="date"
-                                     v-model="formData.infoCommande.dateCmdAtelier" />
+                                     v-model="formData.infoCommande.dateCmdAtelier"/>
                         </div>
 
                         <div class="form-row">
                             <d-input label="Date fin atelier Prev" type="date"
                                      v-model="formData.infoCommande.dateFinAtelierPrev"
-                                     rootClass="pink-bg" />
+                                     rootClass="pink-bg"/>
                         </div>
 
                         <div class="form-row">
                             <d-input label="% commande soie" v-model="formData.infoCommande.pourcentCommande"
-                                     rootClass="pink-bg" />
+                                     rootClass="pink-bg"/>
                         </div>
 
                         <div class="form-row">
                             <d-input label="Largeur cmd. atelier" v-model="formData.infoCommande.largeurCmd"
-                                     rootClass="pink-bg" />
+                                     rootClass="pink-bg"/>
                         </div>
 
                         <div class="form-row">
                             <d-input label="Longueur cmd. atelier" v-model="formData.infoCommande.longueurCmd"
-                                     rootClass="pink-bg" />
+                                     rootClass="pink-bg"/>
                         </div>
 
                         <div class="form-row">
-                            <d-input label="Srf cmd. atelier" v-model="formData.infoCommande.srfCmd" />
+                            <d-input label="Srf cmd. atelier" v-model="formData.infoCommande.srfCmd"/>
                         </div>
 
                         <div class="form-row row ">
-                            <div class="col-4 ps-0">
-                                Année grille tarif :
-                            </div>
-                            <div class="col-8 px-2">
-                                <SelectInput v-model="formData.infoCommande.anneeGrilleTarif" rootClass="pink-bg" />
-                            </div>
+                            <d-tarifs v-model="formData.infoCommande.anneeGrilleTarif" rootClass="pink-bg"/>
                         </div>
 
                         <div class="form-row special-tarif row py-3">
                             <div class="col-12 p-0">
-                                <RadioButton v-model="formData.tarifSpecial" :value="true" label="Tarif spécial" />
+                                <RadioButton v-model="formData.tarifSpecial" :value="true" label="Tarif spécial"/>
                             </div>
 
                         </div>
@@ -199,10 +278,10 @@
                                 <div class="row align-items-center">
                                     <div class="col-6">
                                         <SelectInput class="pt-2" v-model="material.material" :options="materialOptions"
-                                                     rootClass="pink-bg" />
+                                                     rootClass="pink-bg"/>
                                     </div>
                                     <div class="col-6">
-                                        <d-input v-model="material.price" />
+                                        <d-input v-model="material.price"/>
                                     </div>
 
                                 </div>
@@ -214,12 +293,12 @@
                         <div class="theoretical-section">
                             <div class="form-row">
                                 <d-input label="Date fin Théo" type="date"
-                                         v-model="formData.infoCommande.dateFinTheo" />
+                                         v-model="formData.infoCommande.dateFinTheo"/>
                             </div>
 
                             <div class="form-row">
                                 <div class="col-12">
-                                    <d-input label="Délais de prod" v-model="formData.infoCommande.delaisProd" />
+                                    <d-input label="Délais de prod" v-model="formData.infoCommande.delaisProd"/>
                                 </div>
                             </div>
 
@@ -231,15 +310,15 @@
                             </div>
 
                             <div class="form-row">
-                                <d-input label="Lrg. réelle" v-model="formData.infoCommande.largeurReelle" />
+                                <d-input label="Lrg. réelle" v-model="formData.infoCommande.largeurReelle"/>
                             </div>
 
                             <div class="form-row">
-                                <d-input label="Lng. réelle" v-model="formData.infoCommande.longueurReelle" />
+                                <d-input label="Lng. réelle" v-model="formData.infoCommande.longueurReelle"/>
                             </div>
 
                             <div class="form-row">
-                                <d-input label="Srf réelle" v-model="formData.infoCommande.srfReelle" />
+                                <d-input label="Srf réelle" v-model="formData.infoCommande.srfReelle"/>
                             </div>
 
                             <div class="form-row py-2">
@@ -249,7 +328,7 @@
                             </div>
 
                             <div class="form-row">
-                                <d-input label="% Réduc. tapis " v-model="formData.reductionTapis" />
+                                <d-input label="% Réduc. tapis " v-model="formData.reductionTapis"/>
                             </div>
                         </div>
                     </div>
@@ -257,55 +336,55 @@
 
 
                 <div class="radio-options my-4">
-                    <RadioButton v-model="formData.complexiteAtelier" :value="true" label="Complexité atelier" />
-                    <RadioButton v-model="formData.multiLevelAtelier" :value="true" label="Multi-level atelier" />
-                    <RadioButton v-model="formData.formeSpeciale" :value="true" label="Forme spéciale" />
+                    <RadioButton v-model="formData.complexiteAtelier" :value="true" label="Complexité atelier"/>
+                    <RadioButton v-model="formData.multiLevelAtelier" :value="true" label="Multi-level atelier"/>
+                    <RadioButton v-model="formData.formeSpeciale" :value="true" label="Forme spéciale"/>
                 </div>
 
 
                 <div class="row">
                     <div class="col-6 ps-0">
                         <div class="price-row">
-                            <d-input label="Prix d'achat tapis au m² " v-model="formData.prixAchatTapis.auM2" />
+                            <d-input label="Prix d'achat tapis au m² " v-model="formData.prixAchatTapis.auM2"/>
                         </div>
                         <div class="price-row">
                             <d-input label="Prix d'achat tapis théorique"
-                                     v-model="formData.prixAchatTapis.theorique" />
+                                     v-model="formData.prixAchatTapis.theorique"/>
                         </div>
                         <div class="price-row">
-                            <d-input label="Pénalité" v-model="formData.others.penalite" />
+                            <d-input label="Pénalité" v-model="formData.others.penalite"/>
                         </div>
                         <div class="price-row">
-                            <d-input label="Taxe" v-model="formData.others.taxe" />
+                            <d-input label="Taxe" v-model="formData.others.taxe"/>
                         </div>
                         <div class="price-row">
-                            <d-input label="Référence sur facture" v-model="formData.others.referenceSurFacture" />
+                            <d-input label="Référence sur facture" v-model="formData.others.referenceSurFacture"/>
                         </div>
                     </div>
                     <div class="col-6">
 
 
                         <div class="price-row">
-                            <d-input label="Prix d'achat tapis Cmd" v-model="formData.prixAchatTapis.cmd" />
+                            <d-input label="Prix d'achat tapis Cmd" v-model="formData.prixAchatTapis.cmd"/>
                         </div>
 
 
                         <div class="price-row">
-                            <d-input label="Prix d'achat tapis facture" v-model="formData.prixAchatTapis.facture" />
+                            <d-input label="Prix d'achat tapis facture" v-model="formData.prixAchatTapis.facture"/>
                         </div>
 
 
                         <div class="price-row">
-                            <d-input label="Transport" v-model="formData.others.transport" />
+                            <d-input label="Transport" v-model="formData.others.transport"/>
                         </div>
 
 
                         <div class="price-row">
-                            <d-input label="Marge brute" v-model="formData.others.margeBrute" />
+                            <d-input label="Marge brute" v-model="formData.others.margeBrute"/>
                         </div>
 
                         <div class="price-row">
-                            <d-input label="Numéro du facture" v-model="formData.others.numeroDuFacture" />
+                            <d-input label="Numéro du facture" v-model="formData.others.numeroDuFacture"/>
                         </div>
                     </div>
                 </div>
@@ -356,17 +435,17 @@
 
                 <div class="selector-row row py-3">
                     <div class="col-7">
-                        <SelectInput />
+                        <SelectInput/>
                     </div>
                     <div class="col-5">
-                        <SelectInput />
+                        <SelectInput/>
                     </div>
                 </div>
 
                 <button class="btn btn-custom  text-uppercase w-100" @click="attribuer">ATTRIBUER</button>
 
                 <div class="form-row">
-                    <d-input label="Date validation client" type="date" v-model="formData.dateValidationClient" />
+                    <d-input label="Date validation client" type="date" v-model="formData.dateValidationClient"/>
                 </div>
 
                 <button class="coherence-btn btn btn-custom  text-uppercase w-100 py-2"
@@ -376,22 +455,23 @@
                 <div class="form-row row py-2 align-items-center">
                     <div class="col-4"><label>Fabricant :</label></div>
                     <div class="col-8">
-                        <SelectInput v-model="formData.tapisDuProjet.fabricant" rootClass="pink-bg" />
+                        <SelectInput v-model="formData.tapisDuProjet.fabricant" :options="manufacturers"
+                                     rootClass="pink-bg"/>
                     </div>
                 </div>
                 <div class="form-row row py-2">
                     <div class="col-4"><label>Type commandé :</label></div>
                     <div class="col-8">
-                        <SelectInput v-model="formData.tapisDuProjet.fabricant" rootClass="pink-bg" />
+                        <SelectInput v-model="formData.tapisDuProjet.fabricant" rootClass="pink-bg"/>
                     </div>
                 </div>
 
                 <div class="form-row">
-                    <d-input label="RN" v-model="formData.tapisDuProjet.rn" rootClass="pink-bg" disabled />
+                    <d-input label="RN" v-model="formData.tapisDuProjet.rn" rootClass="pink-bg" disabled/>
                 </div>
 
                 <div class="form-row">
-                    <d-input label="N° d'exemplaire" v-model="formData.tapisDuProjet.exemplaire" />
+                    <d-input label="N° d'exemplaire" v-model="formData.tapisDuProjet.exemplaire"/>
                 </div>
 
                 <button class="generate-btn btn btn-outline-dark   text-uppercase w-100" @click="generateRN">

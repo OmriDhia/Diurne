@@ -28,22 +28,25 @@
 <style scoped lang="scss">
     .tab-navigation {
         display: flex;
-        background-color: #a7a7a7;
-        border-bottom: 1px solid #ddd;
+        background-color: #d4eff8;
     }
 
     .tab {
         padding: 12px 20px;
         cursor: pointer;
         transition: background-color 0.2s ease;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
 
         &:hover {
             background-color: #e5e5e5;
         }
-
+        &:first-child {
+            margin-left: 2rem;
+        }
         &.active {
             background-color: white;
-            border-bottom: 2px solid #000;
+            border-bottom: none;
             font-weight: 600;
         }
     }
