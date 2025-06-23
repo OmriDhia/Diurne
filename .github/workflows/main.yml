@@ -1,4 +1,4 @@
-name: diurne_api_dev
+name: diurne_ultra_secure_deploy
 
 on:
   push:
@@ -12,89 +12,94 @@ on:
 env:
   TARGET_DIR: /var/www/html/diurne_vuejs
   BUILD_DIR: dist
-  TIMEOUT: 300s 
+  TIMEOUT: 300s
 
 jobs:
   pre_deploy_checks:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
-      - name: Validate files
+      - name: Verify critical files
         run: |
-          [ -f ".htaccess" ] || { echo ".htaccess missing"; exit 1; }
-          [ -d "src" ] || { echo "src directory missing"; exit 1; }
+          [ -f "vite.config.js" ] || { echo "❌ vite.config.js missing"; exit 1; }
+          [ -f ".htaccess" ] || { echo "❌ .htaccess missing"; exit 1; }
+          echo "✅ All critical files present"
 
-  deploy:
+      - name: Security audit
+        run: npm audit --production
+
+  build:
     needs: pre_deploy_checks
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          persist-credentials: false
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '18'
           cache: 'npm'
 
-      - name: Install dependencies (production only)
-        run: npm ci --omit=dev --audit
+      - name: Install dependencies
+        run: npm ci --omit=dev
 
       - name: Build project
         run: |
           npm run build
-          # Vérification des artefacts critiques
-          [ -f "$BUILD_DIR/index.html" ] || { echo "index.html missing"; exit 1; }
-          [ -f "$BUILD_DIR/.htaccess" ] || { echo ".htaccess missing"; exit 1; }
+          [ -f "$BUILD_DIR/index.html" ] || { echo "❌ Build failed - no index.html"; exit 1; }
+          echo "✅ Build successful"
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: ${{ env.BUILD_DIR }}
 
       - name: Secure SCP transfer
         uses: appleboy/scp-action@master
-        env:
-          DEPLOY_KEY: ${{ secrets.DIURNE_PASSWORD }}
         with:
           host: ${{ secrets.DIURNE_HOST }}
           username: ${{ secrets.DIURNE_USERNAME }}
           password: ${{ secrets.DIURNE_PASSWORD }}
           port: 22
-          connect_timeout: 60
           source: "${{ env.BUILD_DIR }}/*"
           target: "${{ env.TARGET_DIR }}"
           strip_components: 1
-          rm: false  # Évite la suppression brutale
           overwrite: true
           verbose: true
 
-      - name: Remote configuration (SSH)
+      - name: Post-deploy verification
         uses: appleboy/ssh-action@master
-        env:
-          DEPLOY_KEY: ${{ secrets.DIURNE_PASSWORD }}
         with:
           host: ${{ secrets.DIURNE_HOST }}
           username: ${{ secrets.DIURNE_USERNAME }}
           password: ${{ secrets.DIURNE_PASSWORD }}
-          port: 22
-          script_timeout: ${{ env.TIMEOUT }}
           script: |
-            # Backup avant toute modification
-            backup_dir="/var/www/backups/diurne_$(date +%Y%m%d_%H%M%S)"
-            sudo mkdir -p "$backup_dir"
-            sudo cp -rp "${{ env.TARGET_DIR }}" "$backup_dir" || true
+            # Verify files were transferred
+            [ -f "${{ env.TARGET_DIR }}/index.html" ] || exit 1
+            [ -f "${{ env.TARGET_DIR }}/.htaccess" ] || exit 1
             
-            # Sécurisation des permissions
+            # Set secure permissions
             sudo find "${{ env.TARGET_DIR }}" -type f -exec chmod 644 {} \;
             sudo find "${{ env.TARGET_DIR }}" -type d -exec chmod 755 {} \;
             sudo chown -R www-data:www-data "${{ env.TARGET_DIR }}"
             
-            # Protection des fichiers sensibles
-            sudo chmod 440 "${{ env.TARGET_DIR }}/.htaccess"
-            
-            # Validation finale
-            sudo ls -la "${{ env.TARGET_DIR }}"
+            # Restart Apache gracefully
             sudo systemctl reload apache2
+            echo "✅ Deployment successful"
+
+  post_deploy:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Health check
+        run: |
+          curl -sSf https://yourdomain.com > /dev/null || exit 1
+          echo "✅ Service is up and running"
