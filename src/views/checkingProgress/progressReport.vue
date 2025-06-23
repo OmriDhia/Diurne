@@ -20,8 +20,8 @@
                             <d-input type="text" label="RN" v-model="form.rn" />
                         </div>
                         <div class="col-md-6">
-                            <d-base-dropdown name="État de la commende" v-model="form.statusId" :datas="statuses"
-                                             label="État de la commende"
+                            <d-base-dropdown name="État de la commande" v-model="form.statusId" :datas="statuses"
+                                             label="status"
                                              trackBy="id" />
                         </div>
 

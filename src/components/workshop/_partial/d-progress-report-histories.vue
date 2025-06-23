@@ -23,13 +23,22 @@
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-6">
-                                                <div class="row"><d-input label="Evenement" v-model="item.event"></d-input></div>
-                                                <div class="row"><d-input label="Date" v-model="item.date"></d-input></div>
-                                                <div class="row"><d-input label="Date prev" v-model="item.dateprev"></d-input></div>
+                                                <div class="row"><d-input v-model="item.event" :disabled="true"></d-input></div>
+                                                <div class="row"><d-input v-model="item.dateEvent" :disabled="true"></d-input></div>
+                                                <div class="row"><d-input v-model="item.datePR" :disabled="true"></d-input></div>
                                             </div>
                                             <div class="col-6">
-                                                <div class="row"><textarea v-model="item.comment"></textarea></div>
-                                                <div class="row"><vue-feather type="eye" :size="14"></vue-feather></div>
+                                                <div class="row">
+                                                    <textarea
+                                                    v-model="item.comment"
+                                                    class="w-100 block-custom-border"
+                                                ></textarea>
+                                                </div>
+                                                <div class="row justify-content-end">
+                                                    <div class="col-2">
+                                                        <vue-feather type="eye" :size="14"></vue-feather>
+                                                    </div> 
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -47,7 +56,7 @@
 </template>
 
 <script setup>
-import {defineProps, ref} from 'vue';
+import {defineProps, onMounted, ref} from 'vue';
 import VueFeather from 'vue-feather';
 import dInput from "../../../components/base/d-input.vue";
 import '../../../assets/sass/components/tabs-accordian/custom-accordions.scss';
@@ -57,6 +66,7 @@ import DPanelTitle from "@/components/common/d-panel-title.vue";
 import checkingListService from "@/Services/checkingList-service.js";
 import axiosInstance from "@/config/http.js";
 import {useRouter} from "vue-router";
+import progressReportService from "@/Services/progress-report-service.js";
 
 const props = defineProps({
     workshopOrderId: {
@@ -84,6 +94,20 @@ const data = ref([{
 const error = ref({});
 const router = useRouter();
 
+const getData = async () => {
+    if (props.workshopOrderId) {
+        const res = await axiosInstance.get(`/api/provisionalCalendar/workshopOrder/${props.workshopOrderId}`);
+        const provisionalCalendar = res.data?.response;
+        if (provisionalCalendar.length > 0) {
+            const d = await progressReportService.getByPrevId(provisionalCalendar[0].id)
+            data.value = d.map((item) => {
+                item.event = item.status?.status;
+                return item;
+            })
+            console.log(data.value)
+        }
+    }
+}
 const addNewProgressReport = async () => {
     if (props.workshopOrderId) {
         const res = await axiosInstance.get(`/api/provisionalCalendar/workshopOrder/${props.workshopOrderId}`);
@@ -98,6 +122,8 @@ const addNewProgressReport = async () => {
     }
    
 }
+
+onMounted(getData)
 </script>
 <style>
 
