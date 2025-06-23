@@ -10,6 +10,7 @@ export const FILTER_CONTREMARQUE_STORAGE_NAME = "filterContremarque";
 export const FILTER_DEVIS_STORAGE_NAME = "filterDevis";
 export const FILTER_FACTURE_CLIENT_STORAGE_NAME = "filterFactureClient";
 export const FILTER_SUIVI_DI_STORAGE_NAME = "filterSuiviDi";
+export const FILTER_WORKSHOP_STORAGE_NAME = "filterWorkshop";
 export const FILTER_CLIENT_INVOICE_STORAGE_NAME = "filterClientInvoice";
 export const DESIGNER_MANAGER_ROLE_NAME = "Designer manager";
 export const DESIGNER_ROLE_NAME = "Designer";
@@ -99,6 +100,18 @@ export const filterContremarque = {
     projectWithoutRelance: null,
     allProjects: null,
 };
+export const filterWorkshop = {
+    customer: null,
+    workshop: null,
+    commercial: null,
+    endDate: null,
+    prescriptor: null,
+    pendingProject: null,
+    projectRelance: null,
+    projectRelanceX: null,
+    projectWithoutRelance: null,
+    allProjects: null,
+};
 export const filterDevis = {
     customer: null,
     contremarque: null,
@@ -130,6 +143,26 @@ export const filterClientInvoice = {
     date_from: null,
     date_to: null,
     contremarque: null,
+};
+
+export const FILTER_CARPET_ORDER_STORAGE_NAME = "filterCarpetOrder";
+export const filterCarpetOrder = {
+    client: null,
+    rn: null,
+    collection: null,
+    contremarque: null,
+    etatTapis: null,
+    modele: null,
+    commercial: null,
+    atelier: null,
+    commande: null,
+    devis: null,
+    prescripteur: null,
+    orderDate_from: null,
+    orderDate_to: null,
+    invoiceDate_from: null,
+    invoiceDate_to: null,
+    type: null,
 };
 
 export const customerInstructionObject = {

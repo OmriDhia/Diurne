@@ -17,8 +17,8 @@
               Chargement...
             </td>
           </tr>
-          <TableRow v-for="row in rows" :key="row[rowKey]" :row="row" :columns="columns" :showViewButton="showViewButton"
-            :isEditing="isEditing === row[rowKey]" @edit="startEdit" @save="saveEdit" @delete="deleteRow"  @view="startView" 
+          <TableRow v-for="row in rows" :key="row[rowKey]" :row="row" :columns="columns" :showViewButton="showViewButton" :showRattacherButton="showRattacherButton"
+            :isEditing="isEditing === row[rowKey]" @edit="startEdit" @save="saveEdit" @delete="deleteRow"  @view="startView" @rattacher="startRattacher"
             @cancel="cancelEdit" />
           <tr>
             <EditableCell v-if="!disableAddNew" v-for="column in columns" :key="column.key" :row="newRow"
@@ -56,10 +56,11 @@ const props = defineProps({
   rowKey: { type: String, required: true },
   title: { type: String, required: false },
   disableAddNew: { type: Boolean, default: false },
-  showViewButton: { type: Boolean, default: false }
+  showViewButton: { type: Boolean, default: false },
+  showRattacherButton: { type: Boolean, default: false }
 });
 
-const emit = defineEmits(["updated", "added","delete", "view"]);
+const emit = defineEmits(["updated", "added","delete", "view", "rattacher"]);
 
 const rows = ref([]);
 const isEditing = ref(null);
@@ -113,6 +114,10 @@ const startEdit = (row) => {
 
 const startView = (row) => {
   emit('view', row);
+};
+
+const startRattacher = (row) => {
+  emit('rattacher', row);
 };
 
 const addRow = async () => {

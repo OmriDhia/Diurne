@@ -277,6 +277,9 @@ onMounted(async () => {
     if (isEditMode.value) {
         await loadPaymentData();
     }
+    if (route.params.quoteId) {
+        await attachQuoteById(route.params.quoteId);
+    }
 });
 
 const loadPaymentData = async () => {
@@ -460,6 +463,25 @@ const handleQuoteSelection = async (quoteFullObject) => {
         window.showMessage('Erreur lors de la récupération des détails du devis', 'error');
     } finally {
         loading.value = false;
+    }
+};
+
+const attachQuoteById = async (id) => {
+    try {
+        const res = await axiosInstance.get(`/api/quote/${id}`);
+        const data = res.data.response?.quoteData || res.data.response;
+        if (data) {
+            const quoteObj = {
+                ...data,
+                quote_id: data.quote_id || data.id,
+                contremarque_id: data.contremarqueId || data.contremarque_id,
+                customer_id: data.customerId || data.customer_id || data.customer?.id,
+                commercial_id: data.commercialId || data.commercial_id || data.commercial?.id
+            };
+            await handleQuoteSelection(quoteObj);
+        }
+    } catch (e) {
+        console.error('Error attaching quote:', e);
     }
 };
 

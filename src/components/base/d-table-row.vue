@@ -9,7 +9,7 @@
         <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="cancelEdit()">
           <vue-feather type="slash" :size="14"></vue-feather>
         </button>
-         <button v-if="showViewButton" type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="startView(row)">
+        <button v-if="showViewButton" type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="startView(row)">
           <vue-feather type="eye" :size="14"></vue-feather>
         </button>
       </template>
@@ -22,6 +22,9 @@
         </button>
         <button v-if="showViewButton" type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click="startView(row)">
           <vue-feather type="eye" :size="14"></vue-feather>
+        </button>
+        <button v-if="showRattacherButton" type="button" class="btn btn-dark mb-1 me-1" @click="startRattacher(row)">
+          Attribuer
         </button>
       </template>
       <button v-if="showViewButton" type="button" class="btn btn-dark mb-1 me-2" @click="alertCommercial(row)">
@@ -40,10 +43,11 @@ defineProps({
   row: { type: Object, required: true },
   columns: { type: Array, required: true },
   isEditing: { type: Boolean, required: true },
-  showViewButton: { type: Boolean, default: false }
+  showViewButton: { type: Boolean, default: false },
+  showRattacherButton: { type: Boolean, default: false }
 });
 
-const emit = defineEmits(['edit', 'save', 'cancel', 'delete','view']);
+const emit = defineEmits(['edit', 'save', 'cancel', 'delete','view','rattacher']);
 
 const startEdit = (row) => {
   emit('edit', row);
@@ -59,6 +63,10 @@ const cancelEdit = () => {
 
 const startView = (row) => {
   emit('view', row);
+};
+
+const startRattacher = (row) => {
+  emit('rattacher', row);
 };
 
 const alertCommercial = (row) => {

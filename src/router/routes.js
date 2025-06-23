@@ -307,7 +307,7 @@ export const routes = [
     },
     //Carpet Order
     {
-        path: '/tapis/order',
+        path: '/tapis',
         name: 'tapis',
         children: [
             {
@@ -461,7 +461,44 @@ export const routes = [
                 },
             },
         ],
-       meta: {
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+
+    {
+        path: '/checking-progress/list/:id',
+        name: 'checkingList',
+        component: () => import('../views/checkingProgress/checkingList.vue'),
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
+        path: '/checking-progress/provisional',
+        name: 'provisionalCalendar',
+        component: () => import('../views/checkingProgress/provisionalCalendar.vue'),
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
+        path: '/checking-progress/provisional/:id',
+        name: 'provisionalCalendarView',
+        component: () => import('../views/checkingProgress/provisionalCalendar.vue'),
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+    {
+        path: '/checking-progress/progress',
+        name: 'progressReport',
+        component: () => import('../views/checkingProgress/progressReport.vue'),
+        meta: {
             requiresAuth: true,
             class: 'projects'
         }
@@ -484,6 +521,16 @@ export const routes = [
                 path: '',
                 name: 'reglement_list',
                 component: () => import('../views/treasury/treasuryList.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: "read treasury",
+                },
+            },
+            {
+                path: 'attach/:quoteId',
+                name: 'reglement_attach_list',
+                component: () => import('../views/treasury/treasuryAttachList.vue'),
                 meta: {
                     requiresAuth: true,
                     class: 'treasury',
@@ -520,13 +567,61 @@ export const routes = [
                     permission: "read treasury",
                 },
             },
+            {
+                path: 'rattacher/:quoteId/:id',
+                name: 'reglement_rattacher',
+                component: () => import('../views/treasury/treasuryView.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'treasury',
+                    permission: "update treasury",
+                },
+            },
         ],
         meta: {
             requiresAuth: true,
             class: 'treasury'
         },
     },
-
-    
+    {
+        path: '/tapis/workshop',
+        name: 'carpetWorkshop',
+        children: [
+            {
+                path: '',
+                name: 'carpetWorkshopList',
+                component: () => import('../views/workshop/workshops.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'tapis',
+                    permission: 'read carpet'
+                }
+            },
+            {
+                path: ':imagesCommadeId/create',
+                name: 'createCarpetWorkshop',
+                component: () => import('../views/workshop/workshop-info.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'tapis',
+                    permission: 'create workshop'
+                }
+            },
+            {
+                path: 'update/:workshopOrderId',
+                name: 'updateCarpetWorkshop',
+                component: () => import('../views/workshop/workshop-info.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'tapis',
+                    permission: 'update workshop'
+                }
+            }
+        ],
+        meta: {
+            requiresAuth: true,
+            class: 'tapis'
+        },
+    },
 
 ];
