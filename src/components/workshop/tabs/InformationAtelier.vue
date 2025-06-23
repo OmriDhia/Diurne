@@ -8,11 +8,16 @@ import DCurrency from '@/components/common/d-currency.vue';
 import DPanelTitle from '@/components/common/d-panel-title.vue';
 import checkingListService from '../../../Services/checkingList-service';
 import workshopService from '@/Services/workshop-service.js';
+import DTarifs from "@/components/common/d-tarifs.vue";
 
 const props = defineProps({
     orderId: {
         type: Number,
-        required: true
+        required: false
+    },
+    workshopInfoId: {
+        type: Number,
+        required: false
     },
     imageCommandId: {
         type: Number,
@@ -135,12 +140,13 @@ const attribuer = () => {
 
 const saveWorkshopInformation = async () => {
     const payload = {
-        launchDate: formData.value.infoCommande.dateCmdAtelier,
-        expectedEndDate: formData.value.infoCommande.dateFinTheo,
+        launchDate: formData.value.infoCommande.dateCmdAtelier || "",
+        expectedEndDate: formData.value.infoCommande.dateFinTheo || "",
         productionTime: Number(formData.value.infoCommande.delaisProd) || 0,
         orderSilkPercentage: formData.value.infoCommande.pourcentCommande,
         orderedWidth: formData.value.infoCommande.largeurCmd,
-        orderedHeight: formData.value.infoCommande.longueurCmd,
+        orderedHeigh: formData.value.infoCommande.longueurCmd,
+        orderedSurface: formData.value.infoCommande.srfCmd,
         realWidth: formData.value.infoCommande.largeurReelle,
         realHeight: formData.value.infoCommande.longueurReelle,
         realSurface: formData.value.infoCommande.srfReelle,
@@ -159,11 +165,24 @@ const saveWorkshopInformation = async () => {
         grossMargin: formData.value.others.margeBrute,
         referenceOnInvoice: formData.value.others.referenceSurFacture,
         invoiceNumber: formData.value.others.numeroDuFacture,
-        manufacturerId: formData.value.tapisDuProjet.fabricant,
+        manufacturerId: parseInt(formData.value.tapisDuProjet.fabricant),
         Rn: formData.value.tapisDuProjet.rn,
     };
     try {
-        await workshopService.createWorkshopInformation(payload);
+        if(props.workshopInfoId){
+            const res = await workshopService.updateWorkshopInformation(props.workshopInfoId,payload);
+        } else {
+            const res = await workshopService.createWorkshopInformation(payload);
+            
+            if(res?.response?.id){
+                const resWorkshopOrder = await workshopService.createWorkshopOrder({
+                    reference: formData.value.tapisDuProjet.rn,
+                    image_command_id: props.imageCommandId,
+                    workshop_information_id: res?.response?.id
+                })
+                router.push({name: "updateCarpetWorkshop",params:{workshopOrderId:resWorkshopOrder?.response?.id}})
+            }
+        }
         console.log('Saved workshop information');
     } catch (e) {
         console.error('Failed to save workshop information', e);
@@ -240,12 +259,7 @@ onMounted(loadCheckingLists);
                         </div>
 
                         <div class="form-row row ">
-                            <div class="col-4 ps-0">
-                                Année grille tarif :
-                            </div>
-                            <div class="col-8 px-2">
-                                <SelectInput v-model="formData.infoCommande.anneeGrilleTarif" rootClass="pink-bg"/>
-                            </div>
+                            <d-tarifs v-model="formData.infoCommande.anneeGrilleTarif" rootClass="pink-bg"/>
                         </div>
 
                         <div class="form-row special-tarif row py-3">

@@ -11,13 +11,14 @@
                 />
 
                 <div class="tab-content">
-                    <InformationAtelier :order-id="staticOrderId" ref="infoTab" :imageCommandId="imageCommandId" v-if="activeTab === 'information'" />
+                    <InformationAtelier :workshop-info-id="workshopInfoId" :order-id="staticOrderId" ref="infoTab" :imageCommandId="imageCommandId" v-if="activeTab === 'information'" />
                     <ImageTab v-if="activeTab === 'image'" />
                     <HistoriqueTab v-if="activeTab === 'historique'" />
                 </div>
             </div>
             <div class="col-md-4">
                 <HistoryPanel />
+                <d-progress-report-histories></d-progress-report-histories>
                 <div class="status-options">
                     <RadioButton class="w-100" v-model="formData.disponibleVente" :value="true"
                                  label="Disponible à la vente" />
@@ -51,12 +52,14 @@
     import HistoryPanel from './HistoryPanel.vue';
     import dPageTitle from '../../components/common/d-page-title.vue';
     import RadioButton from '@/components/workshop/ui/RadioButton.vue';
+    import DProgressReportHistories from "@/components/workshop/_partial/d-progress-report-histories.vue";
 
     const activeTab = ref('information');
     const route = useRoute();
-    const staticOrderId = 1;
-    const imageCommandId = parseInt(route.params.imagesCommadeId, 10);
+    const staticOrderId = parseInt(route.params.workshopOrderId);
+    const imageCommandId = parseInt(route.params.imagesCommadeId);
     const infoTab = ref(null);
+    const workshopInfoId = ref(null);
 
     const tabs = [
         { id: 'information', label: 'Information atelier' },

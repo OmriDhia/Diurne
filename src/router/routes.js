@@ -559,7 +559,7 @@ export const routes = [
         children: [
             /*{
                 path: '',
-                name: 'carpetOrderList',
+                name: 'carpetWorkshopList',
                 component: () => import('../views/carpet/order/carpetOrders.vue'),
                 meta: {
                     requiresAuth: true,
@@ -575,6 +575,16 @@ export const routes = [
                     requiresAuth: true,
                     class: 'tapis',
                     permission: 'create workshop'
+                }
+            },
+            {
+                path: 'update/:workshopOrderId',
+                name: 'updateCarpetWorkshop',
+                component: () => import('../views/workshop/workshop-info.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'tapis',
+                    permission: 'update workshop'
                 }
             }
         ],
