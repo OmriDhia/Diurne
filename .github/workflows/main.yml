@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Important pour avoir l'historique complet
 
       - name: Check branch and commit
         run: |
@@ -31,6 +33,13 @@ jobs:
             sudo chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
             sudo chmod -R 775 /var/www/html/diurne_vuejs
 
+      - name: Create clean archive (excluding unwanted files)
+        run: |
+          tar --exclude='.git' \
+              --exclude='.github' \
+              --exclude='.gitignore' \
+              -czf /tmp/deploy.tar.gz *
+
       - name: Copy source code to server
         uses: appleboy/scp-action@master
         with:
@@ -38,14 +47,12 @@ jobs:
           username: ${{ secrets.DIURNE_USERNAME }}
           password: ${{ secrets.DIURNE_PASSWORD }}
           port: 22
-          source: "./"
+          source: "/tmp/deploy.tar.gz"
           target: "/var/www/html/diurne_vuejs/"
-          strip_components: 0
           rm: true
           overwrite: true
-          exclude: ".git, .github, .gitignore"
 
-      - name: Build and configure on server
+      - name: Extract and build on server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DIURNE_HOST }}
@@ -54,6 +61,8 @@ jobs:
           port: 22
           script: |
             cd /var/www/html/diurne_vuejs
+            tar -xzf deploy.tar.gz
+            rm deploy.tar.gz
             npm install
             npm run build
             sudo chown -R www-data:www-data /var/www/html/diurne_vuejs
