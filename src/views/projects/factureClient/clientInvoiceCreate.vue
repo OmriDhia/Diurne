@@ -210,11 +210,10 @@
     import dPanelTitle from '../../../components/common/d-panel-title.vue';
     import dPageTitle from '../../../components/common/d-page-title.vue';
     import dInput from '../../../components/base/d-input.vue';
-    import dDatePicker from '../../../components/base/d-date-picker.vue';
+
     import dCurrency from '../../../components/common/d-currency.vue';
     import dContremarqueDropdown from '../../../components/common/d-contremarque-dropdown.vue';
-    import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
-    import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
+
     import VueFeather from 'vue-feather';
     import { useMeta } from '/src/composables/use-meta';
     import Multiselect from 'vue-multiselect';

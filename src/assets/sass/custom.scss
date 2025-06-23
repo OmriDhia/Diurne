@@ -439,6 +439,7 @@ label,
         thead {
             th {
                 border: 0;
+                text-align: center;
             }
         }
         td {
@@ -477,7 +478,43 @@ label,
 }
 
 .create-fournisseur-invoice {
+    .d-block__item {
+        .col-4,
+        .col-8 {
+            width: 100%;
+        }
+    }
     .custom-date {
         width: 100%;
+    }
+    .form-check .form-check-input {
+        float: none;
+        margin-right: 12px;
+    }
+    .rn-td {
+        .multiselect {
+            min-height: 35px;
+            .multiselect__tags {
+                width: 100px;
+            }
+        }
+    }
+    .btn-outline-custom {
+        padding: 7px 20px;
+    }
+    .valeur-commande {
+        .row {
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            .form-label {
+                margin-bottom: 0;
+            }
+            .col-8 {
+                width: 8.33333333%;
+            }
+            .col-3 {
+                display: none;
+            }
+        }
     }
 }
