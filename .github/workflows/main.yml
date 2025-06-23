@@ -16,8 +16,8 @@ jobs:
 
       - name: Check branch and commit
         run: |
-          git branch --show-current  # Should show 'main' or a detached HEAD
-          git log -1                 # Shows the latest commit
+          git branch --show-current
+          git log -1
 
       - name: Copy source code to server
         uses: appleboy/scp-action@master
@@ -28,7 +28,7 @@ jobs:
           port: 22
           source: "./*"
           target: "/var/www/html/diurne_vuejs/"
-          strip_components: 0  # Keeps the files at the target root
+          strip_components: 0
 
       - name: Build and configure on server
         uses: appleboy/ssh-action@master
@@ -40,6 +40,8 @@ jobs:
           script: |
             cd /var/www/html/diurne_vuejs
             sudo chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
-            npm install
+            # Installation explicite de Vite et des dépendances
+            npm install vite --no-audit
+            npm install --no-audit
             npm run build
             sudo systemctl restart apache2
