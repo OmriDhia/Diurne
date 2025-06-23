@@ -110,10 +110,10 @@ export default {
             return m;
         });
 
-        const hasInvoice = mapped.some(m => m.name === 'Facture Client');
-        if (!hasInvoice) {
-            mapped.push({ id: 'clientInvoice', name: 'Facture Client', route: 'clientInvoice', children: [], icon: 'icon-projects' });
-        }
+        // const hasInvoice = mapped.some(m => m.name === 'Facture Client');
+        // if (!hasInvoice) {
+        //     mapped.push({ id: 'clientInvoice', name: 'Facture Client', route: 'clientInvoice', children: [], icon: 'icon-projects' });
+        // }
 
         return mapped;
     },

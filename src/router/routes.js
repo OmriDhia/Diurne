@@ -41,6 +41,36 @@ export const routes = [
         }
     },
 
+    // {
+    //     path: '/facture-client',
+    //     name: 'facture_client',
+    //     children: [
+    //         {
+    //             path: '',
+    //             name: 'facture_client_list',
+    //             component: () => import('../views/factureClient/factureClientList.vue'),
+    //             meta: {
+    //                 requiresAuth: true,
+    //                 class: 'treasury',
+    //                 permission: 'read invoice',
+    //             }
+    //         },
+    //         {
+    //             path: 'manage/:id?',
+    //             name: 'facture_client_manage',
+    //             component: () => import('../views/factureClient/factureClientForm.vue'),
+    //             meta: {
+    //                 requiresAuth: true,
+    //                 class: 'treasury',
+    //                 permission: 'create invoice',
+    //             }
+    //         }
+    //     ],
+    //     meta: {
+    //         requiresAuth: true,
+    //         class: 'treasury'
+    //     },
+    // },
     //users
     {
         path: '/users',
@@ -407,6 +437,37 @@ export const routes = [
         }
     },
     {
+        path: '/projet/invoices',
+        name: 'invoices',
+        children: [
+            {
+                path: '',
+                name: 'client-invoice-list',
+                component: () => import('../views/projects/factureClient/clientInvoiceList.vue'),
+                meta: {
+                    requiresAuth: true,
+                   class: 'projects',
+                    permission: 'read invoice',
+                },
+            },
+            {
+                path: 'create',
+                name: 'client-invoice-create',
+                component: () => import('../views/projects/factureClient/clientInvoiceCreate.vue'),
+                meta: {
+                    requiresAuth: true,
+                   class: 'projects',
+                    permission: 'create invoice',
+                },
+            },
+        ],
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+
+    {
         path: '/checking-progress/list/:id',
         name: 'checkingList',
         component: () => import('../views/checkingProgress/checkingList.vue'),
@@ -514,37 +575,6 @@ export const routes = [
                     requiresAuth: true,
                     class: 'treasury',
                     permission: "update treasury",
-                },
-            },
-        ],
-        meta: {
-            requiresAuth: true,
-            class: 'treasury'
-        },
-    },
-
-    {
-        path: '/facture-client',
-        name: 'clientInvoice',
-        children: [
-            {
-                path: '',
-                name: 'client-invoice-list',
-                component: () => import('../views/invoices/clientInvoiceList.vue'),
-                meta: {
-                    requiresAuth: true,
-                    class: 'treasury',
-                    permission: 'read invoice',
-                },
-            },
-            {
-                path: 'create',
-                name: 'client-invoice-create',
-                component: () => import('../views/invoices/clientInvoiceCreate.vue'),
-                meta: {
-                    requiresAuth: true,
-                    class: 'treasury',
-                    permission: 'create invoice',
                 },
             },
         ],

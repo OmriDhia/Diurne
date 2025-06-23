@@ -8,6 +8,7 @@ export const FILTER_ORDER_PAYMENT_STORAGE_NAME = "filterOrderPayment";
 export const FILTER_EVENT_STORAGE_NAME = "filterEvent";
 export const FILTER_CONTREMARQUE_STORAGE_NAME = "filterContremarque";
 export const FILTER_DEVIS_STORAGE_NAME = "filterDevis";
+export const FILTER_FACTURE_CLIENT_STORAGE_NAME = "filterFactureClient";
 export const FILTER_SUIVI_DI_STORAGE_NAME = "filterSuiviDi";
 export const FILTER_WORKSHOP_STORAGE_NAME = "filterWorkshop";
 export const FILTER_CLIENT_INVOICE_STORAGE_NAME = "filterClientInvoice";
@@ -116,6 +117,15 @@ export const filterDevis = {
     contremarque: null,
     commercial: null,
     devis: null,
+};
+
+export const filterFactureClient = {
+    auteur: null,
+    rn: null,
+    startDate: null,
+    endDate: null,
+    invoiceNumber: null,
+    atelier: null,
 };
 
 export const filterSuiviDi = {
