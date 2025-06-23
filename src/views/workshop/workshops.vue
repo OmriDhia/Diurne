@@ -103,7 +103,7 @@
             <tbody>
               <tr v-for="order in rows" :key="order.id">
                 <td v-if="!cols.find(c => c.field === 'image')?.hide" class="text-center">
-                  <img src="/label-image.jpg" alt="Carpet" style="width: 60px" />
+                  <img src="" alt="Carpet" style="width: 60px" />
                 </td>
                 <td v-if="!cols.find(c => c.field === 'contremarque')?.hide">
                   <strong>Contremarque :</strong> {{ order.designation }}

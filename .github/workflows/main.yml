@@ -1,79 +1,105 @@
-name: Deploy Vue.js Application
+name: diurne_ultra_secure_deploy
+
 on:
   push:
     branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'vite.config.js'
+      - '.htaccess'
+
+env:
+  TARGET_DIR: /var/www/html/diurne_vuejs
+  BUILD_DIR: dist
+  TIMEOUT: 300s
 
 jobs:
-  deploy_job:
+  pre_deploy_checks:
     runs-on: ubuntu-latest
-    name: Secure Deployment
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Étape 1: Créer une archive locale (plus sécurisé que copier des fichiers individuels)
-      - name: Create build artifact
+      - name: Verify critical files
         run: |
-          npm install
-          npm run build
-          tar -czf dist.tar.gz -C dist .
+          [ -f "vite.config.js" ] || { echo "❌ vite.config.js missing"; exit 1; }
+          [ -f ".htaccess" ] || { echo "❌ .htaccess missing"; exit 1; }
+          echo "✅ All critical files present"
 
-      # Étape 2: Nettoyer l'environnement distant de manière sécurisée
-      - name: Prepare remote directory
-        uses: appleboy/ssh-action@master
+      - name: Security audit
+        run: npm audit --production
+
+  build:
+    needs: pre_deploy_checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
-          host: ${{ secrets.DIURNE_HOST }}
-          username: ${{ secrets.DIURNE_USERNAME }}
-          password: ${{ secrets.DIURNE_PASSWORD }}
-          port: 22
-          script: |
-            # Crée un backup du déploiement actuel (rollback possible)
-            TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-            BACKUP_DIR="/var/www/html/backups/diurne_vuejs_$TIMESTAMP"
-            mkdir -p "$BACKUP_DIR"
-            [ -d "/var/www/html/diurne_vuejs" ] && mv /var/www/html/diurne_vuejs/* "$BACKUP_DIR/" || true
-            
-            # Crée le répertoire proprement
-            mkdir -p /var/www/html/diurne_vuejs
-            chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
+          node-version: '18'
+          cache: 'npm'
 
-      # Étape 3: Transfert sécurisé de l'archive
-      - name: Secure transfer
+      - name: Install dependencies
+        run: npm ci --omit=dev
+
+      - name: Build project
+        run: |
+          npm run build
+          [ -f "$BUILD_DIR/index.html" ] || { echo "❌ Build failed - no index.html"; exit 1; }
+          echo "✅ Build successful"
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: ${{ env.BUILD_DIR }}
+
+      - name: Secure SCP transfer
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.DIURNE_HOST }}
           username: ${{ secrets.DIURNE_USERNAME }}
           password: ${{ secrets.DIURNE_PASSWORD }}
           port: 22
-          source: "dist.tar.gz"
-          target: "/var/www/html/diurne_vuejs/"
-          rm: true  # Supprime l'archive après transfert
+          source: "${{ env.BUILD_DIR }}/*"
+          target: "${{ env.TARGET_DIR }}"
+          strip_components: 1
+          overwrite: true
+          verbose: true
 
-      # Étape 4: Déploiement avec vérifications
-      - name: Deploy and verify
+      - name: Post-deploy verification
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DIURNE_HOST }}
           username: ${{ secrets.DIURNE_USERNAME }}
           password: ${{ secrets.DIURNE_PASSWORD }}
-          port: 22
           script: |
-            cd /var/www/html/diurne_vuejs
+            # Verify files were transferred
+            [ -f "${{ env.TARGET_DIR }}/index.html" ] || exit 1
+            [ -f "${{ env.TARGET_DIR }}/.htaccess" ] || exit 1
             
-            # Extraction sécurisée
-            tar -xzf dist.tar.gz --no-overwrite-dir
-            rm dist.tar.gz
+            # Set secure permissions
+            sudo find "${{ env.TARGET_DIR }}" -type f -exec chmod 644 {} \;
+            sudo find "${{ env.TARGET_DIR }}" -type d -exec chmod 755 {} \;
+            sudo chown -R www-data:www-data "${{ env.TARGET_DIR }}"
             
-            # Vérification du déploiement
-            if [ ! -f "index.html" ]; then
-              echo "ERREUR: Le fichier index.html est manquant!"
-              exit 1
-            fi
-            
-            # Correction des permissions
-            chmod -R 755 .
-            chown -R ubuntu:ubuntu .
-            
-            # Redémarrage contrôlé
+            # Restart Apache gracefully
             sudo systemctl reload apache2
-            echo "Déploiement réussi et vérifié"
+            echo "✅ Deployment successful"
+
+  post_deploy:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Health check
+        run: |
+          curl -sSf https://yourdomain.com > /dev/null || exit 1
+          echo "✅ Service is up and running"
