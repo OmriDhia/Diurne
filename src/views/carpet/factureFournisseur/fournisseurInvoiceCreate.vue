@@ -1,5 +1,5 @@
 <template>
-    <div class="create-facture-client">
+    <div class="create-fournisseur-invoice">
         <d-base-page>
             <template #title>
                 <d-page-title title="Nouvelle Facture" />
@@ -8,191 +8,170 @@
             <template #body>
                 <d-panel>
                     <template #panel-body>
-                        <div class="row p-2">
-                            <div class="col-3">
-                                <d-input label="Référence client" v-model="form.customerRef" />
+                        <!-- <d-panel-title title="Caractéristiques facture" class-name="ps-2" /> -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <d-input label="Numéro facture" v-model="form.invoiceNumber" />
+                                <d-input label="Packing list" v-model="form.packingList" class="pt-2" />
+                                <d-currency v-model="form.currency" class="pt-2" />
+                            </div>
+                            <div class="col-md-4">
+                                <div class="row align-items-center">
+                                    <label for="invoice-date" class="col-4">Date facture</label>
+                                    <div class="col-8">
+                                        <input id="invoice-date" class="form-control custom-date" type="date" v-model="form.invoiceDate" />
+                                    </div>
+                                </div>
+                                <d-input label="Air way bill" v-model="form.airWayBill" class="pt-2" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <d-input label="Fournisseur" v-model="form.supplier" />
+                                <d-input label="Fret total" v-model="form.totalFreight" class="pt-2" />
+                                <div class="form-check text-end pt-2">
+                                    <input class="form-check-input" type="radio" id="freight-included" v-model="form.freightIncluded" />
+                                    <label class="form-check-label" for="freight-included">compris dans la facture</label>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="row">
-                            <div class="col-md-7">
-                                <d-panel>
-                                    <template #panel-body>
-                                        <d-panel-title title="Caractéristiques facture" class-name="ps-2" />
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <d-input label="Numéro facture" v-model="form.invoiceNumber" />
-                                                <div class="row align-items-center pt-2">
-                                                    <label for="date" class="col-4">Date</label>
-                                                    <div class="col-8">
-                                                        <input id="date" class="form-control custom-date custom-date" type="date" v-model="form.date" />
-                                                    </div>
-                                                </div>
-
-                                                <d-input label="Projet" v-model="form.project" />
-                                                <hr class="mt-3" />
-
-                                                <div class="row">
-                                                    <d-contremarque-dropdown v-model="form.contremarque" :customerId="form.customer" class="contremarque" />
-                                                    <d-input label="Prescripteur" v-model="form.prescripteur" />
-                                                    <d-input label="Description" v-model="form.description" />
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <!-- <d-input label="Type de facture" v-model="form.invoiceType" /> -->
-                                                <div class="row align-items-center">
-                                                    <label for="" class="col-4">Type de facture:</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.invoiceType" :options="[]" :multiple="false" :placeholder="'Type de facture'" :searchable="true"></multiselect>
-                                                    </div>
-                                                </div>
-                                                <div class="row align-items-center mt-2 mb-1">
-                                                    <label for="" class="col-4">TVA:</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.tva" :options="[]" :multiple="false" :placeholder="'TVA'" :searchable="true"></multiselect>
-                                                    </div>
-                                                </div>
-
-                                                <d-currency v-model="form.currency" />
-                                                <div class="row align-items-center mt-2">
-                                                    <label for="" class="col-4">Tx de conversion:</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.rate" :options="[]" :multiple="false" :placeholder="'Tx de conversion'" :searchable="true"></multiselect>
-                                                    </div>
-                                                </div>
-                                                <div class="row align-items-center mt-2">
-                                                    <label for="" class="col-4">Langue:</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.language" :options="[]" :multiple="false" :placeholder="'Langue'" :searchable="true"></multiselect>
-                                                    </div>
-                                                </div>
-                                                <div class="row align-items-center mt-2">
-                                                    <label for="" class="col-4">Unité de mesure:</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.language" :options="[]" :multiple="false" :placeholder="'Unité de mesure'" :searchable="true"></multiselect>
-                                                    </div>
-                                                </div>
-                                                <div class="row justify-content-end mt-2">
-                                                    <button class="btn btn-link">Appliquer</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </d-panel>
-                            </div>
-                            <div class="col-md-5">
-                                <d-panel>
-                                    <template #panel-body>
-                                        <d-panel-title title="Règlement transporteur" class-name="ps-2" />
-                                        <div class="row p-3">
-                                            <div class="col-12">
-                                                <div class="row align-items-center mt-2">
-                                                    <label for="" class="col-4">Mode de règlement</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.reglement" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect>
-                                                    </div>
-                                                </div>
-                                                <div class="row align-items-center mt-2">
-                                                    <label for="" class="col-4">Tarif d’expédition</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.tarifExpedition" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect>
-                                                    </div>
-                                                </div>
-                                                <div class="row align-items-center mt-2">
-                                                    <label for="" class="col-4">Transporteur</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.transporteur" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect>
-                                                    </div>
-                                                </div>
-
-                                                <d-input label="Numéro" v-model="form.numero" />
-                                            </div>
-                                        </div>
-                                        <d-panel-title title="Autre tapis" class-name="ps-2 mt-2" />
-                                        <div class="row p-3">
-                                            <div class="col-12 bloc-add">
-                                                <d-input label="Numéro RN" v-model="form.autreRn" />
-
-                                                <button class="btn btn-add"><vue-feather type="plus" stroke-width="1" class="cursor-pointer"></vue-feather></button>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </d-panel>
-                            </div>
-                        </div> </template
-                ></d-panel>
+                    </template>
+                </d-panel>
 
                 <div class="mt-3">
                     <d-panel>
                         <template #panel-body>
-                            <!-- <d-panel-title title="Détails" class-name="ps-2" /> -->
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover table-sm">
                                     <thead>
-                                        <tr class="border-top text-black bg-black">
-                                            <th rowspan="2" class="text-white">% Prix total</th>
-                                            <th rowspan="2" class="text-white">RN</th>
-                                            <th rowspan="2" class="text-white">Collection</th>
-                                            <th rowspan="2" class="text-white">Modèle</th>
-                                            <th rowspan="2" class="text-white">Ref tapis devis</th>
-                                            <th rowspan="2" class="text-white">Ref tapis commande</th>
-                                            <th rowspan="2" class="border-end text-white">Versement</th>
-                                            <th colspan="4" class="border-start border-end text-white text-center">Prix vendu</th>
-                                            <th rowspan="2" class="border-start border-end text-white"></th>
-                                        </tr>
-                                        <tr class="border-top text-black bg-black">
-                                            <th class="text-white">m2</th>
-                                            <th class="text-white">sqft</th>
-                                            <th class="text-white">HT</th>
-                                            <th class="text-white">TTC</th>
+                                        <tr class="border-top text-black bg-black text-white">
+                                            <th class="text-white">RN</th>
+                                            <th class="text-white">N° tapis</th>
+                                            <th class="text-white">Prix m²</th>
+                                            <th class="text-white">Surface facture</th>
+                                            <th class="text-white">Prix de la facture</th>
+                                            <th class="text-white">Prix théorique</th>
+                                            <th class="text-white">Pénalité</th>
+                                            <th class="text-white">Surface produite</th>
+                                            <th class="text-white">Montant réel avoir</th>
+                                            <th class="text-white">Avoir théorique</th>
+                                            <th class="text-white">Montant réel avoir</th>
+                                            <th class="text-white">Montant final tapis</th>
+                                            <th class="text-white">Poids</th>
+                                            <th class="text-white">% poids</th>
+                                            <th class="text-white">Fret</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="(line, index) in lines" :key="index">
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.percent" /></td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.rn" /></td>
-                                            <td><multiselect v-model="line.collection" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect></td>
-                                            <td><multiselect v-model="line.model" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect></td>
-                                            <td><input type="text" class="form-control form-control-sm" v-model="line.refDevis" /></td>
-                                            <td><input type="text" class="form-control form-control-sm" v-model="line.refCommande" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.versement" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.priceM2" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.priceSqft" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.priceHt" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.priceTtc" /></td>
-                                            <td class="text-center td-actions">
-                                                <button class="btn btn-add btn-sm me-1" @click="saveLine(index)">
-                                                    <vue-feather type="save" size="16" />
-                                                </button>
-                                                <button class="btn btn-add btn-sm" @click="removeLine(index)">
-                                                    <vue-feather type="x" size="16" />
-                                                </button>
-                                            </td>
+                                            <td><input type="text" class="form-control form-control-sm" v-model="line.numeroTapis" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.prixM2" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.surfaceFacture" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.prixFacture" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.prixTheorique" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.penalite" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.surfaceProduite" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.montantReelAvoir" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.avoirTheorique" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.montantReelAvoir2" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.montantFinalTapis" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.poids" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.pourcentPoids" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.fret" /></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
 
                             <div class="row mt-3">
-                                <div class="col-md-3">
-                                    <d-input label="Qte total" v-model="form.qteTotal" />
-                                    <d-input label="Frais port HT" v-model="form.fraisPort" />
+                                <div class="col-md-4">
+                                    <d-input label="Autre montant" v-model="form.autreMontant" />
+                                    <d-input label="Poids" v-model="form.poids" />
                                 </div>
-                                <div class="col-md-3">
-                                    <d-input label="Versement" v-model="form.versement" />
-                                    <d-input label="% facturé" v-model="form.percentFacture" />
+                                <div class="col-md-4">
+                                    <div class="row">
+                                        <label for="" class="col-4">Description:</label>
+                                        <div class="col-8">
+                                            <textarea v-model="form.description" class="form-control"></textarea>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-md-3">
-                                    <d-input label="Total HT" v-model="form.totalHt" />
-                                    <d-input label="Montant HT" v-model="form.montantHt" />
-                                    <d-input label="Montant TVA" v-model="form.montantTva" />
-                                    <d-input label="Montant TTC" v-model="form.montantTtc" />
+                                <div class="col-md-4">
+                                    <d-panel-title title="Avoir sur cette facture" class-name="ps-2 mt-0" />
+                                    <div class="row">
+                                        <div class="col d-block__item">
+                                            <d-input label="Montant théorique" v-model="form.avoirMontantTheo" />
+                                        </div>
+                                        <div class="col d-block__item">
+                                            <d-input label="Montant réel" v-model="form.avoirMontantReel" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col d-block__item">
+                                            <d-input label="Numéro de l'avoir" v-model="form.numeroAvoir" />
+                                        </div>
+
+                                        <div class="col pt-2">
+                                            <label for="date-avoir">Date de l'avoir</label>
+                                            <input id="date-avoir" class="form-control custom-date" type="date" v-model="form.dateAvoir" />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-md-3 bloc-btns-actions">
-                                    <button class="btn btn-custom">RÉPARTITION</button>
-                                    <button class="btn btn-custom">CALCULER</button>
-                                    <button class="btn btn-custom">ÉDITER</button>
-                                    <button class="btn btn-custom">RATTACHER UN RÈGLEMENT</button>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="col d-block__item">
+                                            <d-input label="Total facture" v-model="form.totalFacture" />
+                                        </div>
+                                        <div class="col d-block__item">
+                                            <d-input label="Total théorique" v-model="form.totalTheorique" />
+                                        </div>
+                                        <div class="col d-block__item">
+                                            <d-input label="Total surface" v-model="form.totalSurface" />
+                                        </div>
+                                        <div class="col d-block__item">
+                                            <d-input label="Total Poids" v-model="form.totalPoids" />
+                                        </div>
+                                    </div>
+
+                                    <d-panel-title title="Paiement" class-name="ps-2" />
+                                    <div class="row">
+                                        <div class="col d-block__item">
+                                            <d-input label="Montant théorique" v-model="form.paiementMontantTheo" />
+                                        </div>
+                                        <div class="col d-block__item">
+                                            <d-input label="Montant réel" v-model="form.paiementMontantReel" />
+                                        </div>
+
+                                        <div class="col pt-2">
+                                            <label for="date-avoir">Date de paiement</label>
+                                            <input id="date-avoir" class="form-control custom-date" type="date" v-model="form.datePaiement" />
+                                        </div>
+                                    </div>
+                                    <div class="valeur-commande">
+                                        <d-input label="Valeur de la commande" v-model="form.valeurCommande" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <d-panel-title title="Suivi avoir fournisseur" class-name="ps-2" />
+                                    <div class="row">
+                                        <div class="col d-block__item">
+                                            <d-input label="Antérieur" v-model="form.suiviAnterieur" />
+                                        </div>
+                                        <div class="col d-block__item">
+                                            <d-input label="Restant" v-model="form.suiviRestant" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3 justify-content-end">
+                                <div class="col-auto">
+                                    <button class="btn btn-custom me-2">Valider</button>
+
+                                    <button class="btn btn-outline-custom">Annuler</button>
                                 </div>
                             </div>
                         </template>
@@ -212,64 +191,62 @@
     import dInput from '../../../components/base/d-input.vue';
     import dDatePicker from '../../../components/base/d-date-picker.vue';
     import dCurrency from '../../../components/common/d-currency.vue';
-    import dContremarqueDropdown from '../../../components/common/d-contremarque-dropdown.vue';
-    import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
-    import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
-    import VueFeather from 'vue-feather';
-    import { useMeta } from '/src/composables/use-meta';
     import Multiselect from 'vue-multiselect';
-    useMeta({ title: 'Nouvelle Facture' });
+    import { useMeta } from '/src/composables/use-meta';
+
+    useMeta({ title: 'Nouvelle Facture Fournisseur' });
 
     const form = ref({
-        customerRef: '',
         invoiceNumber: '',
-        date: '',
-        project: '',
-        invoiceType: '',
-        tva: '',
+        invoiceDate: '',
+        supplier: '',
+        packingList: '',
+        airWayBill: '',
+        totalFreight: '',
         currency: null,
-        rate: '',
-        language: '',
-        unit: '',
-        contremarque: null,
-        prescripteur: '',
+        freightIncluded: false,
+        autreMontant: '',
+        poids: '',
         description: '',
-        reglement: '',
-        tarifExpedition: '',
-        transporteur: '',
-        numero: '',
-        autreRn: '',
-        qteTotal: '',
-        fraisPort: '',
-        versement: '',
-        percentFacture: '',
-        totalHt: '',
-        montantHt: '',
-        montantTva: '',
-        montantTtc: '',
+        avoirMontantTheo: '',
+        avoirMontantReel: '',
+        numeroAvoir: '',
+        dateAvoir: '',
+        totalFacture: '',
+        totalTheorique: '',
+        totalSurface: '',
+        totalPoids: '',
+        paiementMontantTheo: '',
+        paiementMontantReel: '',
+        datePaiement: '',
+        valeurCommande: '',
+        suiviAnterieur: '',
+        suiviRestant: '',
     });
 
     const lines = ref([
         {
-            percent: null,
-            rn: '',
-            collection: null,
-            model: null,
-            refDevis: '',
-            refCommande: '',
-            versement: null,
-            priceM2: null,
-            priceSqft: null,
-            priceHt: null,
-            priceTtc: null,
+            rn: null,
+            numeroTapis: '',
+            prixM2: null,
+            surfaceFacture: null,
+            prixFacture: null,
+            prixTheorique: null,
+            penalite: null,
+            surfaceProduite: null,
+            montantReelAvoir: null,
+            avoirTheorique: null,
+            montantReelAvoir2: null,
+            montantFinalTapis: null,
+            poids: null,
+            pourcentPoids: null,
+            fret: null,
         },
     ]);
-
-    const saveLine = (index) => {
-        console.log('save line', lines.value[index]);
-    };
-
-    const removeLine = (index) => {
-        lines.value.splice(index, 1);
-    };
 </script>
+
+<style scoped>
+    .custom-date {
+        width: 100%;
+    }
+</style>
