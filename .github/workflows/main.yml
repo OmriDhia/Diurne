@@ -1,58 +1,57 @@
-name: diurne_api_dev_fixed
+name: diurne_deploy_fixed
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
-  deploy_job:
+  deploy:
     runs-on: ubuntu-latest
-    name: deploy
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Verify branch status
-        run: |
-          echo "Current branch: $(git branch --show-current)"
-          echo "Last commit: $(git log -1 --oneline)"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build project
-        run: npm run build
-
-      - name: Secure file transfer (SCP)
-        uses: appleboy/scp-action@master
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
-          host: ${{ secrets.DIURNE_HOST }}
-          username: ${{ secrets.DIURNE_USERNAME }}
-          password: ${{ secrets.DIURNE_PASSWORD }}
-          port: 22
-          source: "dist/*"
-          target: "/var/www/html/diurne_vuejs/"
-          strip_components: 0
-          overwrite: true
-          rm_command: "sudo rm -rf"  # Utilise sudo pour les permissions
+          node-version: '20'
 
-      - name: Server configuration
+      - name: Install & Build
+        run: |
+          npm ci
+          npm run build
+          ls -la dist/
+
+      - name: Prepare Server (SSH)
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DIURNE_HOST }}
           username: ${{ secrets.DIURNE_USERNAME }}
           password: ${{ secrets.DIURNE_PASSWORD }}
-          port: 22
           script: |
-            echo "Setting permissions..."
+            sudo mkdir -p /var/www/html/diurne_vuejs
+            sudo chown ubuntu:www-data /var/www/html/diurne_vuejs
+            sudo chmod 775 /var/www/html/diurne_vuejs
+
+      - name: Transfer Files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DIURNE_HOST }}
+          username: ${{ secrets.DIURNE_USERNAME }}
+          password: ${{ secrets.DIURNE_PASSWORD }}
+          source: "dist/*"
+          target: "/var/www/html/diurne_vuejs"
+          overwrite: true
+          strip_components: 0
+
+      - name: Finalize Permissions
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DIURNE_HOST }}
+          username: ${{ secrets.DIURNE_USERNAME }}
+          password: ${{ secrets.DIURNE_PASSWORD }}
+          script: |
             sudo chown -R www-data:www-data /var/www/html/diurne_vuejs
             sudo find /var/www/html/diurne_vuejs -type d -exec chmod 755 {} \;
             sudo find /var/www/html/diurne_vuejs -type f -exec chmod 644 {} \;
-            
-            echo "Restarting Apache..."
             sudo systemctl restart apache2
-            
-            echo "Verifying deployment..."
-            curl -I http://localhost | head -n 1
