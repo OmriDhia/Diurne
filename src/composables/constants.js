@@ -135,6 +135,11 @@ export const filterCarpetOrder = {
     commande: null,
     devis: null,
     prescripteur: null,
+    orderDate_from: null,
+    orderDate_to: null,
+    invoiceDate_from: null,
+    invoiceDate_to: null,
+    type: null,
 };
 
 export const customerInstructionObject = {
