@@ -1,87 +1,109 @@
 <template>
     <div class="layout-px-spacing mt-4">
-        <d-page-title title="TAPIS (M0025)"></d-page-title>
+        <d-page-title icon="carpet" :title="`Tapis (${workshopOrder?.workshopInformation?.rn})`"></d-page-title>
+        <div class="row layout-top-spacing mt-3 p-2">
+            <div class="panel br-6 p-4">
+                <div class="row">
+                    <div class="col-md-8">
+                        <TabNavigation
+                            :tabs="tabs"
+                            :activeTab="activeTab"
+                            @change-tab="changeTab"
+                        />
 
-        <div class="row">
-            <div class="col-md-8">
-                <TabNavigation
-                    :tabs="tabs"
-                    :activeTab="activeTab"
-                    @change-tab="changeTab"
-                />
+                        <div class="tab-content">
+                            <InformationAtelier :workshop-info-id="workshopInfoId" :workshop-info="workshopInfo"
+                                                :order-id="workshopOrderId" ref="infoTab"
+                                                :imageCommandId="imageCommandId"
+                                                v-if="activeTab === 'information'"/>
+                            <ImageTab v-if="activeTab === 'image'"/>
+                            <HistoriqueTab v-if="activeTab === 'historique'"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <HistoryPanel v-if="workshopOrderId"></HistoryPanel>
+                        <d-progress-report-histories  v-if="workshopOrderId" :workshopOrderId="workshopOrderId"></d-progress-report-histories>
+                        <div class="status-options">
+                            <RadioButton class="w-100" v-model="formData.disponibleVente" :value="true"
+                                         label="Disponible à la vente"/>
+                            <RadioButton class="w-100" v-model="formData.envoye" :value="true" label="Envoyé"/>
+                            <RadioButton class="w-100" v-model="formData.receptionParis" :value="true"
+                                         label="Réception Paris"/>
+                        </div>
 
-                <div class="tab-content">
-                    <InformationAtelier :workshop-info-id="workshopInfoId" :order-id="staticOrderId" ref="infoTab" :imageCommandId="imageCommandId" v-if="activeTab === 'information'" />
-                    <ImageTab v-if="activeTab === 'image'" />
-                    <HistoriqueTab v-if="activeTab === 'historique'" />
+                        <div class="action-buttons">
+                            <button class="save-btn btn btn-outline-dark   text-uppercase w-100 my-2"
+                                    @click="enregistrer">
+                                ENREGISTRER
+                            </button>
+                            <button class="command-btn btn btn-custom  text-uppercase w-100 my-2"
+                                    @click="commandeAtelier">COMMANDE ATELIER
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <HistoryPanel />
-                <d-progress-report-histories></d-progress-report-histories>
-                <div class="status-options">
-                    <RadioButton class="w-100" v-model="formData.disponibleVente" :value="true"
-                                 label="Disponible à la vente" />
-                    <RadioButton class="w-100" v-model="formData.envoye" :value="true" label="Envoyé" />
-                    <RadioButton class="w-100" v-model="formData.receptionParis" :value="true"
-                                 label="Réception Paris" />
-                </div>
-
-                <div class="action-buttons">
-                    <button class="save-btn btn btn-outline-dark   text-uppercase w-100 my-2"
-                            @click="enregistrer">
-                        ENREGISTRER
-                    </button>
-                    <button class="command-btn btn btn-custom  text-uppercase w-100 my-2"
-                            @click="commandeAtelier">COMMANDE ATELIER
-                    </button>
-                </div>
-            </div>
-
         </div>
     </div>
 
 </template>
 <script setup>
-    import { ref } from 'vue';
-    import { useRoute } from 'vue-router';
-    import TabNavigation from './TabNavigation.vue';
-    import InformationAtelier from '../../components/workshop/tabs/InformationAtelier.vue';
-    import ImageTab from '../../components/workshop/tabs/ImageTab.vue';
-    import HistoriqueTab from '../../components/workshop/tabs/HistoriqueTab.vue';
-    import HistoryPanel from './HistoryPanel.vue';
-    import dPageTitle from '../../components/common/d-page-title.vue';
-    import RadioButton from '@/components/workshop/ui/RadioButton.vue';
-    import DProgressReportHistories from "@/components/workshop/_partial/d-progress-report-histories.vue";
+import {onMounted, ref} from 'vue';
+import {useRoute} from 'vue-router';
+import TabNavigation from './TabNavigation.vue';
+import InformationAtelier from '../../components/workshop/tabs/InformationAtelier.vue';
+import ImageTab from '../../components/workshop/tabs/ImageTab.vue';
+import HistoriqueTab from '../../components/workshop/tabs/HistoriqueTab.vue';
+import HistoryPanel from './HistoryPanel.vue';
+import dPageTitle from '../../components/common/d-page-title.vue';
+import RadioButton from '@/components/workshop/ui/RadioButton.vue';
+import DProgressReportHistories from "@/components/workshop/_partial/d-progress-report-histories.vue";
+import workshopService from "@/Services/workshop-service.js";
+import DPageTitle from "@/components/common/d-page-title.vue";
 
-    const activeTab = ref('information');
-    const route = useRoute();
-    const staticOrderId = parseInt(route.params.workshopOrderId);
-    const imageCommandId = parseInt(route.params.imagesCommadeId);
-    const infoTab = ref(null);
-    const workshopInfoId = ref(null);
+const activeTab = ref('information');
+const route = useRoute();
+const workshopOrderId = parseInt(route.params.workshopOrderId);
+const imageCommandId = parseInt(route.params.imagesCommadeId);
+const infoTab = ref(null);
+const workshopInfoId = ref(null);
+const workshopOrder = ref({})
+const workshopInfo = ref({})
+const loading = ref(false);
 
-    const tabs = [
-        { id: 'information', label: 'Information atelier' },
-        { id: 'image', label: 'Image' },
-        { id: 'historique', label: 'Historique stockage RN' }
-    ];
-    const formData = ref({
-        disponibleVente: false,
-        envoye: false,
-        receptionParis: true
-    });
-    const changeTab = (tabId) => {
-        activeTab.value = tabId;
-    };
+const getWorkshopOrder = async () => {
+    if (workshopOrderId) {
+        loading.value = true;
+        workshopOrder.value = await workshopService.getWorkshopOrder(workshopOrderId);
+        workshopInfo.value = workshopOrder.value.workshopInformation;
+        workshopInfoId.value = workshopInfo.value.id;
+        loading.value = false;
+    }
+}
 
-    const enregistrer = () => {
-        infoTab.value?.saveWorkshopInformation();
-    };
+onMounted(getWorkshopOrder)
 
-    const commandeAtelier = () => {
-        infoTab.value?.commandeAtelier();
-    };
+const tabs = [
+    {id: 'information', label: 'Information atelier'},
+    {id: 'image', label: 'Image'},
+    {id: 'historique', label: 'Historique stockage RN'}
+];
+const formData = ref({
+    disponibleVente: false,
+    envoye: false,
+    receptionParis: true
+});
+const changeTab = (tabId) => {
+    activeTab.value = tabId;
+};
+
+const enregistrer = () => {
+    infoTab.value?.saveWorkshopInformation();
+};
+
+const commandeAtelier = () => {
+    infoTab.value?.commandeAtelier();
+};
 </script>
 <style scoped lang="scss">
 .tapis-container {

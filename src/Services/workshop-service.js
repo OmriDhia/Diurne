@@ -30,4 +30,10 @@ export default {
         });
         return res.data;
     },
+    async calculatePrices(idWorkshopInformation) {
+        const res = await axiosInstance.post('/api/workshop/calculatePrices', {
+            idWorkshopInformation
+        });
+        return res.data;
+    },
 };

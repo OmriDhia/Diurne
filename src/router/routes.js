@@ -486,7 +486,7 @@ export const routes = [
         }
     },
     {
-        path: '/checking-progress/provisional/:id',
+        path: '/checking-progress/:workshopOrderId/provisional/:id?',
         name: 'provisionalCalendarView',
         component: () => import('../views/checkingProgress/provisionalCalendar.vue'),
         meta: {
@@ -495,7 +495,7 @@ export const routes = [
         }
     },
     {
-        path: '/checking-progress/progress',
+        path: '/checking-progress/progress/:provisionalCalendarId',
         name: 'progressReport',
         component: () => import('../views/checkingProgress/progressReport.vue'),
         meta: {

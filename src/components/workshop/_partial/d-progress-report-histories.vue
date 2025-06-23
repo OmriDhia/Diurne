@@ -41,7 +41,7 @@
             </template>
         </d-panel>
         <div class="row mt-2 justify-content-end">
-            <d-btn-outlined icon="plus" label="Ajouter" @click.prevent="addNewAddress"></d-btn-outlined>
+            <d-btn-outlined icon="plus" label="Ajouter" @click.prevent="addNewProgressReport"></d-btn-outlined>
         </div>
     </div>
 </template>
@@ -54,8 +54,15 @@ import '../../../assets/sass/components/tabs-accordian/custom-accordions.scss';
 import dBtnOutlined from "../../base/d-btn-outlined.vue"
 import DPanel from "@/components/common/d-panel.vue";
 import DPanelTitle from "@/components/common/d-panel-title.vue";
+import checkingListService from "@/Services/checkingList-service.js";
+import axiosInstance from "@/config/http.js";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
+    workshopOrderId: {
+        type: Number,
+        required: false
+    },
 });
 
 const data = ref([{
@@ -75,13 +82,21 @@ const data = ref([{
     comment: ""
 }]);
 const error = ref({});
+const router = useRouter();
 
-const addAddress = async () => {
-    
-};
-
-const addNewAddress = () => {
-   console.log("Ajouter nouveau progress report ...")
+const addNewProgressReport = async () => {
+    if (props.workshopOrderId) {
+        const res = await axiosInstance.get(`/api/provisionalCalendar/workshopOrder/${props.workshopOrderId}`);
+        const provisionalCalendar = res.data?.response;
+        if (provisionalCalendar.length > 0) {
+            router.push({name: "progressReport", params :{provisionalCalendarId: provisionalCalendar[0].id}})
+        } else {
+            router.push({name: "provisionalCalendarView", params :{workshopOrderId: props.workshopOrderId}})
+        }
+    } else {
+        window.showMessage("Identifiant commande atelier introuvable",'error');
+    }
+   
 }
 </script>
 <style>
