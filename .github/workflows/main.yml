@@ -30,7 +30,7 @@ jobs:
           target: "/var/www/html/diurne_vuejs/"
           strip_components: 0  # Keeps the files at the target root
 
-      - name: Build and configure on server
+      - name: Build and deploy on server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DIURNE_HOST }}
@@ -38,8 +38,29 @@ jobs:
           password: ${{ secrets.DIURNE_PASSWORD }}
           port: 22
           script: |
-            cd /var/www/html/diurne_vuejs
-            sudo chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
-            npm install
+            # Aller dans le dossier source
+            cd /var/www/html/diurne_vuejs_src
+
+            # Nettoyage des anciennes dépendances
+            rm -rf node_modules package-lock.json
+            sudo chown -R ubuntu:ubuntu .
+
+            # Installer avec les dépendances optionnelles
+            npm install --include=optional
+
+            # Build Vite
             npm run build
+
+            # Supprimer anciens fichiers buildés
+            sudo rm -rf /var/www/html/diurne_vuejs/*
+
+            # Copier le contenu du build dans le bon dossier
+            cp -r dist/* /var/www/html/diurne_vuejs/
+            cp dist/.htaccess /var/www/html/diurne_vuejs/ || true
+
+            # Permissions correctes
+            sudo chown -R www-data:www-data /var/www/html/diurne_vuejs
+            sudo chmod -R 755 /var/www/html/diurne_vuejs
+
+            # Redémarrer Apache
             sudo systemctl restart apache2
