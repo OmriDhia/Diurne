@@ -40,8 +40,8 @@ jobs:
           script: |
             cd /var/www/html/diurne_vuejs
             sudo chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
-            # Correction des problèmes esbuild
-            npm install --omit=dev --no-audit
-            npm rebuild esbuild
+            # Installation explicite de Vite et des dépendances
+            npm install vite --no-audit
+            npm install --no-audit
             npm run build
             sudo systemctl restart apache2
