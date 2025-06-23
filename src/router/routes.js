@@ -468,6 +468,37 @@ export const routes = [
     },
 
     {
+        path: '/projet/supplier-invoices',
+        name: 'supplier-invoices',
+        children: [
+            {
+                path: '',
+                name: 'supplier-invoice-list',
+                component: () => import('../views/projects/factureFournisseur/supplierInvoiceList.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'projects',
+                    permission: 'read invoice',
+                },
+            },
+            {
+                path: 'create',
+                name: 'supplier-invoice-create',
+                component: () => import('../views/projects/factureFournisseur/supplierInvoiceCreate.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'projects',
+                    permission: 'create invoice',
+                },
+            },
+        ],
+        meta: {
+            requiresAuth: true,
+            class: 'projects'
+        }
+    },
+
+    {
         path: '/checking-progress/list/:id',
         name: 'checkingList',
         component: () => import('../views/checkingProgress/checkingList.vue'),
