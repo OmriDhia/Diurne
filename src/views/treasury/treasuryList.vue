@@ -286,7 +286,7 @@ const fetchData = async ({ page, itemsPerPage, sort }) => {
 
     const response = await axiosInstance.get(url);
     const data = response.data.response;
-    const payments = data.data || data.orderPayments || data;
+    const payments = data.data || data ;
 
     // Utilisation de Promise.all avec un nombre limité de requêtes simultanées
     rows.value = await batchTransformPayments(payments, 5); // 5 requêtes simultanées max
