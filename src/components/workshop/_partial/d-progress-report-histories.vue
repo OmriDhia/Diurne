@@ -63,7 +63,6 @@ import '../../../assets/sass/components/tabs-accordian/custom-accordions.scss';
 import dBtnOutlined from "../../base/d-btn-outlined.vue"
 import DPanel from "@/components/common/d-panel.vue";
 import DPanelTitle from "@/components/common/d-panel-title.vue";
-import checkingListService from "@/Services/checkingList-service.js";
 import axiosInstance from "@/config/http.js";
 import {useRouter} from "vue-router";
 import progressReportService from "@/Services/progress-report-service.js";
@@ -76,7 +75,6 @@ const props = defineProps({
 });
 
 const data = ref([]);
-const error = ref({});
 const router = useRouter();
 
 const getData = async () => {
