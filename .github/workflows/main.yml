@@ -16,8 +16,8 @@ jobs:
 
       - name: Check branch and commit
         run: |
-          git branch --show-current  # Should show 'main' or a detached HEAD
-          git log -1                 # Shows the latest commit
+          git branch --show-current
+          git log -1
 
       - name: Copy source code to server
         uses: appleboy/scp-action@master
@@ -28,7 +28,7 @@ jobs:
           port: 22
           source: "./*"
           target: "/var/www/html/diurne_vuejs/"
-          strip_components: 0  # Keeps the files at the target root
+          strip_components: 0
 
       - name: Build and deploy on server
         uses: appleboy/ssh-action@master
@@ -38,29 +38,26 @@ jobs:
           password: ${{ secrets.DIURNE_PASSWORD }}
           port: 22
           script: |
-            # Aller dans le dossier source
-            cd /var/www/html/diurne_vuejs_src
+            cd /var/www/html/diurne_vuejs
 
-            # Nettoyage des anciennes dépendances
+            # Clean install
             rm -rf node_modules package-lock.json
-            sudo chown -R ubuntu:ubuntu .
-
-            # Installer avec les dépendances optionnelles
             npm install --include=optional
 
-            # Build Vite
+            # Build
             npm run build
 
-            # Supprimer anciens fichiers buildés
-            sudo rm -rf /var/www/html/diurne_vuejs/*
+            # Create or clean output folder
+            sudo mkdir -p /var/www/html/diurne_vuejs_dist
+            sudo rm -rf /var/www/html/diurne_vuejs_dist/*
 
-            # Copier le contenu du build dans le bon dossier
-            cp -r dist/* /var/www/html/diurne_vuejs/
-            cp dist/.htaccess /var/www/html/diurne_vuejs/ || true
+            # Copy build output
+            cp -r dist/* /var/www/html/diurne_vuejs_dist/
+            cp dist/.htaccess /var/www/html/diurne_vuejs_dist/ || true
 
-            # Permissions correctes
-            sudo chown -R www-data:www-data /var/www/html/diurne_vuejs
-            sudo chmod -R 755 /var/www/html/diurne_vuejs
+            # Set correct permissions
+            sudo chown -R www-data:www-data /var/www/html/diurne_vuejs_dist
+            sudo chmod -R 755 /var/www/html/diurne_vuejs_dist
 
-            # Redémarrer Apache
+            # Restart web server
             sudo systemctl restart apache2
