@@ -89,12 +89,14 @@
                   <input type="date" class="form-control form-control-sm mb-1" />
                   <div>Fin :</div>
                   <input type="date" class="form-control form-control-sm" />
+                  <div>Date commande client</div>
                 </th>
                 <th v-if="!cols.find(c => c.field === 'dates2')?.hide">
                   <div>Début :</div>
                   <input type="date" class="form-control form-control-sm mb-1" />
                   <div>Fin :</div>
                   <input type="date" class="form-control form-control-sm" />
+                  <div>Date Facture client</div>
                 </th>
               </tr>
             </thead>
