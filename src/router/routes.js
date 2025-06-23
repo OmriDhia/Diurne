@@ -438,7 +438,7 @@ export const routes = [
     },
     {
         path: '/projet/invoices',
-        name: 'clientInvoice',
+        name: 'invoices',
         children: [
             {
                 path: '',
