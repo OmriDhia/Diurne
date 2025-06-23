@@ -16,5 +16,13 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+    async getByPrevId(prevId) {
+        try {
+            const res = await axiosInstance.get(`/api/progressReport?provisionalCalendarId=${prevId}`);
+            return res.data.response;
+        } catch (error) {
+            throw error;
+        }
     }
 };
