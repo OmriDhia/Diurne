@@ -1,52 +1,100 @@
-name: diurne_api_dev
+name: diurne_secure_deploy
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'vite.config.js'
+      - '.htaccess'
+
+env:
+  TARGET_DIR: /var/www/html/diurne_vuejs
+  BUILD_DIR: dist
+  TIMEOUT: 300s 
 
 jobs:
-  deploy_job:
+  pre_deploy_checks:
     runs-on: ubuntu-latest
-    name: deploy
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Validate files
+        run: |
+          [ -f ".htaccess" ] || { echo ".htaccess missing"; exit 1; }
+          [ -d "src" ] || { echo "src directory missing"; exit 1; }
+
+  deploy:
+    needs: pre_deploy_checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Install dependencies and build
+      - name: Install dependencies (production only)
+        run: npm ci --omit=dev --audit
+
+      - name: Build project
         run: |
-          npm install
           npm run build
-          ls -R dist/ # Vérifie la structure du dossier dist
+          # Vérification des artefacts critiques
+          [ -f "$BUILD_DIR/index.html" ] || { echo "index.html missing"; exit 1; }
+          [ -f "$BUILD_DIR/.htaccess" ] || { echo ".htaccess missing"; exit 1; }
 
-      - name: Copy files to server (SCP)
+      - name: Secure SCP transfer
         uses: appleboy/scp-action@master
+        env:
+          DEPLOY_KEY: ${{ secrets.DIURNE_PASSWORD }}
         with:
           host: ${{ secrets.DIURNE_HOST }}
           username: ${{ secrets.DIURNE_USERNAME }}
           password: ${{ secrets.DIURNE_PASSWORD }}
           port: 22
-          source: "dist/*"
-          target: "/var/www/html/diurne_vuejs/"
-          rm: true
-          overwrite: true
+          connect_timeout: 60
+          source: "${{ env.BUILD_DIR }}/*"
+          target: "${{ env.TARGET_DIR }}"
           strip_components: 1
+          rm: false  # Évite la suppression brutale
+          overwrite: true
+          verbose: true
 
-      - name: Configure server permissions
+      - name: Remote configuration (SSH)
         uses: appleboy/ssh-action@master
+        env:
+          DEPLOY_KEY: ${{ secrets.DIURNE_PASSWORD }}
         with:
           host: ${{ secrets.DIURNE_HOST }}
           username: ${{ secrets.DIURNE_USERNAME }}
           password: ${{ secrets.DIURNE_PASSWORD }}
           port: 22
+          script_timeout: ${{ env.TIMEOUT }}
           script: |
-            cd /var/www/html/diurne_vuejs
-            sudo chown -R www-data:www-data .
-            sudo chmod -R 755 .
-            sudo systemctl restart apache2
+            # Backup avant toute modification
+            backup_dir="/var/www/backups/diurne_$(date +%Y%m%d_%H%M%S)"
+            sudo mkdir -p "$backup_dir"
+            sudo cp -rp "${{ env.TARGET_DIR }}" "$backup_dir" || true
+            
+            # Sécurisation des permissions
+            sudo find "${{ env.TARGET_DIR }}" -type f -exec chmod 644 {} \;
+            sudo find "${{ env.TARGET_DIR }}" -type d -exec chmod 755 {} \;
+            sudo chown -R www-data:www-data "${{ env.TARGET_DIR }}"
+            
+            # Protection des fichiers sensibles
+            sudo chmod 440 "${{ env.TARGET_DIR }}/.htaccess"
+            
+            # Validation finale
+            sudo ls -la "${{ env.TARGET_DIR }}"
+            sudo systemctl reload apache2
