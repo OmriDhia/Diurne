@@ -2,27 +2,27 @@
   <div class="layout-px-spacing mt-4">
     <d-page-title :title="'Tapis'"></d-page-title>
 
-
-
     <div class="row layout-top-spacing mt-2 p-2">
-
-
       <div class="panel br-6 p-3 mt-1" id="fullscreen">
-
         <!-- Radio Filter Section -->
-
         <div class="d-flex flex-wrap justify-content-start gap-4 mb-4">
-          <label class="fw-normal"><input type="radio" name="type" value="echantillon" v-model="filter.type" /> Échantillon</label>
+          <label class="fw-normal"><input type="radio" name="type" value="echantillon" v-model="filter.type" />
+            Échantillon</label>
           <label class="fw-normal"><input type="radio" name="type" value="tapis" v-model="filter.type" /> Tapis</label>
           <label class="fw-normal"><input type="radio" name="type" value="tous" v-model="filter.type" /> Tous</label>
-          <label class="fw-normal"><input type="radio" name="type" value="dispo_vente" v-model="filter.type" /> Dispo. vente</label>
-          <label class="fw-normal"><input type="radio" name="type" value="etat_prod" v-model="filter.type" /> État prod</label>
-          <label class="fw-normal"><input type="radio" name="type" value="etat_stock" v-model="filter.type" /> État stock</label>
+          <label class="fw-normal"><input type="radio" name="type" value="dispo_vente" v-model="filter.type" /> Dispo.
+            vente</label>
+          <label class="fw-normal"><input type="radio" name="type" value="etat_prod" v-model="filter.type" /> État
+            prod</label>
+          <label class="fw-normal"><input type="radio" name="type" value="etat_stock" v-model="filter.type" /> État
+            stock</label>
         </div>
+
         <!-- FILTER FORM -->
         <div class="row g-3 mb-3">
           <div v-for="(field, index) in fields" :key="index" class="col-md-4">
-            <d-input :label="field.label" :type="field.type || 'text'" v-model="filter[field.model]" :as="field.as || 'input'">
+            <d-input :label="field.label" :type="field.type || 'text'" v-model="filter[field.model]"
+              :as="field.as || 'input'">
               <template v-if="field.model === 'etatTapis'">
                 <option value="">--</option>
                 <option value="cmd_atelier">Cmd. atelier</option>
@@ -84,19 +84,19 @@
                   <div><input class="form-control form-control-sm" /></div>
                   <div>Prix d'achat</div>
                 </th>
-                <th v-if="!cols.find(c => c.field === 'dates1')?.hide">
+                <th v-if="!cols.find(c => c.field === 'dateCommande')?.hide">
                   <div>Début :</div>
-                  <input type="date" class="form-control form-control-sm mb-1" />
+                  <input type="date" class="form-control form-control-sm mb-1" v-model="filter.orderDate_from" />
                   <div>Fin :</div>
-                  <input type="date" class="form-control form-control-sm" />
+                  <input type="date" class="form-control form-control-sm" v-model="filter.orderDate_to" />
                   <div>Date commande client</div>
                 </th>
-                <th v-if="!cols.find(c => c.field === 'dates2')?.hide">
+                <th v-if="!cols.find(c => c.field === 'dateFacture')?.hide">
                   <div>Début :</div>
-                  <input type="date" class="form-control form-control-sm mb-1" />
+                  <input type="date" class="form-control form-control-sm mb-1" v-model="filter.invoiceDate_from" />
                   <div>Fin :</div>
-                  <input type="date" class="form-control form-control-sm" />
-                  <div>Date Facture client</div>
+                  <input type="date" class="form-control form-control-sm" v-model="filter.invoiceDate_to" />
+                  <div>Date facture client</div>
                 </th>
               </tr>
             </thead>
@@ -129,7 +129,6 @@
                 <td v-if="!cols.find(c => c.field === 'prixVente')?.hide"></td>
                 <td v-if="!cols.find(c => c.field === 'prixAchat')?.hide"></td>
                 <td v-if="!cols.find(c => c.field === 'dates1')?.hide"></td>
-                <td v-if="!cols.find(c => c.field === 'dates2')?.hide"></td>
               </tr>
             </tbody>
           </table>
@@ -168,10 +167,6 @@ const fields = [
   { label: 'Commande', model: 'commande' },
   { label: 'Devis', model: 'devis' },
   { label: 'Prescripteur', model: 'prescripteur' },
-  { label: 'Date cmd. client du', model: 'orderDate_from', type: 'date' },
-  { label: 'Date cmd. client au', model: 'orderDate_to', type: 'date' },
-  { label: 'Date facture client du', model: 'invoiceDate_from', type: 'date' },
-  { label: 'Date facture client au', model: 'invoiceDate_to', type: 'date' }
 ];
 
 const cols = ref([
@@ -185,8 +180,8 @@ const cols = ref([
   { field: 'dispo', title: 'Dispo', hide: false },
   { field: 'prixVente', title: 'Prix de vente', hide: false },
   { field: 'prixAchat', title: 'Prix d\'achat', hide: false },
-  { field: 'dates1', title: 'Dates 1', hide: false },
-  { field: 'dates2', title: 'Dates 2', hide: false }
+  { field: 'dateCommande', title: 'Date commande client', hide: false },
+  { field: 'dateFacture', title: 'Date facture client', hide: false }
 ]);
 
 const rows = ref([]);
@@ -314,8 +309,9 @@ th input {
 .bh-table-responsive table tbody tr td.bh-sticky {
   background: #eff5ff !important;
 }
-input[type="radio"]{
-    position: unset;
-    opacity: 1;
+
+input[type="radio"] {
+  position: unset;
+  opacity: 1;
 }
 </style>
