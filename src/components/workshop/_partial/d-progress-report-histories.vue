@@ -75,22 +75,7 @@ const props = defineProps({
     },
 });
 
-const data = ref([{
-    event: "",
-    date: "",
-    dateprev: "",
-    comment: ""
-},{
-    event: "",
-    date: "",
-    dateprev: "",
-    comment: ""
-},{
-    event: "",
-    date: "",
-    dateprev: "",
-    comment: ""
-}]);
+const data = ref([]);
 const error = ref({});
 const router = useRouter();
 
