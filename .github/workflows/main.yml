@@ -1,91 +1,45 @@
-name: diurne_deploy_with_checks
+name: diurne_api_dev
 
 on:
   push:
     branches: [main]
-    paths:
-      - 'src/**'
-      - 'public/**'
-      - '.htaccess'
-      - 'vite.config.js'
+  pull_request:
+    branches: [main]
 
 jobs:
-  pre_deploy_checks:
+  deploy_job:
     runs-on: ubuntu-latest
-    outputs:
-      checks_passed: ${{ steps.verify_checks.outputs.passed }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Verify critical files
-        id: file_check
-        run: |
-          [ -f "vite.config.js" ] || { echo "❌ vite.config.js missing"; exit 1; }
-          [ -f ".htaccess" ] || { echo "❌ .htaccess missing"; exit 1; }
-          echo "✅ All critical files present"
-
-      - name: Security audit
-        id: security_check
-        run: npm audit --production || true
-
-      - name: Build verification
-        id: build_check
-        run: |
-          npm ci
-          npm run build
-          [ -f "dist/index.html" ] || { echo "❌ Build failed"; exit 1; }
-          echo "✅ Build successful"
-
-      - name: Set checks status
-        id: verify_checks
-        run: echo "passed=true" >> $GITHUB_OUTPUT
-
-  deploy:
-    needs: pre_deploy_checks
-    if: needs.pre_deploy_checks.outputs.checks_passed == 'true'
-    runs-on: ubuntu-latest
+    name: deploy
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: dist
+      - name: Check branch and commit
+        run: |
+          git branch --show-current  # Should show 'main' or a detached HEAD
+          git log -1                 # Shows the latest commit
 
-      - name: Prepare server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.DIURNE_HOST }}
-          username: ${{ secrets.DIURNE_USERNAME }}
-          password: ${{ secrets.DIURNE_PASSWORD }}
-          script: |
-            sudo mkdir -p /var/www/html/diurne_vuejs
-            sudo chown ubuntu:www-data /var/www/html/diurne_vuejs
-            sudo chmod 775 /var/www/html/diurne_vuejs
-
-      - name: Secure transfer
+      - name: Copy source code to server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.DIURNE_HOST }}
           username: ${{ secrets.DIURNE_USERNAME }}
           password: ${{ secrets.DIURNE_PASSWORD }}
-          source: "dist/*"
-          target: "/var/www/html/diurne_vuejs"
-          overwrite: true
-          strip_components: 0
+          port: 22
+          source: "./*"
+          target: "/var/www/html/diurne_vuejs/"
+          strip_components: 0  # Keeps the files at the target root
 
-      - name: Finalize deployment
+      - name: Build and configure on server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DIURNE_HOST }}
           username: ${{ secrets.DIURNE_USERNAME }}
           password: ${{ secrets.DIURNE_PASSWORD }}
+          port: 22
           script: |
-            sudo chown -R www-data:www-data /var/www/html/diurne_vuejs
-            sudo find /var/www/html/diurne_vuejs -type d -exec chmod 755 {} \;
-            sudo find /var/www/html/diurne_vuejs -type f -exec chmod 644 {} \;
+            cd /var/www/html/diurne_vuejs
+            sudo chown -R ubuntu:ubuntu /var/www/html/diurne_vuejs
+            npm install
+            npm run build
             sudo systemctl restart apache2
-            echo "🚀 Deployment successful!"
