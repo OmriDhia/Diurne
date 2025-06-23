@@ -1,5 +1,5 @@
 <template>
-    <div class="layout-px-spacing mt-4">
+    <div class="layout-px-spacing mt-4 list-facture-client">
         <d-page-title icon="file-text" :title="'Facture Client'"></d-page-title>
 
         <div class="row layout-top-spacing mt-3 p-2">
@@ -10,20 +10,22 @@
                     </div>
                 </div>
                 <div class="row d-flex justify-content-center align-items-start p-2">
-                    <div class="col-md-6 col-sm-12">
+                    <div class="col-md-6 col-sm-12 list-facture-client--item">
                         <d-customer-dropdown v-model="filter.customer" />
                         <d-input label="Numéro de facture" v-model="filter.invoiceNumber" />
-                        <d-contremarque-dropdown :customerId="filter.customer" v-model="filter.contremarque" />
+                        <d-contremarque-dropdown class="contremarque" :customerId="filter.customer" v-model="filter.contremarque" />
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <!-- <d-date-picker label="Du" v-model="filter.date_from" />
             <d-date-picker label="Au" v-model="filter.date_to" /> -->
                         <d-input label="RN" class="pb-2" v-model="filter.rn" />
-                        <div class="d-flex justify-content-between align-items-center">
-                          <label for="date_from">Date Env</label>
-                            <input id="date_from" class="form-control custom-date" type="date" v-model="filter.date_from" />
-                            <label for="date_to">au</label>
-                            <input id="date_to" class="form-control custom-date" type="date" v-model="filter.date_to" />
+                        <div class="row">
+                            <label for="date_from" class="col-4">Date Env</label>
+                            <div class="col-8 d-flex justify-content-between align-items-center">
+                                <input id="date_from" class="form-control custom-date" type="date" v-model="filter.date_from" />
+                                <label for="date_to" class="custom-between">au</label>
+                                <input id="date_to" class="form-control custom-date" type="date" v-model="filter.date_to" />
+                            </div>
                         </div>
 
                         <div class="row mt-2 justify-content-end">
@@ -178,7 +180,7 @@
         font-size: 16px !important;
     }
     .custom-date {
-        width: 40%;
+        width: 45%;
         padding: 0.375rem 0.75rem;
         border-radius: 0.25rem;
         border: 1px solid #ced4da;
