@@ -25,7 +25,7 @@
                                                 <div class="row align-items-center pt-2">
                                                     <label for="date" class="col-4">Date</label>
                                                     <div class="col-8">
-                                                        <input id="date" class="form-control custom-date custom-date" type="date" v-model="form.date" />
+                                                        <input id="date" class="form-control custom-date custom-date" type="date" v-model="form.invoiceDate" />
                                                     </div>
                                                 </div>
 
@@ -175,7 +175,7 @@
 
                             <div class="row mt-3">
                                 <div class="col-md-3">
-                                    <d-input label="Qte total" v-model="form.qteTotal" />
+                                    <d-input label="Qte total" v-model="form.quantityTotal" />
                                     <d-input label="Frais port HT" v-model="form.fraisPort" />
                                 </div>
                                 <div class="col-md-3">
@@ -184,21 +184,15 @@
                                 </div>
                                 <div class="col-md-3">
                                     <d-input label="Total HT" v-model="form.totalHt" />
-                                    <d-input label="Montant HT" v-model="form.montantHt" />
-                                    <d-input label="Montant TVA" v-model="form.montantTva" />
-                                    <d-input label="Montant TTC" v-model="form.montantTtc" />
+                                    <d-input label="Montant HT" v-model="form.amountHt" />
+                                    <d-input label="Montant TVA" v-model="form.amountTva" />
+                                    <d-input label="Montant TTC" v-model="form.amountTtc" />
                                 </div>
                                 <div class="col-md-3 bloc-btns-actions">
                                     <button class="btn btn-custom">RÉPARTITION</button>
                                     <button class="btn btn-custom">CALCULER</button>
-                                    <button class="btn btn-custom">ÉDITER</button>
+                                    <button class="btn btn-custom" @click="save">ÉDITER</button>
                                     <button class="btn btn-custom">RATTACHER UN RÈGLEMENT</button>
-                                </div>
-                            </div>
-
-                            <div class="row mt-3 justify-content-end">
-                                <div class="col-auto">
-                                    <button class="btn btn-custom" @click="save">Enregistrer</button>
                                 </div>
                             </div>
                         </template>
@@ -234,7 +228,7 @@
     const form = ref({
         customerRef: '',
         invoiceNumber: '',
-        date: '',
+        invoiceDate: '',
         project: '',
         invoiceType: '',
         tva: '',
@@ -250,14 +244,14 @@
         transporteur: '',
         numero: '',
         autreRn: '',
-        qteTotal: '',
+        quantityTotal: '',
         fraisPort: '',
         versement: '',
         percentFacture: '',
         totalHt: '',
-        montantHt: '',
-        montantTva: '',
-        montantTtc: '',
+        amountHt: '',
+        amountTva: '',
+        amountTtc: '',
     });
 
     const lines = ref([
