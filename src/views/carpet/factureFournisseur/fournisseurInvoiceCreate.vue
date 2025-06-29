@@ -1,6 +1,6 @@
 <template>
     <div class="create-fournisseur-invoice">
-        <d-base-page>
+        <d-base-page :loading="loading">
             <template #title>
                 <d-page-title title="Nouvelle Facture" />
             </template>
@@ -13,7 +13,7 @@
                             <div class="col-md-4">
                                 <d-input label="Numéro facture" v-model="form.invoiceNumber" />
                                 <d-input label="Packing list" v-model="form.packingList" class="pt-2" />
-                                <d-currency v-model="form.currency" class="pt-2" />
+                                <d-currency v-model="form.currencyId" class="pt-2" />
                             </div>
                             <div class="col-md-4">
                                 <div class="row align-items-center">
@@ -22,12 +22,12 @@
                                         <input id="invoice-date" class="form-control custom-date" type="date" v-model="form.invoiceDate" />
                                     </div>
                                 </div>
-                                <d-input label="Air way bill" v-model="form.airWayBill" class="pt-2" />
+                                <d-input label="Air way bill" v-model="form.airWay" class="pt-2" />
                             </div>
 
                             <div class="col-md-4">
                                 <d-input label="Fournisseur" v-model="form.supplier" />
-                                <d-input label="Fret total" v-model="form.totalFreight" class="pt-2" />
+                                <d-input label="Fret total" v-model="form.fretTotal" class="pt-2" />
                                 <div class="form-check text-end pt-2">
                                     <input class="form-check-input" type="radio" id="freight-included" v-model="form.freightIncluded" />
                                     <label class="form-check-label" for="freight-included">compris dans la facture</label>
@@ -85,8 +85,8 @@
 
                             <div class="row mt-3">
                                 <div class="col-md-4">
-                                    <d-input label="Autre montant" v-model="form.autreMontant" />
-                                    <d-input label="Poids" v-model="form.poids" />
+                                    <d-input label="Autre montant" v-model="form.amountOther" />
+                                    <d-input label="Poids" v-model="form.weight" />
                                 </div>
                                 <div class="col-md-4">
                                     <div class="row">
@@ -100,20 +100,20 @@
                                     <d-panel-title title="Avoir sur cette facture" class-name="ps-2 mt-0" />
                                     <div class="row">
                                         <div class="col d-block__item">
-                                            <d-input label="Montant théorique" v-model="form.avoirMontantTheo" />
+                                            <d-input label="Montant théorique" v-model="form.amountTheoretical" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Montant réel" v-model="form.avoirMontantReel" />
+                                            <d-input label="Montant réel" v-model="form.amountReal" />
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col d-block__item">
-                                            <d-input label="Numéro de l'avoir" v-model="form.numeroAvoir" />
+                                            <d-input label="Numéro de l'avoir" v-model="form.creditNumber" />
                                         </div>
 
                                         <div class="col pt-2">
                                             <label for="date-avoir">Date de l'avoir</label>
-                                            <input id="date-avoir" class="form-control custom-date" type="date" v-model="form.dateAvoir" />
+                                            <input id="date-avoir" class="form-control custom-date" type="date" v-model="form.creditDate" />
                                         </div>
                                     </div>
                                 </div>
@@ -123,31 +123,31 @@
                                 <div class="col-md-8">
                                     <div class="row">
                                         <div class="col d-block__item">
-                                            <d-input label="Total facture" v-model="form.totalFacture" />
+                                            <d-input label="Total facture" v-model="form.invoiceTotal" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Total théorique" v-model="form.totalTheorique" />
+                                            <d-input label="Total théorique" v-model="form.theoreticalTotal" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Total surface" v-model="form.totalSurface" />
+                                            <d-input label="Total surface" v-model="form.surfaceTotal" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Total Poids" v-model="form.totalPoids" />
+                                            <d-input label="Total Poids" v-model="form.weightTotal" />
                                         </div>
                                     </div>
 
                                     <d-panel-title title="Paiement" class-name="ps-2" />
                                     <div class="row">
                                         <div class="col d-block__item">
-                                            <d-input label="Montant théorique" v-model="form.paiementMontantTheo" />
+                                            <d-input label="Montant théorique" v-model="form.paymentTheoretical" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Montant réel" v-model="form.paiementMontantReel" />
+                                            <d-input label="Montant réel" v-model="form.paymentReal" />
                                         </div>
 
                                         <div class="col pt-2">
                                             <label for="date-avoir">Date de paiement</label>
-                                            <input id="date-avoir" class="form-control custom-date" type="date" v-model="form.datePaiement" />
+                                            <input id="date-avoir" class="form-control custom-date" type="date" v-model="form.paymentDate" />
                                         </div>
                                     </div>
                                     <div class="valeur-commande">
@@ -169,9 +169,8 @@
 
                             <div class="row mt-3 justify-content-end">
                                 <div class="col-auto">
-                                    <button class="btn btn-custom me-2">Valider</button>
-
-                                    <button class="btn btn-outline-custom">Annuler</button>
+                                    <button class="btn btn-custom me-2" @click="save">Valider</button>
+                                    <button class="btn btn-outline-custom" @click="cancel">Annuler</button>
                                 </div>
                             </div>
                         </template>
@@ -183,48 +182,51 @@
 </template>
 
 <script setup>
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
     import dBasePage from '../../../components/base/d-base-page.vue';
     import dPanel from '../../../components/common/d-panel.vue';
     import dPanelTitle from '../../../components/common/d-panel-title.vue';
     import dPageTitle from '../../../components/common/d-page-title.vue';
     import dInput from '../../../components/base/d-input.vue';
-    import dDatePicker from '../../../components/base/d-date-picker.vue';
-    import dCurrency from '../../../components/common/d-currency.vue';
-    import Multiselect from 'vue-multiselect';
+    import supplierInvoiceService from '../../../Services/supplier-invoice-service';
     import { useMeta } from '/src/composables/use-meta';
 
+    import dCurrency from '../../../components/common/d-currency.vue';
     useMeta({ title: 'Nouvelle Facture Fournisseur' });
-
+    const route = useRoute();
+    const router = useRouter();
+    const loading = ref(false);
     const form = ref({
-        invoiceNumber: '',
+        invoiceNumber: '', //?
         invoiceDate: '',
         supplier: '',
         packingList: '',
-        airWayBill: '',
-        totalFreight: '',
-        currency: null,
-        freightIncluded: false,
-        autreMontant: '',
-        poids: '',
+        airWay: '',
+        fretTotal: '',
+        currencyId: null,
+        freightIncluded: false, //?
+        amountOther: '',
+        weight: '',
         description: '',
-        avoirMontantTheo: '',
-        avoirMontantReel: '',
-        numeroAvoir: '',
-        dateAvoir: '',
-        totalFacture: '',
-        totalTheorique: '',
-        totalSurface: '',
-        totalPoids: '',
-        paiementMontantTheo: '',
-        paiementMontantReel: '',
-        datePaiement: '',
-        valeurCommande: '',
-        suiviAnterieur: '',
-        suiviRestant: '',
+        amountTheoretical: '',
+        amountReal: '',
+        creditNumber: '',
+        creditDate: '',
+        invoiceTotal: '',
+        theoreticalTotal: '',
+        surfaceTotal: '',
+        weightTotal: '',
+        paymentTheoretical: '',
+        paymentReal: '',
+        paymentDate: '',
+        valeurCommande: '', //?
+        suiviAnterieur: '', //?
+        suiviRestant: '', //?
     });
 
     const lines = ref([
+        // Initial empty line
         {
             rn: null,
             numeroTapis: '',
@@ -238,11 +240,51 @@
             avoirTheorique: null,
             montantReelAvoir2: null,
             montantFinalTapis: null,
-            poids: null,
-            pourcentPoids: null,
+            weight: null,
+            pourcentweight: null,
             fret: null,
         },
     ]);
+
+    const loadInvoice = async (id) => {
+        try {
+            loading.value = true;
+            const data = await supplierInvoiceService.getById(id);
+            form.value = { ...form.value, ...data };
+        } catch (e) {
+            window.showMessage(e.message, 'error');
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    const save = async () => {
+        try {
+            loading.value = true;
+            if (route.params.id) {
+                await supplierInvoiceService.update(route.params.id, form.value);
+                window.showMessage('Mise à jour avec succès.');
+            } else {
+                await supplierInvoiceService.create(form.value);
+                window.showMessage('Ajout avec succès.');
+                router.push({ name: 'fournisseur-invoice-list' });
+            }
+        } catch (e) {
+            window.showMessage(e.message, 'error');
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    const cancel = () => {
+        router.back();
+    };
+
+    onMounted(() => {
+        if (route.params.id) {
+            loadInvoice(route.params.id);
+        }
+    });
 </script>
 
 <style scoped>

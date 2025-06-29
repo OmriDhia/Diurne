@@ -99,17 +99,17 @@
     const params = reactive({
         current_page: 1,
         pagesize: 50,
-        orderBy: 'invoiceNumber',
+        orderBy: 'invoice_number',
         orderWay: 'desc',
     });
 
     const filter = ref({ ...filterFactureFournisseur });
 
     const cols = ref([
-        { field: 'invoiceNumber', title: 'Numéro facture' },
-        { field: 'invoiceDate', title: 'Date de facture' },
-        { field: 'customer', title: 'Atelier' },
-        { field: 'rn', title: 'RN' },
+        { field: 'invoice_number', title: 'Numéro facture' },
+        { field: 'invoice_date', title: 'Date de facture' },
+        { field: 'supplier', title: 'Atelier' }, //atelier == supplier??
+        { field: 'rn', title: 'RN' }, //?
     ]);
 
     onMounted(() => {
@@ -124,13 +124,13 @@
     const getInvoices = async () => {
         try {
             loading.value = true;
-            let url = `/api/fournisseur-invoices?page=${params.current_page}&limit=${params.pagesize}`;
+            let url = `/api/supplierInvoices?page=${params.current_page}&limit=${params.pagesize}`;
             url += `&orderBy=${params.orderBy}&orderWay=${params.orderWay}`;
             url += getFilterParams();
             const res = await axiosInstance.get(url);
-            const data = res.data.response || {};
-            rows.value = data.invoices || [];
-            total_rows.value = data.count || 0;
+            const data = res.data.data || {};
+            rows.value = data || [];
+            total_rows.value = res.data.meta.total || 0;
         } catch (e) {
             console.error(e);
         }
@@ -153,14 +153,14 @@
 
     const doReset = () => {
         filterActive.value = false;
-        filter.value = { ...filterClientInvoice };
+        filter.value = { ...filterFactureFournisseur };
         Helper.setStorage(FILTER_FOURNISSEUR_INVOICE_STORAGE_NAME, filter.value);
         getInvoices();
     };
 
     const getFilterParams = () => {
         let p = '';
-        if (filter.value.auteur) p += `&customerId=${filter.value.auteur}`;
+        if (filter.value.auteur) p += `&authorId=${filter.value.auteur}`;
         if (filter.value.invoiceNumber) p += `&invoiceNumber=${filter.value.invoiceNumber}`;
         if (filter.value.rn) p += `&rn=${filter.value.rn}`;
         if (filter.value.startDate) p += `&dateFrom=${filter.value.startDate}`;

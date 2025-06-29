@@ -1,6 +1,6 @@
 <template>
     <div class="create-facture-client">
-        <d-base-page>
+        <d-base-page :loading="loading">
             <template #title>
                 <d-page-title title="Nouvelle Facture" />
             </template>
@@ -25,7 +25,7 @@
                                                 <div class="row align-items-center pt-2">
                                                     <label for="date" class="col-4">Date</label>
                                                     <div class="col-8">
-                                                        <input id="date" class="form-control custom-date custom-date" type="date" v-model="form.date" />
+                                                        <input id="date" class="form-control custom-date custom-date" type="date" v-model="form.invoiceDate" />
                                                     </div>
                                                 </div>
 
@@ -175,23 +175,23 @@
 
                             <div class="row mt-3">
                                 <div class="col-md-3">
-                                    <d-input label="Qte total" v-model="form.qteTotal" />
-                                    <d-input label="Frais port HT" v-model="form.fraisPort" />
+                                    <d-input label="Qte total" v-model="form.quantityTotal" />
+                                    <d-input label="Frais port HT" v-model="form.shippingCostsHt" />
                                 </div>
                                 <div class="col-md-3">
                                     <d-input label="Versement" v-model="form.versement" />
-                                    <d-input label="% facturé" v-model="form.percentFacture" />
+                                    <d-input label="% facturé" v-model="form.billed" />
                                 </div>
                                 <div class="col-md-3">
                                     <d-input label="Total HT" v-model="form.totalHt" />
-                                    <d-input label="Montant HT" v-model="form.montantHt" />
-                                    <d-input label="Montant TVA" v-model="form.montantTva" />
-                                    <d-input label="Montant TTC" v-model="form.montantTtc" />
+                                    <d-input label="Montant HT" v-model="form.amountHt" />
+                                    <d-input label="Montant TVA" v-model="form.amountTva" />
+                                    <d-input label="Montant TTC" v-model="form.amountTtc" />
                                 </div>
                                 <div class="col-md-3 bloc-btns-actions">
                                     <button class="btn btn-custom">RÉPARTITION</button>
                                     <button class="btn btn-custom">CALCULER</button>
-                                    <button class="btn btn-custom">ÉDITER</button>
+                                    <button class="btn btn-custom" @click="save">ÉDITER</button>
                                     <button class="btn btn-custom">RATTACHER UN RÈGLEMENT</button>
                                 </div>
                             </div>
@@ -204,7 +204,8 @@
 </template>
 
 <script setup>
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
     import dBasePage from '../../../components/base/d-base-page.vue';
     import dPanel from '../../../components/common/d-panel.vue';
     import dPanelTitle from '../../../components/common/d-panel-title.vue';
@@ -217,38 +218,45 @@
     import VueFeather from 'vue-feather';
     import { useMeta } from '/src/composables/use-meta';
     import Multiselect from 'vue-multiselect';
+    import customerInvoiceService from '../../../Services/customer-invoice-service';
     useMeta({ title: 'Nouvelle Facture' });
 
+    const route = useRoute();
+    const router = useRouter();
+    const loading = ref(false);
+
     const form = ref({
-        customerRef: '',
-        invoiceNumber: '',
-        date: '',
-        project: '',
+        customerRef: '', //??
+        invoiceNumber: '', //invoiceNumber == customerId
+        invoiceDate: '',
+        project: '', //??
         invoiceType: '',
-        tva: '',
-        currency: null,
-        rate: '',
-        language: '',
-        unit: '',
-        contremarque: null,
-        prescripteur: '',
-        description: '',
-        reglement: '',
-        tarifExpedition: '',
-        transporteur: '',
-        numero: '',
-        autreRn: '',
-        qteTotal: '',
-        fraisPort: '',
-        versement: '',
-        percentFacture: '',
+        tva: '', //?
+        currency: null, //?
+        rate: '', //?
+        language: '', //?
+        unit: '', //?
+        contremarque: null, //?
+        prescripteur: '', //?
+        description: '', //?
+        reglement: '', //?
+        tarifExpedition: '', //?
+        transporteur: '', //?
+        numero: '', //?
+        autreRn: '', //?
+        quantityTotal: '',
+        shippingCostsHt: '',
+        versement: '', //Versement==payment
+        billed: '',
         totalHt: '',
-        montantHt: '',
-        montantTva: '',
-        montantTtc: '',
+        amountHt: '',
+        amountTva: '',
+        amountTtc: '',
+        carpetOrderId: null, // Quel champ???
     });
 
     const lines = ref([
+        // Initial empty line
         {
             percent: null,
             rn: '',
@@ -263,6 +271,45 @@
             priceTtc: null,
         },
     ]);
+
+    const loadInvoice = async (id) => {
+        try {
+            loading.value = true;
+            const data = await customerInvoiceService.getById(id);
+            form.value = { ...form.value, ...data };
+            if (data?.lines) {
+                lines.value = data.lines;
+            }
+        } catch (e) {
+            window.showMessage(e.message, 'error');
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    const save = async () => {
+        try {
+            loading.value = true;
+            if (route.params.id) {
+                await customerInvoiceService.update(route.params.id, { ...form.value, lines: lines.value });
+                window.showMessage('Mise à jour avec succés.');
+            } else {
+                await customerInvoiceService.create({ ...form.value, lines: lines.value });
+                window.showMessage('Ajout avec succés.');
+                router.push({ name: 'client-invoice-list' });
+            }
+        } catch (e) {
+            window.showMessage(e.message, 'error');
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    onMounted(() => {
+        if (route.params.id) {
+            loadInvoice(route.params.id);
+        }
+    });
 
     const saveLine = (index) => {
         console.log('save line', lines.value[index]);
