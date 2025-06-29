@@ -122,11 +122,14 @@ export default {
             // Transform all validation fields
             transformValidationField('graphic', payload.graphicValidation);
             transformValidationField('instruction_compliance', payload.instructionRespect);
-            transformValidationField('repair_relevant', payload.repairValidation);
+            // "repair" field should not include the "_relevant" suffix in its base name
+            // otherwise the generated keys become "repair_relevant_relevant" etc.
+            transformValidationField('repair', payload.repairValidation);
             transformValidationField('tightness', payload.tighteningValidation);
             transformValidationField('wool_quality', payload.woolQuality);
             transformValidationField('silk_quality', payload.silkQuality);
-            transformValidationField('special_shape_relevant', payload.specialShape);
+            // Same for the "special_shape" field
+            transformValidationField('special_shape', payload.specialShape);
             transformValidationField('corps_ondu_coins', payload.bodyWaveCorners);
             transformValidationField('velour_author', payload.velourAuthorValidation);
             transformValidationField('washing', payload.washingValidation);
