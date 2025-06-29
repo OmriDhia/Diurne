@@ -96,7 +96,7 @@ export default {
             const transformedPayload = {};
             
             // Helper function to transform validation objects
-            const transformValidationField = (fieldName, validationObj, customValidationKey = null) => {
+            const transformValidationField = (fieldName, validationObj, customValidationKey = null, customCommentKey = null) => {
                 if (validationObj && typeof validationObj === 'object') {
                     // If relevant is set (true or false), send all validation fields
                     // This ensures the backend gets the complete validation state
@@ -105,16 +105,17 @@ export default {
 
                         // When relevant is true, send validation and seen fields
                         const validationKey = customValidationKey || `${fieldName}_validation`;
+                        const commentKey = customCommentKey || `${fieldName}_comment`;
                         if (validationObj.relevant === true) {
                             transformedPayload[validationKey] = validationObj.validation;
                             transformedPayload[`${fieldName}_seen`] = validationObj.seen;
                             // Always send comment when relevant is true, even if empty
-                            transformedPayload[`${fieldName}_comment`] = validationObj.comment || '';
+                            transformedPayload[commentKey] = validationObj.comment || '';
                         } else {
                             // When relevant is false, reset validation and seen to null
                             transformedPayload[validationKey] = null;
                             transformedPayload[`${fieldName}_seen`] = null;
-                            transformedPayload[`${fieldName}_comment`] = '';
+                            transformedPayload[commentKey] = '';
                         }
                     }
                 }
@@ -122,30 +123,29 @@ export default {
 
             // Transform all validation fields
             transformValidationField('graphic', payload.graphicValidation);
-            transformValidationField('instruction_compliance', payload.instructionRespect);
-            // "repair" field should not include the "_relevant" suffix in its base name
-            // otherwise the generated keys become "repair_relevant_relevant" etc.
-            transformValidationField('repair', payload.repairValidation);
+            transformValidationField('instruction', payload.instructionRespect, 'instruction_compliance_validation');
+            // "repair" field uses repair_relevant_validation in the backend
+            transformValidationField('repair', payload.repairValidation, 'repair_relevant_validation');
             transformValidationField('tightness', payload.tighteningValidation);
             // "wool" and "silk" fields use a simple base name without the
             // "_quality" suffix so that the generated keys match
             // `woolRelevant`, `woolQualityValidation`, etc.
-            transformValidationField('wool', payload.woolQuality);
-            transformValidationField('silk', payload.silkQuality);
+            transformValidationField('wool', payload.woolQuality, 'wool_quality_validation');
+            transformValidationField('silk', payload.silkQuality, 'silk_quality_validation');
             // Same for the "special_shape" field
-            transformValidationField('special_shape', payload.specialShape);
+            transformValidationField('special_shape', payload.specialShape, 'special_shape_relevant_validation');
             transformValidationField('corps_ondu_coins', payload.bodyWaveCorners);
-            transformValidationField('velour_author', payload.velourAuthorValidation);
-            transformValidationField('washing', payload.washingValidation);
+            transformValidationField('velour_author', payload.velourAuthorValidation, 'velour_author_validation', 'velour_comment');
+            transformValidationField('washing', payload.washingValidation, 'washing_validation', 'waching_comment');
             transformValidationField('cleaning', payload.cleaningValidation);
             transformValidationField('carving', payload.carvingValidation);
             transformValidationField('fabric_color', payload.tissueColorValidation);
-            transformValidationField('frange', payload.fringeRepairValidation);
+            transformValidationField('frange', payload.fringeRepairValidation, 'frange_validation', 'frang_comment');
             transformValidationField('no_binding', payload.nonBindingValidation);
             transformValidationField('signature', payload.signatureValidation);
             transformValidationField('without_backing', payload.sansBackingValidation);
 
-            // Add global comment if present
+            // Add global comment if present (this is different from the comment validation field)
             if (payload.comment) {
                 transformedPayload.comment = payload.comment;
             }

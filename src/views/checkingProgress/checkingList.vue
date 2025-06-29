@@ -42,8 +42,6 @@
                                 <d-input label="" type="date" v-model="form.productionEnd" />
                                 <label>commentaire</label>
                                 <d-textarea label="" v-model="form.globalComment" />
-                                <label>Forme / progress / Report / Couche</label>
-                                <d-textarea label="" v-model="form.shapeProgress" />
                             </fieldset>
                         </div>
 
@@ -233,7 +231,7 @@
                             <div class="row mt-2">
                                 <div class="col">
                                     <label class="mb-0">Commentaire:</label>
-                                    <d-textarea label="" v-model="form.shapeProgress" />
+                                    <d-textarea label="" v-model="form.globalComment" />
                                 </div>
                             </div>
                         </div>
@@ -453,7 +451,6 @@
         diagonalB: '',
         productionEnd: '',
         globalComment: '',
-        shapeProgress: '',
         
         // Shape Validation
         shapeValidation: createValidationObject(),
@@ -500,7 +497,6 @@
         form.value.date = data.date?.date?.split(' ')[0] || '';
         form.value.productionEnd = data.dateEndProd?.date?.split(' ')[0] || '';
         form.value.globalComment = data.comment || '';
-        form.value.shapeProgress = data.shapeProgress || '';
         layersValidations.value = data.layersValidations || [];
         
         if (data.shapeValidation) {
@@ -762,8 +758,7 @@
             // Save main checking list
             const checkingListPayload = {
                 dateEndProd: form.value.productionEnd,
-                comment: form.value.globalComment,
-                shapeProgress: form.value.shapeProgress
+                comment: form.value.globalComment
             };
             console.log('Checking List Payload:', checkingListPayload);
             savePromises.push(
@@ -812,7 +807,8 @@
                 fringeRepairValidation: form.value.fringeRepairValidation,
                 nonBindingValidation: form.value.nonBindingValidation,
                 signatureValidation: form.value.signatureValidation,
-                sansBackingValidation: form.value.sansBackingValidation
+                sansBackingValidation: form.value.sansBackingValidation,
+                comment: form.value.globalComment
             };
             console.log('Quality Check Payload:', qualityCheckPayload);
             savePromises.push(
