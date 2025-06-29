@@ -60,6 +60,14 @@
                             @change="changeServer"
                             class="advanced-table text-nowrap"
                         >
+                            <template #customer="data">
+                                <div class="d-flex justify-content-between">
+                                    <strong>{{ data.value.customer }}</strong>
+                                    <router-link :to="'/contacts/manage/' + data.value.customer_id" v-if="$hasPermission('update contact')">
+                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    </router-link>
+                                </div>
+                            </template>
                             <!-- <template #actions="data">
                                 <router-link :to="'/facture-client/view/' + data.value.id">
                                     <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>

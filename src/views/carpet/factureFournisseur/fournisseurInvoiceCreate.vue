@@ -205,7 +205,7 @@
         airWay: '',
         fretTotal: '',
         currencyId: null,
-        freightIncluded: false, //?
+        freightIncluded: false, //0:1
         amountOther: '',
         weight: '',
         description: '',

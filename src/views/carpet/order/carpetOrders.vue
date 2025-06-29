@@ -27,9 +27,7 @@
                     <div class="col-md-6 col-sm-12">
                         <div class="row mt-2">
                             <div class="col-auto" v-if="filterActive">
-                                <button class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">
-                                    Reset filtre
-                                </button>
+                                <button class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">Reset filtre</button>
                             </div>
                             <div class="col-auto me-2">
                                 <button class="btn btn-custom pe-3 ps-3" @click.prevent="doSearch">Recherche</button>
@@ -44,18 +42,21 @@
                         <div class="row mb-4 relative align-items-center justify-content-between">
                             <div class="col-auto">
                                 <div class="btn-group custom-dropdown me-2 btn-group-lg">
-                                    <button class="btn btn-outline-custom p-2 dropdown-toggle" type="button"
-                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button class="btn btn-outline-custom p-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Cacher / Montrer Colonnes
                                     </button>
                                     <ul class="dropdown-menu p-2">
                                         <li v-for="col in cols" :key="col.field">
                                             <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" :checked="!col.hide"
-                                                       :id="col.field" @change="col.hide = !$event.target.checked"
-                                                       :name="col.field" />
-                                                <label class="custom-control-label text-black" :for="col.field">
-                                                    {{ col.title }} </label>
+                                                <input
+                                                    type="checkbox"
+                                                    class="custom-control-input"
+                                                    :checked="!col.hide"
+                                                    :id="col.field"
+                                                    @change="col.hide = !$event.target.checked"
+                                                    :name="col.field"
+                                                />
+                                                <label class="custom-control-label text-black" :for="col.field"> {{ col.title }} </label>
                                             </div>
                                         </li>
                                     </ul>
@@ -63,49 +64,50 @@
                             </div>
                             <d-btn-fullscreen></d-btn-fullscreen>
                         </div>
-                        <vue3-datatable :rows="rows"
-                                        :columns="cols" :loading="loading"
-                                        :isServerMode="true" :sortColumn="params.orderBy"
-                                        :sortDirection="params.orderWay"
-                                        :totalRows="total_rows" :page="params.current_page"
-                                        :pageSize="params.pagesize"
-                                        :pageSizeOptions="[10, 25, 50, 75, 100]"
-                                        noDataContent="Aucun devis trouvé."
-                                        paginationInfo="Affichage de {0} à {1} sur {2} entrées" :sortable="true"
-                                        @change="changeServer" class="advanced-table text-nowrap">
+                        <vue3-datatable
+                            :rows="rows"
+                            :columns="cols"
+                            :loading="loading"
+                            :isServerMode="true"
+                            :sortColumn="params.orderBy"
+                            :sortDirection="params.orderWay"
+                            :totalRows="total_rows"
+                            :page="params.current_page"
+                            :pageSize="params.pagesize"
+                            :pageSizeOptions="[10, 25, 50, 75, 100]"
+                            noDataContent="Aucun devis trouvé."
+                            paginationInfo="Affichage de {0} à {1} sur {2} entrées"
+                            :sortable="true"
+                            @change="changeServer"
+                            class="advanced-table text-nowrap"
+                        >
                             <template #reference="data">
                                 <div class="d-flex justify-content-between">
                                     <strong>{{ data.value.reference }}</strong>
-                                    <router-link :to="'/tapis/order/manage/' + data.value.cloned_quote"
-                                                 v-if="$hasPermission('update carpet')">
-                                        <vue-feather type="search" stroke-width="1"
-                                                     class="cursor-pointer"></vue-feather>
+                                    <router-link :to="'/projet/commande/manage/' + data.value.cloned_quote" v-if="$hasPermission('update carpet')">
+                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
                                 </div>
                             </template>
                             <template #contremarque="data">
                                 <div class="d-flex justify-content-between">
                                     <strong>{{ data.value.designation }}</strong>
-                                    <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id"
-                                                 v-if="$hasPermission('update contremarque')">
-                                        <vue-feather type="search" stroke-width="1"
-                                                     class="cursor-pointer"></vue-feather>
+                                    <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id" v-if="$hasPermission('update contremarque')">
+                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
                                 </div>
                             </template>
                             <template #customer="data">
                                 <div class="d-flex justify-content-between">
                                     <strong>{{ data.value.customer }}</strong>
-                                    <router-link :to="'/contacts/manage/' + data.value.customer_id"
-                                                 v-if="$hasPermission('update contremarque')">
-                                        <vue-feather type="search" stroke-width="1"
-                                                     class="cursor-pointer"></vue-feather>
+                                    <router-link :to="'/contacts/manage/' + data.value.customer_id" v-if="$hasPermission('update contremarque')">
+                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
                                 </div>
                             </template>
                             <template #creationDate="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ (data.value.created_at) ? $Helper.FormatDate(data.value.created_at) : '' }}
+                                    {{ data.value.created_at ? $Helper.FormatDate(data.value.created_at) : '' }}
                                 </div>
                             </template>
                             <template #validationDate="data">
@@ -151,21 +153,22 @@
         current_page: 1,
         pagesize: 50,
         orderBy: '',
-        orderWay: ''
+        orderWay: '',
     });
 
     const filter = ref(Object.assign({}, filterDevis));
     const filterActive = ref(false);
     const rows = ref(null);
 
-    const cols = ref([
-        { field: 'reference', title: 'Numéro devis' },
-        { field: 'contremarque', title: 'Contremarque' },
-        { field: 'customer', title: 'Client' },
-        { field: 'commercial', title: 'Commercial' },
-        { field: 'creationDate', title: 'Date création' },
-        { field: 'validationDate', title: 'Date validation' }
-    ]) || [];
+    const cols =
+        ref([
+            { field: 'reference', title: 'Numéro devis' },
+            { field: 'contremarque', title: 'Contremarque' },
+            { field: 'customer', title: 'Client' },
+            { field: 'commercial', title: 'Commercial' },
+            { field: 'creationDate', title: 'Date création' },
+            { field: 'validationDate', title: 'Date validation' },
+        ]) || [];
 
     onMounted(() => {
         const f = Helper.getStorage(FILTER_DEVIS_STORAGE_NAME);
@@ -197,8 +200,7 @@
             const data = response.data;
             total_rows.value = data.count;
             rows.value = data.carpetOrders;
-        } catch {
-        }
+        } catch {}
 
         loading.value = false;
     };
@@ -218,7 +220,6 @@
     };
 
     const getFilterParams = () => {
-
         let param = '';
         if (filter.value.customer) {
             param += '&customer=' + filter.value.customer;
@@ -249,7 +250,6 @@
             router.push({ name: 'devisManage' });
         }
     };
-
 </script>
 <style>
     .text-size-16 {
