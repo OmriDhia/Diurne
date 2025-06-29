@@ -60,11 +60,11 @@
                             @change="changeServer"
                             class="advanced-table text-nowrap"
                         >
-                            <template #actions="data">
+                            <!-- <template #actions="data">
                                 <router-link :to="'/facture-client/view/' + data.value.id">
                                     <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
                                 </router-link>
-                            </template>
+                            </template> -->
                         </vue3-datatable>
                     </div>
                 </div>
@@ -108,9 +108,9 @@
     const cols = ref([
         { field: 'invoice_number', title: 'Numéro facture' },
         { field: 'invoice_date', title: 'Date de facture' },
-        { field: 'customer', title: 'Raison sociale' },
+        { field: 'customer', title: 'Raison sociale' }, //customer== ??
         { field: 'contremarque', title: 'Contremarque' },
-        // { field: 'amountTtc', title: 'Montant TTC' },
+        { field: 'amountTtc', title: 'Montant TTC' }, //?
         { field: 'actions', title: '', sort: false },
     ]);
 
@@ -166,8 +166,8 @@
         if (filter.value.customer) p += `&customerId=${filter.value.customer}`;
         if (filter.value.invoiceNumber) p += `&invoiceNumber=${filter.value.invoiceNumber}`;
         if (filter.value.rn) p += `&rn=${filter.value.rn}`;
-        if (filter.value.date_from) p += `&dateFrom=${filter.value.date_from}`;
-        if (filter.value.date_to) p += `&dateTo=${filter.value.date_to}`;
+        if (filter.value.date_from) p += `&fromDate=${filter.value.date_from}`;
+        if (filter.value.date_to) p += `&toDate=${filter.value.date_to}`;
         if (filter.value.contremarque) p += `&contremarque=${filter.value.contremarque}`;
         return p;
     };

@@ -108,8 +108,8 @@
     const cols = ref([
         { field: 'invoice_number', title: 'Numéro facture' },
         { field: 'invoice_date', title: 'Date de facture' },
-        { field: 'supplier', title: 'Atelier' },
-        { field: 'rn', title: 'RN' },
+        { field: 'supplier', title: 'Atelier' }, //atelier == supplier??
+        { field: 'rn', title: 'RN' }, //?
     ]);
 
     onMounted(() => {
@@ -160,7 +160,7 @@
 
     const getFilterParams = () => {
         let p = '';
-        if (filter.value.auteur) p += `&customerId=${filter.value.auteur}`;
+        if (filter.value.auteur) p += `&authorId=${filter.value.auteur}`;
         if (filter.value.invoiceNumber) p += `&invoiceNumber=${filter.value.invoiceNumber}`;
         if (filter.value.rn) p += `&rn=${filter.value.rn}`;
         if (filter.value.startDate) p += `&dateFrom=${filter.value.startDate}`;

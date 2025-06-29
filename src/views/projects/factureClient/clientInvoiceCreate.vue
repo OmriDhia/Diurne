@@ -176,11 +176,11 @@
                             <div class="row mt-3">
                                 <div class="col-md-3">
                                     <d-input label="Qte total" v-model="form.quantityTotal" />
-                                    <d-input label="Frais port HT" v-model="form.fraisPort" />
+                                    <d-input label="Frais port HT" v-model="form.shippingCostsHt" />
                                 </div>
                                 <div class="col-md-3">
                                     <d-input label="Versement" v-model="form.versement" />
-                                    <d-input label="% facturé" v-model="form.percentFacture" />
+                                    <d-input label="% facturé" v-model="form.billed" />
                                 </div>
                                 <div class="col-md-3">
                                     <d-input label="Total HT" v-model="form.totalHt" />
@@ -226,35 +226,37 @@
     const loading = ref(false);
 
     const form = ref({
-        customerRef: '',
-        invoiceNumber: '',
+        customerRef: '', //??
+        invoiceNumber: '', //invoiceNumber == customerId
         invoiceDate: '',
-        project: '',
+        project: '', //??
         invoiceType: '',
-        tva: '',
-        currency: null,
-        rate: '',
-        language: '',
-        unit: '',
-        contremarque: null,
-        prescripteur: '',
-        description: '',
-        reglement: '',
-        tarifExpedition: '',
-        transporteur: '',
-        numero: '',
-        autreRn: '',
+        tva: '', //?
+        currency: null, //?
+        rate: '', //?
+        language: '', //?
+        unit: '', //?
+        contremarque: null, //?
+        prescripteur: '', //?
+        description: '', //?
+        reglement: '', //?
+        tarifExpedition: '', //?
+        transporteur: '', //?
+        numero: '', //?
+        autreRn: '', //?
         quantityTotal: '',
-        fraisPort: '',
-        versement: '',
-        percentFacture: '',
+        shippingCostsHt: '',
+        versement: '', //Versement==payment
+        billed: '',
         totalHt: '',
         amountHt: '',
         amountTva: '',
         amountTtc: '',
+        carpetOrderId: null, // Quel champ???
     });
 
     const lines = ref([
+        // Initial empty line
         {
             percent: null,
             rn: '',
