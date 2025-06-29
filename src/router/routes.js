@@ -429,6 +429,16 @@ export const routes = [
                     class: 'projects',
                     permission: 'read order'
                 }
+            },
+            {
+                path: 'manage/:id',
+                name: 'ordersDetail',
+                component: () => import('../views/carpet/order/manage.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'projects',
+                    permission: 'read order'
+                }
             }
         ],
         meta: {
