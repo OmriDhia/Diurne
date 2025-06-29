@@ -99,18 +99,18 @@
     const params = reactive({
         current_page: 1,
         pagesize: 50,
-        orderBy: 'invoiceNumber',
+        orderBy: 'customer',
         orderWay: 'desc',
     });
 
     const filter = ref({ ...filterClientInvoice });
 
     const cols = ref([
-        { field: 'invoiceNumber', title: 'Numéro facture' },
-        { field: 'invoiceDate', title: 'Date de facture' },
+        { field: 'invoice_number', title: 'Numéro facture' },
+        { field: 'invoice_date', title: 'Date de facture' },
         { field: 'customer', title: 'Raison sociale' },
         { field: 'contremarque', title: 'Contremarque' },
-        { field: 'amountTtc', title: 'Montant TTC' },
+        // { field: 'amountTtc', title: 'Montant TTC' },
         { field: 'actions', title: '', sort: false },
     ]);
 
@@ -126,13 +126,13 @@
     const getInvoices = async () => {
         try {
             loading.value = true;
-            let url = `/api/client-invoices?page=${params.current_page}&limit=${params.pagesize}`;
+            let url = `/api/customerInvoices?page=${params.current_page}&limit=${params.pagesize}`;
             url += `&orderBy=${params.orderBy}&orderWay=${params.orderWay}`;
             url += getFilterParams();
             const res = await axiosInstance.get(url);
-            const data = res.data.response || {};
-            rows.value = data.invoices || [];
-            total_rows.value = data.count || 0;
+            const data = res.data.data || {};
+            rows.value = data || [];
+            total_rows.value = res.data.meta.total || 0;
         } catch (e) {
             console.error(e);
         }
@@ -156,6 +156,7 @@
     const doReset = () => {
         filterActive.value = false;
         filter.value = { ...filterClientInvoice };
+        filter.value.customer = null;
         Helper.setStorage(FILTER_CLIENT_INVOICE_STORAGE_NAME, filter.value);
         getInvoices();
     };
