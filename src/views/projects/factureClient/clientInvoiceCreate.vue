@@ -1,6 +1,6 @@
 <template>
     <div class="create-facture-client">
-        <d-base-page>
+        <d-base-page :loading="loading">
             <template #title>
                 <d-page-title title="Nouvelle Facture" />
             </template>
@@ -195,6 +195,12 @@
                                     <button class="btn btn-custom">RATTACHER UN RÈGLEMENT</button>
                                 </div>
                             </div>
+
+                            <div class="row mt-3 justify-content-end">
+                                <div class="col-auto">
+                                    <button class="btn btn-custom" @click="save">Enregistrer</button>
+                                </div>
+                            </div>
                         </template>
                     </d-panel>
                 </div>
@@ -204,7 +210,8 @@
 </template>
 
 <script setup>
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
     import dBasePage from '../../../components/base/d-base-page.vue';
     import dPanel from '../../../components/common/d-panel.vue';
     import dPanelTitle from '../../../components/common/d-panel-title.vue';
@@ -217,7 +224,12 @@
     import VueFeather from 'vue-feather';
     import { useMeta } from '/src/composables/use-meta';
     import Multiselect from 'vue-multiselect';
+    import customerInvoiceService from '../../../Services/customer-invoice-service';
     useMeta({ title: 'Nouvelle Facture' });
+
+    const route = useRoute();
+    const router = useRouter();
+    const loading = ref(false);
 
     const form = ref({
         customerRef: '',
@@ -263,6 +275,45 @@
             priceTtc: null,
         },
     ]);
+
+    const loadInvoice = async (id) => {
+        try {
+            loading.value = true;
+            const data = await customerInvoiceService.getById(id);
+            form.value = { ...form.value, ...data };
+            if (data?.lines) {
+                lines.value = data.lines;
+            }
+        } catch (e) {
+            window.showMessage(e.message, 'error');
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    const save = async () => {
+        try {
+            loading.value = true;
+            if (route.params.id) {
+                await customerInvoiceService.update(route.params.id, { ...form.value, lines: lines.value });
+                window.showMessage('Mise à jour avec succés.');
+            } else {
+                await customerInvoiceService.create({ ...form.value, lines: lines.value });
+                window.showMessage('Ajout avec succés.');
+                router.push({ name: 'client-invoice-list' });
+            }
+        } catch (e) {
+            window.showMessage(e.message, 'error');
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    onMounted(() => {
+        if (route.params.id) {
+            loadInvoice(route.params.id);
+        }
+    });
 
     const saveLine = (index) => {
         console.log('save line', lines.value[index]);
