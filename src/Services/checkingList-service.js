@@ -203,6 +203,14 @@ export default {
             transformValidationField('respect_velour', payload.respectVelvetValidation);
             transformValidationField('respect_remark', payload.respectNoteValidation);
 
+            // Add other fields
+            if (payload.orderStatus !== undefined) {
+                transformedPayload.order_status = payload.orderStatus;
+            }
+            if (payload.penaltyDate) {
+                transformedPayload.penalty_date = payload.penaltyDate;
+            }
+
             const res = await axiosInstance.put(`/api/qualityRespects/${id}`, transformedPayload);
             return res.data?.data;
         } catch (error) {
