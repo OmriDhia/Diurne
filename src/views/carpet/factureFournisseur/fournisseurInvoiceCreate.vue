@@ -182,8 +182,10 @@
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { Helper } from '../../../composables/global-methods';
+import quoteService from '../../../Services/quote-service';
     import dBasePage from '../../../components/base/d-base-page.vue';
     import dPanel from '../../../components/common/d-panel.vue';
     import dPanelTitle from '../../../components/common/d-panel-title.vue';
@@ -196,6 +198,8 @@
     useMeta({ title: 'Nouvelle Facture Fournisseur' });
     const route = useRoute();
     const router = useRouter();
+    const quote_id = route.query.quote_id || null;
+    const quote = ref({});
     const loading = ref(false);
     const form = ref({
         invoiceNumber: '', //?
@@ -258,6 +262,21 @@
         }
     };
 
+    const getQuote = async (id) => {
+        try {
+            if (id) {
+                loading.value = true;
+                quote.value = await quoteService.getQuoteById(id);
+            }
+        } catch (e) {
+            console.log(e);
+            const msg = 'Echec de r\u00e9cup\u00e9ration des donn\u00e9es devis';
+            window.showMessage(msg, 'error');
+        } finally {
+            loading.value = false;
+        }
+    };
+
     const save = async () => {
         try {
             loading.value = true;
@@ -283,6 +302,9 @@
     onMounted(() => {
         if (route.params.id) {
             loadInvoice(route.params.id);
+        }
+        if (quote_id) {
+            getQuote(quote_id);
         }
     });
 </script>
