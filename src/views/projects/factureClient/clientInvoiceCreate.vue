@@ -204,8 +204,8 @@
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
     import dBasePage from '../../../components/base/d-base-page.vue';
     import dPanel from '../../../components/common/d-panel.vue';
     import dPanelTitle from '../../../components/common/d-panel-title.vue';
@@ -217,13 +217,17 @@
 
     import VueFeather from 'vue-feather';
     import { useMeta } from '/src/composables/use-meta';
-    import Multiselect from 'vue-multiselect';
-    import customerInvoiceService from '../../../Services/customer-invoice-service';
+import Multiselect from 'vue-multiselect';
+import customerInvoiceService from '../../../Services/customer-invoice-service';
+import quoteService from '../../../Services/quote-service';
+import { Helper } from '../../../composables/global-methods';
     useMeta({ title: 'Nouvelle Facture' });
 
     const route = useRoute();
     const router = useRouter();
     const loading = ref(false);
+    const quote_id = route.query.quote_id || null;
+    const quote = ref({});
 
     const form = ref({
         customerRef: '', //??
@@ -272,6 +276,35 @@
         },
     ]);
 
+    const getQuote = async (id) => {
+        try {
+            if (id) {
+                loading.value = true;
+                const data = await quoteService.getQuoteById(id);
+                quote.value = data;
+                if (data?.quoteDetails) {
+                    lines.value = data.quoteDetails.map((d) => ({
+                        percent: d.impactOnTheQuotePrice,
+                        rn: d.rn,
+                        collection: d.carpetSpecification?.collection?.id || null,
+                        model: d.carpetSpecification?.model?.id || null,
+                        refDevis: d.reference,
+                        refCommande: '',
+                        versement: null,
+                        priceM2: Helper.getPrice(d.prices, 'tarif.m².price'),
+                        priceSqft: Helper.getPrice(d.prices, 'tarif.sqft.price'),
+                        priceHt: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.m².price'),
+                        priceTtc: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
+                    }));
+                }
+            }
+        } catch (e) {
+            window.showMessage(e.message, 'error');
+        } finally {
+            loading.value = false;
+        }
+    };
+
     const loadInvoice = async (id) => {
         try {
             loading.value = true;
@@ -308,6 +341,9 @@
     onMounted(() => {
         if (route.params.id) {
             loadInvoice(route.params.id);
+        }
+        if (quote_id) {
+            getQuote(quote_id);
         }
     });
 
