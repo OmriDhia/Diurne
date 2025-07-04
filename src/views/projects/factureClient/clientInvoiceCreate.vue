@@ -117,9 +117,12 @@
                                         <d-panel-title title="Autre tapis" class-name="ps-2 mt-2" />
                                         <div class="row p-3">
                                             <div class="col-12 bloc-add">
-                                                <d-input label="Numéro RN" v-model="form.autreRn" />
-
-                                                <button class="btn btn-add"><vue-feather type="plus" stroke-width="1" class="cursor-pointer"></vue-feather></button>
+                                                <div class="row w-100" v-for="(rn, index) in form.otherRns" :key="index">
+                                                    <d-input label="Numéro RN" v-model="form.otherRns[index]" />
+                                                </div>
+                                                <button class="btn btn-add" @click="addAutreRn">
+                                                    <vue-feather type="plus" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                                </button>
                                             </div>
                                         </div>
                                     </template>
@@ -259,7 +262,7 @@
         tarifExpedition: '', //?
         transporteur: '', //?
         numero: '', //?
-        autreRn: '', //?
+        otherRns: [''],
         quantityTotal: '',
         shippingCostsHt: '',
         versement: '', //Versement==payment
@@ -370,6 +373,10 @@
 
     const removeLine = (index) => {
         lines.value.splice(index, 1);
+    };
+
+    const addAutreRn = () => {
+        form.value.otherRns.push('');
     };
 </script>
 
