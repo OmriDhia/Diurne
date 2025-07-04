@@ -116,13 +116,20 @@
                                         </div>
                                         <d-panel-title title="Autre tapis" class-name="ps-2 mt-2" />
                                         <div class="row p-3">
-                                            <div class="col-12 bloc-add">
-                                                <div class="row w-100" v-for="(rn, index) in form.otherRns" :key="index">
-                                                    <d-input label="Numéro RN" v-model="form.otherRns[index]" />
+                                            <div class="bloc-add">
+                                                <div class="col-12">
+                                                    <div class="row w-100 d-block" v-for="(rn, index) in form.otherRns" :key="index">
+                                                        <div class="d-flex align-items-center">
+                                                            <d-input label="Numéro RN" v-model="form.otherRns[index]" />
+                                                            <button v-if="form.otherRns.length > 1" class="btn btn-add me-2 ms-2" @click="form.otherRns.splice(index, 1)" type="button">
+                                                                <vue-feather type="trash-2" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                                            </button>
+                                                            <button class="btn btn-add m-2" @click="addAutreRn">
+                                                                <vue-feather type="plus" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <button class="btn btn-add" @click="addAutreRn">
-                                                    <vue-feather type="plus" stroke-width="1" class="cursor-pointer"></vue-feather>
-                                                </button>
                                             </div>
                                         </div>
                                     </template>
@@ -160,8 +167,8 @@
                                         <tr v-for="(line, index) in lines" :key="index">
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.percent" /></td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.rn" /></td>
-                                            <td><multiselect v-model="line.collection" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect></td>
-                                            <td><multiselect v-model="line.model" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect></td>
+                                            <td><d-collections-dropdown v-if="line.collection" :disabled="false" :showOnlyDropdown="true" v-model="line.collection"></d-collections-dropdown></td>
+                                            <td><d-model-dropdown v-if="line.model" :disabled="false" :showOnlyDropdown="true" v-model="line.model"></d-model-dropdown></td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.refDevis" /></td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.refCommande" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.versement" /></td>
@@ -220,11 +227,11 @@
     import dPanelTitle from '../../../components/common/d-panel-title.vue';
     import dPageTitle from '../../../components/common/d-page-title.vue';
     import dInput from '../../../components/base/d-input.vue';
-    import dPrescripteurDropdown from '../../../components/common/d-prescripteur-dropdown.vue';
+
     import dCurrency from '../../../components/common/d-currency.vue';
     import dContremarqueDropdown from '../../../components/common/d-contremarque-dropdown.vue';
     import dConversions from '../../../components/common/d-conversions.vue';
-    import dCustomerType from '../../../components/common/d-customer-dropdown.vue';
+
     import dUnitMeasurements from '../../../components/common/d-unit-measurements.vue';
     import dLangages from '../../../components/common/d-langages.vue';
     import VueFeather from 'vue-feather';
@@ -233,7 +240,8 @@
     import customerInvoiceService from '../../../Services/customer-invoice-service';
     import quoteService from '../../../Services/quote-service';
     import dTransportCondition from '../../../components/common/d-transportCondition.vue';
-
+    import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
+    import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
     import { Helper } from '../../../composables/global-methods';
     import moment from 'moment';
     useMeta({ title: 'Nouvelle Facture' });
