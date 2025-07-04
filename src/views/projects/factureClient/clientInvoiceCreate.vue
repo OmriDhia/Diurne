@@ -34,6 +34,7 @@
 
                                                 <div class="row">
                                                     <d-contremarque-dropdown v-model="form.contremarque" :customerId="form.customer" class="contremarque" />
+                                                    <!-- <d-prescripteurDropdown v-model="form.prescripteur"></d-prescripteurDropdown> -->
                                                     <d-input label="Prescripteur" v-model="form.prescripteur" />
                                                     <d-input label="Description" v-model="form.description" />
                                                 </div>
@@ -43,6 +44,7 @@
                                                 <div class="row align-items-center">
                                                     <label for="" class="col-4">Type de facture:</label>
                                                     <div class="col-8">
+                                                        <!-- <d-customer-type v-model="form.invoiceType"> </d-customer-type> -->
                                                         <multiselect v-model="form.invoiceType" :options="[]" :multiple="false" :placeholder="'Type de facture'" :searchable="true"></multiselect>
                                                     </div>
                                                 </div>
@@ -56,20 +58,23 @@
                                                 <d-currency v-model="form.currency" />
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Tx de conversion:</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.rate" :options="[]" :multiple="false" :placeholder="'Tx de conversion'" :searchable="true"></multiselect>
+                                                    <div class="col-8 custom-droupdown-exist">
+                                                        <!-- <multiselect v-model="form.rate" :options="[]" :multiple="false" :placeholder="'Tx de conversion'" :searchable="true"></multiselect> -->
+                                                        <d-conversions v-model="form.rate"></d-conversions>
                                                     </div>
                                                 </div>
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Langue:</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.language" :options="[]" :multiple="false" :placeholder="'Langue'" :searchable="true"></multiselect>
+                                                    <div class="col-8 custom-droupdown-exist">
+                                                        <d-langages v-model="form.languageId"></d-langages>
+                                                        <!-- <multiselect v-model="form.language" :options="[]" :multiple="false" :placeholder="'Langue'" :searchable="true"></multiselect> -->
                                                     </div>
                                                 </div>
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Unité de mesure:</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.language" :options="[]" :multiple="false" :placeholder="'Unité de mesure'" :searchable="true"></multiselect>
+                                                    <div class="col-8 custom-droupdown-exist">
+                                                        <d-unit-measurements v-model="form.unitOfMeasurement"></d-unit-measurements>
+                                                        <!-- <multiselect v-model="form.weight" :options="[]" :multiple="false" :placeholder="'Unité de mesure'" :searchable="true"></multiselect> -->
                                                     </div>
                                                 </div>
                                                 <div class="row justify-content-end mt-2">
@@ -100,8 +105,9 @@
                                                 </div>
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Transporteur</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.transporteur" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect>
+                                                    <div class="col-8 custom-droupdown-exist">
+                                                        <d-transport-condition v-model="form.transporteur"></d-transport-condition>
+                                                        <!-- <multiselect v-model="form.transporteur" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect> -->
                                                     </div>
                                                 </div>
 
@@ -110,10 +116,20 @@
                                         </div>
                                         <d-panel-title title="Autre tapis" class-name="ps-2 mt-2" />
                                         <div class="row p-3">
-                                            <div class="col-12 bloc-add">
-                                                <d-input label="Numéro RN" v-model="form.autreRn" />
-
-                                                <button class="btn btn-add"><vue-feather type="plus" stroke-width="1" class="cursor-pointer"></vue-feather></button>
+                                            <div class="bloc-add">
+                                                <div class="col-12">
+                                                    <div class="row w-100 d-block" v-for="(rn, index) in form.otherRns" :key="index">
+                                                        <div class="d-flex align-items-center">
+                                                            <d-input label="Numéro RN" v-model="form.otherRns[index]" />
+                                                            <button v-if="form.otherRns.length > 1" class="btn btn-add me-2 ms-2" @click="form.otherRns.splice(index, 1)" type="button">
+                                                                <vue-feather type="trash-2" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                                            </button>
+                                                            <button class="btn btn-add m-2" @click="addAutreRn">
+                                                                <vue-feather type="plus" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </template>
@@ -122,7 +138,7 @@
                         </div> </template
                 ></d-panel>
 
-                <div class="mt-3">
+                <div class="mt-3" v-if="quote?.quoteDetails && quote?.quoteDetails.length > 0">
                     <d-panel>
                         <template #panel-body>
                             <!-- <d-panel-title title="Détails" class-name="ps-2" /> -->
@@ -151,8 +167,8 @@
                                         <tr v-for="(line, index) in lines" :key="index">
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.percent" /></td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.rn" /></td>
-                                            <td><multiselect v-model="line.collection" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect></td>
-                                            <td><multiselect v-model="line.model" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect></td>
+                                            <td><d-collections-dropdown v-if="line.collection" :disabled="false" :showOnlyDropdown="true" v-model="line.collection"></d-collections-dropdown></td>
+                                            <td><d-model-dropdown v-if="line.model" :disabled="false" :showOnlyDropdown="true" v-model="line.model"></d-model-dropdown></td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.refDevis" /></td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.refCommande" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.versement" /></td>
@@ -214,16 +230,27 @@
 
     import dCurrency from '../../../components/common/d-currency.vue';
     import dContremarqueDropdown from '../../../components/common/d-contremarque-dropdown.vue';
+    import dConversions from '../../../components/common/d-conversions.vue';
 
+    import dUnitMeasurements from '../../../components/common/d-unit-measurements.vue';
+    import dLangages from '../../../components/common/d-langages.vue';
     import VueFeather from 'vue-feather';
     import { useMeta } from '/src/composables/use-meta';
     import Multiselect from 'vue-multiselect';
     import customerInvoiceService from '../../../Services/customer-invoice-service';
+    import quoteService from '../../../Services/quote-service';
+    import dTransportCondition from '../../../components/common/d-transportCondition.vue';
+    import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
+    import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
+    import { Helper } from '../../../composables/global-methods';
+    import moment from 'moment';
     useMeta({ title: 'Nouvelle Facture' });
 
     const route = useRoute();
     const router = useRouter();
     const loading = ref(false);
+    const quote_id = route.query.quote_id || null;
+    const quote = ref({});
 
     const form = ref({
         customerRef: '', //??
@@ -234,7 +261,7 @@
         tva: '', //?
         currency: null, //?
         rate: '', //?
-        language: '', //?
+        languageId: 0, //?
         unit: '', //?
         contremarque: null, //?
         prescripteur: '', //?
@@ -243,7 +270,7 @@
         tarifExpedition: '', //?
         transporteur: '', //?
         numero: '', //?
-        autreRn: '', //?
+        otherRns: [''],
         quantityTotal: '',
         shippingCostsHt: '',
         versement: '', //Versement==payment
@@ -272,13 +299,50 @@
         },
     ]);
 
-    const loadInvoice = async (id) => {
+    const getQuote = async (id) => {
         try {
-            loading.value = true;
-            const data = await customerInvoiceService.getById(id);
-            form.value = { ...form.value, ...data };
-            if (data?.lines) {
-                lines.value = data.lines;
+            if (id) {
+                loading.value = true;
+                const data = await quoteService.getQuoteById(id);
+                quote.value = data;
+                if (quote.value) {
+                    form.value = {
+                        ...form.value,
+                        languageId: quote.value?.language.id,
+                        // prescripteur: quote.value.prescripteur.id || '',
+                        customerRef: quote.value.reference || '',
+                        invoiceNumber: quote.value.invoiceNumber || '',
+                        invoiceDate: moment(quote.value.createdAt).format('YYYY-MM-DD') || '',
+                        invoiceType: quote.value.invoiceType || '',
+                        tva: quote.value.otherTva || '',
+                        currency: quote.value.currency.id || null,
+                        rate: quote.value.conversion.id || '',
+                        transporteur: quote.value.transportCondition.id || '',
+                        contremarque: quote.value.contremarqueId || null,
+                        shippingCostsHt: parseFloat(quote.value.shippingPrice) || '',
+                        totalHt: parseFloat(quote.value.totalTaxExcluded) || '',
+                        amountHt: parseFloat(quote.value.otherTva) || '',
+                        amountTtc: parseFloat(quote.value.totalTaxIncluded) || '',
+                        versement: parseFloat(quote.value.totalTaxIncluded) || '',
+                        billed: parseFloat(quote.value.totalDiscountPercentage) || '',
+                        amountTva: parseFloat(quote.value.tax) || '',
+                    };
+                }
+                if (data?.quoteDetails) {
+                    lines.value = data.quoteDetails.map((d) => ({
+                        percent: d.impactOnTheQuotePrice,
+                        rn: d.rn,
+                        collection: d.carpetSpecification?.collection?.id || null,
+                        model: d.carpetSpecification?.model?.id || null,
+                        refDevis: d.reference,
+                        refCommande: '',
+                        versement: null,
+                        priceM2: Helper.getPrice(d.prices, 'tarif.m².price'),
+                        priceSqft: Helper.getPrice(d.prices, 'tarif.sqft.price'),
+                        priceHt: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.m².price'),
+                        priceTtc: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
+                    }));
+                }
             }
         } catch (e) {
             window.showMessage(e.message, 'error');
@@ -305,9 +369,9 @@
         }
     };
 
-    onMounted(() => {
+    onMounted(async () => {
         if (route.params.id) {
-            loadInvoice(route.params.id);
+            await getQuote(route.params.id);
         }
     });
 
@@ -318,4 +382,10 @@
     const removeLine = (index) => {
         lines.value.splice(index, 1);
     };
+
+    const addAutreRn = () => {
+        form.value.otherRns.push('');
+    };
 </script>
+
+<style scoped></style>

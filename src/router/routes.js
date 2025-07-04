@@ -470,6 +470,16 @@ export const routes = [
                     permission: 'create invoice',
                 },
             },
+            {
+                path: 'edit/:id',
+                name: 'client-invoice-edit',
+                component: () => import('../views/projects/factureClient/clientInvoiceCreate.vue'),
+                meta: {
+                    requiresAuth: true,
+                   class: 'projects',
+                    permission: 'create invoice',
+                },
+            },
         ],
         meta: {
             requiresAuth: true,

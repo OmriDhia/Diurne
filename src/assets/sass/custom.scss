@@ -476,7 +476,13 @@ label,
         margin: 0;
     }
 }
-
+.custom-droupdown-exist .col-4,
+.custom-droupdown-exist .col-auto.text-black {
+    display: none;
+}
+.custom-droupdown-exist .col-8 {
+    width: 100% !important;
+}
 .create-fournisseur-invoice {
     .d-block__item {
         .col-4,
