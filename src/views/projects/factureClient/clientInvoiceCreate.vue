@@ -10,7 +10,8 @@
                     <template #panel-body>
                         <div class="row p-2">
                             <div class="col-3">
-                                <d-input label="Référence client" v-model="form.customerRef" />
+                                <!-- <d-input label="Référence client" v-model="form.customerRef" /> -->
+                                <d-customer-dropdown :disabled="disbledContremarque" :showCustomer="true" :required="true" v-model="selectedCustomer"></d-customer-dropdown>
                             </div>
                         </div>
 
@@ -118,7 +119,14 @@
                                         <div class="row p-3">
                                             <div class="bloc-add">
                                                 <div class="col-12">
-                                                    <div class="row w-100 d-block" v-for="(rn, index) in form.otherRns" :key="index">
+                                                    <!-- <d-RN-dropdown
+                                                        :required="true"
+                                                        :hideBtn="true"
+                                                        v-model="carpetOrderDetailsId"
+                                                        :carpetOrderDetailsId="carpetOrderDetailsId"
+                                                        :error="validationSubmitErrors.collectionId"
+                                                    ></d-RN-dropdown> -->
+                                                    <!-- <div class="row w-100 d-block" v-for="(rn, index) in form.otherRns" :key="index">
                                                         <div class="d-flex align-items-center">
                                                             <d-input label="Numéro RN" v-model="form.otherRns[index]" />
                                                             <button v-if="form.otherRns.length > 1" class="btn btn-add me-2 ms-2" @click="form.otherRns.splice(index, 1)" type="button">
@@ -128,15 +136,16 @@
                                                                 <vue-feather type="plus" stroke-width="1" class="cursor-pointer"></vue-feather>
                                                             </button>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
                                                 </div>
                                             </div>
                                         </div>
                                     </template>
                                 </d-panel>
                             </div>
-                        </div> </template
-                ></d-panel>
+                        </div>
+                    </template></d-panel
+                >
 
                 <div class="mt-3" v-if="quote?.quoteDetails && quote?.quoteDetails.length > 0">
                     <d-panel>
@@ -243,6 +252,8 @@
     import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
     import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
     import { Helper } from '../../../composables/global-methods';
+    import dCustomerDropdown from '../../../components/common/d-customer-dropdown.vue';
+    import DRNDropdown from '@/components/projet/contremarques/dropdown/d-RN-dropdown.vue';
     import moment from 'moment';
     useMeta({ title: 'Nouvelle Facture' });
 
@@ -251,7 +262,7 @@
     const loading = ref(false);
     const quote_id = route.query.quote_id || null;
     const quote = ref({});
-
+    let carpetOrderDetailsId = ref(null);
     const form = ref({
         customerRef: '', //??
         invoiceNumber: '', //invoiceNumber == customerId
@@ -306,6 +317,7 @@
                 const data = await quoteService.getQuoteById(id);
                 quote.value = data;
                 if (quote.value) {
+                    carpetOrderDetailsId = quote.value.id;
                     form.value = {
                         ...form.value,
                         languageId: quote.value?.language.id,
