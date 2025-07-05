@@ -33,10 +33,18 @@
                                                 <hr class="mt-3" />
 
                                                 <div class="row">
-                                                    <d-contremarque-dropdown v-model="form.contremarque" :customerId="form.customer" class="contremarque" />
-                                                    <!-- <d-prescripteurDropdown v-model="form.prescripteur"></d-prescripteurDropdown> -->
-                                                    <d-input label="Prescripteur" v-model="form.prescripteur" />
-                                                    <d-input label="Description" v-model="form.description" />
+                                                    <div class="col-md-4">
+                                                        <d-contremarque-dropdown v-model="form.contremarque" :customerId="selectedCustomer" class="contremarque" />
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <d-customer-dropdown :disabled="true" :showCustomer="true" v-model="selectedCustomer" />
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <d-customer-dropdown :disabled="true" :isPrescripteur="true" v-model="prescriber" />
+                                                    </div>
+                                                    <div class="col-md-12 mt-2">
+                                                        <d-input label="Description" v-model="form.description" />
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -230,6 +238,7 @@
 
     import dCurrency from '../../../components/common/d-currency.vue';
     import dContremarqueDropdown from '../../../components/common/d-contremarque-dropdown.vue';
+    import dCustomerDropdown from '../../../components/common/d-customer-dropdown.vue';
     import dConversions from '../../../components/common/d-conversions.vue';
 
     import dUnitMeasurements from '../../../components/common/d-unit-measurements.vue';
@@ -244,6 +253,7 @@
     import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
     import { Helper } from '../../../composables/global-methods';
     import moment from 'moment';
+    import contremarqueService from '../../../Services/contremarque-service';
     useMeta({ title: 'Nouvelle Facture' });
 
     const route = useRoute();
@@ -251,6 +261,10 @@
     const loading = ref(false);
     const quote_id = route.query.quote_id || null;
     const quote = ref({});
+    const contremarque = ref({});
+    const selectedCustomer = ref(null);
+    const prescriber = ref(null);
+    const currentCustomer = ref({});
 
     const form = ref({
         customerRef: '', //??
@@ -299,6 +313,17 @@
         },
     ]);
 
+    watch(selectedCustomer, (customerId) => {
+        getCustomer(customerId);
+    });
+
+    watch(
+        () => form.value.contremarque,
+        (contremarqueId) => {
+            getContremarque(contremarqueId);
+        }
+    );
+
     const getQuote = async (id) => {
         try {
             if (id) {
@@ -327,6 +352,9 @@
                         billed: parseFloat(quote.value.totalDiscountPercentage) || '',
                         amountTva: parseFloat(quote.value.tax) || '',
                     };
+                    if (form.value.contremarque) {
+                        getContremarque(form.value.contremarque);
+                    }
                 }
                 if (data?.quoteDetails) {
                     lines.value = data.quoteDetails.map((d) => ({
@@ -348,6 +376,30 @@
             window.showMessage(e.message, 'error');
         } finally {
             loading.value = false;
+        }
+    };
+
+    const getCustomer = async (customer_id) => {
+        try {
+            if (customer_id) {
+                currentCustomer.value = await contremarqueService.getCustomerById(customer_id);
+            }
+        } catch (e) {
+            const msg = "Un client d'id " + customer_id + " n'existe pas";
+            window.showMessage(msg, 'error');
+        }
+    };
+
+    const getContremarque = async (contremarque_id) => {
+        try {
+            if (contremarque_id) {
+                contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
+                selectedCustomer.value = contremarque.value.customer.customer_id;
+                prescriber.value = contremarque.value.prescriber.customer_id;
+            }
+        } catch (e) {
+            const msg = "Une contremarque d'id " + contremarque_id + " n'existe pas";
+            window.showMessage(msg, 'error');
         }
     };
 
