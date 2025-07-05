@@ -79,6 +79,13 @@
                                     <strong>{{ (data.value.profile && data.value.profile.name) ? data.value.profile.name : '--'
                                         }}</strong>
                                 </template>
+                                <template #delete="data">
+                                    <d-delete
+                                        :api="`/api/user/${data.value.id}`"
+                                        message="Voulez-vous vraiment supprimer cet utilisateur ?"
+                                        @isDone="getUsers"
+                                    ></d-delete>
+                                </template>
                             </vue3-datatable>
                         </div>
                     </div>
@@ -95,6 +102,7 @@
     import dProfile from '../../components/common/d-profile.vue';
     import VueFeather from 'vue-feather';
     import dPageTitle from '../../components/common/d-page-title.vue';
+    import dDelete from '../../components/common/d-delete.vue';
     import { useRouter } from 'vue-router';
 
     const router = useRouter();
@@ -125,8 +133,8 @@
         { field: 'login', title: 'Login' },
         { field: 'manager', title: 'Manager', sort: false },
         { field: 'salary', title: 'salarié actif', sort: false },
-        { field: 'profile', title: 'Droit' }
-        // add new column
+        { field: 'profile', title: 'Droit' },
+        { field: 'delete', title: '', sort: false }
     ]) || [];
 
     onMounted(() => {
