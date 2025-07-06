@@ -86,6 +86,7 @@ const getUsers = async (firstname = "", lastname = "") => {
         url += "&filter[profiles]=Designer,Designer manager";
 
         const res = await axiosInstance.get(url);
+        console.log("designer", res.data.response.users);
         users.value = res.data.response.users.map(e => ({
             id: e.id,
             name: `${e.firstname} ${e.lastname}`
