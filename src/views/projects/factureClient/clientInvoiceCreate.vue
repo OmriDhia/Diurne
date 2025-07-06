@@ -102,7 +102,15 @@
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Mode de règlement</label>
                                                     <div class="col-8">
-                                                        <multiselect v-model="form.reglement" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect>
+                                                        <multiselect
+                                                            v-model="form.reglement"
+                                                            :options="regulations"
+                                                            track-by="id"
+                                                            label="label"
+                                                            :multiple="false"
+                                                            placeholder=""
+                                                            :searchable="true"
+                                                        ></multiselect>
                                                     </div>
                                                 </div>
                                                 <div class="row align-items-center mt-2">
@@ -230,7 +238,7 @@
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import dBasePage from '../../../components/base/d-base-page.vue';
     import dPanel from '../../../components/common/d-panel.vue';
@@ -256,7 +264,8 @@
     import DRNDropdown from '../../../components/projet/contremarques/dropdown/d-RN-dropdown.vue';
     import { Helper } from '../../../composables/global-methods';
     import moment from 'moment';
-    import contremarqueService from '../../../Services/contremarque-service';
+import contremarqueService from '../../../Services/contremarque-service';
+import axiosInstance from '../../../config/http';
     useMeta({ title: 'Nouvelle Facture' });
 
     const route = useRoute();
@@ -267,7 +276,8 @@
     const contremarque = ref({});
     const selectedCustomer = ref(null);
     const prescriber = ref(null);
-    const currentCustomer = ref({});
+const currentCustomer = ref({});
+const regulations = ref([]);
 
     const form = ref({
         customerRef: '', //??
@@ -327,6 +337,15 @@
             getContremarque(contremarqueId);
         },
     );
+
+    const fetchRegulations = async () => {
+        try {
+            const res = await axiosInstance.get('/api/regulations');
+            regulations.value = res.data.response || [];
+        } catch (error) {
+            console.error('Failed to fetch regulations:', error);
+        }
+    };
 
     const getQuote = async (id) => {
         try {
@@ -430,6 +449,7 @@
         if (route.params.id) {
             await getQuote(route.params.id);
         }
+        fetchRegulations();
     });
 
     const saveLine = (index) => {
