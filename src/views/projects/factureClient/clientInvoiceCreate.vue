@@ -114,7 +114,7 @@
                                                 </div>
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Tarif d’expédition</label>
-                                                    <div class="col-8">
+                                                    <div class="col-8 custom-droupdown-exist">
                                                         <d-tarif-expedition v-model="form.tarifExpedition" />
                                                     </div>
                                                 </div>
@@ -396,7 +396,8 @@
                         collection: d.carpetSpecification?.collection?.id || null,
                         model: d.carpetSpecification?.model?.id || null,
                         refDevis: d.reference,
-                        refCommande: '',
+                        // refCommande: '',
+                        refCommande: quote.value.reference,
                         versement: null,
                         priceM2: Helper.getPrice(d.prices, 'tarif.m².price'),
                         priceSqft: Helper.getPrice(d.prices, 'tarif.sqft.price'),
