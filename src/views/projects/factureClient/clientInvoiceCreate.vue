@@ -39,7 +39,7 @@
                                                     </div>
 
                                                     <div class="col-md-12 mt-2">
-                                                        <d-customer-dropdown :disabled="true" :isPrescripteur="true" v-model="prescriber" />
+                                                        <d-customer-dropdown :isPrescripteur="true" v-model="form.prescripteur" />
                                                     </div>
                                                     <div class="col-md-12 mt-2">
                                                         <d-input label="Description" v-model="form.description" />
@@ -47,12 +47,10 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <!-- <d-input label="Type de facture" v-model="form.invoiceType" /> -->
                                                 <div class="row align-items-center">
                                                     <label for="" class="col-4">Type de facture:</label>
-                                                    <div class="col-8">
-                                                        <!-- <d-customer-type v-model="form.invoiceType"> </d-customer-type> -->
-                                                        <multiselect v-model="form.invoiceType" :options="[]" :multiple="false" :placeholder="'Type de facture'" :searchable="true"></multiselect>
+                                                    <div class="col-8 custom-droupdown-exist">
+                                                        <d-invoice-types v-model="form.invoiceType" :disabled="false" :showOnlyDropdown="true"></d-invoice-types>
                                                     </div>
                                                 </div>
                                                 <div class="row align-items-center mt-2 mb-1">
@@ -100,16 +98,8 @@
                                             <div class="col-12">
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Mode de règlement</label>
-                                                    <div class="col-8">
-                                                        <multiselect
-                                                            v-model="form.reglement"
-                                                            :options="regulations"
-                                                            track-by="id"
-                                                            label="label"
-                                                            :multiple="false"
-                                                            placeholder=""
-                                                            :searchable="true"
-                                                        ></multiselect>
+                                                    <div class="col-8 custom-droupdown-exist">
+                                                        <d-regulations-dropdown v-model="form.reglement" />
                                                     </div>
                                                 </div>
                                                 <div class="row align-items-center mt-2">
@@ -133,7 +123,7 @@
                                         <div class="row p-3">
                                             <div class="bloc-add">
                                                 <div class="col-12">
-                                                    <d-RN-dropdown v-model="form.rn" :carpetOrderDetailsId="carpetOrderDetailsId" :showOnlyDropdown="true" />
+                                                    <d-RN-dropdown v-model="form.rn" :carpetOrderDetailsId="form.rn" :showOnlyDropdown="true" />
                                                     <!-- <d-RN-dropdown
                                                         :required="true"
                                                         :hideBtn="true"
@@ -162,11 +152,11 @@
                     </template></d-panel
                 >
 
-                <div class="mt-3" v-if="quote?.quoteDetails && quote?.quoteDetails.length > 0">
+                <div class="mt-3">
                     <d-panel>
                         <template #panel-body>
                             <!-- <d-panel-title title="Détails" class-name="ps-2" /> -->
-                            <div class="table-responsive">
+                            <div class="table-responsive" v-if="quote?.quoteDetails && quote?.quoteDetails.length > 0">
                                 <table class="table table-striped table-hover table-sm">
                                     <thead>
                                         <tr class="border-top text-black bg-black">
@@ -263,18 +253,20 @@
     import VueFeather from 'vue-feather';
     import { useMeta } from '/src/composables/use-meta';
     import Multiselect from 'vue-multiselect';
-import customerInvoiceService from '../../../Services/customer-invoice-service';
-import customerInvoiceDetailsService from '../../../Services/customer-invoice-details-service';
+    import customerInvoiceService from '../../../Services/customer-invoice-service';
+    import customerInvoiceDetailsService from '../../../Services/customer-invoice-details-service';
     import quoteService from '../../../Services/quote-service';
+    import invoiceTypeService from '../../../Services/invoice-type-service';
     import dTransportCondition from '../../../components/common/d-transportCondition.vue';
     import dTarifExpedition from '../../../components/common/d-tarif-expedition.vue';
     import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
     import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
     import { Helper } from '../../../composables/global-methods';
-
+    import dRegulationsDropdown from '../../../components/common/d-regulations-dropdown.vue';
     import DRNDropdown from '../../../components/projet/contremarques/dropdown/d-RN-dropdown.vue';
     import moment from 'moment';
     import contremarqueService from '../../../Services/contremarque-service';
+    import dInvoiceTypes from '../../../components/common/d-invoice-types.vue';
     import axiosInstance from '../../../config/http';
     useMeta({ title: 'Nouvelle Facture' });
 
@@ -289,6 +281,7 @@ import customerInvoiceDetailsService from '../../../Services/customer-invoice-de
     const prescriber = ref(null);
     const currentCustomer = ref({});
     const regulations = ref([]);
+    const invoiceTypes = ref([]);
 
     const form = ref({
         customerRef: '', //??
@@ -354,6 +347,14 @@ import customerInvoiceDetailsService from '../../../Services/customer-invoice-de
             regulations.value = res.data.response || [];
         } catch (error) {
             console.error('Failed to fetch regulations:', error);
+        }
+    };
+
+    const fetchInvoiceTypes = async () => {
+        try {
+            invoiceTypes.value = await invoiceTypeService.getInvoiceTypes();
+        } catch (error) {
+            console.error('Failed to fetch invoice types:', error);
         }
     };
 
@@ -461,6 +462,7 @@ import customerInvoiceDetailsService from '../../../Services/customer-invoice-de
             await getQuote(route.params.id);
         }
         fetchRegulations();
+        fetchInvoiceTypes();
     });
 
     const saveLine = async (index) => {
