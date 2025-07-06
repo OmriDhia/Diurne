@@ -151,7 +151,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="row ps-2 mt-4 mb-2 justify-content-between">
-                                                        <d-transmis-studio @transmisStudio="updateCarpetDesignStatus($event)" :can-show="carpetDesignOrderId && !hideForTrans"></d-transmis-studio>
+                                                        <d-transmis-studio @saveCarpetOrderSpecifications="saveCarpetOrderSpecifications()" @transmisStudio="updateCarpetDesignStatus($event)" :can-show="carpetDesignOrderId && !hideForTrans"></d-transmis-studio>
                                                     </div>
                                                     <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="!hideForTrans">
                                                         <div class="col-12" v-if="carpetSpecificationId">
@@ -707,7 +707,7 @@
         }
     };
 
-    watch(
+    /*watch(
         () => dataSpecification.value,
         async (newDataSpecification) => {
             if (!firstLoad.value) {
@@ -715,7 +715,7 @@
             }
         },
         { deep: true }
-    );
+    );*/
     
     const goToDis = ()=>{
         router.push({ name: 'di_list'});
