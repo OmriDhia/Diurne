@@ -111,8 +111,7 @@
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Transporteur</label>
                                                     <div class="col-8 custom-droupdown-exist">
-                                                        <d-transport-condition v-model="form.transporteur"></d-transport-condition>
-                                                        <!-- <multiselect v-model="form.transporteur" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect> -->
+                                                        <d-carrier-dropdown v-model="form.transporteur"></d-carrier-dropdown>
                                                     </div>
                                                 </div>
 
@@ -257,7 +256,7 @@
     import customerInvoiceDetailsService from '../../../Services/customer-invoice-details-service';
     import quoteService from '../../../Services/quote-service';
     import invoiceTypeService from '../../../Services/invoice-type-service';
-    import dTransportCondition from '../../../components/common/d-transportCondition.vue';
+    import dCarrierDropdown from '../../../components/common/d-carrier-dropdown.vue';
     import dTarifExpedition from '../../../components/common/d-tarif-expedition.vue';
     import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
     import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
