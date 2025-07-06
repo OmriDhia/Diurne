@@ -174,7 +174,9 @@
                                     <tbody>
                                         <tr v-for="(line, index) in lines" :key="index">
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.percent" /></td>
-                                            <td><input type="text" class="form-control form-control-sm" v-model="line.rn" /></td>
+                                            <td>
+                                                <d-RN-dropdown v-model="line.rn" :carpetOrderDetailsId="line.carpetOrderDetailsId" :showOnlyDropdown="true" />
+                                            </td>
                                             <td><d-collections-dropdown v-if="line.collection" :disabled="false" :showOnlyDropdown="true" v-model="line.collection"></d-collections-dropdown></td>
                                             <td><d-model-dropdown v-if="line.model" :disabled="false" :showOnlyDropdown="true" v-model="line.model"></d-model-dropdown></td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.refDevis" /></td>
@@ -251,6 +253,7 @@
     import dTransportCondition from '../../../components/common/d-transportCondition.vue';
     import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
     import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
+    import DRNDropdown from '../../../components/projet/contremarques/dropdown/d-RN-dropdown.vue';
     import { Helper } from '../../../composables/global-methods';
     import moment from 'moment';
     import contremarqueService from '../../../Services/contremarque-service';
@@ -301,6 +304,7 @@
         {
             percent: null,
             rn: '',
+            carpetOrderDetailsId: null,
             collection: null,
             model: null,
             refDevis: '',
@@ -321,7 +325,7 @@
         () => form.value.contremarque,
         (contremarqueId) => {
             getContremarque(contremarqueId);
-        }
+        },
     );
 
     const getQuote = async (id) => {
@@ -360,6 +364,7 @@
                     lines.value = data.quoteDetails.map((d) => ({
                         percent: d.impactOnTheQuotePrice,
                         rn: d.rn,
+                        carpetOrderDetailsId: d.id || null,
                         collection: d.carpetSpecification?.collection?.id || null,
                         model: d.carpetSpecification?.model?.id || null,
                         refDevis: d.reference,
