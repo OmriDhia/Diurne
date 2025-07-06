@@ -107,7 +107,12 @@ const loadCheckingLists = async () => {
     try {
         const response = await checkingListService.getCheckingListsByOrder(props.orderId);
         checkingLists.value = response || [];
-        console.log('Loaded checking lists:', checkingLists.value); // Debug log
+        const lastcheckingList = checkingLists.value[checkingLists.value.length - 1];
+        if(lastcheckingList){
+            formData.value.infoCommande.largeurReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.realWidth);
+            formData.value.infoCommande.longueurReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.realLength);
+            formData.value.infoCommande.srfReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.surface);
+        }
     } catch (e) {
         console.error('Error loading checking lists:', e);
     }
