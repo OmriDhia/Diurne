@@ -36,4 +36,8 @@ export default {
         });
         return res.data;
     },
+    async updatePruchasePrices(id, price) {
+        const res = await axiosInstance.put(`/api/materialPurchasePrices/${id}`, price);
+        return res.data;
+    },
 };
