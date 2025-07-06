@@ -29,15 +29,19 @@ router.beforeEach((to, from, next) => {
             } else {
                 if (store.getters.layout !== 'app') store.commit('setLayout', 'app');
             }
-
+            
+            // Check authentication
+            const isAuthenticated = store.getters.isAuthenticated;
+            if(to.name === "login" && isAuthenticated)
+                next('/home');
+            
             // Set page class
             store.commit('setPageClass', '');
             if (to.meta && to.meta.class) {
                 store.commit('setPageClass', to.meta.class);
             }
 
-            // Check authentication
-            const isAuthenticated = store.getters.isAuthenticated;
+           
             if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
                 next('/');
             } else {

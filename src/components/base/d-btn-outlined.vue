@@ -1,6 +1,6 @@
 <template>
     <div class="col-auto">
-        <button :disabled="disabled" :class="['btn', 'ms-0', 'btn-outline-custom','d-flex', buttonClass]" v-on:click="$emit('click', $event)">
+        <button :disabled="disabled" :class="['btn', 'ms-0', 'btn-outline-custom','d-flex', buttonClass]" @click.prevent="$emit('clickBtn', $event)">
             <span style="text-align: center;">{{ label }}</span>
             <vue-feather :type="icon" size="14"  class="d-flex align-items-center"></vue-feather>
         </button>

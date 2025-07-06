@@ -1,6 +1,6 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4">
+        <div class="col-4" v-if="!showOnlyDropdown">
             <label class="form-label">
                 <template v-if="isPrescripteur">
                     Prescripteur
@@ -11,7 +11,7 @@
                 <span class="required" v-if="required">*</span> :
             </label>
         </div>
-        <div :class="{'col-8': !showCustomer || !customerId,'col-7': showCustomer &&  customerId}">
+        <div :class="{'col-8': !showCustomer || !customerId,'col-7': showCustomer &&  customerId,'col-md-12':showOnlyDropdown}">
             <multiselect
                 :class="{ 'is-invalid': error }"
                 v-model="customerId"
@@ -92,7 +92,11 @@
             disabled: {
                 type: Boolean,
                 default: false
-            }
+            },
+            showOnlyDropdown: {
+                type: Boolean,
+                default: false,
+            },
         },
         data() {
             return {

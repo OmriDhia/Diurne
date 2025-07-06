@@ -8,6 +8,7 @@
                 :min="min"
                 :max="max"
                 @input="$emit('update:modelValue', $event.target.value)"
+                @blur="$emit('changeValue', true)"
                 :class="{ 'is-invalid': error, 'form-control': true }"
                 :id="computedId"
                 :disabled="disabled"
