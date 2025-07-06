@@ -32,9 +32,9 @@ axiosInstance.interceptors.response.use(
       return response;
     },
     (error) => {
-      /*if (error.response && error.response.status === 401 && error.response.data.message === "Invalid JWT Token" ) {
+      if (error.response && error.response.status === 401 && error.response.data.message === "Invalid JWT Token" ) {
         userService.doLogout();
-      }*/
+      }
   
       // Forward the error to the calling code
       return Promise.reject(error);

@@ -9,7 +9,9 @@ import { Helper, formatErrorViolations, formatErrorViolationsComposed } from '@/
 import DPanelTitle from '@/components/common/d-panel-title.vue';
 import checkingListService from '../../../Services/checkingList-service';
 import workshopService from '@/Services/workshop-service.js';
-import DTarifs from "@/components/common/d-tarifs.vue";
+import DTarifTextureDropdown from "@/components/workshop/dropdown/d-tarif-texture-dropdown.vue";
+import DMaterialsDropdown from "@/components/projet/contremarques/dropdown/d-materials-dropdown.vue";
+import DCoherenceCheck from "@/components/workshop/_partial/d-coherence-check.vue";
 
 const props = defineProps({
     orderId: {
@@ -21,6 +23,10 @@ const props = defineProps({
         required: false
     },
     workshopInfo: {
+        type: Object,
+        required: false
+    },
+    imageCommande: {
         type: Object,
         required: false
     },
@@ -47,12 +53,8 @@ const formData = ref({
         anneeGrilleTarif: ''
     },
     tarifSpecial: true,
-    prixAchat: [
-        {material: 'Wool', price: '32'},
-        {material: 'Silk', price: '32'},
-        {material: 'Hemp', price: '32'}
-    ],
-    reductionTapis: '',
+    prixAchat: [],
+    reductionTapis: '0',
     complexiteAtelier: false,
     multiLevelAtelier: true,
     formeSpeciale: true,
@@ -74,7 +76,7 @@ const formData = ref({
         taxe: '0',
         margeBrute: '0',
         referenceSurFacture: '0',
-        numeroDuFacture: '0'
+        numeroDuFacture: null
     },
     dateValidationClient: '24-10-2021',
     disponibleVente: false,
@@ -98,12 +100,6 @@ onMounted(() => {
     fetchManufacturers();
 });
 
-const materialOptions = [
-    {value: 'Wool', label: 'Wool'},
-    {value: 'Silk', label: 'Silk'},
-    {value: 'Hemp', label: 'Hemp'}
-];
-
 const checkingLists = ref([]);
 const router = useRouter();
 const error = ref({});
@@ -111,7 +107,12 @@ const loadCheckingLists = async () => {
     try {
         const response = await checkingListService.getCheckingListsByOrder(props.orderId);
         checkingLists.value = response || [];
-        console.log('Loaded checking lists:', checkingLists.value); // Debug log
+        const lastcheckingList = checkingLists.value[checkingLists.value.length - 1];
+        if(lastcheckingList){
+            formData.value.infoCommande.largeurReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.realWidth);
+            formData.value.infoCommande.longueurReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.realLength);
+            formData.value.infoCommande.srfReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.surface);
+        }
     } catch (e) {
         console.error('Error loading checking lists:', e);
     }
@@ -138,7 +139,12 @@ const controlCoherence = () => {
 
 const updatePrixTapis = async() => {
     try{
-        const prices = await workshopService.calculatePrices(props.workshopInfoId);  
+        await saveWorkshopInformation();
+        const res = await workshopService.calculatePrices(props.workshopInfoId);
+        const prices = res.response.prices;
+        formData.value.prixAchatTapis.auM2 =  `${Helper.FormatNumber(prices.carpet_purchase_price_per_m2)}`;
+        formData.value.prixAchatTapis.cmd = `${Helper.FormatNumber(prices.carpet_purchase_price_cmd)}`;
+        formData.value.prixAchatTapis.theorique = `${Helper.FormatNumber(prices.carpet_purchase_price_theoretical)}`;
     }catch(e){
         window.showMessage('Erreur au niveau de calcule des prix','error');
     }
@@ -166,6 +172,7 @@ const saveWorkshopInformation = async () => {
         realHeight: formData.value.infoCommande.longueurReelle,
         realSurface: formData.value.infoCommande.srfReelle,
         idTarifGroup: Number(formData.value.infoCommande.anneeGrilleTarif) || 0,
+        idTarifTexture: Number(formData.value.infoCommande.anneeGrilleTarif) || 0,
         reductionRate: formData.value.reductionTapis,
         hasComplixityWorkshop: formData.value.complexiteAtelier,
         hasMultilevelWorkshop: formData.value.multiLevelAtelier,
@@ -182,6 +189,7 @@ const saveWorkshopInformation = async () => {
         invoiceNumber: formData.value.others.numeroDuFacture,
         manufacturerId: parseInt(formData.value.tapisDuProjet.fabricant),
         Rn: formData.value.tapisDuProjet.rn,
+        idQuality: props.imageCommande?.carpetSpecification?.quality?.id,
     };
     try {
         if(props.workshopInfoId){
@@ -198,11 +206,15 @@ const saveWorkshopInformation = async () => {
                 router.push({name: "updateCarpetWorkshop",params:{workshopOrderId:resWorkshopOrder?.response?.id}})
             }
         }
-        console.log('Saved workshop information');
+        window.showMessage("Commande atelier enregistrer avec succées");
     } catch (e) {
         if (e.response.data.violations) {
             error.value = formatErrorViolations(e.response.data.violations);
+        }else if(e.status === 500 && e.response.data?.detail?.includes('Duplicate entry')){
+            window.showMessage("Une commande atelier existe déja pour cette commande image", 'error');
+            return
         }
+        console.log(e);
         window.showMessage(e.message, 'error');
     }
 };
@@ -218,45 +230,53 @@ defineExpose({
 });
 
 const setDataForUpdate = () => {
-    formData.value.infoCommande.dateCmdAtelier = props.workshopInfo.launchDate;
-    formData.value.infoCommande.dateFinTheo = props.workshopInfo.expectedEndDate;
-    formData.value.infoCommande.delaisProd = props.workshopInfo.productionTime?.toString() || "";
-    formData.value.infoCommande.pourcentCommande = props.workshopInfo.orderSilkPercentage;
-    formData.value.infoCommande.largeurCmd = props.workshopInfo.orderedWidth;
-    formData.value.infoCommande.longueurCmd = props.workshopInfo.orderedHeigh;
-    formData.value.infoCommande.srfCmd = props.workshopInfo.orderedSurface;
-    formData.value.infoCommande.largeurReelle = props.workshopInfo.realWidth;
-    formData.value.infoCommande.longueurReelle = props.workshopInfo.realHeight;
-    formData.value.infoCommande.srfReelle = props.workshopInfo.realSurface;
-    formData.value.infoCommande.anneeGrilleTarif = props.workshopInfo.idTarifGroup?.toString() || "";
+    if(Object.keys(props.workshopInfo).length > 0){
+        formData.value.infoCommande.dateCmdAtelier = props.workshopInfo.launchDate;
+        formData.value.infoCommande.dateFinTheo = props.workshopInfo.expectedEndDate;
+        formData.value.infoCommande.delaisProd = props.workshopInfo.productionTime?.toString() || "";
+        formData.value.infoCommande.pourcentCommande = Helper.FormatNumber(props.workshopInfo.orderSilkPercentage);
+        formData.value.infoCommande.largeurCmd =  Helper.FormatNumber(props.workshopInfo.orderedWidth);
+        formData.value.infoCommande.longueurCmd = Helper.FormatNumber(props.workshopInfo.orderedHeigh);
+        formData.value.infoCommande.srfCmd = Helper.FormatNumber(props.workshopInfo.orderedSurface);
+        formData.value.infoCommande.largeurReelle = Helper.FormatNumber(props.workshopInfo.realWidth);
+        formData.value.infoCommande.longueurReelle = Helper.FormatNumber(props.workshopInfo.realHeight);
+        formData.value.infoCommande.srfReelle = Helper.FormatNumber(props.workshopInfo.realSurface);
+        formData.value.infoCommande.anneeGrilleTarif = props.workshopInfo.idTarifTexture || "";
+        formData.value.prixAchat = [];
 
-    formData.value.reductionTapis = props.workshopInfo.reductionRate;
-    formData.value.complexiteAtelier = props.workshopInfo.hasComplixityWorkshop;
-    formData.value.multiLevelAtelier = props.workshopInfo.hasMultilevelWorkshop;
-    formData.value.formeSpeciale = props.workshopInfo.hasSpecialShape;
+        formData.value.reductionTapis = Helper.FormatNumber(props.workshopInfo.reductionRate);
+        formData.value.complexiteAtelier = props.workshopInfo.hasComplixityWorkshop;
+        formData.value.multiLevelAtelier = props.workshopInfo.hasMultilevelWorkshop;
+        formData.value.formeSpeciale = props.workshopInfo.hasSpecialShape;
 
-    formData.value.prixAchatTapis.auM2 = props.workshopInfo.carpetPurchasePricePerM2;
-    formData.value.prixAchatTapis.cmd = props.workshopInfo.carpetPurchasePriceCmd;
-    formData.value.prixAchatTapis.theorique = props.workshopInfo.carpetPurchasePriceTheoretical;
-    formData.value.prixAchatTapis.facture = props.workshopInfo.carpetPurchasePriceInvoice;
+        formData.value.prixAchatTapis.auM2 = Helper.FormatNumber(props.workshopInfo.carpetPurchasePricePerM2);
+        formData.value.prixAchatTapis.cmd = Helper.FormatNumber(props.workshopInfo.carpetPurchasePriceCmd);
+        formData.value.prixAchatTapis.theorique = Helper.FormatNumber(props.workshopInfo.carpetPurchasePriceTheoretical);
+        formData.value.prixAchatTapis.facture = Helper.FormatNumber(props.workshopInfo.carpetPurchasePriceInvoice);
 
-    formData.value.others.penalite = props.workshopInfo.penalty;
-    formData.value.others.transport = props.workshopInfo.shipping;
-    formData.value.others.taxe = props.workshopInfo.tva;
-    formData.value.others.margeBrute = props.workshopInfo.grossMargin;
-    formData.value.others.referenceSurFacture = props.workshopInfo.referenceOnInvoice;
-    formData.value.others.numeroDuFacture = props.workshopInfo.invoiceNumber;
+        formData.value.others.penalite = Helper.FormatNumber(props.workshopInfo.penalty);
+        formData.value.others.transport = Helper.FormatNumber(props.workshopInfo.shipping);
+        formData.value.others.taxe = Helper.FormatNumber(props.workshopInfo.tva);
+        formData.value.others.margeBrute = Helper.FormatNumber(props.workshopInfo.grossMargin);
+        formData.value.others.referenceSurFacture = props.workshopInfo.referenceOnInvoice;
+        formData.value.others.numeroDuFacture = props.workshopInfo.invoiceNumber;
 
-    formData.value.tapisDuProjet.fabricant = props.workshopInfo.manufacturerId?.toString() || "";
-    formData.value.tapisDuProjet.rn = props.workshopInfo.rn;
+        formData.value.tapisDuProjet.fabricant = props.workshopInfo.manufacturerId?.toString() || "";
+        formData.value.tapisDuProjet.rn = props.workshopInfo.rn;
+
+        if(props.workshopInfo?.materialPurchasePrices.length > 0){
+            formData.value.prixAchat = props.workshopInfo?.materialPurchasePrices.map(item => {
+                item.price = Helper.FormatNumber(item.price);
+                return item;
+            });  
+        }
+    }
 }
 const createNewCheckingList = async () => {
     try {
         const newList = await checkingListService.createCheckingList(
-            //    props.orderId
             props.orderId
         );
-        console.log(newList);
         if (newList) {
             checkingLists.value.push(newList);
             router.push(`/checking-progress/list/${newList.id}`);
@@ -265,11 +285,48 @@ const createNewCheckingList = async () => {
         console.error('Failed to create checking list:', e);
     }
 };
-onMounted(loadCheckingLists);
+const setDataFromImageCommande = () => {
+    if(!props.orderId){
+        const long = props.imageCommande?.carpetSpecification?.carpetDimensions?.[2]?.[0]?.value ?? 0
+        const larg = props.imageCommande?.carpetSpecification?.carpetDimensions?.[1]?.[0]?.value ?? 0
+        formData.value.infoCommande.largeurCmd =  Helper.FormatNumber(larg);
+        formData.value.infoCommande.longueurCmd = Helper.FormatNumber(long);
+        formData.value.infoCommande.srfCmd = Helper.FormatNumber(long * larg);
+    }
+}
+const updatePurchasePrice = async (index, price) => {
+    const pa = formData.value.prixAchat[index]
+    if(pa){
+        const p = {
+            materialId: pa.material_id,
+            price: price.target.value,
+            productionOrderId: pa.production_order_id,
+            workshopInformationId: pa.workshop_information
+        }
+        try {
+            const res = await workshopService.updatePruchasePrices(pa.id, p);
+            window.showMessage("Mise a jour de prix d'achat materials avec succées");
+        } catch (e) {
+            console.error('Failed to create checking list:', e);
+        }
+    }
+}
+onMounted(() =>{
+    loadCheckingLists();
+    setDataForUpdate();
+    setDataFromImageCommande();
+});
 watch(
     () => props.workshopInfo,
     () => {
         setDataForUpdate()
+    },
+    { deep: true }
+);
+watch(
+    () => props.imageCommande,
+    () => {
+        setDataFromImageCommande()
     },
     { deep: true }
 );
@@ -278,9 +335,7 @@ watch(
 <template>
     <div class="information-atelier">
         <div class="main-sections row">
-            <!-- Left section -->
             <div class="left-section col-8">
-
                 <d-panel-title title="Info commande atelier" className="ps-2"></d-panel-title>
                 <div class="row">
                     <div class="col-6">
@@ -314,36 +369,14 @@ watch(
                         <div class="form-row">
                             <d-input label="Srf cmd. atelier" v-model="formData.infoCommande.srfCmd"/>
                         </div>
-
-                        <div class="form-row row ">
-                            <d-tarifs v-model="formData.infoCommande.anneeGrilleTarif" rootClass="pink-bg" :error="error.idTarifGroup"/>
-                        </div>
+                        
+                        <d-tarif-texture-dropdown v-model="formData.infoCommande.anneeGrilleTarif" rootClass="pink-bg" :error="error.idTarifGroup"/>
 
                         <div class="form-row special-tarif row py-3">
                             <div class="col-12 p-0">
                                 <RadioButton v-model="formData.tarifSpecial" :value="true" label="Tarif spécial"/>
                             </div>
 
-                        </div>
-
-                        <div class="form-row material-row row" v-for="(material, index) in formData.prixAchat"
-                             :key="index">
-                            <div class="col-5">
-                                <label>Prix d'achat :</label>
-                            </div>
-                            <div class="material-inputs col-7">
-                                <div class="row align-items-center">
-                                    <div class="col-6">
-                                        <SelectInput class="pt-2" v-model="material.material" :options="materialOptions"
-                                                     rootClass="pink-bg"/>
-                                    </div>
-                                    <div class="col-6">
-                                        <d-input v-model="material.price"/>
-                                    </div>
-
-                                </div>
-
-                            </div>
                         </div>
                     </div>
                     <div class="col-6">
@@ -390,8 +423,29 @@ watch(
                         </div>
                     </div>
                 </div>
-
-
+                
+                <div class="row mb-4 my-4 align-items-center">
+                    <div class="col-md-12">
+                        <div class="row align-items-center" v-for="(material, index) in formData.prixAchat"
+                             :key="index">
+                            <div class="col-md-3">
+                                <label class="pt-2">Prix d'achat :</label>
+                            </div>
+                            <div class="col-md-5">
+                                <d-materials-dropdown :hide-label="true" class="pt-2" v-model="material.material_id" :disabled="true" />
+                            </div>
+                            <div class="col-md-4">
+                                <input class="form-control" 
+                                       type="text" 
+                                       :name="`price_${index}`" 
+                                       :id="`price_${index}`" 
+                                       :value="material.price" 
+                                       @change="updatePurchasePrice(index, $event)"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="radio-options my-4">
                     <RadioButton v-model="formData.complexiteAtelier" :value="true" label="Complexité atelier"/>
                     <RadioButton v-model="formData.multiLevelAtelier" :value="true" label="Multi-level atelier"/>
@@ -466,9 +520,9 @@ watch(
                             :to="`/checking-progress/list/${list.id}`"
                             class="checking-link"
                         >
-        <span class="text-decoration-underline me-2">
-            Checking List n°{{ list.id }}
-        </span>
+                            <span class="text-decoration-underline me-2">
+                                Checking List n°{{ list.id }}
+                            </span>
                         </router-link>
                     </div>
                     <button class="new-list-btn btn btn-custom  text-uppercase my-2"
@@ -505,9 +559,11 @@ watch(
                     <d-input label="Date validation client" type="datetime-local" v-model="formData.dateValidationClient"/>
                 </div>
 
-                <button class="coherence-btn btn btn-custom  text-uppercase w-100 py-2"
+                <!--button class="coherence-btn btn btn-custom  text-uppercase w-100 py-2"
                         @click="controlCoherence">CONTRÔLE DE COHÉRENCE
-                </button>
+                </button-->
+                
+                <d-coherence-check v-if="props.orderId" :imageCommandId="props.imageCommandId" :workshopOrderId="props.orderId"></d-coherence-check>
 
                 <div class="form-row row py-2 align-items-center">
                     <div class="col-4"><label>Fabricant :</label></div>
