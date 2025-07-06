@@ -256,7 +256,8 @@ import { ref, onMounted } from 'vue';
     import VueFeather from 'vue-feather';
     import { useMeta } from '/src/composables/use-meta';
     import Multiselect from 'vue-multiselect';
-    import customerInvoiceService from '../../../Services/customer-invoice-service';
+import customerInvoiceService from '../../../Services/customer-invoice-service';
+import customerInvoiceDetailsService from '../../../Services/customer-invoice-details-service';
     import quoteService from '../../../Services/quote-service';
     import dTransportCondition from '../../../components/common/d-transportCondition.vue';
     import dTarifExpedition from '../../../components/common/d-tarif-expedition.vue';
@@ -453,11 +454,28 @@ const regulations = ref([]);
         fetchRegulations();
     });
 
-    const saveLine = (index) => {
-        console.log('save line', lines.value[index]);
+    const saveLine = async (index) => {
+        const line = lines.value[index];
+        if (!line.id) return;
+        try {
+            await customerInvoiceDetailsService.update(line.id, line);
+            window.showMessage('Ligne mise à jour avec succès');
+        } catch (e) {
+            window.showMessage(e.message, 'error');
+        }
     };
 
-    const removeLine = (index) => {
+    const removeLine = async (index) => {
+        const line = lines.value[index];
+        if (line.id) {
+            try {
+                await customerInvoiceDetailsService.delete(line.id);
+                window.showMessage('Ligne supprimée avec succès');
+            } catch (e) {
+                window.showMessage(e.message, 'error');
+                return;
+            }
+        }
         lines.value.splice(index, 1);
     };
 
