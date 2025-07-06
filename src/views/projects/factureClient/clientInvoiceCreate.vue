@@ -50,6 +50,7 @@
                                                 <div class="row align-items-center">
                                                     <label for="" class="col-4">Type de facture:</label>
                                                     <div class="col-8 custom-droupdown-exist">
+                                                        {{ form.invoiceType }}
                                                         <d-invoice-types v-model="form.invoiceType" :disabled="false" :showOnlyDropdown="true"></d-invoice-types>
                                                     </div>
                                                 </div>
@@ -112,7 +113,8 @@
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Transporteur</label>
                                                     <div class="col-8 custom-droupdown-exist">
-                                                        <d-transport-condition v-model="form.transporteur"></d-transport-condition>
+                                                        <!-- <d-transport-condition v-model="form.carrierId"></d-transport-condition> -->
+                                                        <d-carrier v-model="form.carrierId"></d-carrier>
                                                         <!-- <multiselect v-model="form.transporteur" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect> -->
                                                     </div>
                                                 </div>
@@ -124,7 +126,8 @@
                                         <div class="row p-3">
                                             <div class="bloc-add">
                                                 <div class="col-12">
-                                                    <d-RN-dropdown v-model="form.rn" :carpetOrderDetailsId="form.rn" :showOnlyDropdown="true" />
+                                                    <!-- <d-RN-dropdown v-model="form.rn" :carpetOrderDetailsId="form.rn" :showOnlyDropdown="true" /> -->
+                                                    <d-rn-number-dropdown v-model="form.rn" @dataOfRn="ResultasRnData" :showActionRn="true"></d-rn-number-dropdown>
                                                     <!-- <d-RN-dropdown
                                                         :required="true"
                                                         :hideBtn="true"
@@ -157,7 +160,7 @@
                     <d-panel>
                         <template #panel-body>
                             <!-- <d-panel-title title="Détails" class-name="ps-2" /> -->
-                            <div class="table-responsive" v-if="quote?.quoteDetails && quote?.quoteDetails.length > 0">
+                            <div class="table-responsive">
                                 <table class="table table-striped table-hover table-sm">
                                     <thead>
                                         <tr class="border-top text-black bg-black">
@@ -270,6 +273,7 @@
     import dInvoiceTypes from '../../../components/common/d-invoice-types.vue';
     import axiosInstance from '../../../config/http';
     import dTaxRules from '../../../components/common/d-taxRules.vue';
+    import dRnNumberDropdown from '../../../components/common/d-rn-number-dropdown.vue';
     useMeta({ title: 'Nouvelle Facture' });
 
     const route = useRoute();
@@ -301,7 +305,7 @@
         description: '', //?
         reglement: '', //?
         tarifExpedition: '', //?
-        transporteur: '', //?
+        carrierId: '', //?
         numero: '', //?
         otherRns: [''],
         quantityTotal: '',
@@ -351,7 +355,29 @@
             console.error('Failed to fetch regulations:', error);
         }
     };
+    const ResultasRnData = (data) => {
+        if (data && data.data && data.data.response) {
+            const rnData = data.data.response;
+            console.log('data', data);
 
+            form.value.rn = rnData.rnNumber;
+            carpetOrderDetailsId = rnData.id;
+            // Push a new line to lines array with RN data
+            lines.value.push({
+                percent: null,
+                rn: rnData.rnNumber,
+                collection: rnData.imageCommand.carpetSpecification.collection?.id || null,
+                model: rnData.imageCommand.carpetSpecification.model?.id || null,
+                refDevis: rnData.imageCommand.reference || '',
+                refCommande: quote.value.reference || '',
+                versement: null,
+                priceM2: Helper.getPrice(rnData.imageCommand.prices, 'tarif.m².price'),
+                priceSqft: Helper.getPrice(rnData.imageCommand.prices, 'tarif.sqft.price'),
+                priceHt: Helper.getPrice(rnData.imageCommand.prices, 'prix-propose-avant-remise-complementaire.m².price'),
+                priceTtc: Helper.getPrice(rnData.imageCommand.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
+            });
+        }
+    };
     const fetchInvoiceTypes = async () => {
         try {
             invoiceTypes.value = await invoiceTypeService.getInvoiceTypes();
@@ -379,7 +405,7 @@
                         tva: quote.value.otherTva || '',
                         currency: quote.value.currency.id || null,
                         rate: quote.value.conversion.id || '',
-                        transporteur: quote.value.transportCondition.id || '',
+                        carrierId: quote.value.transportCondition.id || '',
                         contremarque: quote.value.contremarqueId || null,
                         shippingCostsHt: parseFloat(quote.value.shippingPrice) || '',
                         totalHt: parseFloat(quote.value.totalTaxExcluded) || '',
@@ -445,10 +471,10 @@
         try {
             loading.value = true;
             if (route.params.id) {
-                await customerInvoiceService.update(route.params.id, { ...form.value, lines: lines.value });
+                await customerInvoiceService.update(route.params.id, { ...form.value });
                 window.showMessage('Mise à jour avec succés.');
             } else {
-                await customerInvoiceService.create({ ...form.value, lines: lines.value });
+                await customerInvoiceService.create({ ...form.value });
                 window.showMessage('Ajout avec succés.');
                 router.push({ name: 'client-invoice-list' });
             }

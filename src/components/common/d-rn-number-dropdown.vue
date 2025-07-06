@@ -3,7 +3,7 @@
         <div class="col-4">
             <label class="form-label">RN<span class="required" v-if="required">*</span> :</label>
         </div>
-        <div class="col-8">
+        <div class="col-8 d-flex align-items-center">
             <multiselect
                 :class="{ 'is-invalid': error }"
                 v-model="selectedRn"
@@ -20,82 +20,93 @@
                 @search-change="handleSearch"
             ></multiselect>
             <div v-if="error" class="invalid-feedback">{{ $t('Le champ RN est obligatoire.') }}</div>
+            <button class="btn btn-add m-2" @click="selectRnChoix" v-if="showActionRn && selectedRn">
+                <vue-feather type="plus" class="cursor-pointer"></vue-feather>
+            </button>
         </div>
     </div>
 </template>
 
 <script>
-import axiosInstance from '../../config/http';
-import Multiselect from 'vue-multiselect';
-import 'vue-multiselect/dist/vue-multiselect.css';
+    import axiosInstance from '../../config/http';
+    import VueFeather from 'vue-feather';
+    import Multiselect from 'vue-multiselect';
+    import 'vue-multiselect/dist/vue-multiselect.css';
 
-export default {
-    components: {
-        Multiselect
-    },
-    props: {
-        modelValue: {
-            type: [String, Number, null],
-            required: true
+    export default {
+        components: {
+            Multiselect,
+            VueFeather,
         },
-        error: {
-            type: String,
-            default: ''
+        props: {
+            modelValue: {
+                type: [String, Number, null],
+                required: true,
+            },
+            error: {
+                type: String,
+                default: '',
+            },
+            required: {
+                type: Boolean,
+                default: false,
+            },
+            disabled: {
+                type: Boolean,
+                default: false,
+            },
+            showActionRn: {
+                type: Boolean,
+                default: false,
+            },
         },
-        required: {
-            type: Boolean,
-            default: false
+        data() {
+            return {
+                selectedRn: null,
+                rns: [],
+            };
         },
-        disabled: {
-            type: Boolean,
-            default: false
-        }
-    },
-    data() {
-        return {
-            selectedRn: null,
-            rns: []
-        };
-    },
-    methods: {
-        handleChange(value) {
-            this.selectedRn = value;
-            this.$emit('update:modelValue', value ? value.rnNumber : null);
-        },
-        handleSearch(searchQuery) {
-            this.getRn(searchQuery);
-        },
-        async getRn(rnNumber) {
-            if (!rnNumber) {
-                this.rns = [];
-                return;
-            }
-            try {
-                const res = await axiosInstance.get(`/api/carpets/rn/${rnNumber}`);
-                const data = res.data.response || res.data;
-                this.rns = Array.isArray(data) ? data : [data];
-                if (this.modelValue) {
-                    this.selectedRn = this.rns.find(r => r.rnNumber === this.modelValue) || null;
+        methods: {
+            handleChange(value) {
+                this.selectedRn = value;
+                this.$emit('update:modelValue', value ? value.rnNumber : null);
+            },
+            async selectRnChoix() {
+                const res = await axiosInstance.get(`/api/carpets/rn/${this.selectedRn.id}`);
+                this.$emit('dataOfRn', res);
+            },
+            handleSearch(searchQuery) {
+                this.getRn(searchQuery);
+            },
+            async getRn() {
+                // if (!rnNumber) {
+                //     this.rns = [];
+                //     return;
+                // }
+                try {
+                    // const res = await axiosInstance.get(`/api/carpets/rn/${rnNumber}`);
+                    const res = await axiosInstance.get('api/carpets');
+                    const data = res.data.response || res.data;
+                    this.rns = data;
+                    // if (this.modelValue) {
+                    //     this.selectedRn = this.rns.find((r) => r.rnNumber === this.modelValue) || null;
+                    // }
+                } catch (e) {
+                    console.error('Erreur get RN list.', e);
                 }
-            } catch (e) {
-                console.error('Erreur get RN list.', e);
-            }
-        }
-    },
-    mounted() {
-        if (this.modelValue) {
-            this.getRn(this.modelValue);
-        }
-    },
-    watch: {
-        modelValue(newValue) {
-            if (newValue) {
-                this.getRn(newValue);
-            } else {
-                this.selectedRn = null;
-            }
-        }
-    }
-};
+            },
+        },
+        mounted() {
+            this.getRn();
+        },
+        watch: {
+            modelValue(newValue) {
+                if (newValue) {
+                    return true;
+                } else {
+                    this.selectedRn = null;
+                }
+            },
+        },
+    };
 </script>
-
