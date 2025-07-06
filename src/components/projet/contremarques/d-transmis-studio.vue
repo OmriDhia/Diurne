@@ -1,6 +1,6 @@
 <template>
     <div class="col-12">
-        <div class="row justify-content-end align-items-start">
+        <div class="row justify-content-between align-items-start">
             <!--div class="col-auto">
                 <div class="d-flex w-100">
                     <div class="custom-control custom-radio">
@@ -24,6 +24,9 @@
                     </div>
                 </div>
             </div-->
+            <div class="col-auto">
+                <button class="btn btn-custom ps-4 pe-4 text-uppercase" @click="saveDI" :disabled="canSaveSpecifications">Enregistrer</button>
+            </div>
             <div class="col-auto" v-if="canShowTransmisStudio">
                 <button class="btn btn-custom ps-4 pe-4 text-uppercase font-size-0-7" @click="transmisStudio">Transmettre la demande au studio</button>
             </div>
@@ -62,14 +65,21 @@
         carpetDesignOrderId: {
             type: Number,
         },
+        disableSave: {
+            type: Boolean,
+            default: false,
+        },
     });
 
     const store = useStore();
-    const emit = defineEmits(['transmisStudio']);
+    const emit = defineEmits(['transmisStudio','saveCarpetOrderSpecifications']);
     const canShowTransmisStudio = computed(() => (store.getters.isCommertial || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
-    const canCreateVariation = computed(() => (store.getters.isDesigner || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
+    const canSaveSpecifications = computed(() => (store.getters.isDesigner || store.getters.isDesignerManager || !store.getters.isNonTrasmisStatus));
     
     const transmisStudio = () => {
         emit('transmisStudio',carpetStatus.transmisId);
+    }
+    const saveDI = () => {
+        emit('saveCarpetOrderSpecifications');
     }
 </script>

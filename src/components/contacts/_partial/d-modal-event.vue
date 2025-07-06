@@ -18,6 +18,7 @@
 <script setup>
     import dEventHistories from "./d-event-histories.vue";
     import VueFeather from 'vue-feather';
+    import {ref} from "vue";
     
     const props = defineProps({
         customerId : {

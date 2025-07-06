@@ -13,7 +13,7 @@
             <template v-slot:modal-body>
                 <div class="col-8">
                     <template v-if="step === 1">
-                        <d-input label="trame" v-model="data.trame"></d-input>
+                        <d-input label="trame" v-model="data.trame" :disabled="true"></d-input>
                         <!-- <d-input type="number" label="fil" v-model="data.threadCount" v-if="!props.carpetCompositionId"></d-input> -->
                         <d-input type="number" label="couche" v-model="data.layerCount" v-if="!props.carpetCompositionId"></d-input>
                     </template>
@@ -59,7 +59,7 @@
     
     const color = ref(null);
     const data = ref({
-        trame: "",
+        trame: 3,
         threadCount: 3,
         layerCount: 0
     });
@@ -85,7 +85,7 @@
                 
                 for (let i = 0; i < data.value.threadCount; i++) {
                     threads.value.push(
-                        {techColorId: 0}
+                        {techColorId: 1}
                     );
                 }
                 step.value = 2;
@@ -133,7 +133,7 @@
     };
     const handleClose = () => {
         color.value = null;
-        trame.value = "";
+        trame.value = 3;
         emit('onClose')
     }
 </script>

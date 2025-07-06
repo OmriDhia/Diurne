@@ -51,7 +51,7 @@
     const emit = defineEmits(['onClose', 'addThread']);
     
     const color = ref(null);
-    const trame = ref("");
+    const trame = ref(3);
 
     const addThread = async () => {
         let res = {};
@@ -93,7 +93,7 @@
     
     const handleClose = () => {
         color.value = null;
-        trame.value = "";
+        trame.value = 3;
         emit('onClose')
     }
 </script>
