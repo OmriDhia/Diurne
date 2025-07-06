@@ -11,6 +11,7 @@ import checkingListService from '../../../Services/checkingList-service';
 import workshopService from '@/Services/workshop-service.js';
 import DTarifTextureDropdown from "@/components/workshop/dropdown/d-tarif-texture-dropdown.vue";
 import DMaterialsDropdown from "@/components/projet/contremarques/dropdown/d-materials-dropdown.vue";
+import DCoherenceCheck from "@/components/workshop/_partial/d-coherence-check.vue";
 
 const props = defineProps({
     orderId: {
@@ -553,9 +554,11 @@ watch(
                     <d-input label="Date validation client" type="datetime-local" v-model="formData.dateValidationClient"/>
                 </div>
 
-                <button class="coherence-btn btn btn-custom  text-uppercase w-100 py-2"
+                <!--button class="coherence-btn btn btn-custom  text-uppercase w-100 py-2"
                         @click="controlCoherence">CONTRÔLE DE COHÉRENCE
-                </button>
+                </button-->
+                
+                <d-coherence-check v-if="props.orderId" :imageCommandId="props.imageCommandId" :workshopOrderId="props.orderId"></d-coherence-check>
 
                 <div class="form-row row py-2 align-items-center">
                     <div class="col-4"><label>Fabricant :</label></div>

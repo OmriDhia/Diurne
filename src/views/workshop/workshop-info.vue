@@ -70,7 +70,7 @@ import axiosInstance from "@/config/http.js";
 const activeTab = ref('information');
 const route = useRoute();
 const workshopOrderId = route.params.workshopOrderId ? parseInt(route.params.workshopOrderId) : null;
-const imageCommandId = route.params.imagesCommadeId ? parseInt(route.params.imagesCommadeId) : null;
+const imageCommandId = ref(route.params.imagesCommadeId ? parseInt(route.params.imagesCommadeId) : null);
 const infoTab = ref(null);
 const workshopInfoId = ref(null);
 const workshopOrder = ref({})
@@ -85,6 +85,7 @@ const getWorkshopOrder = async () => {
         workshopInfo.value = workshopOrder.value.workshopInformation;
         workshopInfoId.value = workshopInfo.value.id;
         imageCommande.value = workshopOrder.value.imageCommand;
+        imageCommandId.value = imageCommande.value.id;
     }else if (imageCommandId) {
         const res = await axiosInstance.get(`/api/image-command/${imageCommandId}`);
         imageCommande.value = res.data.response;
