@@ -53,7 +53,15 @@
                                                     <label for="" class="col-4">Type de facture:</label>
                                                     <div class="col-8">
                                                         <!-- <d-customer-type v-model="form.invoiceType"> </d-customer-type> -->
-                                                        <multiselect v-model="form.invoiceType" :options="[]" :multiple="false" :placeholder="'Type de facture'" :searchable="true"></multiselect>
+                                                        <multiselect
+                                                            v-model="form.invoiceType"
+                                                            :options="invoiceTypes"
+                                                            track-by="id"
+                                                            label="label"
+                                                            :multiple="false"
+                                                            :placeholder="'Type de facture'"
+                                                            :searchable="true"
+                                                        ></multiselect>
                                                     </div>
                                                 </div>
                                                 <div class="row align-items-center mt-2 mb-1">
@@ -258,7 +266,8 @@ import { ref, onMounted } from 'vue';
     import Multiselect from 'vue-multiselect';
 import customerInvoiceService from '../../../Services/customer-invoice-service';
 import customerInvoiceDetailsService from '../../../Services/customer-invoice-details-service';
-    import quoteService from '../../../Services/quote-service';
+import quoteService from '../../../Services/quote-service';
+import invoiceTypeService from '../../../Services/invoice-type-service';
     import dTransportCondition from '../../../components/common/d-transportCondition.vue';
     import dTarifExpedition from '../../../components/common/d-tarif-expedition.vue';
     import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
@@ -280,6 +289,7 @@ import axiosInstance from '../../../config/http';
     const prescriber = ref(null);
 const currentCustomer = ref({});
 const regulations = ref([]);
+const invoiceTypes = ref([]);
 
     const form = ref({
         customerRef: '', //??
@@ -346,6 +356,14 @@ const regulations = ref([]);
             regulations.value = res.data.response || [];
         } catch (error) {
             console.error('Failed to fetch regulations:', error);
+        }
+    };
+
+    const fetchInvoiceTypes = async () => {
+        try {
+            invoiceTypes.value = await invoiceTypeService.getInvoiceTypes();
+        } catch (error) {
+            console.error('Failed to fetch invoice types:', error);
         }
     };
 
@@ -452,6 +470,7 @@ const regulations = ref([]);
             await getQuote(route.params.id);
         }
         fetchRegulations();
+        fetchInvoiceTypes();
     });
 
     const saveLine = async (index) => {
