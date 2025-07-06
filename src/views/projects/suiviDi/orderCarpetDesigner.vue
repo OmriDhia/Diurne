@@ -89,7 +89,6 @@
                                                                 :error="errorCarpetDesignOrder.materialsRate"
                                                                 :disabled="disableForDesigner"
                                                                 :firstLoad="firstLoad"
-                                                                @changeMaterials="saveCarpetOrderSpecifications"
                                                                 :materialsProps="currentMaterials"
                                                             ></d-materials-list>
                                                         </div>
@@ -131,7 +130,6 @@
                                                         <d-measurements-di
                                                             :disabled="disableForDesigner"
                                                             :firstLoad="firstLoad"
-                                                            @changeMeasurements="saveCarpetOrderSpecifications"
                                                             :dimensionsProps="currentDimensions"
                                                             :error="errorCarpetDesignOrder.measurments"
                                                         ></d-measurements-di>
@@ -181,7 +179,7 @@
                                     </div>
                                     <div class="col-md-12 col-xl-3 ps-1 d-flex flex-column" v-if="carpetDesignOrderId">
                                         <d-designer-list
-                                            v-if="!hideForTrans || designerManagerAccess"
+                                            v-if="!hideForTransStudio || designerManagerAccess"
                                             :disabled="CommercialAccess"
                                             @endCarpetDesignOrder="updateCarpetDesignStatus($event,true)"
                                             :carpetDesignOrderId="carpetDesignOrderId"
@@ -264,6 +262,7 @@
     // src/composables/global-methods.js
     const selectedImageTypes = ref([]);
     const hideForTrans = ref(false);
+    const hideForTransStudio = ref(false);
     const hideForAttributePause = ref(false);
     // Handle designer addition from the child component
 
@@ -353,6 +352,7 @@
 
     const setHideForTrans = () => {
         hideForTrans.value = (dataCarpetOrder.value.status_id === carpetStatus.transmisId || dataCarpetOrder.value.status_id === carpetStatus.nonTransmisId);
+        hideForTransStudio.value = (dataCarpetOrder.value.status_id === carpetStatus.transmisId);
         hideForAttributePause.value = (dataCarpetOrder.value.status_id === carpetStatus.attribuId || dataCarpetOrder.value.status_id === carpetStatus.enPauseId || dataCarpetOrder.value.status_id === carpetStatus.enCoursId)
     };
     // const disableForCommercial = computed(() => {

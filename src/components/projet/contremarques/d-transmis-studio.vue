@@ -25,7 +25,7 @@
                 </div>
             </div-->
             <div class="col-auto">
-                <button class="btn btn-custom ps-4 pe-4 text-uppercase" @click="saveDI">Enregistrer</button>
+                <button class="btn btn-custom ps-4 pe-4 text-uppercase" @click="saveDI" :disabled="canSaveSpecifications">Enregistrer</button>
             </div>
             <div class="col-auto" v-if="canShowTransmisStudio">
                 <button class="btn btn-custom ps-4 pe-4 text-uppercase font-size-0-7" @click="transmisStudio">Transmettre la demande au studio</button>
@@ -65,12 +65,16 @@
         carpetDesignOrderId: {
             type: Number,
         },
+        disableSave: {
+            type: Boolean,
+            default: false,
+        },
     });
 
     const store = useStore();
     const emit = defineEmits(['transmisStudio','saveCarpetOrderSpecifications']);
     const canShowTransmisStudio = computed(() => (store.getters.isCommertial || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
-    const canCreateVariation = computed(() => (store.getters.isDesigner || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
+    const canSaveSpecifications = computed(() => (store.getters.isDesigner || store.getters.isDesignerManager || !store.getters.isNonTrasmisStatus));
     
     const transmisStudio = () => {
         emit('transmisStudio',carpetStatus.transmisId);

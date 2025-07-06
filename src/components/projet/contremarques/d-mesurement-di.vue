@@ -134,9 +134,8 @@
         try {
             const result = await contremarqueService.calculateMesurementsNew(data.value);
             const dimension = result.dimension;
-            setMeasurementResults(larg.unit, dimension.larg);
-            setMeasurementResults(long.unit, dimension.lng);
-            console.log('measurements', measurements);
+            setMeasurementResults(larg.unit, dimension.width);
+            setMeasurementResults(long.unit, dimension.length);
             store.commit('setMeasurements', measurements);
         } catch (error) {
             console.error(`Error calculation mesurements:`, error);
