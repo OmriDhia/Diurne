@@ -45,10 +45,14 @@
                             <vue-feather type="search" size="14"></vue-feather>
                         </button>
                         <d-modal-manage-event ref="modalEnvent" :eventData="selectedEvent" :customerId="props.customerId"></d-modal-manage-event>
+                        <d-modal-manage-event ref="modalAddEvent" action="Add"></d-modal-manage-event>
                     </div>
                 </div>
             </perfect-scrollbar>
             </div>
+        </div>
+        <div class="row justify-content-end mt-3">
+            <d-btn-outlined icon="plus" label="Ajouter" @clickBtn="addNewEvent()"></d-btn-outlined>
         </div>
     </div>
     <div class="row" v-else>
@@ -67,6 +71,7 @@
     import VueFeather from 'vue-feather';
     import dDelete from "../../common/d-delete.vue";
     import dModalManageEvent from "../../contacts/d-modal-manage-event.vue";
+    import DBtnOutlined from "@/components/base/d-btn-outlined.vue";
 
     const props = defineProps({
         customerId: {
@@ -118,6 +123,19 @@
         await nextTick();
         if (modalEnvent.value) {
             modalEnvent.value.show();
+        }
+    };
+
+    const modalAddEvent = ref(null);
+    const addNewEvent = async () => {
+        if (modalAddEvent.value) {
+            if(props.customerId){
+                modalAddEvent.value.setCustomerId(props.customerId); 
+            }
+            if(props.contremarqueId){
+                modalAddEvent.value.setContremarqueId(props.contremarqueId);
+            }
+            modalAddEvent.value.show();
         }
     };
 

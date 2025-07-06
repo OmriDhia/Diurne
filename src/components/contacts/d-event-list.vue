@@ -197,15 +197,25 @@
                     <template #has_wrong_address="data">
                         <div title="test" class="t-dot" :class="data.value.has_wrong_address === 'true' ? 'bg-success' :'bg-danger'"></div>
                     </template>
+                    <template #event_date="data">
+                        {{ $Helper.FormatDate(data.value.event_date)}}
+                    </template>
+                    <template #next_step="data">
+                        {{ (data.value.next_step) ? $Helper.FormatDate(data.value.next_step) : "--"}}
+                    </template>
+                    <template #action="data">
+                        <d-btn-outlined icon="plus" label="Ajouter" @clickBtn="addNewEvent(data.value)"></d-btn-outlined>
+                    </template>
                 </vue3-datatable>
             </div>
         </div>
         <d-modal-event :customerId="selectedCustomerId"></d-modal-event>
+        <d-modal-manage-event ref="modalAddEvent" :customerId="selectedCustomerId" action="Add"></d-modal-manage-event>
     </div>
 </template>
 
 <script setup>
-    import { ref , reactive, onMounted} from 'vue';
+import {ref, reactive, onMounted, nextTick} from 'vue';
     import dInput from '../base/d-input.vue';
     import dCustomerType from "../common/d-customer-type.vue";
     import VueFeather from 'vue-feather';
@@ -219,6 +229,7 @@
     import dCustomerTypeDropdown from "../common/d-customer-type-dropdown.vue";
     import { Helper } from "../../composables/global-methods";
     import { useRouter } from 'vue-router';
+    import DBtnOutlined from "@/components/base/d-btn-outlined.vue";
     
     const router = useRouter();
     const loading = ref(true);
@@ -246,7 +257,8 @@
         { field: 'email', title: 'Email', sort: false},
         { field: 'subject', title: 'Evènement client', sort: false},
         { field: 'event_date', title: 'Date Ev.', sort: true },
-        { field: 'next_step', title: 'Next step', sort: false },
+        { field: 'next_step', title: 'Next step', sort: true },
+        { field: 'action', title: 'Action', sort: false },
     ]) || [];
 
     onMounted(() => {
@@ -345,6 +357,14 @@
         }
         
         return param;
+    };
+
+    const modalAddEvent = ref(null);
+    const addNewEvent = async (event) => {
+        if (modalAddEvent.value) {
+            modalAddEvent.value.setCustomerId(event.customer_id);
+            modalAddEvent.value.show();
+        }
     };
     const doReset = () => {
         filterActive.value = false;
