@@ -88,12 +88,15 @@
                             </div>
                             <div class="row justify-content-center align-items-center mt-2">
                                 <div class="col-md-6">
-                                    <button class="btn btn-custom font-size-0-7 text-uppercase" @click="router.push({ name: 'client-invoice-edit', params: { id: quote_id } })">
-                                        Facture d'acompte
-                                    </button>
+                                    <button class="btn btn-custom font-size-0-7 text-uppercase">Facture d'acompte</button>
                                 </div>
                                 <div class="col-md-6">
                                     <button class="btn btn-custom font-size-0-7 text-uppercase" @click="goToAttachReglement">rattacher un règlement</button>
+                                </div>
+                            </div>
+                            <div class="row mt-2 justify-content-center align-items-center">
+                                <div class="col-md-6">
+                                    <button class="btn btn-custom font-size-0-7 text-uppercase" @click="router.push({ name: 'client-invoice-edit', params: { id: quote_id } })">Facture client</button>
                                 </div>
                             </div>
                         </div>
