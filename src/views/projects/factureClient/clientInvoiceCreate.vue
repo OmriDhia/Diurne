@@ -55,8 +55,9 @@
                                                 </div>
                                                 <div class="row align-items-center mt-2 mb-1">
                                                     <label for="" class="col-4">TVA:</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.tva" :options="[]" :multiple="false" :placeholder="'TVA'" :searchable="true"></multiselect>
+                                                    <div class="col-8 custom-droupdown-exist">
+                                                        <d-taxRules v-model="form.tva"></d-taxRules>
+                                                        <!-- <multiselect v-model="form.tva" :options="[]" :multiple="false" :placeholder="'TVA'" :searchable="true"></multiselect> -->
                                                     </div>
                                                 </div>
 
@@ -257,17 +258,18 @@
     import customerInvoiceDetailsService from '../../../Services/customer-invoice-details-service';
     import quoteService from '../../../Services/quote-service';
     import invoiceTypeService from '../../../Services/invoice-type-service';
-    import dTransportCondition from '../../../components/common/d-transportCondition.vue';
+    import dTransportCondition from '../../../components/common/d-transportCondition.vue'; //carrier list
     import dTarifExpedition from '../../../components/common/d-tarif-expedition.vue';
     import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
     import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
     import { Helper } from '../../../composables/global-methods';
     import dRegulationsDropdown from '../../../components/common/d-regulations-dropdown.vue';
-    import DRNDropdown from '../../../components/projet/contremarques/dropdown/d-RN-dropdown.vue';
+    import DRNDropdown from '../../../components/projet/contremarques/dropdown/d-RN-dropdown.vue'; //droupdown rn
     import moment from 'moment';
     import contremarqueService from '../../../Services/contremarque-service';
     import dInvoiceTypes from '../../../components/common/d-invoice-types.vue';
     import axiosInstance from '../../../config/http';
+    import dTaxRules from '../../../components/common/d-taxRules.vue';
     useMeta({ title: 'Nouvelle Facture' });
 
     const route = useRoute();
