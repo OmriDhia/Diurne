@@ -429,6 +429,16 @@ export const routes = [
                     class: 'projects',
                     permission: 'read order'
                 }
+            },
+            {
+                path: 'manage/:id',
+                name: 'ordersDetail',
+                component: () => import('../views/carpet/order/manage.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'projects',
+                    permission: 'read order'
+                }
             }
         ],
         meta: {
@@ -453,6 +463,16 @@ export const routes = [
             {
                 path: 'create',
                 name: 'client-invoice-create',
+                component: () => import('../views/projects/factureClient/clientInvoiceCreate.vue'),
+                meta: {
+                    requiresAuth: true,
+                   class: 'projects',
+                    permission: 'create invoice',
+                },
+            },
+            {
+                path: 'edit/:id',
+                name: 'client-invoice-edit',
                 component: () => import('../views/projects/factureClient/clientInvoiceCreate.vue'),
                 meta: {
                     requiresAuth: true,
