@@ -108,7 +108,7 @@
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Tarif d’expédition</label>
                                                     <div class="col-8">
-                                                        <multiselect v-model="form.tarifExpedition" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect>
+                                                        <d-tarif-expedition v-model="form.tarifExpedition" />
                                                     </div>
                                                 </div>
                                                 <div class="row align-items-center mt-2">
@@ -251,6 +251,7 @@
     import customerInvoiceService from '../../../Services/customer-invoice-service';
     import quoteService from '../../../Services/quote-service';
     import dTransportCondition from '../../../components/common/d-transportCondition.vue';
+    import dTarifExpedition from '../../../components/common/d-tarif-expedition.vue';
     import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
     import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
     import DRNDropdown from '../../../components/projet/contremarques/dropdown/d-RN-dropdown.vue';
