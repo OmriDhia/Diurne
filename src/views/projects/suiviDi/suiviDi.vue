@@ -109,6 +109,22 @@
                                     <div title="test" class="t-dot" :class="data.value.wrong_image === 0 ? 'bg-warning' :'bg-success'"></div>
                                 </div>
                             </template>
+                            <template #customer="data">
+                                <div class="d-flex align-items-center">
+                                    <span>{{ data.value.customer || '' }}</span>
+                                    <router-link v-if="data.value.customer_id" :to="'/contacts/manage/' + data.value.customer_id" class="ms-1" title="Voir fiche client">
+                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    </router-link>
+                                </div>
+                            </template>
+                            <template #contremarque="data">
+                                <div class="d-flex align-items-center">
+                                    <span>{{ data.value.contremarqueName || data.value.contremarque || '' }}</span>
+                                    <router-link v-if="data.value.contremarque_id" :to="'/projet/contremarques/manage/' + data.value.contremarque_id" class="ms-1" title="Voir fiche contremarque">
+                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    </router-link>
+                                </div>
+                            </template>
                         </vue3-datatable>
                     </div>
                 </div>
@@ -264,6 +280,8 @@ const handleClose = () => {
 const goToNewContremarque = () => {
     location.href = "/projet/contremarques/manage"
 };
+
+
     
 </script>
 <style>
