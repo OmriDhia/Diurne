@@ -50,7 +50,6 @@
                                                 <div class="row align-items-center">
                                                     <label for="" class="col-4">Type de facture:</label>
                                                     <div class="col-8 custom-droupdown-exist">
-                                                        {{ form.invoiceType }}
                                                         <d-invoice-types v-model="form.invoiceType" :disabled="false" :showOnlyDropdown="true"></d-invoice-types>
                                                     </div>
                                                 </div>
@@ -113,9 +112,7 @@
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Transporteur</label>
                                                     <div class="col-8 custom-droupdown-exist">
-                                                        <!-- <d-transport-condition v-model="form.carrierId"></d-transport-condition> -->
-                                                        <d-carrier v-model="form.carrierId"></d-carrier>
-                                                        <!-- <multiselect v-model="form.transporteur" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect> -->
+                                                        <d-carrier-dropdown v-model="form.carrierId"></d-carrier-dropdown>
                                                     </div>
                                                 </div>
 
@@ -261,13 +258,14 @@
     import customerInvoiceDetailsService from '../../../Services/customer-invoice-details-service';
     import quoteService from '../../../Services/quote-service';
     import invoiceTypeService from '../../../Services/invoice-type-service';
-    import dTransportCondition from '../../../components/common/d-transportCondition.vue'; //carrier list
+
+    import dCarrierDropdown from '../../../components/common/d-carrier-dropdown.vue';
+
     import dTarifExpedition from '../../../components/common/d-tarif-expedition.vue';
     import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
     import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
     import { Helper } from '../../../composables/global-methods';
     import dRegulationsDropdown from '../../../components/common/d-regulations-dropdown.vue';
-    import DRNDropdown from '../../../components/projet/contremarques/dropdown/d-RN-dropdown.vue'; //droupdown rn
     import moment from 'moment';
     import contremarqueService from '../../../Services/contremarque-service';
     import dInvoiceTypes from '../../../components/common/d-invoice-types.vue';
@@ -290,7 +288,7 @@
     const invoiceTypes = ref([]);
 
     const form = ref({
-        customerRef: '', //??
+        customerRef: null, //??
         invoiceNumber: '', //invoiceNumber == customerId
         invoiceDate: '',
         project: '', //??
@@ -299,41 +297,41 @@
         currency: null, //?
         rate: '', //?
         languageId: 0, //?
-        unit: '', //?
+        unitOfMeasurement: null, //?
         contremarque: null, //?
         prescripteur: '', //?
         description: '', //?
         reglement: '', //?
         tarifExpedition: '', //?
-        carrierId: '', //?
+        carrierId: null, //?
         numero: '', //?
-        otherRns: [''],
-        quantityTotal: '',
+        rn: null, //?
+        quantityTotal: null,
         shippingCostsHt: '',
         versement: '', //Versement==payment
         billed: '',
-        totalHt: '',
-        amountHt: '',
-        amountTva: '',
-        amountTtc: '',
+        totalHt: null,
+        amountHt: null,
+        amountTva: null,
+        amountTtc: null,
         carpetOrderId: null, // Quel champ???
     });
 
     const lines = ref([
         // Initial empty line
-        {
-            percent: null,
-            rn: '',
-            collection: null,
-            model: null,
-            refDevis: '',
-            refCommande: '',
-            versement: null,
-            priceM2: null,
-            priceSqft: null,
-            priceHt: null,
-            priceTtc: null,
-        },
+        // {
+        //     percent: null,
+        //     rn: '',
+        //     collection: null,
+        //     model: null,
+        //     refDevis: '',
+        //     refCommande: '',
+        //     versement: null,
+        //     priceM2: null,
+        //     priceSqft: null,
+        //     priceHt: null,
+        //     priceTtc: null,
+        // },
     ]);
 
     watch(selectedCustomer, (customerId) => {
@@ -468,13 +466,61 @@
     };
 
     const save = async () => {
+        const payload = {
+            invoiceNumber: form.value.invoiceNumber,
+            invoiceDate: form.value.invoiceDate,
+            invoiceType: form.value.invoiceType,
+            carrierId: form.value.carrierId,
+            customerId: selectedCustomer.value,
+            carpetOrderId: carpetOrderDetailsId.value || null,
+            quantityTotal: form.value.quantityTotal,
+            shippingCostsHt: String(form.value.shippingCostsHt) || '',
+
+            billed: String(form.value.billed) || '',
+            payment: String(form.value.versement) || '',
+            totalHt: String(form.value.totalHt) || '',
+            amountHt: String(form.value.amountHt) || '',
+            amountTva: String(form.value.amountTva) || '',
+            amountTtc: String(form.value.amountTtc) || '',
+            prescriberId: form.value.prescripteur ? form.value.prescripteur.id : null,
+            invoiceTypeEntityId: form.value.invoiceType ? form.value.invoiceType.id : null,
+            currencyId: form.value.currency ? form.value.currency.id : null,
+            conversionId: form.value.rate ? form.value.rate.id : null,
+            languageId: form.value.languageId || 0,
+            mesurementId: form.value.unit ? form.value.unit.id : null,
+            regulationId: form.value.reglement ? form.value.reglement.id : null,
+            tarifExpeditionId: form.value.tarifExpedition ? form.value.tarifExpedition.id : null,
+            rnId: form.value.rn ? form.value.rn.id : null,
+        };
         try {
             loading.value = true;
             if (route.params.id) {
-                await customerInvoiceService.update(route.params.id, { ...form.value });
+                const resultat = await customerInvoiceService.update(route.params.id, payload);
+                console.log('resultat', resultat.id);
+                for (const line of lines.value) {
+                    await customerInvoiceDetailsService.create({
+                        customerInvoiceId: selectedCustomer.value,
+                        carpetOrderDetailId: carpetOrderDetailsId.value || resultat.id,
+                        cleared: false,
+                        refCommand: line.refDevis,
+                        refQuote: line.refCommande,
+                    });
+                }
                 window.showMessage('Mise à jour avec succés.');
             } else {
-                await customerInvoiceService.create({ ...form.value });
+                const resultat = await customerInvoiceService.create(payload);
+                console.log('resultat', resultat);
+                for (const line of lines.value) {
+                    await customerInvoiceDetailsService.create({
+                        customerInvoiceId: selectedCustomer.value,
+                        carpetOrderDetailId: carpetOrderDetailsId.value || resultat.id,
+                        cleared: false,
+                        refCommand: line.refDevis,
+                        refQuote: line.refCommande,
+                    });
+                }
+
+                // }
                 window.showMessage('Ajout avec succés.');
                 router.push({ name: 'client-invoice-list' });
             }
@@ -495,9 +541,15 @@
 
     const saveLine = async (index) => {
         const line = lines.value[index];
-        if (!line.id) return;
+
         try {
-            await customerInvoiceDetailsService.update(line.id, line);
+            await customerInvoiceDetailsService.create({
+                customerInvoiceId: selectedCustomer.value || null,
+                carpetOrderDetailId: carpetOrderDetailsId.value || id,
+                cleared: false,
+                refCommand: line.refDevis,
+                refQuote: line.refCommande,
+            });
             window.showMessage('Ligne mise à jour avec succès');
         } catch (e) {
             window.showMessage(e.message, 'error');
@@ -516,10 +568,6 @@
             }
         }
         lines.value.splice(index, 1);
-    };
-
-    const addAutreRn = () => {
-        form.value.otherRns.push('');
     };
 </script>
 
