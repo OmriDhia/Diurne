@@ -10,7 +10,8 @@
                     <template #panel-body>
                         <div class="row p-2">
                             <div class="col-3">
-                                <d-input label="Référence client" v-model="form.customerRef" />
+                                <!-- <d-input label="Référence client" v-model="form.customerRef" /> -->
+                                <d-customer-dropdown :disabled="disbledContremarque" :showCustomer="true" :required="true" v-model="selectedCustomer"></d-customer-dropdown>
                             </div>
                         </div>
 
@@ -33,25 +34,30 @@
                                                 <hr class="mt-3" />
 
                                                 <div class="row">
-                                                    <d-contremarque-dropdown v-model="form.contremarque" :customerId="form.customer" class="contremarque" />
-                                                    <!-- <d-prescripteurDropdown v-model="form.prescripteur"></d-prescripteurDropdown> -->
-                                                    <d-input label="Prescripteur" v-model="form.prescripteur" />
-                                                    <d-input label="Description" v-model="form.description" />
+                                                    <div class="col-md-12 mt-2">
+                                                        <d-contremarque-dropdown v-model="form.contremarque" :customerId="selectedCustomer" class="contremarque" />
+                                                    </div>
+
+                                                    <div class="col-md-12 mt-2">
+                                                        <d-customer-dropdown :isPrescripteur="true" v-model="form.prescripteur" />
+                                                    </div>
+                                                    <div class="col-md-12 mt-2">
+                                                        <d-input label="Description" v-model="form.description" />
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <!-- <d-input label="Type de facture" v-model="form.invoiceType" /> -->
                                                 <div class="row align-items-center">
                                                     <label for="" class="col-4">Type de facture:</label>
-                                                    <div class="col-8">
-                                                        <!-- <d-customer-type v-model="form.invoiceType"> </d-customer-type> -->
-                                                        <multiselect v-model="form.invoiceType" :options="[]" :multiple="false" :placeholder="'Type de facture'" :searchable="true"></multiselect>
+                                                    <div class="col-8 custom-droupdown-exist">
+                                                        <d-invoice-types v-model="form.invoiceType" :disabled="false" :showOnlyDropdown="true"></d-invoice-types>
                                                     </div>
                                                 </div>
                                                 <div class="row align-items-center mt-2 mb-1">
                                                     <label for="" class="col-4">TVA:</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.tva" :options="[]" :multiple="false" :placeholder="'TVA'" :searchable="true"></multiselect>
+                                                    <div class="col-8 custom-droupdown-exist">
+                                                        <d-taxRules v-model="form.tva"></d-taxRules>
+                                                        <!-- <multiselect v-model="form.tva" :options="[]" :multiple="false" :placeholder="'TVA'" :searchable="true"></multiselect> -->
                                                     </div>
                                                 </div>
 
@@ -93,21 +99,20 @@
                                             <div class="col-12">
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Mode de règlement</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.reglement" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect>
+                                                    <div class="col-8 custom-droupdown-exist">
+                                                        <d-regulations-dropdown v-model="form.reglement" />
                                                     </div>
                                                 </div>
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Tarif d’expédition</label>
-                                                    <div class="col-8">
-                                                        <multiselect v-model="form.tarifExpedition" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect>
+                                                    <div class="col-8 custom-droupdown-exist">
+                                                        <d-tarif-expedition v-model="form.tarifExpedition" />
                                                     </div>
                                                 </div>
                                                 <div class="row align-items-center mt-2">
                                                     <label for="" class="col-4">Transporteur</label>
                                                     <div class="col-8 custom-droupdown-exist">
-                                                        <d-transport-condition v-model="form.transporteur"></d-transport-condition>
-                                                        <!-- <multiselect v-model="form.transporteur" :options="[]" :multiple="false" placeholder="" :searchable="true"></multiselect> -->
+                                                        <d-carrier-dropdown v-model="form.carrierId"></d-carrier-dropdown>
                                                     </div>
                                                 </div>
 
@@ -118,7 +123,16 @@
                                         <div class="row p-3">
                                             <div class="bloc-add">
                                                 <div class="col-12">
-                                                    <div class="row w-100 d-block" v-for="(rn, index) in form.otherRns" :key="index">
+                                                    <!-- <d-RN-dropdown v-model="form.rn" :carpetOrderDetailsId="form.rn" :showOnlyDropdown="true" /> -->
+                                                    <d-rn-number-dropdown v-model="form.rn" @dataOfRn="ResultasRnData" :showActionRn="true"></d-rn-number-dropdown>
+                                                    <!-- <d-RN-dropdown
+                                                        :required="true"
+                                                        :hideBtn="true"
+                                                        v-model="carpetOrderDetailsId"
+                                                        :carpetOrderDetailsId="carpetOrderDetailsId"
+                                                        :error="validationSubmitErrors.collectionId"
+                                                    ></d-RN-dropdown> -->
+                                                    <!-- <div class="row w-100 d-block" v-for="(rn, index) in form.otherRns" :key="index">
                                                         <div class="d-flex align-items-center">
                                                             <d-input label="Numéro RN" v-model="form.otherRns[index]" />
                                                             <button v-if="form.otherRns.length > 1" class="btn btn-add me-2 ms-2" @click="form.otherRns.splice(index, 1)" type="button">
@@ -128,17 +142,18 @@
                                                                 <vue-feather type="plus" stroke-width="1" class="cursor-pointer"></vue-feather>
                                                             </button>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
                                                 </div>
                                             </div>
                                         </div>
                                     </template>
                                 </d-panel>
                             </div>
-                        </div> </template
-                ></d-panel>
+                        </div>
+                    </template></d-panel
+                >
 
-                <div class="mt-3" v-if="quote?.quoteDetails && quote?.quoteDetails.length > 0">
+                <div class="mt-3">
                     <d-panel>
                         <template #panel-body>
                             <!-- <d-panel-title title="Détails" class-name="ps-2" /> -->
@@ -220,7 +235,8 @@
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, watch } from 'vue';
+
     import { useRoute, useRouter } from 'vue-router';
     import dBasePage from '../../../components/base/d-base-page.vue';
     import dPanel from '../../../components/common/d-panel.vue';
@@ -230,6 +246,7 @@
 
     import dCurrency from '../../../components/common/d-currency.vue';
     import dContremarqueDropdown from '../../../components/common/d-contremarque-dropdown.vue';
+    import dCustomerDropdown from '../../../components/common/d-customer-dropdown.vue';
     import dConversions from '../../../components/common/d-conversions.vue';
 
     import dUnitMeasurements from '../../../components/common/d-unit-measurements.vue';
@@ -238,12 +255,23 @@
     import { useMeta } from '/src/composables/use-meta';
     import Multiselect from 'vue-multiselect';
     import customerInvoiceService from '../../../Services/customer-invoice-service';
+    import customerInvoiceDetailsService from '../../../Services/customer-invoice-details-service';
     import quoteService from '../../../Services/quote-service';
-    import dTransportCondition from '../../../components/common/d-transportCondition.vue';
+    import invoiceTypeService from '../../../Services/invoice-type-service';
+
+    import dCarrierDropdown from '../../../components/common/d-carrier-dropdown.vue';
+
+    import dTarifExpedition from '../../../components/common/d-tarif-expedition.vue';
     import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
     import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
     import { Helper } from '../../../composables/global-methods';
+    import dRegulationsDropdown from '../../../components/common/d-regulations-dropdown.vue';
     import moment from 'moment';
+    import contremarqueService from '../../../Services/contremarque-service';
+    import dInvoiceTypes from '../../../components/common/d-invoice-types.vue';
+    import axiosInstance from '../../../config/http';
+    import dTaxRules from '../../../components/common/d-taxRules.vue';
+    import dRnNumberDropdown from '../../../components/common/d-rn-number-dropdown.vue';
     useMeta({ title: 'Nouvelle Facture' });
 
     const route = useRoute();
@@ -251,9 +279,16 @@
     const loading = ref(false);
     const quote_id = route.query.quote_id || null;
     const quote = ref({});
+    let carpetOrderDetailsId = ref(null);
+    const contremarque = ref({});
+    const selectedCustomer = ref(null);
+    const prescriber = ref(null);
+    const currentCustomer = ref({});
+    const regulations = ref([]);
+    const invoiceTypes = ref([]);
 
     const form = ref({
-        customerRef: '', //??
+        customerRef: null, //??
         invoiceNumber: '', //invoiceNumber == customerId
         invoiceDate: '',
         project: '', //??
@@ -262,42 +297,92 @@
         currency: null, //?
         rate: '', //?
         languageId: 0, //?
-        unit: '', //?
+        unitOfMeasurement: null, //?
         contremarque: null, //?
         prescripteur: '', //?
         description: '', //?
         reglement: '', //?
         tarifExpedition: '', //?
-        transporteur: '', //?
+        carrierId: null, //?
         numero: '', //?
-        otherRns: [''],
-        quantityTotal: '',
+        rn: null, //?
+        quantityTotal: null,
         shippingCostsHt: '',
         versement: '', //Versement==payment
         billed: '',
-        totalHt: '',
-        amountHt: '',
-        amountTva: '',
-        amountTtc: '',
+        totalHt: null,
+        amountHt: null,
+        amountTva: null,
+        amountTtc: null,
         carpetOrderId: null, // Quel champ???
     });
 
     const lines = ref([
         // Initial empty line
-        {
-            percent: null,
-            rn: '',
-            collection: null,
-            model: null,
-            refDevis: '',
-            refCommande: '',
-            versement: null,
-            priceM2: null,
-            priceSqft: null,
-            priceHt: null,
-            priceTtc: null,
-        },
+        // {
+        //     percent: null,
+        //     rn: '',
+        //     collection: null,
+        //     model: null,
+        //     refDevis: '',
+        //     refCommande: '',
+        //     versement: null,
+        //     priceM2: null,
+        //     priceSqft: null,
+        //     priceHt: null,
+        //     priceTtc: null,
+        // },
     ]);
+
+    watch(selectedCustomer, (customerId) => {
+        getCustomer(customerId);
+    });
+
+    watch(
+        () => form.value.contremarque,
+        (contremarqueId) => {
+            getContremarque(contremarqueId);
+        }
+    );
+
+    const fetchRegulations = async () => {
+        try {
+            const res = await axiosInstance.get('/api/regulations');
+            regulations.value = res.data.response || [];
+        } catch (error) {
+            console.error('Failed to fetch regulations:', error);
+        }
+    };
+    const ResultasRnData = (data) => {
+        if (data && data.data && data.data.response) {
+            const rnData = data.data.response;
+            console.log('data', data);
+
+            form.value.rn = rnData.rnNumber;
+            carpetOrderDetailsId = rnData.id;
+            // Push a new line to lines array with RN data
+            lines.value.push({
+                percent: null,
+                rn: rnData.rnNumber,
+                collection: rnData.imageCommand.carpetSpecification.collection?.id || null,
+                model: rnData.imageCommand.carpetSpecification.model?.id || null,
+                refDevis: rnData.imageCommand.reference || '',
+                refCommande: quote.value.reference || '',
+                versement: null,
+                priceM2: Helper.getPrice(rnData.imageCommand.prices, 'tarif.m².price'),
+                priceSqft: Helper.getPrice(rnData.imageCommand.prices, 'tarif.sqft.price'),
+                priceHt: Helper.getPrice(rnData.imageCommand.prices, 'prix-propose-avant-remise-complementaire.m².price'),
+                priceTtc: Helper.getPrice(rnData.imageCommand.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
+            });
+        }
+    };
+    const fetchInvoiceTypes = async () => {
+        try {
+            invoiceTypes.value = await invoiceTypeService.getInvoiceTypes();
+        } catch (error) {
+            console.error('Failed to fetch invoice types:', error);
+        }
+    };
 
     const getQuote = async (id) => {
         try {
@@ -306,6 +391,7 @@
                 const data = await quoteService.getQuoteById(id);
                 quote.value = data;
                 if (quote.value) {
+                    carpetOrderDetailsId = quote.value.id;
                     form.value = {
                         ...form.value,
                         languageId: quote.value?.language.id,
@@ -317,7 +403,7 @@
                         tva: quote.value.otherTva || '',
                         currency: quote.value.currency.id || null,
                         rate: quote.value.conversion.id || '',
-                        transporteur: quote.value.transportCondition.id || '',
+                        carrierId: quote.value.transportCondition.id || '',
                         contremarque: quote.value.contremarqueId || null,
                         shippingCostsHt: parseFloat(quote.value.shippingPrice) || '',
                         totalHt: parseFloat(quote.value.totalTaxExcluded) || '',
@@ -327,6 +413,9 @@
                         billed: parseFloat(quote.value.totalDiscountPercentage) || '',
                         amountTva: parseFloat(quote.value.tax) || '',
                     };
+                    if (form.value.contremarque) {
+                        getContremarque(form.value.contremarque);
+                    }
                 }
                 if (data?.quoteDetails) {
                     lines.value = data.quoteDetails.map((d) => ({
@@ -335,7 +424,8 @@
                         collection: d.carpetSpecification?.collection?.id || null,
                         model: d.carpetSpecification?.model?.id || null,
                         refDevis: d.reference,
-                        refCommande: '',
+                        // refCommande: '',
+                        refCommande: quote.value.reference,
                         versement: null,
                         priceM2: Helper.getPrice(d.prices, 'tarif.m².price'),
                         priceSqft: Helper.getPrice(d.prices, 'tarif.sqft.price'),
@@ -351,14 +441,86 @@
         }
     };
 
+    const getCustomer = async (customer_id) => {
+        try {
+            if (customer_id) {
+                currentCustomer.value = await contremarqueService.getCustomerById(customer_id);
+            }
+        } catch (e) {
+            const msg = "Un client d'id " + customer_id + " n'existe pas";
+            window.showMessage(msg, 'error');
+        }
+    };
+
+    const getContremarque = async (contremarque_id) => {
+        try {
+            if (contremarque_id) {
+                contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
+                selectedCustomer.value = contremarque.value.customer.customer_id;
+                prescriber.value = contremarque.value.prescriber.customer_id;
+            }
+        } catch (e) {
+            const msg = "Une contremarque d'id " + contremarque_id + " n'existe pas";
+            window.showMessage(msg, 'error');
+        }
+    };
+
     const save = async () => {
+        const payload = {
+            invoiceNumber: form.value.invoiceNumber,
+            invoiceDate: form.value.invoiceDate,
+            invoiceType: form.value.invoiceType,
+            carrierId: form.value.carrierId,
+            customerId: selectedCustomer.value,
+            carpetOrderId: carpetOrderDetailsId.value || null,
+            quantityTotal: form.value.quantityTotal,
+            shippingCostsHt: String(form.value.shippingCostsHt) || '',
+
+            billed: String(form.value.billed) || '',
+            payment: String(form.value.versement) || '',
+            totalHt: String(form.value.totalHt) || '',
+            amountHt: String(form.value.amountHt) || '',
+            amountTva: String(form.value.amountTva) || '',
+            amountTtc: String(form.value.amountTtc) || '',
+            prescriberId: form.value.prescripteur ? form.value.prescripteur.id : null,
+            invoiceTypeEntityId: form.value.invoiceType ? form.value.invoiceType.id : null,
+            currencyId: form.value.currency ? form.value.currency.id : null,
+            conversionId: form.value.rate ? form.value.rate.id : null,
+            languageId: form.value.languageId || 0,
+            mesurementId: form.value.unit ? form.value.unit.id : null,
+            regulationId: form.value.reglement ? form.value.reglement.id : null,
+            tarifExpeditionId: form.value.tarifExpedition ? form.value.tarifExpedition.id : null,
+            rnId: form.value.rn ? form.value.rn.id : null,
+        };
         try {
             loading.value = true;
             if (route.params.id) {
-                await customerInvoiceService.update(route.params.id, { ...form.value, lines: lines.value });
+                const resultat = await customerInvoiceService.update(route.params.id, payload);
+                console.log('resultat', resultat.id);
+                for (const line of lines.value) {
+                    await customerInvoiceDetailsService.create({
+                        customerInvoiceId: selectedCustomer.value,
+                        carpetOrderDetailId: carpetOrderDetailsId.value || resultat.id,
+                        cleared: false,
+                        refCommand: line.refDevis,
+                        refQuote: line.refCommande,
+                    });
+                }
                 window.showMessage('Mise à jour avec succés.');
             } else {
-                await customerInvoiceService.create({ ...form.value, lines: lines.value });
+                const resultat = await customerInvoiceService.create(payload);
+                console.log('resultat', resultat);
+                for (const line of lines.value) {
+                    await customerInvoiceDetailsService.create({
+                        customerInvoiceId: selectedCustomer.value,
+                        carpetOrderDetailId: carpetOrderDetailsId.value || resultat.id,
+                        cleared: false,
+                        refCommand: line.refDevis,
+                        refQuote: line.refCommande,
+                    });
+                }
+
+                // }
                 window.showMessage('Ajout avec succés.');
                 router.push({ name: 'client-invoice-list' });
             }
@@ -373,18 +535,39 @@
         if (route.params.id) {
             await getQuote(route.params.id);
         }
+        fetchRegulations();
+        fetchInvoiceTypes();
     });
 
-    const saveLine = (index) => {
-        console.log('save line', lines.value[index]);
+    const saveLine = async (index) => {
+        const line = lines.value[index];
+
+        try {
+            await customerInvoiceDetailsService.create({
+                customerInvoiceId: selectedCustomer.value || null,
+                carpetOrderDetailId: carpetOrderDetailsId.value || id,
+                cleared: false,
+                refCommand: line.refDevis,
+                refQuote: line.refCommande,
+            });
+            window.showMessage('Ligne mise à jour avec succès');
+        } catch (e) {
+            window.showMessage(e.message, 'error');
+        }
     };
 
-    const removeLine = (index) => {
+    const removeLine = async (index) => {
+        const line = lines.value[index];
+        if (line.id) {
+            try {
+                await customerInvoiceDetailsService.delete(line.id);
+                window.showMessage('Ligne supprimée avec succès');
+            } catch (e) {
+                window.showMessage(e.message, 'error');
+                return;
+            }
+        }
         lines.value.splice(index, 1);
-    };
-
-    const addAutreRn = () => {
-        form.value.otherRns.push('');
     };
 </script>
 
