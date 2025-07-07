@@ -104,15 +104,31 @@
 
                                             <!-- Devis -->
                                             <td>
-                                                <input type="text" class="form-control form-control-sm"
-                                                    v-model="allocation.devis" @change="updateDevis(index)" />
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <input type="text" class="form-control form-control-sm"
+                                                        v-model="allocation.devis" @change="updateDevis(index)" />
+                                                    <router-link 
+                                                        v-if="allocation.quoteId && $hasPermission('update quote')"
+                                                        :to="'/projet/devis/manage/' + allocation.quoteId"
+                                                        class="ms-1">
+                                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                                    </router-link>
+                                                </div>
                                             </td>
 
                                             <!-- Commande -->
                                             <td>
-                                                <input type="text" class="form-control form-control-sm"
-                                                    v-model="allocation.commande_ref"
-                                                    @change="updateCommandeRef(index)" />
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <input type="text" class="form-control form-control-sm"
+                                                        v-model="allocation.commande_ref"
+                                                        @change="updateCommandeRef(index)" />
+                                                    <router-link 
+                                                        v-if="allocation.orderId && $hasPermission('update carpet')"
+                                                        :to="'/projet/commande/manage/' + allocation.orderId"
+                                                        class="ms-1">
+                                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                                    </router-link>
+                                                </div>
                                             </td>
 
                                             <!-- RN -->

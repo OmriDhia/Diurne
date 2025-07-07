@@ -89,7 +89,7 @@
                             </div>
                             <d-panel-title title="Commercial" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0">
-                                <d-commertial-histories :commertialData="currentCustomer.contactCommercialHistoriesData"></d-commertial-histories>
+                                <d-commertial-histories :commercialData="contremarque.commercials"></d-commertial-histories>
                             </div>
                         </template>
                     </d-panel>
