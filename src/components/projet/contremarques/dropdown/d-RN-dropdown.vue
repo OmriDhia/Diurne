@@ -89,7 +89,7 @@
     const data = ref([]);
     const selectedValue = ref(null);
     const isLoading = ref(false);
-    const currentAttribution = ref([]);
+    const currentAttribution = ref(null);
     const canceldAttribution = ref(null);
     // Méthodes
 
@@ -101,18 +101,18 @@
 
         try {
             const response = await axiosInstance.get(`/api/rnAttributions/${props.carpetOrderDetailsId}`);
-            if (response.data.response.active && !response.data.response.active.canceledAt) {
-                console.log('currentAttribution', response.data.response.active);
-                currentAttribution.value = response.data.response.active;
+            const { active, lastCanceled } = response.data.response;
+
+            if (active && !active.canceledAt) {
+                console.log('currentAttribution', active);
+                currentAttribution.value = active;
                 // Set selected RN if attribution exists
                 selectedValue.value = data.value.find((item) => item.id === currentAttribution.value.carpet) || null;
-            }
-            if (response.data.response.lastCanceled) {
-                console.log(response.data.response.lastCanceled, 'lastCanceled');
-                canceldAttribution.value = response.data.response.lastCanceled;
             } else {
                 currentAttribution.value = null;
             }
+
+            canceldAttribution.value = lastCanceled || null;
         } catch (error) {
             console.error('Error fetching attribution:', error);
             currentAttribution.value = null;
@@ -194,7 +194,7 @@
         () => props.modelValue,
         (newValue) => {
             selectedValue.value = data.value.find((item) => item.id === newValue) || null;
-        }
+        },
     );
     // Lifecycle
     watch(
@@ -205,7 +205,7 @@
             } else {
                 currentAttribution.value = null;
             }
-        }
+        },
     );
     onMounted(async () => {
         await fetchData();
