@@ -5,7 +5,9 @@
                 <d-input :disabled="true" :model-value="`${getRnNumber(canceldAttribution.carpet)}`"></d-input>
             </div>
             <div class="col-4">
-                <div class="text-gray-700">Annulée le {{ $Helper.FormatDate(canceldAttribution.canceledAt, 'DD/MM/YYYY') }}</div>
+                <div class="text-gray-700">Annulée le {{ $Helper.FormatDate(canceldAttribution.canceledAt, 'DD/MM/YYYY')
+                    }}
+                </div>
             </div>
         </div>
     </div>
@@ -35,14 +37,19 @@
             </a>
         </div>
         <div class="col-4">
-            <button class="px-6 py-2 bg-black text-white rounded" @click="cancelRnAttribution" v-if="currentAttribution">ANNULÉ RN</button>
-            <button class="px-6 py-2 bg-black text-white rounded" @click="createRnAttribution" v-if="!currentAttribution">Associer à un RN</button>
+            <button class="px-6 py-2 bg-black text-white rounded" @click="cancelRnAttribution"
+                    v-if="!currentAttribution">ANNULÉ RN
+            </button>
+            <button class="px-6 py-2 bg-black text-white rounded" @click="createRnAttribution"
+                    v-if="currentAttribution">Associer à un RN
+            </button>
         </div>
     </div>
 
     <div class="row align-items-center justify-content-end" v-if="!showOnlyDropdown && !hideBtn">
         <div class="col-md-8">
-            <button class="btn btn-custom pe-2 ps-2 font-size-0-7 w-100" @click="goToSettings">Créer une collection</button>
+            <button class="btn btn-custom pe-2 ps-2 font-size-0-7 w-100" @click="goToSettings">Créer une collection
+            </button>
         </div>
     </div>
 </template>
@@ -57,31 +64,31 @@
     const props = defineProps({
         modelValue: {
             type: [Number, String, null],
-            required: true,
+            required: true
         },
         error: {
             type: [String, Boolean],
-            default: '',
+            default: ''
         },
         required: {
             type: Boolean,
-            default: false,
+            default: false
         },
         disabled: {
             type: Boolean,
-            default: false,
+            default: false
         },
         showOnlyDropdown: {
             type: Boolean,
-            default: false,
+            default: false
         },
         hideBtn: {
             type: Boolean,
-            default: false,
+            default: false
         },
         carpetOrderDetailsId: {
-            type: Number,
-        },
+            type: Number
+        }
     });
 
     const emit = defineEmits(['update:modelValue', 'rn-attribution-created']);
@@ -92,7 +99,8 @@
     const currentAttribution = ref([]);
     const canceldAttribution = ref(null);
     // Méthodes
-
+    console.log(canceldAttribution.value);
+    console.log(currentAttribution.value);
     // Separate function to fetch attribution
     const fetchAttribution = async () => {
         console.log('fetchAttribution');
@@ -136,13 +144,17 @@
     };
 
     const createRnAttribution = async () => {
+        console.log('clicked');
+        console.log('props.carpetOrderDetailsId', props.carpetOrderDetailsId);
+        console.log('props.carpetOrderDetailsId', selectedValue.value?.id);
+        console.log((!selectedValue.value?.id || !props.carpetOrderDetailsId));
         if (!selectedValue.value?.id || !props.carpetOrderDetailsId) return;
         isLoading.value = true;
         try {
             const payload = {
                 carpetOrderDetailId: props.carpetOrderDetailsId,
                 carpetId: selectedValue.value.id,
-                canceledAt: null,
+                canceledAt: null
             };
 
             const response = await axiosInstance.post('/api/rnAttributions', payload);
@@ -152,7 +164,7 @@
             alert('RN attribution créée avec succès!');
         } catch (error) {
             console.error('Error creating RN attribution:', error);
-            alert("Erreur lors de la création de l'attribution RN");
+            alert('Erreur lors de la création de l\'attribution RN');
         } finally {
             isLoading.value = false;
         }
@@ -179,7 +191,7 @@
         }
     };
     const goToSettings = () => {
-        console.log("Redirection vers la création d'une collection...");
+        console.log('Redirection vers la création d\'une collection...');
     };
     const getRnNumber = (carpetId) => {
         const carpet = data.value.find((item) => item.id === carpetId);
