@@ -71,7 +71,7 @@
                                             <div class="row">
                                                 <div class="col-12">
                                                     <d-RN-dropdown :required="true" :hideBtn="true"
-                                                                   v-model="carpetOrderDetailsId"
+                                                                   v-model="rnId"
                                                                    :carpetOrderDetailsId="carpetOrderDetailsId"
                                                                    :error="validationSubmitErrors.collectionId"></d-RN-dropdown>
                                                 </div>
@@ -683,6 +683,7 @@
     };
 
     let carpetOrderDetailsId = ref(null);
+    let rnId = ref(null);
 
     const getCarpetOrderDetail = async (quoteDetailId) => {
         try {
