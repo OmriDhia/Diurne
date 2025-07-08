@@ -9,6 +9,14 @@ export default {
             throw new Error('Échec de récupération de devis');
         }
     },
+    async getAllQuoteById(quote_id) {
+        try {
+            const res = await axiosInstance.get(`/api/quote/${quote_id}`);
+            return res.data.response;
+        } catch (error) {
+            throw new Error('Échec de récupération de devis');
+        }
+    },
     async getCarpetOrderDetailByIdQuoteById(quoteDetailId) {
         try {
             const res = await axiosInstance.get(`/api/carpetOrdersDetail/${quoteDetailId}`);

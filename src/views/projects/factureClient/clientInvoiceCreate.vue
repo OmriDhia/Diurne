@@ -221,7 +221,7 @@
                                 </div>
                                 <div class="col-md-3 bloc-btns-actions">
                                     <button class="btn btn-custom">RÉPARTITION</button>
-                                    <button class="btn btn-custom">CALCULER</button>
+                                    <button class="btn btn-custom" @click="calculate">CALCULER</button>
                                     <button class="btn btn-custom" @click="save">ÉDITER</button>
                                     <button class="btn btn-custom">RATTACHER UN RÈGLEMENT</button>
                                 </div>
@@ -277,7 +277,6 @@
     const route = useRoute();
     const router = useRouter();
     const loading = ref(false);
-    const quote_id = route.query.quote_id || null;
     const quote = ref({});
     let carpetOrderDetailsId = ref(null);
     const contremarque = ref({});
@@ -359,7 +358,7 @@
             console.log('data', data);
 
             form.value.rn = rnData.rnNumber;
-            carpetOrderDetailsId = rnData.id;
+            carpetOrderDetailsId.value = rnData.imageCommand.carpetSpecification.id;
             // Push a new line to lines array with RN data
             lines.value.push({
                 percent: null,
@@ -388,21 +387,23 @@
         try {
             if (id) {
                 loading.value = true;
-                const data = await quoteService.getQuoteById(id);
-                quote.value = data;
+                const data = await quoteService.getAllQuoteById(id);
+                quote.value = data.quoteData;
+
                 if (quote.value) {
                     carpetOrderDetailsId = quote.value.id;
                     form.value = {
                         ...form.value,
                         languageId: quote.value?.language.id,
                         // prescripteur: quote.value.prescripteur.id || '',
-                        customerRef: quote.value.reference || '',
+                        //customerRef: quote.value.reference || '',
                         invoiceNumber: quote.value.invoiceNumber || '',
                         invoiceDate: moment(quote.value.createdAt).format('YYYY-MM-DD') || '',
                         invoiceType: quote.value.invoiceType || '',
                         tva: quote.value.otherTva || '',
                         currency: quote.value.currency.id || null,
                         rate: quote.value.conversion.id || '',
+
                         carrierId: quote.value.transportCondition.id || '',
                         contremarque: quote.value.contremarqueId || null,
                         shippingCostsHt: parseFloat(quote.value.shippingPrice) || '',
@@ -417,16 +418,15 @@
                         getContremarque(form.value.contremarque);
                     }
                 }
-                if (data?.quoteDetails) {
-                    lines.value = data.quoteDetails.map((d) => ({
+                if (data?.quoteData.quoteDetails) {
+                    lines.value = data.quoteData.quoteDetails.map((d) => ({
                         percent: d.impactOnTheQuotePrice,
                         rn: d.rn,
                         collection: d.carpetSpecification?.collection?.id || null,
                         model: d.carpetSpecification?.model?.id || null,
-                        refDevis: d.reference,
-                        // refCommande: '',
-                        refCommande: quote.value.reference,
-                        versement: null,
+                        refDevis: data.originalQuoteData.reference,
+                        refCommande: d.reference,
+                        versement: 0,
                         priceM2: Helper.getPrice(d.prices, 'tarif.m².price'),
                         priceSqft: Helper.getPrice(d.prices, 'tarif.sqft.price'),
                         priceHt: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.m².price'),
@@ -451,7 +451,60 @@
             window.showMessage(msg, 'error');
         }
     };
+    const fetchInvoiceById = async () => {
+        try {
+            quote.value = await customerInvoiceService.getById(route.params.id);
+            console.log('quote.value', quote.value);
+            selectedCustomer.value = quote.value.customer_id;
 
+            form.value = {
+                languageId: quote.value?.language_id,
+                prescripteur: quote.value.prescriber_id || '',
+                //customerRef: quote.value.reference || '',
+                invoiceNumber: quote.value.invoice_number || '',
+                invoiceDate: moment(quote.value.invoice_date).format('YYYY-MM-DD') || '',
+                invoiceType: quote.value.invoice_type || '',
+                unitOfMeasurement: quote.value.lmesurement_id || '',
+                tva: quote.value.otherTva || '',
+                currency: quote.value.currency_id || null,
+                prescripteur: quote.value.prescriber_id || '',
+                rate: quote.value.conversion_id || '',
+                carrierId: quote.value.carrier_id || '',
+                tarifExpedition: quote.value.tarifExpedition_id || '',
+                reglement: quote.value.regulation_id || '',
+                rn: quote.value.rn_id || '',
+                //contremarque: quote.value.contremarque_id || null,
+                shippingCostsHt: parseFloat(quote.value.shipping_costs_ht) || '',
+                totalHt: parseFloat(quote.value.total_ht) || '',
+                amountHt: parseFloat(quote.value.amount_ht) || '',
+                amountTtc: parseFloat(quote.value.amount_ttc) || '',
+                versement: parseFloat(quote.value.payment) || '',
+                billed: parseFloat(quote.value.billed) || '',
+                amountTva: parseFloat(quote.value.amount_tva) || '',
+            };
+
+            if (form.value.contremarque) {
+                getContremarque(form.value.contremarque);
+            }
+            lines.value = quote.value.customerInvoiceDetails.length
+                ? quote.value.customerInvoiceDetails.map((d) => ({
+                      percent: d.impactOnTheQuotePrice,
+                      rn: d.rn,
+                      collection: d.carpetSpecification?.collection?.id || null,
+                      model: d.carpetSpecification?.model?.id || null,
+                      refDevis: data.originalQuoteData.quoteDetailReferences.reference,
+                      refCommande: d.value.reference,
+                      versement: null,
+                      priceM2: Helper.getPrice(d.prices, 'tarif.m².price'),
+                      priceSqft: Helper.getPrice(d.prices, 'tarif.sqft.price'),
+                      priceHt: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.m².price'),
+                      priceTtc: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
+                  }))
+                : [];
+        } catch (error) {
+            console.error('Failed to fetch invoice types:', error);
+        }
+    };
     const getContremarque = async (contremarque_id) => {
         try {
             if (contremarque_id) {
@@ -464,7 +517,23 @@
             window.showMessage(msg, 'error');
         }
     };
+    const calculate = () => {
+        let totalHtFromLines = 0;
+        lines.value.forEach((line) => {
+            totalHtFromLines += parseFloat(line.priceHt || 0);
+        });
+        form.value.quantityTotal = lines.value.length; // Assuming quantityTotal is the number of lines
 
+        form.value.totalHt = totalHtFromLines;
+
+        const shippingCosts = parseFloat(form.value.shippingCostsHt || 0);
+        form.value.amountHt = form.value.totalHt + shippingCosts;
+
+        const tvaRate = form.value.tva?.rate || 0; // Assuming form.tva has a 'rate' property
+        form.value.amountTva = form.value.amountHt * (tvaRate / 100);
+
+        form.value.amountTtc = form.value.amountHt + form.value.amountTva;
+    };
     const save = async () => {
         const payload = {
             invoiceNumber: form.value.invoiceNumber,
@@ -475,7 +544,6 @@
             carpetOrderId: carpetOrderDetailsId.value || null,
             quantityTotal: form.value.quantityTotal,
             shippingCostsHt: String(form.value.shippingCostsHt) || '',
-
             billed: String(form.value.billed) || '',
             payment: String(form.value.versement) || '',
             totalHt: String(form.value.totalHt) || '',
@@ -497,24 +565,60 @@
             if (route.params.id) {
                 const resultat = await customerInvoiceService.update(route.params.id, payload);
                 console.log('resultat', resultat.id);
-                for (const line of lines.value) {
-                    await customerInvoiceDetailsService.create({
-                        customerInvoiceId: selectedCustomer.value,
-                        carpetOrderDetailId: carpetOrderDetailsId.value || resultat.id,
-                        cleared: false,
-                        refCommand: line.refDevis,
-                        refQuote: line.refCommande,
-                    });
+                if (form.value.rn) {
+                    const resultat = await customerInvoiceService.create(payload);
+                    console.log('resultat', resultat);
+                    for (const line of lines.value) {
+                        await customerInvoiceDetailsService.create({
+                            customerInvoiceId: resultat.id,
+                            carpetOrderDetailId: carpetOrderDetailsId.value,
+                            cleared: false,
+                            rn: line.rn,
+                            collectionId: line.collection,
+                            modelId: line.model,
+                            m2: line.priceM2,
+                            sqft: line.priceSqft,
+                            ht: line.priceHt,
+                            ttc: line.priceTtc,
+                            refCommand: line.refDevis,
+                            refQuote: line.refCommande,
+                        });
+                    }
+                } else {
+                    for (const line of lines.value) {
+                        await customerInvoiceDetailsService.update(route.params.id, {
+                            customerInvoiceId: resultat.id,
+                            carpetOrderDetailId: carpetOrderDetailsId.value,
+                            cleared: false,
+                            rn: line.rn,
+                            collectionId: line.collection,
+                            modelId: line.model,
+                            m2: line.priceM2,
+                            sqft: line.priceSqft,
+                            ht: line.priceHt,
+                            ttc: line.priceTtc,
+                            refCommand: line.refDevis,
+                            refQuote: line.refCommande,
+                        });
+                    }
                 }
+
                 window.showMessage('Mise à jour avec succés.');
             } else {
                 const resultat = await customerInvoiceService.create(payload);
                 console.log('resultat', resultat);
                 for (const line of lines.value) {
                     await customerInvoiceDetailsService.create({
-                        customerInvoiceId: selectedCustomer.value,
-                        carpetOrderDetailId: carpetOrderDetailsId.value || resultat.id,
+                        customerInvoiceId: resultat.id,
+                        carpetOrderDetailId: carpetOrderDetailsId.value,
                         cleared: false,
+                        rn: line.rn,
+                        collectionId: line.collection,
+                        modelId: line.model,
+                        m2: line.priceM2,
+                        sqft: line.priceSqft,
+                        ht: line.priceHt,
+                        ttc: line.priceTtc,
                         refCommand: line.refDevis,
                         refQuote: line.refCommande,
                     });
@@ -532,8 +636,13 @@
     };
 
     onMounted(async () => {
-        if (route.params.id) {
-            await getQuote(route.params.id);
+        // Check if creating from a quote
+        console.log(route.query.quote_id);
+
+        if (route.query.quote_id) {
+            await getQuote(route.query.quote_id);
+        } else if (route.params.id) {
+            await fetchInvoiceById(route.params.id);
         }
         fetchRegulations();
         fetchInvoiceTypes();
@@ -541,12 +650,22 @@
 
     const saveLine = async (index) => {
         const line = lines.value[index];
+        console.log('ddd', carpetOrderDetailsId.value);
 
         try {
             await customerInvoiceDetailsService.create({
-                customerInvoiceId: selectedCustomer.value || null,
-                carpetOrderDetailId: carpetOrderDetailsId.value || id,
+                customerInvoiceId: route.params.id || null,
+                carpetOrderDetailId: carpetOrderDetailsId.value,
                 cleared: false,
+                refCommand: line.refDevis,
+                refQuote: line.refCommande,
+                rn: line.rn,
+                collectionId: line.collection,
+                modelId: line.model,
+                m2: line.priceM2,
+                sqft: line.priceSqft,
+                ht: line.priceHt,
+                ttc: line.priceTtc,
                 refCommand: line.refDevis,
                 refQuote: line.refCommande,
             });
