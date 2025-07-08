@@ -38,10 +38,10 @@
         </div>
         <div class="col-4">
             <button class="px-6 py-2 bg-black text-white rounded" @click="cancelRnAttribution"
-                    v-if="!currentAttribution">ANNULÉ RN
+                    v-if="currentAttribution">ANNULÉ RN
             </button>
             <button class="px-6 py-2 bg-black text-white rounded" @click="createRnAttribution"
-                    v-if="currentAttribution">Associer à un RN
+                    v-if="!currentAttribution">Associer à un RN
             </button>
         </div>
     </div>
@@ -99,8 +99,7 @@
     const currentAttribution = ref([]);
     const canceldAttribution = ref(null);
     // Méthodes
-    console.log(canceldAttribution.value);
-    console.log(currentAttribution.value);
+
     // Separate function to fetch attribution
     const fetchAttribution = async () => {
         console.log('fetchAttribution');
@@ -144,10 +143,6 @@
     };
 
     const createRnAttribution = async () => {
-        console.log('clicked');
-        console.log('props.carpetOrderDetailsId', props.carpetOrderDetailsId);
-        console.log('props.carpetOrderDetailsId', selectedValue.value?.id);
-        console.log((!selectedValue.value?.id || !props.carpetOrderDetailsId));
         if (!selectedValue.value?.id || !props.carpetOrderDetailsId) return;
         isLoading.value = true;
         try {

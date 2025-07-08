@@ -689,7 +689,7 @@
             if (quoteDetailId) {
                 const response = await quoteService.getCarpetOrderDetailByIdQuoteById(quoteDetailId);
                 CarpetOrderDetail.value = response;
-                carpetOrderDetailsId = response.id;
+                carpetOrderDetailsId.value = response.id;
                 console.log('Parent - Set carpetOrderDetailsId:', response.id);
             }
         } catch (e) {
