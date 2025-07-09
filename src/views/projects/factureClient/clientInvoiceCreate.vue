@@ -344,27 +344,31 @@
         }
     );
     const mapDetailsToLines = (details, originalQuoteReference = null) => {
-        if (!details || !details.length) {
+        if (!details || !Array.isArray(details)) {
+            // Add check if details is an array
             return [];
         }
-        return details.map((d) => ({
-            id: d.id, // Add ID for updates/deletes
-            percent: d.impactOnTheQuotePrice,
-            rn: d.rn,
-            collection: d.carpetSpecification?.collection?.id || null,
-            model: d.carpetSpecification?.model?.id || null,
+        return details.map((d) => {
+            // Use map instead of for...of with early return
+            return {
+                id: d.id, // Add ID for updates/deletes
+                percent: d.impactOnTheQuotePrice,
+                rn: d.rn,
+                collection: d.carpetSpecification?.collection?.id || null,
+                model: d.carpetSpecification?.model?.id || null,
 
-            // If loading from a quote, refDevis comes from the original quote header, refCommande from the quote detail.
-            refDevis: originalQuoteReference || d.refQuote || '', // Use originalQuoteReference if provided (from quote), otherwise try d.refQuote (from invoice detail)
-            refCommande: d.reference || d.refCommand || '', // Use d.reference (from quote detail) or d.refCommand (from invoice detail)
-            versement: d.payment || 0, // Assuming payment might be on the detail line, or default to 0
-            priceM2: Helper.getPrice(d.prices, 'tarif.m².price'),
-            priceSqft: Helper.getPrice(d.prices, 'tarif.sqft.price'),
-            priceHt: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.m².price'),
-            priceTtc: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
-            carpetOrderDetailId: d.carpetOrderDetailId || null, // Keep track of the source detail ID
-            cleared: d.cleared || false, // Keep track of cleared status
-        }));
+                // If loading from a quote, refDevis comes from the original quote header, refCommande from the quote detail.
+                refDevis: originalQuoteReference || d.refQuote || '', // Use originalQuoteReference if provided (from quote), otherwise try d.refQuote (from invoice detail)
+                refCommande: d.reference || d.refCommand || '', // Use d.reference (from quote detail) or d.refCommand (from invoice detail)
+                versement: d.payment || 0, // Assuming payment might be on the detail line, or default to 0
+                priceM2: Helper.getPrice(d.prices, 'tarif.m².price'),
+                priceSqft: Helper.getPrice(d.prices, 'tarif.sqft.price'),
+                priceHt: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.m².price'),
+                priceTtc: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
+                carpetOrderDetailId: d.carpetOrderDetailId || null, // Keep track of the source detail ID
+                cleared: d.cleared || false, // Keep track of cleared status
+            };
+        });
     };
     const fetchRegulations = async () => {
         try {
@@ -380,7 +384,7 @@
             console.log('data', data);
             rnId.value = rnData.id; // Assuming rnData has an ID
             // form.value.rn = rnData.rnNumber; // Don't set form.rn here, it's for the header
-            // carpetOrderDetailsId.value = rnData.imageCommand.carpetSpecification.id; // This seems incorrect, should be the detail ID
+            carpetOrderDetailsId.value = rnData.imageCommand.carpetSpecification.id; // This seems incorrect, should be the detail ID
 
             // Push a new line to lines array with RN data
             lines.value.push({
@@ -418,7 +422,6 @@
                 const originalQuoteData = data.originalQuoteData;
 
                 if (quoteData) {
-                    carpetOrderDetailsId.value = quote.value.id;
                     // Populate form fields relevant when creating an invoice from a quote
                     selectedCustomer.value = quoteData.customer?.id || null;
                     form.value.contremarque = quoteData.contremarqueId || null;
@@ -428,7 +431,7 @@
                     form.value.rate = quoteData.conversion?.id || '';
                     form.value.carrierId = quoteData.transportCondition?.id || '';
                     form.value.shippingCostsHt = quoteData.shippingPrice || '';
-                    form.value.carpetOrderId = quoteData.carpetOrderId || null; // Assuming quoteData has carpetOrderId
+                    form.value.carpetOrderId = quoteData.carpetOrderDetail || null; // Assuming quoteData has carpetOrderId
 
                     // Invoice-specific fields should be empty or default for a new invoice
                     form.value.invoiceNumber = '';
@@ -481,6 +484,10 @@
 
                 if (invoiceData) {
                     selectedCustomer.value = invoiceData.customer_id;
+
+                    // carpetOrderDetailsId.value = invoiceData.customerInvoiceDetails?.[0].carpetOrderDetail || invoiceData.customerInvoiceDetails.carpetOrderDetail;
+                    // console.log('carpetOrderDetailsId', carpetOrderDetailsId.value);
+
                     form.value = {
                         languageId: invoiceData.language_id || 0,
                         prescripteur: invoiceData.prescriber_id || '',
@@ -518,11 +525,8 @@
                     }
 
                     // Populate lines from invoice details using the helper
-                    if (invoiceData.customerInvoiceDetails) {
-                        lines.value = mapDetailsToLines(invoiceData.customerInvoiceDetails);
-                    } else {
-                        lines.value = [];
-                    }
+
+                    lines.value = mapDetailsToLines(invoiceData.customerInvoiceDetails);
                 }
             }
         } catch (error) {
@@ -601,21 +605,21 @@
             let resultat;
             if (invoiceId) {
                 resultat = await customerInvoiceService.update(invoiceId, payload);
+                console.log('resultat', form.value.rn);
 
                 if (form.value.rn) {
                     for (const line of lines.value) {
                         const linePayload = {
-                            customerInvoiceId: invoiceId, // Link to the new invoice
-                            // Use the carpetOrderDetailId stored on the line object (from RN data or quote mapping)
-                            carpetOrderDetailId: line.carpetOrderDetailId || null,
+                            customerInvoiceId: parseInt(invoiceId), // Link to the new invoice
+                            carpetOrderDetailId: carpetOrderDetailsId.value || null,
                             cleared: line.cleared || false,
                             rn: line.rn,
-                            collectionId: line.collection,
-                            modelId: line.model,
-                            m2: line.priceM2 || null,
-                            sqft: line.priceSqft || null,
-                            ht: line.priceHt || null,
-                            ttc: line.priceTtc || null,
+                            collectionId: line.collectionId || null,
+                            modelId: line.modelId || null,
+                            m2: String(line.priceM2) || null,
+                            sqft: String(line.priceSqft) || null,
+                            ht: String(line.priceHt) || null,
+                            ttc: String(line.priceTtc) || null,
                             refCommand: line.refCommande,
                             refQuote: line.refDevis,
                             payment: line.versement || null,
@@ -627,17 +631,17 @@
                 } else {
                     for (const line of lines.value) {
                         const linePayload = {
-                            customerInvoiceId: invoiceId, // Link to the new invoice
+                            customerInvoiceId: parseInt(invoiceId), // Link to the new invoice
                             // Use the carpetOrderDetailId stored on the line object (from RN data or quote mapping)
-                            carpetOrderDetailId: line.carpetOrderDetailId || null,
+                            carpetOrderDetailId: carpetOrderDetailsId.value || null,
                             cleared: line.cleared || false,
                             rn: line.rn,
                             collectionId: line.collection,
                             modelId: line.model,
-                            m2: line.priceM2 || null,
-                            sqft: line.priceSqft || null,
-                            ht: line.priceHt || null,
-                            ttc: line.priceTtc || null,
+                            m2: String(line.priceM2) || null,
+                            sqft: String(line.priceSqft) || null,
+                            ht: String(line.priceHt) || null,
+                            ttc: String(line.priceTtc) || null,
                             refCommand: line.refCommande,
                             refQuote: line.refDevis,
                             payment: line.versement || null,
@@ -654,17 +658,17 @@
                 if (form.value.rn) {
                     for (const line of lines.value) {
                         const linePayload = {
-                            customerInvoiceId: resultat.id, // Link to the new invoice
+                            customerInvoiceId: parseInt(resultat.id), // Link to the new invoice
                             // Use the carpetOrderDetailId stored on the line object (from RN data or quote mapping)
-                            carpetOrderDetailId: line.carpetOrderDetailId || null,
+                            carpetOrderDetailId: carpetOrderDetailsId.value || null,
                             cleared: line.cleared || false,
                             rn: line.rn,
                             collectionId: line.collection,
                             modelId: line.model,
-                            m2: line.priceM2 || null,
-                            sqft: line.priceSqft || null,
-                            ht: line.priceHt || null,
-                            ttc: line.priceTtc || null,
+                            m2: String(line.priceM2) || null,
+                            sqft: String(line.priceSqft) || null,
+                            ht: String(line.priceHt) || null,
+                            ttc: String(line.priceTtc) || null,
                             refCommand: line.refCommande,
                             refQuote: line.refDevis,
                             payment: line.versement || null,
@@ -699,7 +703,7 @@
 
     const saveLine = async (index) => {
         const line = lines.value[index];
-        const invoiceId = route.params.id; // Get invoice ID from route params
+        const invoiceId = route.params.id || null; // Get invoice ID from route params
 
         if (!invoiceId) {
             window.showMessage("Veuillez d'abord enregistrer la facture principale.", 'warning');
@@ -708,16 +712,16 @@
 
         // Ensure line data is correctly mapped for the API call
         const linePayload = {
-            customerInvoiceId: invoiceId, // Link to the main invoice
-            carpetOrderDetailId: line.carpetOrderDetailId || null, // Use the ID stored on the line
+            customerInvoiceId: parseInt(invoiceId), // Link to the main invoice
+            carpetOrderDetailId: carpetOrderDetailsId.value || null, // Use the ID stored on the line
             cleared: line.cleared || false,
             rn: line.rn,
             collectionId: line.collection,
             modelId: line.model,
-            m2: line.priceM2 || null,
-            sqft: line.priceSqft || null,
-            ht: line.priceHt || null,
-            ttc: line.priceTtc || null,
+            m2: String(line.priceM2) || null,
+            sqft: String(line.priceSqft) || null,
+            ht: String(line.priceHt) || null,
+            ttc: String(line.priceTtc) || null,
             refCommand: line.refCommande,
             refQuote: line.refDevis,
             payment: line.versement || null,

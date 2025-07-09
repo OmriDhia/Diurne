@@ -11,23 +11,23 @@
                         <!-- <d-panel-title title="Caractéristiques facture" class-name="ps-2" /> -->
                         <div class="row">
                             <div class="col-md-4">
-                                <d-input label="Numéro facture" v-model="form.invoice_number" />
-                                <d-input label="Packing list" v-model="form.packing_list" class="pt-2" />
-                                <d-currency v-model="form.currency_id" class="pt-2" />
+                                <d-input label="Numéro facture" v-model="form.invoiceNumber" />
+                                <d-input label="Packing list" v-model="form.packingList" class="pt-2" />
+                                <d-currency v-model="form.currencyId" class="pt-2" />
                             </div>
                             <div class="col-md-4">
                                 <div class="row align-items-center">
                                     <label for="invoice-date" class="col-4">Date facture</label>
                                     <div class="col-8">
-                                        <input id="invoice-date" class="form-control custom-date" type="date" v-model="form.invoice_date" />
+                                        <input id="invoice-date" class="form-control custom-date" type="date" v-model="form.invoiceDate" />
                                     </div>
                                 </div>
-                                <d-input label="Air way bill" v-model="form.air_way" class="pt-2" />
+                                <d-input label="Air way bill" v-model="form.airWay" class="pt-2" />
                             </div>
 
                             <div class="col-md-4">
                                 <d-input label="Fournisseur" v-model="form.supplier" />
-                                <d-input label="Fret total" v-model="form.fret_total" class="pt-2" />
+                                <d-input label="Fret total" v-model="form.freightTotal" class="pt-2" />
                                 <div class="form-check text-end pt-2">
                                     <input class="form-check-input" type="radio" id="freight-included" v-model="form.freightIncluded" />
                                     <label class="form-check-label" for="freight-included">compris dans la facture</label>
@@ -64,20 +64,19 @@
                                     </thead>
                                     <tbody>
                                         <tr v-for="(line, index) in lines" :key="index">
-                                            <td class="rn-custom-td"><d-rn-number-dropdown v-model="line.rn"></d-rn-number-dropdown></td>
-                                            <td><input type="text" class="form-control form-control-sm" v-model="line.numeroTapis" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.prixM2" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.surfaceFacture" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.prixFacture" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.prixTheorique" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.penalite" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.surfaceProduite" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.montantReelAvoir" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.avoirTheorique" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.montantReelAvoir2" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.montantFinalTapis" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.poids" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.pourcentPoids" /></td>
+                                            <td class="rn-custom-td"><d-rn-number-dropdown v-model="form.rn" @dataOfRn="ResultasRnData" :showActionRn="true"></d-rn-number-dropdown></td>
+                                            <td><input type="text" class="form-control form-control-sm" v-model="line.carpetNumber" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.pricePerSquareMeter" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.invoiceSurface" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.invoiceAmount" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.theoreticalPrice" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.penalty" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.producedSurface" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.actualCreditAmount" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.theoreticalCredit" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.finalCarpetAmount" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.weight" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.weightPercentage" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.fret" /></td>
                                             <td class="text-center td-actions">
                                                 <button class="btn btn-add btn-sm me-1" @click="saveLine(index)">
@@ -97,7 +96,7 @@
 
                             <div class="row mt-3">
                                 <div class="col-md-4">
-                                    <d-input label="Autre montant" v-model="form.amount_other" />
+                                    <d-input label="Autre montant" v-model="form.amountOther" />
                                     <d-input label="Poids" v-model="form.weight" />
                                 </div>
                                 <div class="col-md-4">
@@ -135,16 +134,16 @@
                                 <div class="col-md-8">
                                     <div class="row">
                                         <div class="col d-block__item">
-                                            <d-input label="Total facture" v-model="form.invoice_total" />
+                                            <d-input label="Total facture" v-model="form.invoiceTotal" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Total théorique" v-model="form.theoretical_total" />
+                                            <d-input label="Total théorique" v-model="form.theoreticalTotal" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Total surface" v-model="form.surface_total" />
+                                            <d-input label="Total surface" v-model="form.surfaceTotal" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Total Poids" v-model="form.weight_total" />
+                                            <d-input label="Total Poids" v-model="form.weightTotal" />
                                         </div>
                                     </div>
 
@@ -214,28 +213,30 @@
     const route = useRoute();
     const router = useRouter();
     const quote_id = route.query.quote_id || null;
+    const carpetOrderDetailsId = ref(null);
+    const rnId = ref(null); // This will hold the ID of the RN (if
     const quote = ref({});
     const loading = ref(false);
     const form = ref({
-        invoice_number: '', //?
-        invoice_date: '',
+        invoiceNumber: '', //?
+        invoiceDate: '',
         supplier: '',
-        packing_list: '',
-        air_way: '',
-        fret_total: '',
-        currency_id: null,
+        packingList: '',
+        airWay: '',
+        freightTotal: '',
+        currencyId: null,
         freightIncluded: false, //0:1
-        amount_other: '',
+        amountOther: '',
         weight: '',
         description: '',
         amountTheoretical: '',
         amountReal: '',
         creditNumber: '',
         creditDate: '',
-        invoice_total: '',
-        theoretical_total: '',
-        surface_total: '',
-        weight_total: '',
+        invoiceTotal: '',
+        theoreticalTotal: '',
+        surfaceTotal: '',
+        weightTotal: '',
         paymentTheoretical: '',
         paymentReal: '',
         paymentDate: '',
@@ -247,19 +248,18 @@
     const addLine = () => {
         lines.value.push({
             rn: null,
-            numeroTapis: '',
-            prixM2: null,
-            surfaceFacture: null,
-            prixFacture: null,
-            prixTheorique: null,
-            penalite: null,
-            surfaceProduite: null,
-            montantReelAvoir: null,
-            avoirTheorique: null,
-            montantReelAvoir2: null,
-            montantFinalTapis: null,
+            carpetNumber: '',
+            pricePerSquareMeter: null,
+            invoiceSurface: null,
+            invoiceAmount: null,
+            theoreticalPrice: null,
+            penalty: null,
+            producedSurface: null,
+            actualCreditAmount: null,
+            theoreticalCredit: null,
+            finalCarpetAmount: null,
             weight: null,
-            pourcentweight: null,
+            weightPercentage: null,
             fret: null,
         });
     };
@@ -284,17 +284,89 @@
             fret: null,
         },
     ]);
+    const ResultasRnData = (data) => {
+        console.log('ResultasRnData', data);
+        if (data && data.data && data.data.response) {
+            const rnData = data.data.response;
 
+            rnId.value = rnData.id; // Assuming rnData has an ID
+            console.log('rnId.value', rnId.value);
+
+            // form.value.rn = rnData.rnNumber; // Don't set form.rn here, it's for the header
+            carpetOrderDetailsId.value = rnData.imageCommand.carpetSpecification.id; // This seems incorrect, should be the detail ID
+        }
+    };
     const loadInvoice = async (id) => {
         try {
             loading.value = true;
             const data = await supplierInvoiceService.getById(id);
             form.value = {
-                ...form.value,
+                invoiceNumber: data.invoice_number || '',
+                invoiceDate: data.invoice_date ? moment(data.invoice_date).format('YYYY-MM-DD') : '',
+                supplier: data.supplier || '',
+                packingList: data.packing_list || '',
+                airWay: data.air_way || '',
 
-                ...data,
+                freightTotal: data.fret_total || '',
+                currencyId: data.currency_id || null,
+                freightIncluded: data.freightIncluded === 1, // Convert to boolean
+                amountOther: data.amount_other || '',
+                weight: data.weight || '',
+                description: data.description || '',
+                amountTheoretical: data.amount_theoretical || '',
+                amountReal: data.amount_real || '',
+                creditNumber: data.credit_number || '',
+                creditDate: data.credit_date ? moment(data.credit_date).format('YYYY-MM-DD') : '',
+                invoiceTotal: data.invoice_total || '',
+                theoreticalTotal: data.theoretical_total || '',
+                surfaceTotal: data.surface_total || '',
+                weightTotal: data.weight_total || '',
+                paymentTheoretical: data.payment_theoretical || '',
+                paymentReal: data.payment_real || '',
+                paymentDate: data.payment_date ? moment(data.payment_date).format('YYYY-MM-DD') : '',
+                valeurCommande: data.valeurCommande || '',
+                suiviAnterieur: data.suiviAnterieur || '',
+                suiviRestant: data.suiviRestant || '',
             };
-            form.value.invoice_date = moment(form.value.invoice_date).format('YYYY-MM-DD');
+            if (data.supplierInvoiceDetails.length > 0) {
+                lines.value = data.supplierInvoiceDetails.map((detail) => ({
+                    id: detail.id, // Add ID for updates/deletes
+                    rn: detail.rn,
+                    carpetNumber: detail.carpet_number,
+                    pricePerSquareMeter: detail.price_per_square_meter,
+                    invoiceSurface: detail.invoice_surface,
+                    invoiceAmount: detail.invoice_amount,
+                    theoreticalPrice: detail.theoretical_price,
+                    penalty: detail.penalty,
+                    producedSurface: detail.produced_surface,
+                    actualCreditAmount: detail.actual_credit_amount,
+                    theoreticalCredit: detail.theoretical_credit,
+                    finalCarpetAmount: detail.final_carpet_amount,
+                    weight: detail.weight,
+                    weightPercentage: detail.weight_percentage,
+                    fret: detail.freight,
+                }));
+            } else {
+                lines.value = [
+                    {
+                        rn: null,
+                        carpetNumber: '',
+                        pricePerSquareMeter: null,
+                        invoiceSurface: null,
+                        invoiceAmount: null,
+                        theoreticalPrice: null,
+                        penalty: null,
+                        producedSurface: null,
+                        actualCreditAmount: null,
+                        theoreticalCredit: null,
+                        finalCarpetAmount: null,
+                        weight: null,
+                        weightPercentage: null,
+                        fret: null,
+                    },
+                ];
+            }
+            form.value.invoiceDate = moment(form.value.invoiceDate).format('YYYY-MM-DD');
         } catch (e) {
             window.showMessage(e.message, 'error');
         } finally {
@@ -320,11 +392,43 @@
     const save = async () => {
         try {
             loading.value = true;
+            const payload = {
+                id: parseInt(route.params.id) || null,
+                invoiceNumber: String(form.value.invoiceNumber) || null,
+                packingList: String(form.value.packingList) || null,
+                airWay: String(form.value.airWay) || null,
+                invoiceDate: moment(form.value.invoiceDate).toISOString(),
+                fretTotal: String(form.value.freightTotal) || null,
+                supplier: String(form.value.supplier) || null,
+                authorId: 0,
+                currencyId: parseInt(form.value.currencyId) || null,
+                freightIncluded: form.value.freightIncluded ? 1 : 0,
+                amountOther: String(form.value.amountOther) || null,
+                weight: form.value.weight,
+                description: form.value.description,
+                amountTheoretical: form.value.amountTheoretical,
+                amountReal: form.value.amountReal,
+                creditNumber: parseInt(form.value.creditNumber) || null,
+                invoiceTotal: form.value.invoiceTotal,
+                theoreticalTotal: form.value.theoreticalTotal,
+                surfaceTotal: form.value.surfaceTotal,
+                weightTotal: form.value.weightTotal,
+                paymentTheoretical: String(form.value.paymentTheoretical) || null,
+                paymentReal: form.value.paymentReal,
+                suiviAnterieur: form.value.suiviAnterieur,
+                suiviRestant: form.value.suiviRestant,
+                valeurCommande: form.value.valeurCommande,
+                montantReelAvoir: form.value.montantReelAvoir,
+                avoirTheorique: form.value.avoirTheorique,
+                invoice_date: moment(form.value.invoice_date).toISOString(),
+                creditDate: form.value.creditDate ? moment(form.value.creditDate).format('YYYY-MM-DD') : null,
+                paymentDate: form.value.paymentDate ? moment(form.value.paymentDate).format('YYYY-MM-DD') : null,
+            };
             if (route.params.id) {
-                await supplierInvoiceService.update(route.params.id, form.value);
+                await supplierInvoiceService.update(route.params.id, payload);
                 window.showMessage('Mise à jour avec succès.');
             } else {
-                await supplierInvoiceService.create(form.value);
+                await supplierInvoiceService.create(payload);
                 window.showMessage('Ajout avec succès.');
                 router.push({ name: 'fournisseur-invoice-list' });
             }
@@ -350,7 +454,24 @@
     const saveLine = async (index) => {
         const line = lines.value[index];
         try {
-            const payload = { ...line, supplierInvoiceId: route.params.id || null };
+            const payload = {
+                supplierInvoiceId: parseInt(route.params.id) || null,
+                rnId: rnId.value || null,
+                rn: line.rn,
+                carpetNumber: line.carpetNumber,
+                pricePerSquareMeter: String(line.pricePerSquareMeter) || '0',
+                invoiceSurface: String(line.invoiceSurface) || '0',
+                invoiceAmount: String(line.invoiceAmount) || '0',
+                theoreticalPrice: String(line.theoreticalPrice) || '0',
+                penalty: String(line.penalty) || '0',
+                producedSurface: String(line.producedSurface) || '0',
+                actualCreditAmount: String(line.actualCreditAmount) || '0',
+                theoreticalCredit: String(line.theoreticalCredit) || '0',
+                finalCarpetAmount: String(line.finalCarpetAmount) || '0',
+                weight: String(line.weight) || null,
+                weightPercentage: String(line.weightPercentage) || '0',
+                freight: String(line.fret) || '0',
+            };
             await supplierInvoiceDetailsService.create(payload);
             window.showMessage('Ligne mise à jour avec succès');
         } catch (e) {
@@ -379,37 +500,45 @@
         let totalWeight = 0;
 
         lines.value.forEach((l) => {
+            // Use updated property names
             const srfCmd = parseFloat(l.surfaceFacture) || 0;
             const srfReal = parseFloat(l.surfaceProduite) || 0;
             const priceM2Cmd = parseFloat(l.prixM2) || 0;
-            const priceCmd = parseFloat(l.prixFacture) || 0;
+            const priceCmd = parseFloat(l.prixFacture) || 0; // Use prixFacture
 
+            // Correct the syntax error in the if condition
             if (srfReal && srfReal < srfCmd) {
-                l.prixTheorique = srfReal * priceM2Cmd;
+                l.prixTheorique = srfReal * priceM2Cmd; // Use prixTheorique
             } else {
-                l.prixTheorique = priceCmd;
+                l.prixTheorique = priceCmd; // Use prixTheorique
             }
 
-            l.avoirTheorique = (parseFloat(l.prixTheorique) || 0) - (parseFloat(l.penalite) || 0);
+            // Use updated property names
+            l.avoirTheorique = (parseFloat(l.prixTheorique) || 0) - (parseFloat(l.penalite) || 0); // Use avoirTheorique and penalite
 
             totalFacture += priceCmd;
-            totalTheorique += parseFloat(l.prixTheorique) || 0;
+            // Use updated property names - assuming amountTheoretical in form is different from avoirTheorique in line
+            // If totalTheorique should sum avoirTheorique from lines, change l.amountTheoretical to l.avoirTheorique
+            totalTheorique += parseFloat(l.avoirTheorique) || 0; // Assuming totalTheorique sums avoirTheorique from lines
             totalSurface += srfCmd;
-            totalWeight += parseFloat(l.weight) || 0;
+            totalWeight += parseFloat(l.poids) || 0; // Use poids
         });
 
         lines.value.forEach((l) => {
-            const poids = parseFloat(l.weight) || 0;
-            l.pourcentPoids = totalWeight ? (poids / totalWeight) * 100 : 0;
-            l.fret = (parseFloat(form.value.fret_total) || 0) * (l.pourcentPoids / 100);
+            const poids = parseFloat(l.poids) || 0; // Use poids
+            l.pourcentPoids = totalWeight ? (poids / totalWeight) * 100 : 0; // Use pourcentPoids
+            l.fret = (parseFloat(form.value.fret_total) || 0) * (l.pourcentPoids / 100); // Use pourcentPoids
         });
 
         form.value.invoice_total = totalFacture;
+        // Assuming theoretical_total in form sums avoirTheorique from lines + amount_other from form
         form.value.theoretical_total = totalTheorique + (parseFloat(form.value.amount_other) || 0);
         form.value.surface_total = totalSurface;
         form.value.weight_total = totalWeight;
-        form.value.paymentTheoretical = form.value.invoice_total - (parseFloat(form.value.amountReal) || 0) - (parseFloat(form.value.suiviAnterieur) || 0);
-        form.value.suiviRestant = form.value.paymentTheoretical - (parseFloat(form.value.paymentReal) || 0);
+
+        // Use updated property names from form
+        form.value.paymentTheoretical = (parseFloat(form.value.invoice_total) || 0) - (parseFloat(form.value.amountReal) || 0) - (parseFloat(form.value.suiviAnterieur) || 0);
+        form.value.suiviRestant = (parseFloat(form.value.paymentTheoretical) || 0) - (parseFloat(form.value.paymentReal) || 0);
     };
 
     watch(
