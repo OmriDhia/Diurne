@@ -96,7 +96,12 @@
                             </div>
                             <div class="row mt-2 justify-content-center align-items-center">
                                 <div class="col-md-6">
-                                    <button class="btn btn-custom font-size-0-7 text-uppercase" @click="router.push({ name: 'client-invoice-edit', params: { id: quote_id } })">Facture client</button>
+                                    <button
+                                        class="btn btn-custom font-size-0-7 text-uppercase"
+                                        @click="router.push({ name: 'client-invoice-edit', params: { id: quote_id }, query: { quote_id: quote_id } })"
+                                    >
+                                        Facture client
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -378,7 +383,7 @@
                 loading.value = true;
                 quote.value = await quoteService.getQuoteById(quote_id);
                 contremarqueId.value = quote.value?.contremarqueId;
-                quoteNumber.value = quote.value.reference;
+                quoteNumber.value = quote.value?.reference;
                 quoteDetails.value = quote.value?.quoteDetails;
                 createdDate.value = moment(quote.value.createdAt).format('YYYY-MM-DD');
                 applyStopAutoSave();

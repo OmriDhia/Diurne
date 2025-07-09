@@ -62,7 +62,7 @@
                 try {
                     const res = await axiosInstance.get('/api/carrier');
                     this.carriers = res.data.response.data;
-                    // this.selected = this.carriers.find((t) => t.id === this.modelValue) || null;
+                    this.selected = this.carriers.find((t) => t.id === this.modelValue) || null;
                 } catch (error) {
                     console.error('Failed to fetch carriers:', error);
                 }
