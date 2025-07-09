@@ -4,7 +4,7 @@ import axiosInstance from '../config/http';
 export default {
     async create(data) {
         try {
-            const res = await axiosInstance.post(`/api/customer-invoice-details`, data);
+            const res = await axiosInstance.post(`/api/customer-invoice-details/create`, data);
             return res.data.response;
         } catch (error) {
             throw error;

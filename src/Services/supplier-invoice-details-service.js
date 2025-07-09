@@ -1,10 +1,10 @@
-import { create } from 'maska';
+
 import axiosInstance from '../config/http';
 
 export default {
     async create(data) {
         try {
-            const res = await axiosInstance.post(`/api/supplier-invoice-details`, data);
+            const res = await axiosInstance.post(`/api/supplier-invoice-details/create`, data);
             return res.data.response;
         } catch (error) {
             throw error;
