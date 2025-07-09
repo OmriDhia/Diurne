@@ -64,7 +64,7 @@
                                     </thead>
                                     <tbody>
                                         <tr v-for="(line, index) in lines" :key="index">
-                                            <td><d-rn-number-dropdown v-model="line.rn"></d-rn-number-dropdown></td>
+                                            <td class="rn-custom-td"><d-rn-number-dropdown v-model="line.rn"></d-rn-number-dropdown></td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.numeroTapis" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.prixM2" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.surfaceFacture" /></td>
@@ -408,8 +408,7 @@
         form.value.theoretical_total = totalTheorique + (parseFloat(form.value.amount_other) || 0);
         form.value.surface_total = totalSurface;
         form.value.weight_total = totalWeight;
-        form.value.paymentTheoretical =
-            form.value.invoice_total - (parseFloat(form.value.amountReal) || 0) - (parseFloat(form.value.suiviAnterieur) || 0);
+        form.value.paymentTheoretical = form.value.invoice_total - (parseFloat(form.value.amountReal) || 0) - (parseFloat(form.value.suiviAnterieur) || 0);
         form.value.suiviRestant = form.value.paymentTheoretical - (parseFloat(form.value.paymentReal) || 0);
     };
 
