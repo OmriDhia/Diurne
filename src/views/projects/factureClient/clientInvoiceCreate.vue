@@ -285,7 +285,7 @@
     const currentCustomer = ref({});
     const regulations = ref([]);
     const invoiceTypes = ref([]);
-
+    const rnId = ref(null); // To store the RN ID from the fetched data
     const form = ref({
         customerRef: null, //??
         invoiceNumber: '', //invoiceNumber == customerId
@@ -343,7 +343,29 @@
             getContremarque(contremarqueId);
         }
     );
+    const mapDetailsToLines = (details, originalQuoteReference = null) => {
+        if (!details || !details.length) {
+            return [];
+        }
+        return details.map((d) => ({
+            id: d.id, // Add ID for updates/deletes
+            percent: d.impactOnTheQuotePrice,
+            rn: d.rn,
+            collection: d.carpetSpecification?.collection?.id || null,
+            model: d.carpetSpecification?.model?.id || null,
 
+            // If loading from a quote, refDevis comes from the original quote header, refCommande from the quote detail.
+            refDevis: originalQuoteReference || d.refQuote || '', // Use originalQuoteReference if provided (from quote), otherwise try d.refQuote (from invoice detail)
+            refCommande: d.reference || d.refCommand || '', // Use d.reference (from quote detail) or d.refCommand (from invoice detail)
+            versement: d.payment || 0, // Assuming payment might be on the detail line, or default to 0
+            priceM2: Helper.getPrice(d.prices, 'tarif.m².price'),
+            priceSqft: Helper.getPrice(d.prices, 'tarif.sqft.price'),
+            priceHt: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.m².price'),
+            priceTtc: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
+            carpetOrderDetailId: d.carpetOrderDetailId || null, // Keep track of the source detail ID
+            cleared: d.cleared || false, // Keep track of cleared status
+        }));
+    };
     const fetchRegulations = async () => {
         try {
             const res = await axiosInstance.get('/api/regulations');
@@ -356,22 +378,26 @@
         if (data && data.data && data.data.response) {
             const rnData = data.data.response;
             console.log('data', data);
+            rnId.value = rnData.id; // Assuming rnData has an ID
+            // form.value.rn = rnData.rnNumber; // Don't set form.rn here, it's for the header
+            // carpetOrderDetailsId.value = rnData.imageCommand.carpetSpecification.id; // This seems incorrect, should be the detail ID
 
-            form.value.rn = rnData.rnNumber;
-            carpetOrderDetailsId.value = rnData.imageCommand.carpetSpecification.id;
             // Push a new line to lines array with RN data
             lines.value.push({
-                percent: null,
+                id: null, // New line, no ID yet
+                percent: null, // Percentage needs to be entered
                 rn: rnData.rnNumber,
                 collection: rnData.imageCommand.carpetSpecification.collection?.id || null,
                 model: rnData.imageCommand.carpetSpecification.model?.id || null,
-                refDevis: rnData.imageCommand.reference || '',
-                refCommande: quote.value.reference || '',
-                versement: null,
+                refDevis: rnData.imageCommand.reference || '', // Assuming RN data provides a reference
+                refCommande: '', // Command reference needs to be entered
+                versement: null, // Versement needs to be entered
                 priceM2: Helper.getPrice(rnData.imageCommand.prices, 'tarif.m².price'),
                 priceSqft: Helper.getPrice(rnData.imageCommand.prices, 'tarif.sqft.price'),
                 priceHt: Helper.getPrice(rnData.imageCommand.prices, 'prix-propose-avant-remise-complementaire.m².price'),
                 priceTtc: Helper.getPrice(rnData.imageCommand.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
+                carpetOrderDetailId: rnData.imageCommand.id || null, // Link to the source detail from RN data
+                cleared: false,
             });
         }
     };
@@ -388,50 +414,44 @@
             if (id) {
                 loading.value = true;
                 const data = await quoteService.getAllQuoteById(id);
-                quote.value = data.quoteData;
+                const quoteData = data.quoteData;
+                const originalQuoteData = data.originalQuoteData;
 
-                if (quote.value) {
-                    carpetOrderDetailsId = quote.value.id;
-                    form.value = {
-                        ...form.value,
-                        languageId: quote.value?.language.id,
-                        // prescripteur: quote.value.prescripteur.id || '',
-                        //customerRef: quote.value.reference || '',
-                        invoiceNumber: quote.value.invoiceNumber || '',
-                        invoiceDate: moment(quote.value.createdAt).format('YYYY-MM-DD') || '',
-                        invoiceType: quote.value.invoiceType || '',
-                        tva: quote.value.otherTva || '',
-                        currency: quote.value.currency.id || null,
-                        rate: quote.value.conversion.id || '',
+                if (quoteData) {
+                    carpetOrderDetailsId.value = quote.value.id;
+                    // Populate form fields relevant when creating an invoice from a quote
+                    selectedCustomer.value = quoteData.customer?.id || null;
+                    form.value.contremarque = quoteData.contremarqueId || null;
+                    form.value.prescripteur = quoteData.prescriber?.id || '';
+                    form.value.languageId = quoteData.language?.id || 0;
+                    form.value.currency = quoteData.currency?.id || null;
+                    form.value.rate = quoteData.conversion?.id || '';
+                    form.value.carrierId = quoteData.transportCondition?.id || '';
+                    form.value.shippingCostsHt = quoteData.shippingPrice || '';
+                    form.value.carpetOrderId = quoteData.carpetOrderId || null; // Assuming quoteData has carpetOrderId
 
-                        carrierId: quote.value.transportCondition.id || '',
-                        contremarque: quote.value.contremarqueId || null,
-                        shippingCostsHt: parseFloat(quote.value.shippingPrice) || '',
-                        totalHt: parseFloat(quote.value.totalTaxExcluded) || '',
-                        amountHt: parseFloat(quote.value.otherTva) || '',
-                        amountTtc: parseFloat(quote.value.totalTaxIncluded) || '',
-                        versement: parseFloat(quote.value.totalTaxIncluded) || '',
-                        billed: parseFloat(quote.value.totalDiscountPercentage) || '',
-                        amountTva: parseFloat(quote.value.tax) || '',
-                    };
-                    if (form.value.contremarque) {
-                        getContremarque(form.value.contremarque);
+                    // Invoice-specific fields should be empty or default for a new invoice
+                    form.value.invoiceNumber = '';
+                    form.value.invoiceDate = moment().format('YYYY-MM-DD'); // Default to today
+                    form.value.invoiceType = '';
+                    form.value.tva = '';
+                    form.value.unitOfMeasurement = null;
+                    form.value.reglement = '';
+                    form.value.tarifExpedition = '';
+                    form.value.numero = '';
+                    form.value.rn = null; // RN field in header? Or only in lines? Assuming only in lines based on template
+                    form.value.quantityTotal = null;
+                    form.value.totalHt = parseFloat(quote.value.totalTaxExcluded) || '';
+                    form.value.amountHt = parseFloat(quote.value.otherTva) || '';
+                    form.value.amountTtc = parseFloat(quote.value.totalTaxIncluded) || '';
+                    form.value.versement = parseFloat(quote.value.totalTaxIncluded) || '';
+                    form.value.billed = parseFloat(quote.value.totalDiscountPercentage) || '';
+                    form.value.amountTva = parseFloat(quote.value.tax) || '';
+
+                    // Populate lines from quote details using the helper
+                    if (quoteData.quoteDetails) {
+                        lines.value = mapDetailsToLines(quoteData.quoteDetails, originalQuoteData?.reference);
                     }
-                }
-                if (data?.quoteData.quoteDetails) {
-                    lines.value = data.quoteData.quoteDetails.map((d) => ({
-                        percent: d.impactOnTheQuotePrice,
-                        rn: d.rn,
-                        collection: d.carpetSpecification?.collection?.id || null,
-                        model: d.carpetSpecification?.model?.id || null,
-                        refDevis: data.originalQuoteData.reference,
-                        refCommande: d.reference,
-                        versement: 0,
-                        priceM2: Helper.getPrice(d.prices, 'tarif.m².price'),
-                        priceSqft: Helper.getPrice(d.prices, 'tarif.sqft.price'),
-                        priceHt: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.m².price'),
-                        priceTtc: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
-                    }));
                 }
             }
         } catch (e) {
@@ -451,66 +471,74 @@
             window.showMessage(msg, 'error');
         }
     };
-    const fetchInvoiceById = async () => {
+    const fetchInvoiceById = async (id) => {
+        // Added id parameter
         try {
-            quote.value = await customerInvoiceService.getById(route.params.id);
-            console.log('quote.value', quote.value);
-            selectedCustomer.value = quote.value.customer_id;
+            if (id) {
+                loading.value = true;
+                const invoiceData = await customerInvoiceService.getById(id);
+                // quote.value = invoiceData; // Renaming 'quote' ref to 'invoice' might be clearer if it holds invoice data
 
-            form.value = {
-                languageId: quote.value?.language_id,
-                prescripteur: quote.value.prescriber_id || '',
-                //customerRef: quote.value.reference || '',
-                invoiceNumber: quote.value.invoice_number || '',
-                invoiceDate: moment(quote.value.invoice_date).format('YYYY-MM-DD') || '',
-                invoiceType: quote.value.invoice_type || '',
-                unitOfMeasurement: quote.value.lmesurement_id || '',
-                tva: quote.value.otherTva || '',
-                currency: quote.value.currency_id || null,
-                prescripteur: quote.value.prescriber_id || '',
-                rate: quote.value.conversion_id || '',
-                carrierId: quote.value.carrier_id || '',
-                tarifExpedition: quote.value.tarifExpedition_id || '',
-                reglement: quote.value.regulation_id || '',
-                rn: quote.value.rn_id || '',
-                //contremarque: quote.value.contremarque_id || null,
-                shippingCostsHt: parseFloat(quote.value.shipping_costs_ht) || '',
-                totalHt: parseFloat(quote.value.total_ht) || '',
-                amountHt: parseFloat(quote.value.amount_ht) || '',
-                amountTtc: parseFloat(quote.value.amount_ttc) || '',
-                versement: parseFloat(quote.value.payment) || '',
-                billed: parseFloat(quote.value.billed) || '',
-                amountTva: parseFloat(quote.value.amount_tva) || '',
-            };
+                if (invoiceData) {
+                    selectedCustomer.value = invoiceData.customer_id;
+                    form.value = {
+                        languageId: invoiceData.language_id || 0,
+                        prescripteur: invoiceData.prescriber_id || '',
+                        //customerRef: invoiceData.reference || '',
+                        invoiceNumber: invoiceData.invoice_number || '',
+                        invoiceDate: moment(invoiceData.invoice_date).format('YYYY-MM-DD') || '',
+                        invoiceType: invoiceData.invoice_type || '', // Assuming this is the ID or value
+                        unitOfMeasurement: invoiceData.lmesurement_id || '', // Assuming this is the ID or value
+                        tva: invoiceData.otherTva || '', // Assuming this is the ID or value
+                        currency: invoiceData.currency_id || null,
+                        rate: invoiceData.conversion_id || '',
+                        carrierId: invoiceData.carrier_id || null,
+                        tarifExpedition: invoiceData.tarif_expedition_id || '',
+                        reglement: invoiceData.regulation_id || '',
+                        rn: invoiceData.rn_id || '', // Assuming this is the ID or value
+                        contremarque: invoiceData.contremarque_id || null,
+                        shippingCostsHt: invoiceData.shipping_costs_ht || '',
+                        totalHt: invoiceData.total_ht || '',
+                        amountHt: invoiceData.amount_ht || '',
+                        amountTva: invoiceData.amount_tva || '',
+                        amountTtc: invoiceData.amount_ttc || '',
+                        versement: invoiceData.payment || '',
+                        billed: invoiceData.billed || '',
+                        carpetOrderId: invoiceData.carpet_order_id || null,
+                        description: invoiceData.description || '', // Add description
+                        project: invoiceData.project || '', // Add project
+                    };
 
-            if (form.value.contremarque) {
-                getContremarque(form.value.contremarque);
+                    // Fetch related data if IDs are present
+                    if (selectedCustomer.value) {
+                        getCustomer(selectedCustomer.value);
+                    }
+                    if (form.value.contremarque) {
+                        getContremarque(form.value.contremarque);
+                    }
+
+                    // Populate lines from invoice details using the helper
+                    if (invoiceData.customerInvoiceDetails) {
+                        lines.value = mapDetailsToLines(invoiceData.customerInvoiceDetails);
+                    } else {
+                        lines.value = [];
+                    }
+                }
             }
-            lines.value = quote.value.customerInvoiceDetails.length
-                ? quote.value.customerInvoiceDetails.map((d) => ({
-                      percent: d.impactOnTheQuotePrice,
-                      rn: d.rn,
-                      collection: d.carpetSpecification?.collection?.id || null,
-                      model: d.carpetSpecification?.model?.id || null,
-                      refDevis: data.originalQuoteData.quoteDetailReferences.reference,
-                      refCommande: d.value.reference,
-                      versement: null,
-                      priceM2: Helper.getPrice(d.prices, 'tarif.m².price'),
-                      priceSqft: Helper.getPrice(d.prices, 'tarif.sqft.price'),
-                      priceHt: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.m².price'),
-                      priceTtc: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
-                  }))
-                : [];
         } catch (error) {
-            console.error('Failed to fetch invoice types:', error);
+            console.error('Failed to fetch invoice:', error);
+            window.showMessage('Erreur lors du chargement de la facture.', 'error');
+        } finally {
+            loading.value = false;
         }
     };
     const getContremarque = async (contremarque_id) => {
         try {
             if (contremarque_id) {
                 contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
-                selectedCustomer.value = contremarque.value.customer.customer_id;
-                prescriber.value = contremarque.value.prescriber.customer_id;
+                // Update customer and prescriber based on contremarque data
+                selectedCustomer.value = contremarque.value.customer?.customer_id || null;
+                form.value.prescripteur = contremarque.value.prescriber?.customer_id || ''; // Assuming prescriber is an object
             }
         } catch (e) {
             const msg = "Une contremarque d'id " + contremarque_id + " n'existe pas";
@@ -538,93 +566,114 @@
         const payload = {
             invoiceNumber: form.value.invoiceNumber,
             invoiceDate: form.value.invoiceDate,
-            invoiceType: form.value.invoiceType,
-            carrierId: form.value.carrierId,
+            invoiceType: form.value.invoiceType, // Assuming this is the ID or value
+            carrierId: form.value.carrierId || null, // Assuming carrierId is an object
             customerId: selectedCustomer.value,
-            carpetOrderId: carpetOrderDetailsId.value || null,
-            quantityTotal: form.value.quantityTotal,
-            shippingCostsHt: String(form.value.shippingCostsHt) || '',
-            billed: String(form.value.billed) || '',
-            payment: String(form.value.versement) || '',
-            totalHt: String(form.value.totalHt) || '',
-            amountHt: String(form.value.amountHt) || '',
-            amountTva: String(form.value.amountTva) || '',
-            amountTtc: String(form.value.amountTtc) || '',
-            prescriberId: form.value.prescripteur ? form.value.prescripteur.id : null,
-            invoiceTypeEntityId: form.value.invoiceType ? form.value.invoiceType.id : null,
-            currencyId: form.value.currency ? form.value.currency.id : null,
-            conversionId: form.value.rate ? form.value.rate.id : null,
+            carpetOrderId: carpetOrderDetailsId.value || null, // Use carpetOrderId from form
+            quantityTotal: form.value.quantityTotal || null,
+            shippingCostsHt: form.value.shippingCostsHt || null,
+            billed: String(form.value.billed) || null,
+            payment: String(form.value.versement) || null,
+            totalHt: String(form.value.totalHt) || null,
+            amountHt: String(form.value.amountHt) || null,
+            amountTva: String(form.value.amountTva) || null,
+            amountTtc: String(form.value.amountTtc) || null,
+            prescriberId: form.value.prescripteur || null, // Assuming prescripteur is an object
+            invoiceTypeEntityId: form.value.invoiceType || null, // Assuming invoiceType is an object
+            currencyId: form.value.currency || null, // Assuming currency is an object
+            conversionId: form.value.rate || null, // Assuming rate is an object
             languageId: form.value.languageId || 0,
-            mesurementId: form.value.unit ? form.value.unit.id : null,
-            regulationId: form.value.reglement ? form.value.reglement.id : null,
-            tarifExpeditionId: form.value.tarifExpedition ? form.value.tarifExpedition.id : null,
-            rnId: form.value.rn ? form.value.rn.id : null,
+            mesurementId: form.value.unitOfMeasurement || null, // Assuming unitOfMeasurement is an object
+            regulationId: form.value.reglement || null, // Assuming reglement is an object
+            tarifExpeditionId: form.value.tarifExpedition || null, // Assuming tarifExpedition is an object
+
+            description: form.value.description || '', // Add description
+            project: form.value.project || '', // Add project
+            otherTva: form.value.tva || form.value.tva || '', // Assuming tva can be object or value
+            description: form.value.description || '', // Add description
+            rnId: rnId.value || null, // Use the ref value for rnId
+            contremarqueId: form.value.contremarque || null, // Assuming contremarque
         };
+
         try {
             loading.value = true;
-            if (route.params.id) {
-                const resultat = await customerInvoiceService.update(route.params.id, payload);
-                console.log('resultat', resultat.id);
+            let invoiceId = route.params.id;
+            let resultat;
+            if (invoiceId) {
+                resultat = await customerInvoiceService.update(invoiceId, payload);
+
                 if (form.value.rn) {
-                    const resultat = await customerInvoiceService.create(payload);
-                    console.log('resultat', resultat);
                     for (const line of lines.value) {
-                        await customerInvoiceDetailsService.create({
-                            customerInvoiceId: resultat.id,
-                            carpetOrderDetailId: carpetOrderDetailsId.value,
-                            cleared: false,
+                        const linePayload = {
+                            customerInvoiceId: invoiceId, // Link to the new invoice
+                            // Use the carpetOrderDetailId stored on the line object (from RN data or quote mapping)
+                            carpetOrderDetailId: line.carpetOrderDetailId || null,
+                            cleared: line.cleared || false,
                             rn: line.rn,
                             collectionId: line.collection,
                             modelId: line.model,
-                            m2: line.priceM2,
-                            sqft: line.priceSqft,
-                            ht: line.priceHt,
-                            ttc: line.priceTtc,
-                            refCommand: line.refDevis,
-                            refQuote: line.refCommande,
-                        });
+                            m2: line.priceM2 || null,
+                            sqft: line.priceSqft || null,
+                            ht: line.priceHt || null,
+                            ttc: line.priceTtc || null,
+                            refCommand: line.refCommande,
+                            refQuote: line.refDevis,
+                            payment: line.versement || null,
+                            percent: line.percent || null,
+                        };
+                        const lineResult = await customerInvoiceDetailsService.create(linePayload);
+                        line.id = lineResult.id;
                     }
                 } else {
                     for (const line of lines.value) {
-                        await customerInvoiceDetailsService.update(route.params.id, {
-                            customerInvoiceId: resultat.id,
-                            carpetOrderDetailId: carpetOrderDetailsId.value,
-                            cleared: false,
+                        const linePayload = {
+                            customerInvoiceId: invoiceId, // Link to the new invoice
+                            // Use the carpetOrderDetailId stored on the line object (from RN data or quote mapping)
+                            carpetOrderDetailId: line.carpetOrderDetailId || null,
+                            cleared: line.cleared || false,
                             rn: line.rn,
                             collectionId: line.collection,
                             modelId: line.model,
-                            m2: line.priceM2,
-                            sqft: line.priceSqft,
-                            ht: line.priceHt,
-                            ttc: line.priceTtc,
-                            refCommand: line.refDevis,
-                            refQuote: line.refCommande,
-                        });
+                            m2: line.priceM2 || null,
+                            sqft: line.priceSqft || null,
+                            ht: line.priceHt || null,
+                            ttc: line.priceTtc || null,
+                            refCommand: line.refCommande,
+                            refQuote: line.refDevis,
+                            payment: line.versement || null,
+                            percent: line.percent || null,
+                        };
+                        line.id = lineResult.id;
+                        const lineResult = await customerInvoiceDetailsService.update(line.id, linePayload);
                     }
                 }
-
                 window.showMessage('Mise à jour avec succés.');
+                router.push({ name: 'client-invoice-list' });
             } else {
                 const resultat = await customerInvoiceService.create(payload);
-                console.log('resultat', resultat);
-                for (const line of lines.value) {
-                    await customerInvoiceDetailsService.create({
-                        customerInvoiceId: resultat.id,
-                        carpetOrderDetailId: carpetOrderDetailsId.value,
-                        cleared: false,
-                        rn: line.rn,
-                        collectionId: line.collection,
-                        modelId: line.model,
-                        m2: line.priceM2,
-                        sqft: line.priceSqft,
-                        ht: line.priceHt,
-                        ttc: line.priceTtc,
-                        refCommand: line.refDevis,
-                        refQuote: line.refCommande,
-                    });
+                if (form.value.rn) {
+                    for (const line of lines.value) {
+                        const linePayload = {
+                            customerInvoiceId: resultat.id, // Link to the new invoice
+                            // Use the carpetOrderDetailId stored on the line object (from RN data or quote mapping)
+                            carpetOrderDetailId: line.carpetOrderDetailId || null,
+                            cleared: line.cleared || false,
+                            rn: line.rn,
+                            collectionId: line.collection,
+                            modelId: line.model,
+                            m2: line.priceM2 || null,
+                            sqft: line.priceSqft || null,
+                            ht: line.priceHt || null,
+                            ttc: line.priceTtc || null,
+                            refCommand: line.refCommande,
+                            refQuote: line.refDevis,
+                            payment: line.versement || null,
+                            percent: line.percent || null,
+                        };
+                        const lineResult = await customerInvoiceDetailsService.create(linePayload);
+                        line.id = lineResult.id;
+                    }
                 }
-
-                // }
                 window.showMessage('Ajout avec succés.');
                 router.push({ name: 'client-invoice-list' });
             }
@@ -650,28 +699,47 @@
 
     const saveLine = async (index) => {
         const line = lines.value[index];
-        console.log('ddd', carpetOrderDetailsId.value);
+        const invoiceId = route.params.id; // Get invoice ID from route params
+
+        if (!invoiceId) {
+            window.showMessage("Veuillez d'abord enregistrer la facture principale.", 'warning');
+            return; // Cannot save lines if the main invoice hasn't been created
+        }
+
+        // Ensure line data is correctly mapped for the API call
+        const linePayload = {
+            customerInvoiceId: invoiceId, // Link to the main invoice
+            carpetOrderDetailId: line.carpetOrderDetailId || null, // Use the ID stored on the line
+            cleared: line.cleared || false,
+            rn: line.rn,
+            collectionId: line.collection,
+            modelId: line.model,
+            m2: line.priceM2 || null,
+            sqft: line.priceSqft || null,
+            ht: line.priceHt || null,
+            ttc: line.priceTtc || null,
+            refCommand: line.refCommande,
+            refQuote: line.refDevis,
+            payment: line.versement || null,
+            percent: line.percent || null,
+        };
 
         try {
-            await customerInvoiceDetailsService.create({
-                customerInvoiceId: route.params.id || null,
-                carpetOrderDetailId: carpetOrderDetailsId.value,
-                cleared: false,
-                refCommand: line.refDevis,
-                refQuote: line.refCommande,
-                rn: line.rn,
-                collectionId: line.collection,
-                modelId: line.model,
-                m2: line.priceM2,
-                sqft: line.priceSqft,
-                ht: line.priceHt,
-                ttc: line.priceTtc,
-                refCommand: line.refDevis,
-                refQuote: line.refCommande,
-            });
-            window.showMessage('Ligne mise à jour avec succès');
+            loading.value = true;
+            if (line.id) {
+                // Update existing line
+                await customerInvoiceDetailsService.update(line.id, linePayload);
+                window.showMessage('Ligne mise à jour avec succès.');
+            } else {
+                // Create new line (should ideally only happen when adding via RN in edit mode and saving it)
+                const result = await customerInvoiceDetailsService.create(linePayload);
+                line.id = result.id; // Update the line object with the new ID
+                window.showMessage('Ligne ajoutée avec succès.');
+            }
         } catch (e) {
             window.showMessage(e.message, 'error');
+        } finally {
+            loading.value = false;
         }
     };
 
@@ -679,13 +747,18 @@
         const line = lines.value[index];
         if (line.id) {
             try {
+                loading.value = true; // Add loading state for deletion
                 await customerInvoiceDetailsService.delete(line.id);
-                window.showMessage('Ligne supprimée avec succès');
+                window.showMessage('Ligne supprimée avec succès.');
             } catch (e) {
                 window.showMessage(e.message, 'error');
-                return;
+                loading.value = false; // Ensure loading is turned off on error
+                return; // Stop if API call fails
+            } finally {
+                loading.value = false; // Ensure loading is turned off on success
             }
         }
+        // Remove from array only after successful API delete if line had an ID
         lines.value.splice(index, 1);
     };
 </script>

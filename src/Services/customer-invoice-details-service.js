@@ -25,5 +25,13 @@ export default {
         } catch (error) {
             throw error;
         }
+    },
+    async getById(id) {
+        try {
+            const res = await axiosInstance.get(`/api/customer-invoice-details/${id}`);
+            return res.data.response;
+        } catch (error) {
+            throw error;
+        }
     }
 };
