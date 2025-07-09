@@ -94,7 +94,7 @@
 
                             <div class="row mt-3">
                                 <div class="col-md-4">
-                                    <d-input label="Autre montant" v-model="form.amountOther" />
+                                    <d-input label="Autre montant" v-model="form.amount_other" />
                                     <d-input label="Poids" v-model="form.weight" />
                                 </div>
                                 <div class="col-md-4">
@@ -132,16 +132,16 @@
                                 <div class="col-md-8">
                                     <div class="row">
                                         <div class="col d-block__item">
-                                            <d-input label="Total facture" v-model="form.invoiceTotal" />
+                                            <d-input label="Total facture" v-model="form.invoice_total" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Total théorique" v-model="form.theoreticalTotal" />
+                                            <d-input label="Total théorique" v-model="form.theoretical_total" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Total surface" v-model="form.surfaceTotal" />
+                                            <d-input label="Total surface" v-model="form.surface_total" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Total Poids" v-model="form.weightTotal" />
+                                            <d-input label="Total Poids" v-model="form.weight_total" />
                                         </div>
                                     </div>
 
@@ -221,17 +221,17 @@
         fret_total: '',
         currency_id: null,
         freightIncluded: false, //0:1
-        amountOther: '',
+        amount_other: '',
         weight: '',
         description: '',
         amountTheoretical: '',
         amountReal: '',
         creditNumber: '',
         creditDate: '',
-        invoiceTotal: '',
-        theoreticalTotal: '',
-        surfaceTotal: '',
-        weightTotal: '',
+        invoice_total: '',
+        theoretical_total: '',
+        surface_total: '',
+        weight_total: '',
         paymentTheoretical: '',
         paymentReal: '',
         paymentDate: '',
