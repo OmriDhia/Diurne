@@ -164,6 +164,11 @@
                         } catch (e) {
                             console.log('Erreur mise a jour', e);
                         }
+                        if(this.designers[indexDesigner].inProgress){
+                            this.$emit('designerAdded', carpetStatus.enCoursId);
+                        }else if(this.designers[indexDesigner].stopped){
+                            this.$emit('designerAdded', carpetStatus.enPauseId);
+                        }
                     }
                 }
             },
@@ -171,7 +176,7 @@
         mounted() {
             if (this.designersProps && this.designersProps.length > 0) {
                 this.designers = this.getDesigners(this.designersProps);
-                // this.updateDesignerStatus('inProgress');
+                this.updateDesignerStatus('inProgress');
             }
         },
         unmounted() {
@@ -185,7 +190,7 @@
                 // }
                 if (newDesigners && newDesigners.length > 0) {
                     this.designers = this.getDesigners(newDesigners);
-                    // this.updateDesignerStatus('inProgress');
+                    this.updateDesignerStatus('inProgress');
                 }
             },
         },

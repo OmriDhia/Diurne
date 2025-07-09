@@ -182,9 +182,8 @@
             const dimension = result.dimension;
             sufaceM2.value = dimension.surface['m²'];
             sufaceSqft.value = dimension.surface.sqft;
-            setMeasurementResults(larg.unit, dimension.larg);
-            setMeasurementResults(long.unit, dimension.lng);
-            console.log(larg, long, dimension);
+            setMeasurementResults(larg.unit, dimension.width);
+            setMeasurementResults(long.unit, dimension.length);
             store.commit('setMeasurements', measurements.value);
             emit('changePrices', result.price);
             window.showMessage("Le calcul s'est terminé avec succès");

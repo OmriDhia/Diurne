@@ -45,7 +45,13 @@
                                                     :error="errorCarpetOrder.location_id"
                                                 ></d-location-dropdown>
                                                 <d-input :disabled="true" v-model="transDate" label="Date trasmission"></d-input>
-                                                <d-input :disabled="true" v-model="projectDi.demande_number" label="N° de la demande"></d-input>
+                                                <label class="form-label" style="font-weight: 500;">N° de la demande:</label>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <input type="text" class="form-control me-2" :value="projectDi.demande_number" readonly style="max-width: 220px;" />
+                                                    <button class="btn btn-custom btn-custom-copy" type="button" @click="copyDemandeNumber" title="Copier">
+                                                        <vue-feather type="clipboard" size="16"></vue-feather>
+                                                    </button>
+                                                </div>
                                                 <d-input :disabled="true" v-model="deadline" label="Deadline"></d-input>
                                                 <d-input :disabled="true" v-model="commercial" label="Commercial"></d-input>
                                             </div>
@@ -89,7 +95,6 @@
                                                                 :error="errorCarpetDesignOrder.materialsRate"
                                                                 :disabled="disableForDesigner"
                                                                 :firstLoad="firstLoad"
-                                                                @changeMaterials="saveCarpetOrderSpecifications"
                                                                 :materialsProps="currentMaterials"
                                                             ></d-materials-list>
                                                         </div>
@@ -131,7 +136,6 @@
                                                         <d-measurements-di
                                                             :disabled="disableForDesigner"
                                                             :firstLoad="firstLoad"
-                                                            @changeMeasurements="saveCarpetOrderSpecifications"
                                                             :dimensionsProps="currentDimensions"
                                                             :error="errorCarpetDesignOrder.measurments"
                                                         ></d-measurements-di>
@@ -151,7 +155,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="row ps-2 mt-4 mb-2 justify-content-between">
-                                                        <d-transmis-studio @transmisStudio="updateCarpetDesignStatus($event)" :can-show="carpetDesignOrderId && !hideForTrans"></d-transmis-studio>
+                                                        <d-transmis-studio @saveCarpetOrderSpecifications="saveCarpetOrderSpecifications()" @transmisStudio="updateCarpetDesignStatus($event)" :can-show="carpetDesignOrderId && !hideForTrans"></d-transmis-studio>
                                                     </div>
                                                     <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="!hideForTrans">
                                                         <div class="col-12" v-if="carpetSpecificationId">
@@ -181,7 +185,7 @@
                                     </div>
                                     <div class="col-md-12 col-xl-3 ps-1 d-flex flex-column" v-if="carpetDesignOrderId">
                                         <d-designer-list
-                                            v-if="!hideForTrans || designerManagerAccess"
+                                            v-if="!hideForTransStudio || designerManagerAccess"
                                             :disabled="CommercialAccess"
                                             @endCarpetDesignOrder="updateCarpetDesignStatus($event,true)"
                                             :carpetDesignOrderId="carpetDesignOrderId"
@@ -264,6 +268,7 @@
     // src/composables/global-methods.js
     const selectedImageTypes = ref([]);
     const hideForTrans = ref(false);
+    const hideForTransStudio = ref(false);
     const hideForAttributePause = ref(false);
     // Handle designer addition from the child component
 
@@ -353,6 +358,7 @@
 
     const setHideForTrans = () => {
         hideForTrans.value = (dataCarpetOrder.value.status_id === carpetStatus.transmisId || dataCarpetOrder.value.status_id === carpetStatus.nonTransmisId);
+        hideForTransStudio.value = (dataCarpetOrder.value.status_id === carpetStatus.transmisId);
         hideForAttributePause.value = (dataCarpetOrder.value.status_id === carpetStatus.attribuId || dataCarpetOrder.value.status_id === carpetStatus.enPauseId || dataCarpetOrder.value.status_id === carpetStatus.enCoursId)
     };
     // const disableForCommercial = computed(() => {
@@ -707,7 +713,7 @@
         }
     };
 
-    watch(
+    /*watch(
         () => dataSpecification.value,
         async (newDataSpecification) => {
             if (!firstLoad.value) {
@@ -715,11 +721,18 @@
             }
         },
         { deep: true }
-    );
+    );*/
     
     const goToDis = ()=>{
         router.push({ name: 'di_list'});
     }
+    
+    const copyDemandeNumber = () => {
+        if (projectDi.value.demande_number) {
+            navigator.clipboard.writeText(projectDi.value.demande_number);
+            window.showMessage && window.showMessage('Numéro de demande copié !', 'success');
+        }
+    };
 </script>
 
 <style>
@@ -731,5 +744,20 @@
         color: red;
         font-size: 12px;
         margin-top: 4px;
+    }
+
+    .btn-custom-copy {
+        height: 30px;
+        min-width: 30px;
+        width: 30px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%!important;
+        background-color: #4260EB !important;
+        border-color: #4260EB !important;
+        box-shadow: none !important;
+        cursor: pointer;
     }
 </style>

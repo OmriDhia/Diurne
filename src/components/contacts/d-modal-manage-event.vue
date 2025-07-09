@@ -1,5 +1,5 @@
 <template>
-    <div ref="modalEventManage" class="modal animated fadeInDown" id="modalEventManage" tabindex="-1" role="dialog" aria-labelledby="fadeinModalLabel">
+    <div :ref="`modalEventManage${action}`" class="modal animated fadeInDown" :id="`modalEventManage${action}`" tabindex="-1" role="dialog" aria-labelledby="fadeinModalLabel">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -81,6 +81,10 @@
         saveAndStay: {
             type: Boolean,
             default: true
+        },
+        action: {
+            type: String,
+            default: ""
         }
     });
 
@@ -99,6 +103,7 @@
         }
     });
     const modalEventManage = ref(null);
+    const modalEventManageAdd = ref(null);
     let modalInstance = null;
     const contactId = ref([]);
     const eventCustomerId = ref(0);
@@ -129,7 +134,7 @@
             if (props.saveAndStay && !data.value.event_id) {
                 affectData(res.data.response);
             } else {
-                document.querySelector("#modalEventManage .btn-close").click();
+                document.querySelector(`#modalEventManage${props.action} .btn-close`).click();
                 initData();
                 eventCustomerId.value = 0;
             }
@@ -197,14 +202,23 @@
         if (modalEventManage.value) {
             modalInstance = new Modal(modalEventManage.value, { backdrop: "static" });
         }
+        if (modalEventManageAdd.value) {
+            modalInstance = new Modal(modalEventManageAdd.value, { backdrop: "static" });
+        }
         affectData(props.eventData);
     });
 
     watch(
         () => props.eventData,
         (event) => {
-            console.log("Event data changed:", event);
             affectData(event);
+        },
+        { deep: true }
+    );
+    watch(
+        () => props.customerId,
+        () => {
+            data.value.customerId = props.customerId;
         },
         { deep: true }
     );
@@ -216,6 +230,14 @@
             console.error("Modal instance is null!");
         }
     };
+    
+    const setCustomerId = (customerId) => {
+        data.value.customerId = customerId;
+        eventCustomerId.value = customerId;
+    };
+    const setContremarqueId = (contremarqueId) => {
+        data.value.contremarqueId = contremarqueId;
+    };
 
     const hide = () => {
         if (modalInstance) {
@@ -223,5 +245,5 @@
         }
     };
 
-    defineExpose({ show, hide });
+    defineExpose({ show, hide, setCustomerId, setContremarqueId });
 </script>

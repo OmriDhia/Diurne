@@ -71,7 +71,7 @@
                                             <div class="row">
                                                 <div class="col-12">
                                                     <d-RN-dropdown :required="true" :hideBtn="true"
-                                                                   v-model="carpetOrderDetailsId"
+                                                                   v-model="rnId"
                                                                    :carpetOrderDetailsId="carpetOrderDetailsId"
                                                                    :error="validationSubmitErrors.collectionId"></d-RN-dropdown>
                                                 </div>
@@ -683,13 +683,14 @@
     };
 
     let carpetOrderDetailsId = ref(null);
+    let rnId = ref(null);
 
     const getCarpetOrderDetail = async (quoteDetailId) => {
         try {
             if (quoteDetailId) {
                 const response = await quoteService.getCarpetOrderDetailByIdQuoteById(quoteDetailId);
                 CarpetOrderDetail.value = response;
-                carpetOrderDetailsId = response.id;
+                carpetOrderDetailsId.value = response.id;
                 console.log('Parent - Set carpetOrderDetailsId:', response.id);
             }
         } catch (e) {

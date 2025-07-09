@@ -2,7 +2,7 @@
     <div>
         <d-base-modal id="modalAddDesigner" title="Ajouter designeur" @onClose="handleClose">
             <template v-slot:modal-body>
-                <div class="col-12">
+                <div class="col-12" style="min-height: 50vh;">
                     <div class="row p-1 align-items-center">
                         <div class="col-sm-12 col-md-8">
                            <d-designer-dropdown v-model="data.designerId" :error="error.designerId"></d-designer-dropdown>
