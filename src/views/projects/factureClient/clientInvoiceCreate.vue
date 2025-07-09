@@ -432,7 +432,7 @@
 
                     // Invoice-specific fields should be empty or default for a new invoice
                     form.value.invoiceNumber = '';
-                    form.value.invoiceDate = moment().format('YYYY-MM-DD'); // Default to today
+                    form.value.invoiceDate = moment(form.value.invoiceDate).format('YYYY-MM-DD'); // Default to today
                     form.value.invoiceType = '';
                     form.value.tva = '';
                     form.value.unitOfMeasurement = null;

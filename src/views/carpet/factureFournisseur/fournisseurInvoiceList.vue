@@ -18,7 +18,7 @@
                     <div class="col-md-6 col-sm-12">
                         <!-- <d-date-picker label="Du" v-model="filter.date_from" />
             <d-date-picker label="Au" v-model="filter.date_to" /> -->
-                        <d-input label="RN" class="pb-2" v-model="filter.rn" />
+                        <d-rn-number-dropdown v-model="filter.rn"></d-rn-number-dropdown>
                         <div class="row">
                             <label for="date_from" class="col-4">Début Recherche :</label>
                             <div class="col-8 d-flex justify-content-between align-items-center">
@@ -90,7 +90,7 @@
     import { filterFactureFournisseur, FILTER_FOURNISSEUR_INVOICE_STORAGE_NAME } from '../../../composables/constants';
     import { Helper } from '../../../composables/global-methods';
     import { useMeta } from '/src/composables/use-meta';
-
+    import dRnNumberDropdown from '../../../components/common/d-rn-number-dropdown.vue';
     useMeta({ title: 'Facture Client' });
 
     const router = useRouter();

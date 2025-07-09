@@ -11,23 +11,23 @@
                         <!-- <d-panel-title title="Caractéristiques facture" class-name="ps-2" /> -->
                         <div class="row">
                             <div class="col-md-4">
-                                <d-input label="Numéro facture" v-model="form.invoiceNumber" />
-                                <d-input label="Packing list" v-model="form.packingList" class="pt-2" />
-                                <d-currency v-model="form.currencyId" class="pt-2" />
+                                <d-input label="Numéro facture" v-model="form.invoice_number" />
+                                <d-input label="Packing list" v-model="form.packing_list" class="pt-2" />
+                                <d-currency v-model="form.currency_id" class="pt-2" />
                             </div>
                             <div class="col-md-4">
                                 <div class="row align-items-center">
                                     <label for="invoice-date" class="col-4">Date facture</label>
                                     <div class="col-8">
-                                        <input id="invoice-date" class="form-control custom-date" type="date" v-model="form.invoiceDate" />
+                                        <input id="invoice-date" class="form-control custom-date" type="date" v-model="form.invoice_date" />
                                     </div>
                                 </div>
-                                <d-input label="Air way bill" v-model="form.airWay" class="pt-2" />
+                                <d-input label="Air way bill" v-model="form.air_way" class="pt-2" />
                             </div>
 
                             <div class="col-md-4">
                                 <d-input label="Fournisseur" v-model="form.supplier" />
-                                <d-input label="Fret total" v-model="form.fretTotal" class="pt-2" />
+                                <d-input label="Fret total" v-model="form.fret_total" class="pt-2" />
                                 <div class="form-check text-end pt-2">
                                     <input class="form-check-input" type="radio" id="freight-included" v-model="form.freightIncluded" />
                                     <label class="form-check-label" for="freight-included">compris dans la facture</label>
@@ -200,10 +200,10 @@
     import dPanelTitle from '../../../components/common/d-panel-title.vue';
     import dPageTitle from '../../../components/common/d-page-title.vue';
     import dInput from '../../../components/base/d-input.vue';
-    import supplierInvoiceService from '../../../Services/supplier-invoice-service';
     import { useMeta } from '/src/composables/use-meta';
     import VueFeather from 'vue-feather';
     import dCurrency from '../../../components/common/d-currency.vue';
+    import moment from 'moment';
     import supplierInvoiceService from '../../../Services/supplier-invoice-service';
     import supplierInvoiceDetailsService from '../../../Services/supplier-invoice-details-service';
     useMeta({ title: 'Nouvelle Facture Fournisseur' });
@@ -213,13 +213,13 @@
     const quote = ref({});
     const loading = ref(false);
     const form = ref({
-        invoiceNumber: '', //?
-        invoiceDate: '',
+        invoice_number: '', //?
+        invoice_date: '',
         supplier: '',
-        packingList: '',
-        airWay: '',
-        fretTotal: '',
-        currencyId: null,
+        packing_list: '',
+        air_way: '',
+        fret_total: '',
+        currency_id: null,
         freightIncluded: false, //0:1
         amountOther: '',
         weight: '',
@@ -265,7 +265,12 @@
         try {
             loading.value = true;
             const data = await supplierInvoiceService.getById(id);
-            form.value = { ...form.value, ...data };
+            form.value = {
+                ...form.value,
+
+                ...data,
+            };
+            form.value.invoice_date = moment(form.value.invoice_date).format('YYYY-MM-DD');
         } catch (e) {
             window.showMessage(e.message, 'error');
         } finally {
