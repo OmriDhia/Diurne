@@ -83,6 +83,9 @@
                                                 <button class="btn btn-add btn-sm me-1" @click="saveLine(index)">
                                                     <vue-feather type="save" size="16" />
                                                 </button>
+                                                <button class="btn btn-add btn-sm me-1" @click="addLine">
+                                                    <vue-feather type="plus" size="16" />
+                                                </button>
                                                 <button class="btn btn-add btn-sm" @click="removeLine(index)">
                                                     <vue-feather type="x" size="16" />
                                                 </button>
@@ -191,7 +194,7 @@
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { Helper } from '../../../composables/global-methods';
     import quoteService from '../../../Services/quote-service';
@@ -239,6 +242,26 @@
         suiviAnterieur: '', //?
         suiviRestant: '', //?
     });
+
+    const addLine = () => {
+        lines.value.push({
+            rn: null,
+            numeroTapis: '',
+            prixM2: null,
+            surfaceFacture: null,
+            prixFacture: null,
+            prixTheorique: null,
+            penalite: null,
+            surfaceProduite: null,
+            montantReelAvoir: null,
+            avoirTheorique: null,
+            montantReelAvoir2: null,
+            montantFinalTapis: null,
+            weight: null,
+            pourcentweight: null,
+            fret: null,
+        });
+    };
 
     const lines = ref([
         // Initial empty line
@@ -347,6 +370,62 @@
         }
         lines.value.splice(index, 1);
     };
+
+    const calculate = () => {
+        let totalFacture = 0;
+        let totalTheorique = 0;
+        let totalSurface = 0;
+        let totalWeight = 0;
+
+        lines.value.forEach((l) => {
+            const srfCmd = parseFloat(l.surfaceFacture) || 0;
+            const srfReal = parseFloat(l.surfaceProduite) || 0;
+            const priceM2Cmd = parseFloat(l.prixM2) || 0;
+            const priceCmd = parseFloat(l.prixFacture) || 0;
+
+            if (srfReal && srfReal < srfCmd) {
+                l.prixTheorique = srfReal * priceM2Cmd;
+            } else {
+                l.prixTheorique = priceCmd;
+            }
+
+            l.avoirTheorique = (parseFloat(l.prixTheorique) || 0) - (parseFloat(l.penalite) || 0);
+
+            totalFacture += priceCmd;
+            totalTheorique += parseFloat(l.prixTheorique) || 0;
+            totalSurface += srfCmd;
+            totalWeight += parseFloat(l.weight) || 0;
+        });
+
+        lines.value.forEach((l) => {
+            const poids = parseFloat(l.weight) || 0;
+            l.pourcentPoids = totalWeight ? (poids / totalWeight) * 100 : 0;
+            l.fret = (parseFloat(form.value.fret_total) || 0) * (l.pourcentPoids / 100);
+        });
+
+        form.value.invoice_total = totalFacture;
+        form.value.theoretical_total = totalTheorique + (parseFloat(form.value.amount_other) || 0);
+        form.value.surface_total = totalSurface;
+        form.value.weight_total = totalWeight;
+        form.value.paymentTheoretical =
+            form.value.invoice_total - (parseFloat(form.value.amountReal) || 0) - (parseFloat(form.value.suiviAnterieur) || 0);
+        form.value.suiviRestant = form.value.paymentTheoretical - (parseFloat(form.value.paymentReal) || 0);
+    };
+
+    watch(
+        lines,
+        () => {
+            calculate();
+        },
+        { deep: true }
+    );
+
+    watch(
+        () => [form.value.amount_other, form.value.fret_total, form.value.amountReal, form.value.suiviAnterieur, form.value.paymentReal],
+        () => {
+            calculate();
+        }
+    );
 </script>
 
 <style scoped>
