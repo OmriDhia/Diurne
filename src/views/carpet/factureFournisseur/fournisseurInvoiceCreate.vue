@@ -64,7 +64,7 @@
                                     </thead>
                                     <tbody>
                                         <tr v-for="(line, index) in lines" :key="index">
-                                            <td><input type="text" class="form-control form-control-sm" v-model="line.rn" /></td>
+                                            <td><d-rn-number-dropdown v-model="line.rn"></d-rn-number-dropdown></td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.numeroTapis" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.prixM2" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.surfaceFacture" /></td>
@@ -204,6 +204,7 @@
     import VueFeather from 'vue-feather';
     import dCurrency from '../../../components/common/d-currency.vue';
     import moment from 'moment';
+    import dRnNumberDropdown from '../../../components/common/d-rn-number-dropdown.vue';
     import supplierInvoiceService from '../../../Services/supplier-invoice-service';
     import supplierInvoiceDetailsService from '../../../Services/supplier-invoice-details-service';
     useMeta({ title: 'Nouvelle Facture Fournisseur' });
