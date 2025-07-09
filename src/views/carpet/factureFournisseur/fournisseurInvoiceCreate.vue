@@ -59,6 +59,7 @@
                                             <th class="text-white">Poids</th>
                                             <th class="text-white">% poids</th>
                                             <th class="text-white">Fret</th>
+                                            <th class="text-white"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -78,6 +79,14 @@
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.poids" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.pourcentPoids" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.fret" /></td>
+                                            <td class="text-center td-actions">
+                                                <button class="btn btn-add btn-sm me-1" @click="saveLine(index)">
+                                                    <vue-feather type="save" size="16" />
+                                                </button>
+                                                <button class="btn btn-add btn-sm" @click="removeLine(index)">
+                                                    <vue-feather type="x" size="16" />
+                                                </button>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -182,10 +191,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { Helper } from '../../../composables/global-methods';
-import quoteService from '../../../Services/quote-service';
+    import { ref, onMounted } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
+    import { Helper } from '../../../composables/global-methods';
+    import quoteService from '../../../Services/quote-service';
     import dBasePage from '../../../components/base/d-base-page.vue';
     import dPanel from '../../../components/common/d-panel.vue';
     import dPanelTitle from '../../../components/common/d-panel-title.vue';
@@ -193,8 +202,10 @@ import quoteService from '../../../Services/quote-service';
     import dInput from '../../../components/base/d-input.vue';
     import supplierInvoiceService from '../../../Services/supplier-invoice-service';
     import { useMeta } from '/src/composables/use-meta';
-
+    import VueFeather from 'vue-feather';
     import dCurrency from '../../../components/common/d-currency.vue';
+    import supplierInvoiceService from '../../../Services/supplier-invoice-service';
+    import supplierInvoiceDetailsService from '../../../Services/supplier-invoice-details-service';
     useMeta({ title: 'Nouvelle Facture Fournisseur' });
     const route = useRoute();
     const router = useRouter();
@@ -307,6 +318,30 @@ import quoteService from '../../../Services/quote-service';
             getQuote(quote_id);
         }
     });
+    const saveLine = async (index) => {
+        const line = lines.value[index];
+        try {
+            const payload = { ...line, supplierInvoiceId: route.params.id || null };
+            await supplierInvoiceDetailsService.create(payload);
+            window.showMessage('Ligne mise à jour avec succès');
+        } catch (e) {
+            window.showMessage(e.message, 'error');
+        }
+    };
+
+    const removeLine = async (index) => {
+        const line = lines.value[index];
+        if (line.id) {
+            try {
+                await supplierInvoiceDetailsService.delete(line.id);
+                window.showMessage('Ligne supprimée avec succès');
+            } catch (e) {
+                window.showMessage(e.message, 'error');
+                return;
+            }
+        }
+        lines.value.splice(index, 1);
+    };
 </script>
 
 <style scoped>

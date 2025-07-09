@@ -627,6 +627,16 @@ export const routes = [
                     permission: 'create invoice',
                 },
             },
+            {
+                path: 'edit/:id',
+                name: 'fournisseur-invoice-edit',
+                component: () => import('../views/carpet/factureFournisseur/fournisseurInvoiceCreate.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'tapis',
+                    permission: 'create invoice',
+                },
+            },
         ],
         meta: {
             requiresAuth: true,

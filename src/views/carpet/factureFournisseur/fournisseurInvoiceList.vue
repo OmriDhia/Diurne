@@ -60,10 +60,13 @@
                             @change="changeServer"
                             class="advanced-table text-nowrap"
                         >
-                            <template #actions="data">
-                                <router-link :to="'/facture-client/view/' + data.value.id">
-                                    <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
-                                </router-link>
+                            <template #invoice_number="data">
+                                <div class="d-flex justify-content-between">
+                                    <strong>{{ data.value.invoice_number }}</strong>
+                                    <router-link :to="{ name: 'fournisseur-invoice-edit', params: { id: data.value.id } }">
+                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    </router-link>
+                                </div>
                             </template>
                         </vue3-datatable>
                     </div>
