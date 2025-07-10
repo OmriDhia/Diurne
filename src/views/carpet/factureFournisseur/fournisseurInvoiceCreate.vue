@@ -54,17 +54,16 @@
                                             <th class="text-white">Surface produite</th>
                                             <th class="text-white">Montant réel avoir</th>
                                             <th class="text-white">Avoir théorique</th>
-                                            <th class="text-white">Montant réel avoir</th>
                                             <th class="text-white">Montant final tapis</th>
                                             <th class="text-white">Poids</th>
                                             <th class="text-white">% poids</th>
                                             <th class="text-white">Fret</th>
-                                            <th class="text-white"></th>
+                                            <th class="text-white actions-invoices"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="(line, index) in lines" :key="index">
-                                            <td class="rn-custom-td"><d-rn-number-dropdown v-model="form.rn" @dataOfRn="ResultasRnData" :showActionRn="true"></d-rn-number-dropdown></td>
+                                            <td class="rn-custom-td"><d-rn-number-dropdown v-model="line.rn" @dataOfRn="ResultasRnData" :showActionRn="true"></d-rn-number-dropdown></td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.carpetNumber" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.pricePerSquareMeter" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.invoiceSurface" /></td>
@@ -209,6 +208,7 @@
     import dRnNumberDropdown from '../../../components/common/d-rn-number-dropdown.vue';
     import supplierInvoiceService from '../../../Services/supplier-invoice-service';
     import supplierInvoiceDetailsService from '../../../Services/supplier-invoice-details-service';
+    import axiosInstance from '../../../config/http';
     useMeta({ title: 'Nouvelle Facture Fournisseur' });
     const route = useRoute();
     const router = useRouter();
@@ -300,6 +300,11 @@
         try {
             loading.value = true;
             const data = await supplierInvoiceService.getById(id);
+            form.value.invoiceDate = moment(form.value.invoiceDate).format('YYYY-MM-DD');
+            const dataRn = await axiosInstance.get('api/carpets');
+
+            const resDataRn = dataRn.data.response;
+            console.log();
             form.value = {
                 invoiceNumber: data.invoice_number || '',
                 invoiceDate: data.invoice_date ? moment(data.invoice_date).format('YYYY-MM-DD') : '',
@@ -328,6 +333,7 @@
                 suiviAnterieur: data.suiviAnterieur || '',
                 suiviRestant: data.suiviRestant || '',
             };
+
             if (data.supplierInvoiceDetails.length > 0) {
                 lines.value = data.supplierInvoiceDetails.map((detail) => ({
                     id: detail.id, // Add ID for updates/deletes
@@ -366,7 +372,6 @@
                     },
                 ];
             }
-            form.value.invoiceDate = moment(form.value.invoiceDate).format('YYYY-MM-DD');
         } catch (e) {
             window.showMessage(e.message, 'error');
         } finally {
@@ -472,7 +477,12 @@
                 weightPercentage: String(line.weightPercentage) || '0',
                 freight: String(line.fret) || '0',
             };
-            await supplierInvoiceDetailsService.create(payload);
+            if (line.id) {
+                await supplierInvoiceDetailsService.update(line.id, payload);
+            } else {
+                await supplierInvoiceDetailsService.create(payload);
+            }
+
             window.showMessage('Ligne mise à jour avec succès');
         } catch (e) {
             window.showMessage(e.message, 'error');
@@ -501,43 +511,43 @@
 
         lines.value.forEach((l) => {
             // Use updated property names
-            const srfCmd = parseFloat(l.surfaceFacture) || 0;
-            const srfReal = parseFloat(l.surfaceProduite) || 0;
-            const priceM2Cmd = parseFloat(l.prixM2) || 0;
-            const priceCmd = parseFloat(l.prixFacture) || 0; // Use prixFacture
+            const srfCmd = parseFloat(l.invoiceSurface) || 0;
+            const srfReal = parseFloat(l.producedSurface) || 0;
+            const priceM2Cmd = parseFloat(l.pricePerSquareMeter) || 0;
+            const priceCmd = parseFloat(l.invoiceAmount) || 0; // Use prixFacture
 
             // Correct the syntax error in the if condition
             if (srfReal && srfReal < srfCmd) {
-                l.prixTheorique = srfReal * priceM2Cmd; // Use prixTheorique
+                l.theoreticalPrice = srfReal * priceM2Cmd; // Use prixTheorique
             } else {
-                l.prixTheorique = priceCmd; // Use prixTheorique
+                l.theoreticalPrice = priceCmd; // Use prixTheorique
             }
 
             // Use updated property names
-            l.avoirTheorique = (parseFloat(l.prixTheorique) || 0) - (parseFloat(l.penalite) || 0); // Use avoirTheorique and penalite
+            l.avoirTtheoreticalCreditheorique = (parseFloat(l.theoreticalPrice) || 0) - (parseFloat(l.penalty) || 0); // Use avoirTheorique and penalite
 
             totalFacture += priceCmd;
             // Use updated property names - assuming amountTheoretical in form is different from avoirTheorique in line
             // If totalTheorique should sum avoirTheorique from lines, change l.amountTheoretical to l.avoirTheorique
-            totalTheorique += parseFloat(l.avoirTheorique) || 0; // Assuming totalTheorique sums avoirTheorique from lines
+            totalTheorique += parseFloat(l.theoreticalCredit) || 0; // Assuming totalTheorique sums avoirTheorique from lines
             totalSurface += srfCmd;
-            totalWeight += parseFloat(l.poids) || 0; // Use poids
+            totalWeight += parseFloat(l.weight) || 0; // Use poids
         });
 
         lines.value.forEach((l) => {
-            const poids = parseFloat(l.poids) || 0; // Use poids
-            l.pourcentPoids = totalWeight ? (poids / totalWeight) * 100 : 0; // Use pourcentPoids
-            l.fret = (parseFloat(form.value.fret_total) || 0) * (l.pourcentPoids / 100); // Use pourcentPoids
+            const poids = parseFloat(l.weight) || 0; // Use poids
+            l.weightPercentage = totalWeight ? (poids / totalWeight) * 100 : 0; // Use pourcentPoids
+            l.fret = (parseFloat(form.value.freightTotal) || 0) * (l.weightPercentage / 100); // Use pourcentPoids
         });
 
-        form.value.invoice_total = totalFacture;
+        form.value.invoiceTotal = totalFacture;
         // Assuming theoretical_total in form sums avoirTheorique from lines + amount_other from form
-        form.value.theoretical_total = totalTheorique + (parseFloat(form.value.amount_other) || 0);
-        form.value.surface_total = totalSurface;
-        form.value.weight_total = totalWeight;
+        form.value.theoreticalTotal = totalTheorique + (parseFloat(form.value.amountOther) || 0);
+        form.value.surfaceTotal = totalSurface;
+        form.value.weightTotal = totalWeight;
 
         // Use updated property names from form
-        form.value.paymentTheoretical = (parseFloat(form.value.invoice_total) || 0) - (parseFloat(form.value.amountReal) || 0) - (parseFloat(form.value.suiviAnterieur) || 0);
+        form.value.paymentTheoretical = (parseFloat(form.value.invoiceTotal) || 0) - (parseFloat(form.value.amountReal) || 0) - (parseFloat(form.value.suiviAnterieur) || 0);
         form.value.suiviRestant = (parseFloat(form.value.paymentTheoretical) || 0) - (parseFloat(form.value.paymentReal) || 0);
     };
 
@@ -550,7 +560,7 @@
     );
 
     watch(
-        () => [form.value.amount_other, form.value.fret_total, form.value.amountReal, form.value.suiviAnterieur, form.value.paymentReal],
+        () => [form.value.amountOther, form.value.freightTotal, form.value.amountReal, form.value.suiviAnterieur, form.value.paymentReal],
         () => {
             calculate();
         }
