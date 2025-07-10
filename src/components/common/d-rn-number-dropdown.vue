@@ -88,9 +88,9 @@
                     const res = await axiosInstance.get('api/carpets');
                     const data = res.data.response || res.data;
                     this.rns = data;
-                    // if (this.modelValue) {
-                    //     this.selectedRn = this.rns.find((r) => r.rnNumber === this.modelValue) || null;
-                    // }
+                    if (this.modelValue) {
+                        this.selectedRn = this.rns.find((r) => r.rnNumber === this.modelValue) || null;
+                    }
                 } catch (e) {
                     console.error('Erreur get RN list.', e);
                 }

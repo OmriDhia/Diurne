@@ -348,15 +348,16 @@
             // Add check if details is an array
             return [];
         }
+        console.log(details);
+
         return details.map((d) => {
             // Use map instead of for...of with early return
             return {
                 id: d.id, // Add ID for updates/deletes
-                percent: d.impactOnTheQuotePrice,
+                percent: d.impactOnTheQuotePrice || 100,
                 rn: d.rn,
-                collection: d.carpetSpecification?.collection?.id || null,
-                model: d.carpetSpecification?.model?.id || null,
-
+                collection: d.quote ? d.carpetSpecification.collection.id : d.collection || null,
+                model: d.quote ? d.carpetSpecification.model.id : d.model || null,
                 // If loading from a quote, refDevis comes from the original quote header, refCommande from the quote detail.
                 refDevis: originalQuoteReference || d.refQuote || '', // Use originalQuoteReference if provided (from quote), otherwise try d.refQuote (from invoice detail)
                 refCommande: d.reference || d.refCommand || '', // Use d.reference (from quote detail) or d.refCommand (from invoice detail)
@@ -365,7 +366,7 @@
                 priceSqft: Helper.getPrice(d.prices, 'tarif.sqft.price'),
                 priceHt: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.m².price'),
                 priceTtc: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
-                carpetOrderDetailId: d.carpetOrderDetailId || null, // Keep track of the source detail ID
+                carpetOrderDetailId: d.carpetOrderDetail || null, // Keep track of the source detail ID
                 cleared: d.cleared || false, // Keep track of cleared status
             };
         });
@@ -384,7 +385,7 @@
             console.log('data', data);
             rnId.value = rnData.id; // Assuming rnData has an ID
             // form.value.rn = rnData.rnNumber; // Don't set form.rn here, it's for the header
-            carpetOrderDetailsId.value = rnData.imageCommand.carpetSpecification.id; // This seems incorrect, should be the detail ID
+            carpetOrderDetailsId.value = rnData.imageCommand.id; // This seems incorrect, should be the detail ID
 
             // Push a new line to lines array with RN data
             lines.value.push({
@@ -437,7 +438,7 @@
                     form.value.invoiceNumber = '';
                     form.value.invoiceDate = moment(form.value.invoiceDate).format('YYYY-MM-DD'); // Default to today
                     form.value.invoiceType = '';
-                    form.value.tva = '';
+                    form.value.tva = quoteData.taxRule?.id || ''; // Assuming taxRule is an object with an ID
                     form.value.unitOfMeasurement = null;
                     form.value.reglement = '';
                     form.value.tarifExpedition = '';
@@ -496,7 +497,7 @@
                         invoiceDate: moment(invoiceData.invoice_date).format('YYYY-MM-DD') || '',
                         invoiceType: invoiceData.invoice_type || '', // Assuming this is the ID or value
                         unitOfMeasurement: invoiceData.lmesurement_id || '', // Assuming this is the ID or value
-                        tva: invoiceData.otherTva || '', // Assuming this is the ID or value
+                        tva: invoiceData.tax_rule_id || '', // Assuming this is the ID or value
                         currency: invoiceData.currency_id || null,
                         rate: invoiceData.conversion_id || '',
                         carrierId: invoiceData.carrier_id || null,
@@ -514,6 +515,9 @@
                         carpetOrderId: invoiceData.carpet_order_id || null,
                         description: invoiceData.description || '', // Add description
                         project: invoiceData.project || '', // Add project
+                        number: invoiceData.number || '',
+                        rnId: invoiceData.rn_id || null, // Use the rn_id from the invoice data
+                        quantityTotal: invoiceData.quantity_total || null, // Assuming quantityTotal is the number of lines
                     };
 
                     // Fetch related data if IDs are present
@@ -525,7 +529,7 @@
                     }
 
                     // Populate lines from invoice details using the helper
-
+                    carpetOrderDetailsId.value = invoiceData.customerInvoiceDetails[0].carpetOrderDetail || null; // Assuming this is the ID or value
                     lines.value = mapDetailsToLines(invoiceData.customerInvoiceDetails);
                 }
             }
@@ -575,7 +579,7 @@
             customerId: selectedCustomer.value,
             carpetOrderId: carpetOrderDetailsId.value || null, // Use carpetOrderId from form
             quantityTotal: form.value.quantityTotal || null,
-            shippingCostsHt: form.value.shippingCostsHt || null,
+            shippingCostsHt: String(form.value.shippingCostsHt) || null,
             billed: String(form.value.billed) || null,
             payment: String(form.value.versement) || null,
             totalHt: String(form.value.totalHt) || null,
@@ -590,13 +594,13 @@
             mesurementId: form.value.unitOfMeasurement || null, // Assuming unitOfMeasurement is an object
             regulationId: form.value.reglement || null, // Assuming reglement is an object
             tarifExpeditionId: form.value.tarifExpedition || null, // Assuming tarifExpedition is an object
-
+            number: form.value.numero || '', // Assuming numero is a string
             description: form.value.description || '', // Add description
             project: form.value.project || '', // Add project
-            otherTva: form.value.tva || form.value.tva || '', // Assuming tva can be object or value
             description: form.value.description || '', // Add description
             rnId: rnId.value || null, // Use the ref value for rnId
-            contremarqueId: form.value.contremarque || null, // Assuming contremarque
+            contremarqueId: form.value.contremarque || null, // Assuming contremarque is an object
+            taxRuleId: form.value.tva || null, // Assuming tva is an object
         };
 
         try {
