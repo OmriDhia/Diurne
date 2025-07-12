@@ -384,7 +384,7 @@ label,
     }
 }
 .btn-add {
-    background-color: black;
+    background-color: black !important;
     border: 0;
     text-decoration: underline;
     box-shadow: none;
@@ -438,29 +438,7 @@ label,
             }
         }
     }
-    .table {
-        thead {
-            th {
-                border: 0;
-                text-align: center;
-            }
-        }
-        td {
-            .multiselect {
-                min-height: 35px;
-                .multiselect__tags {
-                    width: 120px;
-                }
-            }
-        }
-        .btn-add {
-            width: 40px;
-            height: 40px;
-        }
-        .td-actions {
-            width: 105px;
-        }
-    }
+
     .bloc-btns-actions {
         .btn-custom {
             display: block;
@@ -532,4 +510,28 @@ label,
 }
 .rn-custom-td .col-8 {
     width: 100%;
+}
+.table {
+    thead {
+        th {
+            border: 0;
+            text-align: center;
+        }
+    }
+    td {
+        .multiselect {
+            min-height: 35px;
+            .multiselect__tags {
+                width: 120px;
+            }
+        }
+    }
+
+    .td-actions {
+        width: 143px;
+        .btn-add {
+            width: 40px;
+            height: 40px;
+        }
+    }
 }
