@@ -30,6 +30,7 @@
                                 <d-input label="Fret total" v-model="form.freightTotal" class="pt-2" />
                                 <div class="form-check text-end pt-2">
                                     <input class="form-check-input" type="radio" id="freight-included" v-model="form.freightIncluded" />
+                                    <!-- 0 ou 1 response + cond Fret total inclue sur le clacule ou non if 1 inclue sinon 0 non -->
                                     <label class="form-check-label" for="freight-included">compris dans la facture</label>
                                 </div>
                             </div>
@@ -48,10 +49,13 @@
                                             <th class="text-white">N° tapis</th>
                                             <th class="text-white">Prix m²</th>
                                             <th class="text-white">Surface facture</th>
+                                            <!--response.workshopOrder.workshopInformation.orderedSurface-->
                                             <th class="text-white">Prix de la facture</th>
                                             <th class="text-white">Prix théorique</th>
                                             <th class="text-white">Pénalité</th>
+                                            <!--response.workshopOrder.workshopInformation.penalty-->
                                             <th class="text-white">Surface produite</th>
+                                            <!--response.workshopOrder.workshopInformation.realSurface-->
                                             <th class="text-white">Montant réel avoir</th>
                                             <th class="text-white">Avoir théorique</th>
                                             <th class="text-white">Montant final tapis</th>
@@ -524,7 +528,7 @@
             }
 
             // Use updated property names
-            l.avoirTtheoreticalCreditheorique = (parseFloat(l.theoreticalPrice) || 0) - (parseFloat(l.penalty) || 0); // Use avoirTheorique and penalite
+            l.avoirTheorique = (parseFloat(l.theoreticalPrice) || 0) - (parseFloat(l.penalty) || 0); // Use avoirTheorique and penalite
 
             totalFacture += priceCmd;
             // Use updated property names - assuming amountTheoretical in form is different from avoirTheorique in line

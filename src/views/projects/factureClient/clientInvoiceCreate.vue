@@ -362,10 +362,10 @@
                 refDevis: originalQuoteReference || d.refQuote || '', // Use originalQuoteReference if provided (from quote), otherwise try d.refQuote (from invoice detail)
                 refCommande: d.reference || d.refCommand || '', // Use d.reference (from quote detail) or d.refCommand (from invoice detail)
                 versement: d.payment || 0, // Assuming payment might be on the detail line, or default to 0
-                priceM2: Helper.getPrice(d.prices, 'tarif.m².price'),
-                priceSqft: Helper.getPrice(d.prices, 'tarif.sqft.price'),
-                priceHt: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.m².price'),
-                priceTtc: Helper.getPrice(d.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
+                priceM2: formatNumber(d.m2), // à coriger
+                priceSqft: formatNumber(d.sqft),
+                priceHt: formatNumber(d.ht),
+                priceTtc: formatNumber(d.ttc),
                 carpetOrderDetailId: d.carpetOrderDetail || null, // Keep track of the source detail ID
                 cleared: d.cleared || false, // Keep track of cleared status
             };
@@ -379,6 +379,9 @@
             console.error('Failed to fetch regulations:', error);
         }
     };
+    function formatNumber(num) {
+        return parseFloat(Number(num).toFixed(3));
+    }
     const ResultasRnData = (data) => {
         if (data && data.data && data.data.response) {
             const rnData = data.data.response;
@@ -390,17 +393,17 @@
             // Push a new line to lines array with RN data
             lines.value.push({
                 id: null, // New line, no ID yet
-                percent: null, // Percentage needs to be entered
+                percent: formatNumber(rnData.carpetOrderDetail.QuoteDetail.impactOnTheQuotePrice), // Percentage needs to be entered
                 rn: rnData.rnNumber,
                 collection: rnData.imageCommand.carpetSpecification.collection?.id || null,
                 model: rnData.imageCommand.carpetSpecification.model?.id || null,
-                refDevis: rnData.imageCommand.reference || '', // Assuming RN data provides a reference
-                refCommande: '', // Command reference needs to be entered
-                versement: null, // Versement needs to be entered
-                priceM2: Helper.getPrice(rnData.imageCommand.prices, 'tarif.m².price'),
-                priceSqft: Helper.getPrice(rnData.imageCommand.prices, 'tarif.sqft.price'),
-                priceHt: Helper.getPrice(rnData.imageCommand.prices, 'prix-propose-avant-remise-complementaire.m².price'),
-                priceTtc: Helper.getPrice(rnData.imageCommand.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'),
+                refDevis: rnData.imageCommand.reference || rnData.carpetOrderDetail.carpetOrder.refQuote, // Assuming RN data provides a reference
+                refCommande: rnData.carpetOrderDetail.QuoteDetail.reference, // Command reference needs to be entered
+                versement: 0, // Versement needs to be entered
+                priceM2: Helper.getPrice(rnData.carpetOrderDetail.QuoteDetail.prices, 'prix-propose.m².price'), // à coriger
+                priceSqft: Helper.getPrice(rnData.carpetOrderDetail.QuoteDetail.prices, 'prix-propose.sqft.price'),
+                priceHt: Helper.getPrice(rnData.carpetOrderDetail.QuoteDetail.prices, 'prix-propose.totalPriceHt'),
+                priceTtc: Helper.getPrice(rnData.carpetOrderDetail.QuoteDetail.prices, 'prix-propose.totalPriceTtc'),
                 carpetOrderDetailId: rnData.imageCommand.id || null, // Link to the source detail from RN data
                 cleared: false,
             });
@@ -607,7 +610,7 @@
             loading.value = true;
             let invoiceId = route.params.id;
             let resultat;
-            if (invoiceId) {
+            if (invoiceId && route.query.quote_id == null) {
                 resultat = await customerInvoiceService.update(invoiceId, payload);
                 console.log('resultat', form.value.rn);
 
@@ -658,7 +661,7 @@
                 window.showMessage('Mise à jour avec succés.');
                 router.push({ name: 'client-invoice-list' });
             } else {
-                const resultat = await customerInvoiceService.create(payload);
+                const resultat = await customerInvoiceService.create(payload); // test pour commande client (creation facture)
                 if (form.value.rn) {
                     for (const line of lines.value) {
                         const linePayload = {

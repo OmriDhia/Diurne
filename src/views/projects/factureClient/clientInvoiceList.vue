@@ -85,11 +85,9 @@
                                     </router-link>
                                 </div>
                             </template>
-                            <!-- <template #actions="data">
-                                <router-link :to="'/facture-client/view/' + data.value.id">
-                                    <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
-                                </router-link>
-                            </template> -->
+                            <template #amount_ttc="data">
+                                {{ formatNumber(data.value.amount_ttc) }}
+                            </template>
                         </vue3-datatable>
                     </div>
                 </div>
@@ -157,13 +155,16 @@
             const res = await axiosInstance.get(url);
             const data = res.data.data || {};
             rows.value = data || [];
+
             total_rows.value = res.data.meta.total || 0;
         } catch (e) {
             console.error(e);
         }
         loading.value = false;
     };
-
+    function formatNumber(num) {
+        return parseFloat(Number(num).toFixed(3));
+    }
     const changeServer = (data) => {
         params.current_page = data.current_page;
         params.pagesize = data.pagesize;
