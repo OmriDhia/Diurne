@@ -119,5 +119,6 @@
     "Please enter a valid name.": "Veuillez saisir un nom valide.",
     "This value should be greater than or equal to 1." : "Cette valeur doit être supérieure ou égale à 1.",
     "plusderelance": "Plus de relance",
-    "There is an other project with the same name.": "Il existe un autre projet portant le même nom."
+    "There is an other project with the same name.": "Il existe un autre projet portant le même nom.",
+    "This value is not a valid datetime.": "Cette valeur n'est pas une date/heure valide."
 }
