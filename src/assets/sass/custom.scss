@@ -383,21 +383,24 @@ label,
         margin: 0;
     }
 }
-.create-facture-client {
-    .btn-add {
-        background-color: black;
-        border: 0;
-        text-decoration: underline;
-        box-shadow: none;
-        width: 24px;
-        height: 24px;
-        padding: 0px;
-        border-radius: 50px;
+.btn-add {
+    background-color: black;
+    border: 0;
+    text-decoration: underline;
+    box-shadow: none;
+    width: 33px;
+    height: 33px;
+    padding: 0px;
+    border-radius: 50px;
 
-        i {
-            color: white;
-        }
+    i {
+        color: white;
     }
+}
+.actions-invoices {
+    width: 120px;
+}
+.create-facture-client {
     .custom-date {
         width: 100%;
     }
@@ -451,8 +454,11 @@ label,
             }
         }
         .btn-add {
-            width: 40px;
-            height: 40px;
+            width: 33px;
+            height: 33px;
+            .btn svg {
+                width: 18px;
+            }
         }
         .td-actions {
             width: 105px;
@@ -523,4 +529,17 @@ label,
             }
         }
     }
+}
+.rn-custom-td .col-4 {
+    display: none;
+}
+.rn-custom-td .col-8 {
+    width: 100%;
+}
+input[disabled] {
+    color: black;
+}
+.btn-add:hover,
+.btn-add:focus {
+    background-color: black !important;
 }

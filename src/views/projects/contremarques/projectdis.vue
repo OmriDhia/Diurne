@@ -85,9 +85,9 @@
                     <div class="col-xl-4 col-md-12">
                         <d-input :disabled="true" v-model="customer.customerName" label="Client"></d-input>
                         <d-input :disabled="true" v-model="contremarque.designation" label="Contremarque"></d-input>
-                        <d-input :disabled="true" v-model="transDate" label="Date transmission"></d-input>
                         <d-input :disabled="true" v-model="selectedData.demande_number"
                                  label="N° de la demande"></d-input>
+                        <d-input :disabled="true" v-model="transDate" label="Date transmission"></d-input>
                         <d-input :disabled="true" v-model="deadline" label="Deadline"></d-input>
                         <d-input :disabled="true" v-model="commercial" label="Commercial"></d-input>
                     </div>
@@ -101,6 +101,10 @@
                             <vue-feather style="padding: 11px 0px 1px 0px;" type="eye" stroke-width="1"
                                          class="cursor-pointer"></vue-feather>
                         </router-link>
+                        <p></p>
+                        <button class="btn btn-custom" type="button" @click="copyDemandeNumber" title="Copier">
+                                <vue-feather type="clipboard" size="16"></vue-feather>
+                        </button>
                     </div>
 
 
@@ -320,6 +324,12 @@ const handleDeleteSuccess = () => {
             console.error('Error refreshing carpet designs:', error);
         });
 };
+const copyDemandeNumber = () => {
+    if (selectedData.value.demande_number) {
+        navigator.clipboard.writeText(selectedData.value.demande_number);
+        window.showMessage && window.showMessage('Numéro de demande copié !', 'success');
+    }
+};
 onMounted(() => {
     getProjectDIS();
 });
@@ -371,5 +381,66 @@ onMounted(() => {
 
 .table > :not(caption) > * > * {
     --bs-table-accent-bg: #EDF9FD;
+}
+
+.input-group {
+    display: flex;
+    align-items: stretch;
+}
+.input-group .btn-custom {
+    height: 100%;
+    min-width: 30px;
+    width: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%!important;
+    background-color: #4260EB !important;
+    border-color: #4260EB !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+.input-group .btn-custom svg {
+    color: #fff !important;
+}
+
+.copy-btn-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.copy-btn-row .btn-custom {
+    height: 30px;
+    width: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%!important;
+    background-color: #4260EB !important;
+    border-color: #4260EB !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+.copy-btn-row .btn-custom svg {
+    color: #fff !important;
+}
+
+.btn-custom {
+    height: 30px;
+    width: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%!important;
+    background-color: #4260EB !important;
+    border-color: #4260EB !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+.btn-custom svg {
+    color: #fff !important;
 }
 </style>

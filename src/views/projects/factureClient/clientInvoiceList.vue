@@ -18,7 +18,8 @@
                     <div class="col-md-6 col-sm-12">
                         <!-- <d-date-picker label="Du" v-model="filter.date_from" />
             <d-date-picker label="Au" v-model="filter.date_to" /> -->
-                        <d-input label="RN" class="pb-2" v-model="filter.rn" />
+                        <!-- <d-input label="RN" class="pb-2" v-model="filter.rn" /> -->
+                        <d-rn-number-dropdown v-model="filter.rn"></d-rn-number-dropdown>
                         <div class="row">
                             <label for="date_from" class="col-4">Date Env</label>
                             <div class="col-8 d-flex justify-content-between align-items-center">
@@ -68,11 +69,25 @@
                                     </router-link>
                                 </div>
                             </template>
-                            <!-- <template #actions="data">
-                                <router-link :to="'/facture-client/view/' + data.value.id">
-                                    <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
-                                </router-link>
-                            </template> -->
+                            <template #contremarque="data">
+                                <div class="d-flex justify-content-between">
+                                    <strong>{{ data.value.contremarque }}</strong>
+                                    <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id">
+                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    </router-link>
+                                </div>
+                            </template>
+                            <template #invoice_number="data">
+                                <div class="d-flex justify-content-between">
+                                    <strong>{{ data.value.invoice_number }}</strong>
+                                    <router-link :to="{ name: 'client-invoice-edit', params: { id: data.value.id } }">
+                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    </router-link>
+                                </div>
+                            </template>
+                            <template #amount_ttc="data">
+                                {{ formatNumber(data.value.amount_ttc) }}
+                            </template>
                         </vue3-datatable>
                     </div>
                 </div>
@@ -95,7 +110,7 @@
     import { filterClientInvoice, FILTER_CLIENT_INVOICE_STORAGE_NAME } from '../../../composables/constants';
     import { Helper } from '../../../composables/global-methods';
     import { useMeta } from '/src/composables/use-meta';
-
+    import dRnNumberDropdown from '../../../components/common/d-rn-number-dropdown.vue';
     useMeta({ title: 'Facture Client' });
 
     const router = useRouter();
@@ -118,7 +133,7 @@
         { field: 'invoice_date', title: 'Date de facture' },
         { field: 'customer', title: 'Raison sociale' }, //customer== ??
         { field: 'contremarque', title: 'Contremarque' },
-        { field: 'amountTtc', title: 'Montant TTC' }, //?
+        { field: 'amount_ttc', title: 'Montant TTC' }, //?
         { field: 'actions', title: '', sort: false },
     ]);
 
@@ -140,13 +155,16 @@
             const res = await axiosInstance.get(url);
             const data = res.data.data || {};
             rows.value = data || [];
+
             total_rows.value = res.data.meta.total || 0;
         } catch (e) {
             console.error(e);
         }
         loading.value = false;
     };
-
+    function formatNumber(num) {
+        return parseFloat(Number(num).toFixed(3));
+    }
     const changeServer = (data) => {
         params.current_page = data.current_page;
         params.pagesize = data.pagesize;

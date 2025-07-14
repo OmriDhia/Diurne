@@ -11,14 +11,15 @@
                 </div>
                 <div class="row d-flex justify-content-center align-items-start p-2">
                     <div class="col-md-6 col-sm-12 list-facture-client--item">
-                        <d-input label="Auteur" v-model="filter.auteur" />
+                        <d-user-dropdown v-model="filter.auteur" />
+                        <!--/api/users intégrer l'api por l'auteur -->
                         <d-input label="Numéro facture" v-model="filter.invoiceNumber" />
                         <d-input label="Atelier" v-model="filter.atelier" />
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <!-- <d-date-picker label="Du" v-model="filter.date_from" />
             <d-date-picker label="Au" v-model="filter.date_to" /> -->
-                        <d-input label="RN" class="pb-2" v-model="filter.rn" />
+                        <d-rn-number-dropdown v-model="filter.rn"></d-rn-number-dropdown>
                         <div class="row">
                             <label for="date_from" class="col-4">Début Recherche :</label>
                             <div class="col-8 d-flex justify-content-between align-items-center">
@@ -60,10 +61,13 @@
                             @change="changeServer"
                             class="advanced-table text-nowrap"
                         >
-                            <template #actions="data">
-                                <router-link :to="'/facture-client/view/' + data.value.id">
-                                    <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
-                                </router-link>
+                            <template #invoice_number="data">
+                                <div class="d-flex justify-content-between">
+                                    <strong>{{ data.value.invoice_number }}</strong>
+                                    <router-link :to="{ name: 'fournisseur-invoice-edit', params: { id: data.value.id } }">
+                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    </router-link>
+                                </div>
                             </template>
                         </vue3-datatable>
                     </div>
@@ -82,12 +86,13 @@
     import dContremarqueDropdown from '../../../components/common/d-contremarque-dropdown.vue';
     import dPageTitle from '../../../components/common/d-page-title.vue';
     import dDatePicker from '../../../components/base/d-date-picker.vue';
+    import dUserDropdown from '../../../components/common/d-user-dropdown.vue';
     import axiosInstance from '../../../config/http';
     import { useRouter } from 'vue-router';
     import { filterFactureFournisseur, FILTER_FOURNISSEUR_INVOICE_STORAGE_NAME } from '../../../composables/constants';
     import { Helper } from '../../../composables/global-methods';
     import { useMeta } from '/src/composables/use-meta';
-
+    import dRnNumberDropdown from '../../../components/common/d-rn-number-dropdown.vue';
     useMeta({ title: 'Facture Client' });
 
     const router = useRouter();

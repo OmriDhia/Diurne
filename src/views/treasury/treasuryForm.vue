@@ -52,7 +52,7 @@
                                 </div>
 
                                 <div class="col-md-6" v-if="allocationType === 'order'">
-                                    <d-order-dropdown v-model="selectedOrderObject" label="Facture"
+                                    <d-customer-invoice-dropdown v-model="selectedOrderObject" label="Facture"
                                         @selected="handleOrderSelection" />
                                 </div>
                             </div>
@@ -107,15 +107,31 @@
 
                                             <!-- Devis -->
                                             <td>
-                                                <input type="text" class="form-control form-control-sm"
-                                                    v-model="allocation.devis" @change="updateDevis(index)" />
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <input type="text" class="form-control form-control-sm"
+                                                        v-model="allocation.devis" @change="updateDevis(index)" />
+                                                    <router-link 
+                                                        v-if="allocation.quoteId && $hasPermission('update quote')"
+                                                        :to="'/projet/devis/manage/' + allocation.quoteId"
+                                                        class="ms-1">
+                                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                                    </router-link>
+                                                </div>
                                             </td>
 
                                             <!-- Commande -->
                                             <td>
-                                                <input type="text" class="form-control form-control-sm"
-                                                    v-model="allocation.commande_ref"
-                                                    @change="updateCommandeRef(index)" />
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <input type="text" class="form-control form-control-sm"
+                                                        v-model="allocation.commande_ref"
+                                                        @change="updateCommandeRef(index)" />
+                                                    <router-link 
+                                                        v-if="allocation.orderId && $hasPermission('update carpet')"
+                                                        :to="'/projet/invoices/manage/' + allocation.orderId"
+                                                        class="ms-1">
+                                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                                    </router-link>
+                                                </div>
                                             </td>
 
                                             <!-- RN -->
@@ -244,6 +260,8 @@ import dOrderDropdown from '../../components/common/d-order-dropdown.vue';
 import dCollectionsDropdown from '../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
 import dLocationDropdown from '../../components/projet/contremarques/dropdown/d-location-dropdown.vue';
 import dDelete from '../../components/common/d-delete.vue';
+import dCustomerInvoiceDropdown from '../../components/common/d-customer-invoice-dropdown.vue';
+import { createQuoteAllocation, createInvoiceAllocation, updateAllocationForNewItem } from '@/composables/useTreasuryAllocations';
 
 const router = useRouter();
 const loading = ref(false);
@@ -275,6 +293,7 @@ const selectedOrderObject = ref(null);
 const DEFAULT_RN_PREFIX = 'RN-';
 const DEFAULT_DISTRIBUTION = '100.00';
 
+// --- Allocation logic for quote selection ---
 const handleQuoteSelection = async (quoteFullObject) => {
     if (!quoteFullObject?.quote_id) {
         window.showMessage('Veuillez sélectionner un devis valide.', 'warning');
@@ -299,8 +318,8 @@ const handleQuoteSelection = async (quoteFullObject) => {
         contremarqueId.value = quoteFullObject.contremarque_id;
 
         quoteWithDetails.quoteData.quoteDetails.forEach(quoteDetail => {
-            const allocation = createAllocationObject(quoteFullObject, quoteDetail);
-            updateAllocationForNewItem(allocation);
+            const allocation = createQuoteAllocation(quoteFullObject, quoteDetail, { Helper, DEFAULT_RN_PREFIX, DEFAULT_DISTRIBUTION });
+            updateAllocationForNewItem(allocation, { Helper, selectedQuoteObject, paymentData });
             allocations.value.push(allocation);
         });
 
@@ -316,48 +335,44 @@ const handleQuoteSelection = async (quoteFullObject) => {
     }
 };
 
-const createAllocationObject = (quoteFullObject, quoteDetail) => {
-    return {
-        quoteId: quoteFullObject.quote_id,
-        quoteDetailId: quoteDetail.id,
-        orderId: null,
-        orderInvoiceId: null,
-        projetId: quoteDetail.location?.location_id || null,
-        emplacementId: quoteDetail.location?.location_id || quoteFullObject.deliveryAddress?.id || null,
-        carpetSpecification: quoteDetail?.carpetSpecification || null,
-        location: quoteDetail?.location || null,
-        devis: quoteFullObject.reference || '',
-        commande_ref: quoteDetail.reference || '',
-        rn: DEFAULT_RN_PREFIX + Math.random().toString(36).substring(2, 7).toUpperCase(),
-        facture: '',
-        distribution: DEFAULT_DISTRIBUTION,
-        allocatedAmountTtc: 0,
-        totalAmountTtc: parseFloat(quoteDetail.prices?.['prix-propose-avant-remise-complementaire']?.totalPriceTtc) || 0,
-        remainingAmountTtc: parseFloat(quoteDetail.prices?.['prix-propose-avant-remise-complementaire']?.totalPriceTtc) || 0,
-        allocatedAmountHt: 0,
-        tva: 0,
-        cleared: false,
-        type: 'quote',
-        areaSquareMeter: quoteDetail.areaSquareMeter || 0,
-        areaSquareFeet: quoteDetail.areaSquareFeet || 0
-    };
-};
+// --- Allocation logic for invoice selection ---
+const handleOrderSelection = async (invoiceFullObject) => {
+    if (!invoiceFullObject?.id) {
+        window.showMessage('Veuillez sélectionner une facture valide.', 'warning');
+        return;
+    }
 
-const handleOrderSelection = (orderFullObject) => {
-    // @To do
-};
+    if (allocations.value.some(a => a.orderId === invoiceFullObject.id)) {
+        window.showMessage('Cette facture a déjà été ajoutée.', 'warning');
+        return;
+    }
 
-const updateAllocationForNewItem = (allocation) => {
-    const taxRate = allocation.type === 'quote' ?
-        (selectedQuoteObject.value?.taxRule?.taxRate || 0.20) :
-        (paymentData.value.taxRule?.taxRate || 0.20);
+    try {
+        loading.value = true;
+        const response = await axiosInstance.get(`/api/customerInvoices/${invoiceFullObject.id}`);
+        const invoiceWithDetails = response.data.response;
 
-    const allocatedTtc = (allocation.totalAmountTtc * parseFloat(allocation.distribution) / 100).toFixed(2);
-    allocation.allocatedAmountTtc = Helper.FormatNumber(allocatedTtc);
-    const allocatedHt = allocatedTtc / (1 + taxRate);
-    allocation.allocatedAmountHt = Helper.FormatNumber(allocatedHt);
-    allocation.tva = Helper.FormatNumber(allocatedTtc - allocatedHt);
-    allocation.remainingAmountTtc = Helper.FormatNumber(allocation.totalAmountTtc - allocatedTtc);
+        if (!invoiceWithDetails.customerInvoiceDetails?.length) {
+            window.showMessage('Cette facture ne contient aucun détail.', 'warning');
+            return;
+        }
+
+        invoiceWithDetails.customerInvoiceDetails.forEach(invoiceDetail => {
+            const allocation = createInvoiceAllocation(invoiceFullObject, invoiceDetail, { Helper, DEFAULT_RN_PREFIX, DEFAULT_DISTRIBUTION });
+            updateAllocationForNewItem(allocation, { Helper, selectedQuoteObject, paymentData });
+            allocations.value.push(allocation);
+        });
+
+        paymentData.value.customerId = invoiceFullObject.customer_id || null;
+        paymentData.value.commercialId = invoiceFullObject.commercial_id || null;
+        paymentData.value.taxRuleId = invoiceFullObject.taxRule?.id || 1;
+
+    } catch (error) {
+        console.error("Erreur lors de la récupération des détails de la facture:", error);
+        window.showMessage('Erreur lors de la récupération des détails de la facture', 'error');
+    } finally {
+        loading.value = false;
+    }
 };
 
 const updateDevis = (index) => {
@@ -530,18 +545,8 @@ const saveAllocationDetails = async (paymentId) => {
 };
 
 const createAllocationDetailPayload = (paymentId, allocation) => {
-    return {
-        orderPaymentId: paymentId,
-        quoteId: allocation.type === 'quote' ? parseInt(allocation.quoteId) : null,
-        quoteDetailId: allocation.type === 'quote' ? parseInt(allocation.quoteDetailId) : null,
-        orderId: allocation.type === 'order' ? parseInt(allocation.orderId) : null,
-        orderInvoiceId: allocation.orderInvoiceId || null,
-        projetId: allocation.projetId ? parseInt(allocation.projetId) : null,
-        emplacementId: allocation.emplacementId ? parseInt(allocation.emplacementId) : null,
-        devis: allocation.devis || '',
-        commandNumber: allocation.commande_ref || '',
-        rn: allocation.rn || '',
-        facture: allocation.facture || '',
+    const payload = {
+        orderPaymentId: parseInt(paymentId),
         distribution: parseFloat(allocation.distribution).toFixed(2),
         allocatedAmountTtc: parseFloat(allocation.allocatedAmountTtc).toFixed(2),
         remainingAmountTtc: parseFloat(allocation.remainingAmountTtc).toFixed(2),
@@ -552,8 +557,26 @@ const createAllocationDetailPayload = (paymentId, allocation) => {
         paidAmount: allocation.paidAmount ? parseFloat(allocation.paidAmount).toFixed(2) : 0,
         paidDate: allocation.paidDate || null,
         areaSquareMeter: allocation.areaSquareMeter || 0,
-        areaSquareFeet: allocation.areaSquareFeet || 0
+        areaSquareFeet: allocation.areaSquareFeet || 0,
+        rn: allocation.rn || '',
+        facture: allocation.facture || '',
+        projetId: allocation.projetId ? parseInt(allocation.projetId) : null,
+        emplacementId: allocation.emplacementId ? parseInt(allocation.emplacementId) : null,
     };
+
+    if (allocation.type === 'quote') {
+        payload.quoteId = parseInt(allocation.quoteId);
+        payload.quoteDetailId = parseInt(allocation.quoteDetailId);
+        payload.devis = allocation.devis || '';
+        payload.commandNumber = allocation.commande_ref || '';
+    } else if (allocation.type === 'order') {
+        payload.customerInvoiceId = parseInt(allocation.orderId);
+        payload.customerInvoiceDetailId = parseInt(allocation.orderInvoiceId);
+        payload.orderInvoiceId = parseInt(allocation.orderInvoiceId); // if backend expects it
+        // Do NOT include orderId
+    }
+
+    return payload;
 };
 
 const handleSavePaymentError = (error) => {
@@ -601,6 +624,48 @@ const getCurrentTaxRate = () => {
         return paymentData.value.taxRuleId === 1 ? 0.20 : (paymentData.value.taxRuleId === 2 ? 0.10 : 0);
     }
     return 0;
+};
+
+const loadPaymentData = async () => {
+    try {
+        loading.value = true;
+        const response = await axiosInstance.get(`/api/order-payment/${paymentId.value}`);
+        const data = response.data.response;
+
+        paymentData.value = {
+            date: data.date || new Date().toISOString().split('T')[0],
+            paymentMethodId: data.paymentMethodId || await getPaymentMethodIdByName(data.paymentMethod),
+            customerId: data.customer,
+            commercialId: data.commercial,
+            currencyId: data.currencyId || await getCurrencyIdByName(data.currency),
+            taxRuleId: data.taxRuleId || 1,
+            accountLabel: data.accountLabel,
+            transactionNumber: data.transactionNumber,
+            paymentAmountHt: Helper.FormatNumber(data.paymentAmountHt || 0),
+            taxAmount: Helper.FormatNumber(data.taxAmount || 0),
+            paymentAmountTtc: Helper.FormatNumber(data.paymentAmountTtc || 0),
+            affectationNote: data.affectationNote
+        };
+
+        if (data.orderPaymentDetails && data.orderPaymentDetails.length > 0) {
+            allocations.value = await Promise.all(
+                data.orderPaymentDetails.map(item =>
+                    mapAllocationFromPaymentDetail(item, {
+                        contremarqueIdRef: contremarqueId,
+                        Helper,
+                        DEFAULT_RN_PREFIX,
+                        DEFAULT_DISTRIBUTION
+                    })
+                )
+            );
+        }
+
+    } catch (error) {
+        console.error("Erreur lors du chargement du paiement:", error);
+        window.showMessage('Erreur lors du chargement du paiement', 'error');
+    } finally {
+        loading.value = false;
+    }
 };
 </script>
 

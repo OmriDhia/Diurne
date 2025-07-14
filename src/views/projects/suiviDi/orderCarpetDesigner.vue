@@ -45,7 +45,13 @@
                                                     :error="errorCarpetOrder.location_id"
                                                 ></d-location-dropdown>
                                                 <d-input :disabled="true" v-model="transDate" label="Date trasmission"></d-input>
-                                                <d-input :disabled="true" v-model="projectDi.demande_number" label="N° de la demande"></d-input>
+                                                <label class="form-label" style="font-weight: 500;">N° de la demande:</label>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <input type="text" class="form-control me-2" :value="projectDi.demande_number" readonly style="max-width: 220px;" />
+                                                    <button class="btn btn-custom btn-custom-copy" type="button" @click="copyDemandeNumber" title="Copier">
+                                                        <vue-feather type="clipboard" size="16"></vue-feather>
+                                                    </button>
+                                                </div>
                                                 <d-input :disabled="true" v-model="deadline" label="Deadline"></d-input>
                                                 <d-input :disabled="true" v-model="commercial" label="Commercial"></d-input>
                                             </div>
@@ -720,6 +726,13 @@
     const goToDis = ()=>{
         router.push({ name: 'di_list'});
     }
+    
+    const copyDemandeNumber = () => {
+        if (projectDi.value.demande_number) {
+            navigator.clipboard.writeText(projectDi.value.demande_number);
+            window.showMessage && window.showMessage('Numéro de demande copié !', 'success');
+        }
+    };
 </script>
 
 <style>
@@ -731,5 +744,20 @@
         color: red;
         font-size: 12px;
         margin-top: 4px;
+    }
+
+    .btn-custom-copy {
+        height: 30px;
+        min-width: 30px;
+        width: 30px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%!important;
+        background-color: #4260EB !important;
+        border-color: #4260EB !important;
+        box-shadow: none !important;
+        cursor: pointer;
     }
 </style>
