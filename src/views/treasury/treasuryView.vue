@@ -50,7 +50,7 @@
                                 </div>
 
                                 <div class="col-md-6" v-if="allocationType === 'order'">
-                                    <d-order-dropdown v-model="selectedOrderObject" label="Facture"
+                                    <d-customer-invoice-dropdown v-model="selectedOrderObject" label="Facture"
                                         @selected="handleOrderSelection" />
                                 </div>
                             </div>
@@ -124,7 +124,7 @@
                                                         @change="updateCommandeRef(index)" />
                                                     <router-link 
                                                         v-if="allocation.orderId && $hasPermission('update carpet')"
-                                                        :to="'/projet/commande/manage/' + allocation.orderId"
+                                                        :to="'/projet/invoices/manage/' + allocation.orderId"
                                                         class="ms-1">
                                                         <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
                                                     </router-link>
@@ -257,6 +257,8 @@ import dOrderDropdown from '../../components/common/d-order-dropdown.vue';
 import dCollectionsDropdown from '../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
 import dLocationDropdown from '../../components/projet/contremarques/dropdown/d-location-dropdown.vue';
 import dDelete from '../../components/common/d-delete.vue';
+import dCustomerInvoiceDropdown from '../../components/common/d-customer-invoice-dropdown.vue';
+import { mapAllocationFromPaymentDetail } from '@/composables/useTreasuryAllocations';
 
 const router = useRouter();
 const route = useRoute();
@@ -313,67 +315,23 @@ const loadPaymentData = async () => {
             taxRuleId: data.taxRuleId || 1,
             accountLabel: data.accountLabel,
             transactionNumber: data.transactionNumber,
-            paymentAmountHt: Helper.FormatNumber(data.paymentAmountHt || 0), // Format
-            taxAmount: Helper.FormatNumber(data.taxAmount || 0),             // Format
-            paymentAmountTtc: Helper.FormatNumber(data.paymentAmountTtc || 0),// Format
+            paymentAmountHt: Helper.FormatNumber(data.paymentAmountHt || 0),
+            taxAmount: Helper.FormatNumber(data.taxAmount || 0),
+            paymentAmountTtc: Helper.FormatNumber(data.paymentAmountTtc || 0),
             affectationNote: data.affectationNote
         };
 
         if (data.orderPaymentDetails && data.orderPaymentDetails.length > 0) {
-            allocations.value = await Promise.all(data.orderPaymentDetails.map(async (item) => {
-                if (item.quote) {
-                    try {
-                        const quoteResponse = await axiosInstance.get(`/api/quote/${item.quote}`);
-                        const quoteData = quoteResponse.data.response;
-
-                        contremarqueId.value = quoteData?.quoteData?.contremarqueId || 0;
-
-                        return {
-                            id: item.id,
-                            quoteId: item.quote,
-                            quoteDetailId: item.quoteDetail,
-                            orderId: item.orderId,
-                            orderInvoiceId: item.orderInvoiceId,
-                            projetId: item.projetId,
-                            emplacementId: item.emplacementId,
-                            carpetSpecification: quoteData?.quoteData?.quoteDetails?.find(d => d.id === item.quoteDetail)?.carpetSpecification || null,
-                            location: quoteData?.quoteData?.quoteDetails?.find(d => d.id === item.quoteDetail)?.location || null,
-                            devis: quoteData?.quoteData?.reference || '',
-                            commande_ref: item.commandNumber || '',
-                            rn: item.rn || DEFAULT_RN_PREFIX + Math.random().toString(36).substring(2, 7).toUpperCase(),
-                            facture: item.facture || '',
-                            distribution: Helper.FormatNumber(item.distribution || parseFloat(DEFAULT_DISTRIBUTION)), // Format (DEFAULT_DISTRIBUTION is already '100.00')
-                            allocatedAmountTtc: Helper.FormatNumber(item.allocatedAmountTtc || 0),      // Format
-                            totalAmountTtc: Helper.FormatNumber(item.totalAmountTtc || 0),              // Format
-                            remainingAmountTtc: Helper.FormatNumber(item.remainingAmountTtc || 0),    // Format
-                            allocatedAmountHt: Helper.FormatNumber(item.allocatedAmountHt || 0),       // Format
-                            tva: Helper.FormatNumber(item.tva || 0),                                  // Format
-                            cleared: item.cleared || false,
-                            type: 'quote',
-                            areaSquareMeter: item.areaSquareMeter || 0, // Assuming these are not currency
-                            areaSquareFeet: item.areaSquareFeet || 0   // Assuming these are not currency
-                        };
-                    } catch (error) {
-                        console.error(`Erreur lors du chargement du devis ${item.quote}:`, error);
-                        return {
-                            ...item,
-                            type: 'quote',
-                            devis: 'Devis non chargé',
-                            carpetSpecification: null,
-                            location: null
-                        };
-                    }
-                } else {
-                    return {
-                        ...item,
-                        type: 'order',
-                        devis: '',
-                        commande_ref: item.commandNumber || '',
-                        carpetSpecification: null,
-                        location: null
-                    };
-                }
-            }));
+            allocations.value = await Promise.all(
+                data.orderPaymentDetails.map(item =>
+                    mapAllocationFromPaymentDetail(item, {
+                        contremarqueIdRef: contremarqueId,
+                        Helper,
+                        DEFAULT_RN_PREFIX,
+                        DEFAULT_DISTRIBUTION
+                    })
+                )
+            );
         }
 
     } catch (error) {
@@ -528,8 +486,70 @@ const createAllocationObject = (quoteFullObject, quoteDetail) => {
     };
 };
 
-const handleOrderSelection = (orderFullObject) => {
-    // @to DO
+const handleOrderSelection = async (invoiceFullObject) => {
+    if (!invoiceFullObject?.id) {
+        window.showMessage('Veuillez sélectionner une facture valide.', 'warning');
+        return;
+    }
+
+    if (allocations.value.some(a => a.orderId === invoiceFullObject.id)) {
+        window.showMessage('Cette facture a déjà été ajoutée.', 'warning');
+        return;
+    }
+
+    try {
+        loading.value = true;
+        const response = await axiosInstance.get(`/api/customerInvoices/${invoiceFullObject.id}`);
+        const invoiceWithDetails = response.data.response;
+
+        if (!invoiceWithDetails.customerInvoiceDetails?.length) {
+            window.showMessage('Cette facture ne contient aucun détail.', 'warning');
+            return;
+        }
+
+        invoiceWithDetails.customerInvoiceDetails.forEach(invoiceDetail => {
+            const allocation = createOrderAllocationObject(invoiceFullObject, invoiceDetail);
+            updateAllocationForNewItem(allocation);
+            allocations.value.push(allocation);
+        });
+
+        paymentData.value.customerId = invoiceFullObject.customer_id || null;
+        paymentData.value.commercialId = invoiceFullObject.commercial_id || null;
+        paymentData.value.taxRuleId = invoiceFullObject.taxRule?.id || 1;
+
+    } catch (error) {
+        console.error("Erreur lors de la récupération des détails de la facture:", error);
+        window.showMessage('Erreur lors de la récupération des détails de la facture', 'error');
+    } finally {
+        loading.value = false;
+    }
+};
+
+const createOrderAllocationObject = (invoiceFullObject, invoiceDetail) => {
+    return {
+        quoteId: null,
+        quoteDetailId: null,
+        orderId: invoiceFullObject.id,
+        orderInvoiceId: invoiceDetail.id,
+        projetId: null, // set if you have project info
+        emplacementId: null, // set if you have emplacement info
+        carpetSpecification: null, // set if you have this info
+        location: null, // set if you have this info
+        devis: invoiceDetail.refQuote || '',
+        commande_ref: invoiceDetail.refCommand || '',
+        rn: invoiceDetail.rn || (DEFAULT_RN_PREFIX + Math.random().toString(36).substring(2, 7).toUpperCase()),
+        facture: invoiceFullObject.invoice_number || '',
+        distribution: DEFAULT_DISTRIBUTION,
+        allocatedAmountTtc: 0,
+        totalAmountTtc: parseFloat(invoiceDetail.ttc) || 0,
+        remainingAmountTtc: parseFloat(invoiceDetail.ttc) || 0,
+        allocatedAmountHt: 0,
+        tva: 0,
+        cleared: invoiceDetail.cleared || false,
+        type: 'order',
+        areaSquareMeter: parseFloat(invoiceDetail.m2) || 0,
+        areaSquareFeet: parseFloat(invoiceDetail.sqft) || 0
+    };
 };
 
 const updateAllocationForNewItem = (allocation) => {
@@ -711,18 +731,8 @@ const createPaymentPayload = () => {
 };
 
 const createAllocationDetailPayload = (paymentId, allocation) => {
-    return {
+    const payload = {
         orderPaymentId: parseInt(paymentId),
-        quoteId: allocation.type === 'quote' ? parseInt(allocation.quoteId) : null,
-        quoteDetailId: allocation.type === 'quote' ? parseInt(allocation.quoteDetailId) : null,
-        orderId: allocation.type === 'order' ? parseInt(allocation.orderId) : null,
-        orderInvoiceId: allocation.orderInvoiceId || null,
-        projetId: allocation.projetId ? parseInt(allocation.projetId) : null,
-        emplacementId: allocation.emplacementId ? parseInt(allocation.emplacementId) : null,
-        devis: allocation.devis || '',
-        commandNumber: allocation.commande_ref || '',
-        rn: allocation.rn || '',
-        facture: allocation.facture || '',
         distribution: parseFloat(allocation.distribution).toFixed(2),
         allocatedAmountTtc: parseFloat(allocation.allocatedAmountTtc).toFixed(2),
         remainingAmountTtc: parseFloat(allocation.remainingAmountTtc).toFixed(2),
@@ -733,8 +743,26 @@ const createAllocationDetailPayload = (paymentId, allocation) => {
         paidAmount: allocation.paidAmount ? parseFloat(allocation.paidAmount).toFixed(2) : 0,
         paidDate: allocation.paidDate || null,
         areaSquareMeter: allocation.areaSquareMeter || 0,
-        areaSquareFeet: allocation.areaSquareFeet || 0
+        areaSquareFeet: allocation.areaSquareFeet || 0,
+        rn: allocation.rn || '',
+        facture: allocation.facture || '',
+        projetId: allocation.projetId ? parseInt(allocation.projetId) : null,
+        emplacementId: allocation.emplacementId ? parseInt(allocation.emplacementId) : null,
     };
+
+    if (allocation.type === 'quote') {
+        payload.quoteId = parseInt(allocation.quoteId);
+        payload.quoteDetailId = parseInt(allocation.quoteDetailId);
+        payload.devis = allocation.devis || '';
+        payload.commandNumber = allocation.commande_ref || '';
+    } else if (allocation.type === 'order') {
+        payload.customerInvoiceId = parseInt(allocation.orderId);
+        payload.customerInvoiceDetailId = parseInt(allocation.orderInvoiceId);
+        payload.orderInvoiceId = parseInt(allocation.orderInvoiceId); // if backend expects it
+        // Do NOT include orderId
+    }
+
+    return payload;
 };
 
 const handleSavePaymentError = (error) => {
