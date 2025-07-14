@@ -37,10 +37,10 @@
                                         </div>-->
                     <div class="row mt-3">
                         <div class="col-md-6">
-                            <d-input label="Contremarque" v-model="form.contremarque" />
+                            <d-contremarque-dropdown v-model="form.contremarque" :disabled="true" />
                             <d-input type="date" label="date évènement" v-model="form.dateEvent" />
                             <d-input type="date" label="date atelier cible" v-model="form.dateWorkshop" />
-                            <d-input label="Tissage" v-model="form.tissage" />
+                            <d-input label="Tissage" v-model="form.tissage" v-if="form.statusId?.id === 2"/>
                         </div>
                         <div class="col-md-6">
                             <d-textarea label="Comment" v-model="form.comment" />
@@ -52,6 +52,11 @@
                         </div>
                         <div class="col-auto">
                             <button class="btn btn-custom" @click="save">Nouveau PR</button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-custom pe-5 ps-5" @click="goToWorkshop">
+                                Retour à la workShop
+                            </button>
                         </div>
                     </div>
                 </template>
@@ -71,10 +76,14 @@
     import dBaseDropdown from '@/components/base/d-base-dropdown.vue';
     import dUsersDropdown from '@/components/common/d-users-dropdown.vue';
     import progressReportService from '@/Services/progress-report-service';
-    import {useRoute} from "vue-router";
+    import {useRoute, useRouter} from "vue-router";
+    import axiosInstance from "@/config/http.js";
+    import DContremarqueDropdown from "@/components/common/d-contremarque-dropdown.vue";
 
     const route = useRoute();
+    const router = useRouter();
     const loading = ref(false);
+    const provisionalCalendar = ref({});
     const form = ref({
         authorId: [],
         datePr: '',
@@ -88,7 +97,6 @@
         provisionalCalendarId: parseInt(route.params.provisionalCalendarId),
     });
     const statuses = ref([]);
-    console.log(statuses);
     const loadStatuses = async () => {
         try {
             const res = await progressReportService.getStatuses();
@@ -97,8 +105,21 @@
             window.showMessage(e.message, 'error');
         }
     };
+    const getCalndar = async () => {
+        try {
+            const res = await axiosInstance.get(`/api/provisionalCalendar/${form.value.provisionalCalendarId}`);
+            provisionalCalendar.value = res.data?.response;
+            form.value.rn = provisionalCalendar.value.workshopOrder.workshopInformation.rn
+            form.value.contremarque = provisionalCalendar.value.workshopOrder.imageCommand.carpetDesignOrder.location.contremarque_id
+        } catch (e) {
+            window.showMessage(e.message, 'error');
+        }
+    };
 
-    onMounted(loadStatuses);
+    onMounted(() => {
+        loadStatuses()
+        getCalndar()
+    });
 
     const save = async () => {
         try {
@@ -119,6 +140,9 @@
         } finally {
             loading.value = false;
         }
+    };
+    const goToWorkshop = () => {
+        router.back();
     };
 </script>
 

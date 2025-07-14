@@ -26,6 +26,7 @@
                                                 <div class="row"><d-input v-model="item.event" :disabled="true"></d-input></div>
                                                 <div class="row"><d-input v-model="item.dateEvent" :disabled="true"></d-input></div>
                                                 <div class="row"><d-input v-model="item.datePR" :disabled="true"></d-input></div>
+                                                <div class="row"><d-input v-model="item.tissage" :disabled="true" v-if="item.event === 'Tissage'"></d-input></div>
                                             </div>
                                             <div class="col-6">
                                                 <div class="row">

@@ -22,7 +22,7 @@
                                                     :imageCommandId="imageCommandId"
                                                     v-if="activeTab === 'information'"/>
                                 <ImageTab :imageCommandId="imageCommandId" :imageCommande="imageCommande" :workshopOrderId="workshopOrderId" v-if="activeTab === 'image' && workshopOrderId"/>
-                                <HistoriqueTab :workshopOrderId="workshopOrderId" v-if="activeTab === 'historique' && workshopOrderId"/>
+                                <HistoriqueTab :rn="workshopInfo.rn" :workshopOrderId="workshopOrderId" v-if="activeTab === 'historique' && workshopOrderId"/>
                             </div>
                         </div>
                         <div class="col-md-4">

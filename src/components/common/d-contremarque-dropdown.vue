@@ -1,10 +1,10 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-3"><label class="form-label">Contremarque<span class="required" v-if="required">*</span> :</label>
+        <div class="col-4"><label class="form-label">Contremarque<span class="required" v-if="required">*</span> :</label>
 
         </div>
 
-        <div class="col-8">
+        <div class="col-7">
             <multiselect
                 :class="{ 'is-invalid': error}"
                 :model-value="selectedContremarque"
