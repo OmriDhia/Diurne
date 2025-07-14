@@ -12,6 +12,7 @@
                 <div class="row d-flex justify-content-center align-items-start p-2">
                     <div class="col-md-6 col-sm-12 list-facture-client--item">
                         <d-user-dropdown v-model="filter.auteur" />
+                        <!--/api/users intégrer l'api por l'auteur -->
                         <d-input label="Numéro facture" v-model="filter.invoiceNumber" />
                         <d-input label="Atelier" v-model="filter.atelier" />
                     </div>

@@ -393,7 +393,7 @@
             // Push a new line to lines array with RN data
             lines.value.push({
                 id: null, // New line, no ID yet
-                percent: formatNumber(rnData.carpetOrderDetail.QuoteDetail.impactOnTheQuotePrice), // Percentage needs to be entered
+                percent: formatNumber(rnData.carpetOrderDetail.QuoteDetail.impactOnTheQuotePrice) || null, // Percentage needs to be entered
                 rn: rnData.rnNumber,
                 collection: rnData.imageCommand.carpetSpecification.collection?.id || null,
                 model: rnData.imageCommand.carpetSpecification.model?.id || null,

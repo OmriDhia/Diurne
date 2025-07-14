@@ -388,8 +388,8 @@ label,
     border: 0;
     text-decoration: underline;
     box-shadow: none;
-    width: 24px;
-    height: 24px;
+    width: 33px;
+    height: 33px;
     padding: 0px;
     border-radius: 50px;
 
@@ -454,8 +454,11 @@ label,
             }
         }
         .btn-add {
-            width: 40px;
-            height: 40px;
+            width: 33px;
+            height: 33px;
+            .btn svg {
+                width: 18px;
+            }
         }
         .td-actions {
             width: 105px;
@@ -532,4 +535,11 @@ label,
 }
 .rn-custom-td .col-8 {
     width: 100%;
+}
+input[disabled] {
+    color: black;
+}
+.btn-add:hover,
+.btn-add:focus {
+    background-color: black !important;
 }
