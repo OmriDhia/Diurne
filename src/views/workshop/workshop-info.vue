@@ -86,8 +86,8 @@ const getWorkshopOrder = async () => {
         workshopInfoId.value = workshopInfo.value.id;
         imageCommande.value = workshopOrder.value.imageCommand;
         imageCommandId.value = imageCommande.value.id;
-    }else if (imageCommandId) {
-        const res = await axiosInstance.get(`/api/image-command/${imageCommandId}`);
+    }else if (imageCommandId.value) {
+        const res = await axiosInstance.get(`/api/image-command/${imageCommandId.value}`);
         imageCommande.value = res.data.response;
     }
     loading.value = false;
