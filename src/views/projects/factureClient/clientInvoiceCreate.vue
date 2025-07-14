@@ -222,7 +222,7 @@
                                 <div class="col-md-3 bloc-btns-actions">
                                     <button class="btn btn-custom">RÉPARTITION</button>
                                     <button class="btn btn-custom" @click="calculate">CALCULER</button>
-                                    <button class="btn btn-custom" @click="save">ÉDITER</button>
+                                    <button class="btn btn-custom" @click="save"><span v-if="route.params.id && route.query.quote_id == null">ÉDITER</span><span v-else>AJOUTER</span></button>
                                     <button class="btn btn-custom">RATTACHER UN RÈGLEMENT</button>
                                 </div>
                             </div>
@@ -532,7 +532,10 @@
                     }
 
                     // Populate lines from invoice details using the helper
-                    carpetOrderDetailsId.value = invoiceData.customerInvoiceDetails[0].carpetOrderDetail || null; // Assuming this is the ID or value
+                    if (invoiceData.customerInvoiceDetails.length) {
+                        carpetOrderDetailsId.value = invoiceData.customerInvoiceDetails[0].carpetOrderDetail || null; // Assuming this is the ID or value
+                    }
+
                     lines.value = mapDetailsToLines(invoiceData.customerInvoiceDetails);
                 }
             }
