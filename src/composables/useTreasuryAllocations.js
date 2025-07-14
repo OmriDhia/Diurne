@@ -53,14 +53,18 @@ export async function mapAllocationFromPaymentDetail(item, { contremarqueIdRef, 
         const invoiceResponse = await axiosInstance.get(`/api/customerInvoices/${item.customerInvoice || item.customerInvoiceId || item.orderId}`);
         const invoiceData = invoiceResponse.data.response;
         const invoiceDetail = (invoiceData.customerInvoiceDetails || []).find(d => d.id == (item.customerInvoiceDetail || item.orderInvoiceId));
+        // Correction ici : on va chercher location et carpetSpecification
+        const quoteDetail = invoiceDetail?.carpetOrderData?.QuoteDetail;
         const allocation = {
             ...item,
-            orderId: item.customerInvoice || item.customerInvoiceId || item.orderId, // Correction principale
+            orderId: item.customerInvoice || item.customerInvoiceId || item.orderId,
             orderInvoiceId: item.customerInvoiceDetail || item.orderInvoiceId,
             type: 'order',
             commande_ref: invoiceDetail?.refCommand || '',
             devis: invoiceDetail?.refQuote || '',
             facture: invoiceData.invoice_number || '',
+            location: quoteDetail?.location || null,
+            carpetSpecification: quoteDetail?.carpetSpecification || null,
         };
         return allocation;
     } catch (error) {
@@ -111,6 +115,8 @@ export function createQuoteAllocation(quoteFullObject, quoteDetail, { Helper, DE
  * Create an allocation object for an invoice.
  */
 export function createInvoiceAllocation(invoiceFullObject, invoiceDetail, { Helper, DEFAULT_RN_PREFIX, DEFAULT_DISTRIBUTION }) {
+    // Correction ici : on va chercher location et carpetSpecification
+    const quoteDetail = invoiceDetail?.carpetOrderData?.QuoteDetail;
     return {
         quoteId: null,
         quoteDetailId: null,
@@ -118,8 +124,8 @@ export function createInvoiceAllocation(invoiceFullObject, invoiceDetail, { Help
         orderInvoiceId: invoiceDetail.id,
         projetId: null, // set if you have project info
         emplacementId: null, // set if you have emplacement info
-        carpetSpecification: null, // set if you have this info
-        location: null, // set if you have this info
+        carpetSpecification: quoteDetail?.carpetSpecification || null,
+        location: quoteDetail?.location || null,
         devis: invoiceDetail.refQuote || '',
         commande_ref: invoiceDetail.refCommand || '',
         rn: invoiceDetail.rn || (DEFAULT_RN_PREFIX + Math.random().toString(36).substring(2, 7).toUpperCase()),

@@ -321,17 +321,22 @@ const loadPaymentData = async () => {
             affectationNote: data.affectationNote
         };
 
-        if (data.orderPaymentDetails && data.orderPaymentDetails.length > 0) {
-            allocations.value = await Promise.all(
-                data.orderPaymentDetails.map(item =>
-                    mapAllocationFromPaymentDetail(item, {
-                        contremarqueIdRef: contremarqueId,
-                        Helper,
-                        DEFAULT_RN_PREFIX,
-                        DEFAULT_DISTRIBUTION
-                    })
-                )
-            );
+        if (data.orderPaymentDetails) {
+            const details = Array.isArray(data.orderPaymentDetails)
+                ? data.orderPaymentDetails
+                : Object.values(data.orderPaymentDetails);
+            if (details.length > 0) {
+                allocations.value = await Promise.all(
+                    details.map(item =>
+                        mapAllocationFromPaymentDetail(item, {
+                            contremarqueIdRef: contremarqueId,
+                            Helper,
+                            DEFAULT_RN_PREFIX,
+                            DEFAULT_DISTRIBUTION
+                        })
+                    )
+                );
+            }
         }
 
     } catch (error) {
