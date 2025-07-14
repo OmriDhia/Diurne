@@ -11,6 +11,9 @@ import axiosInstance from '../../../config/http';
 const props = defineProps({
     workshopOrderId: {
         type: [Number, null]
+    },
+    rn: {
+        type: [String, null]
     }
 });
 
@@ -45,7 +48,7 @@ onMounted(() => {
             <button class="btn btn-custom font-size-0-7 text-uppercase" data-bs-toggle="modal"
                     data-bs-target="#modalAgentManageHistoriqueRn">Nouveau déplacement
             </button>
-            <d-modal-historique-rn @onClose="handleClose" :workshopOrderId="props.workshopOrderId"></d-modal-historique-rn>
+            <d-modal-historique-rn @onClose="handleClose" :workshopOrderId="props.workshopOrderId" :rn="props.rn"></d-modal-historique-rn>
         </div>
         <div class="col-12 ps-0" style="overflow-x: auto;">
             <table class="table table-striped">

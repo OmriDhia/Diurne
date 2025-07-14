@@ -42,6 +42,9 @@
     const props = defineProps({
         workshopOrderId: {
             type: [Number, null]
+        },
+        rn: {
+            type: [String, null]
         }
     });
     const emit = defineEmits(['onClose']);
@@ -80,10 +83,19 @@
             console.log(error);
         }
     }
+    const getCarpetId = async() => {
+        try {
+             const res = await axiosInstance.get(`/api/carpets/rn/${props.rn}`)
+            console.log('rn',  res.data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
     
     onMounted(() => {
         /* const user = userService.getUserInfo();
         formData.value.customer = user.id; */
+        getCarpetId()
     })
     
     const handleClose = () => {
