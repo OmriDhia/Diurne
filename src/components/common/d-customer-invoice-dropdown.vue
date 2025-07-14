@@ -1,6 +1,5 @@
 <template>
   <div class="form-group">
-    <label v-if="label" class="form-label">{{ label }}</label>
     <multiselect
       v-model="selectedInvoice"
       :options="filteredInvoices"
