@@ -11,7 +11,8 @@
                 </div>
                 <div class="row d-flex justify-content-center align-items-start p-2">
                     <div class="col-md-6 col-sm-12 list-facture-client--item">
-                        <d-input label="Auteur" v-model="filter.auteur" />
+                        <d-user-dropdown v-model="filter.auteur" />
+                        <!--/api/users intégrer l'api por l'auteur -->
                         <d-input label="Numéro facture" v-model="filter.invoiceNumber" />
                         <d-input label="Atelier" v-model="filter.atelier" />
                     </div>
@@ -85,6 +86,7 @@
     import dContremarqueDropdown from '../../../components/common/d-contremarque-dropdown.vue';
     import dPageTitle from '../../../components/common/d-page-title.vue';
     import dDatePicker from '../../../components/base/d-date-picker.vue';
+    import dUserDropdown from '../../../components/common/d-user-dropdown.vue';
     import axiosInstance from '../../../config/http';
     import { useRouter } from 'vue-router';
     import { filterFactureFournisseur, FILTER_FOURNISSEUR_INVOICE_STORAGE_NAME } from '../../../composables/constants';

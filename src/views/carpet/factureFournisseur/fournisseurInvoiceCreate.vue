@@ -28,8 +28,10 @@
                             <div class="col-md-4">
                                 <d-input label="Fournisseur" v-model="form.supplier" />
                                 <d-input label="Fret total" v-model="form.freightTotal" class="pt-2" />
+
                                 <div class="form-check text-end pt-2">
-                                    <input class="form-check-input" type="radio" id="freight-included" v-model="form.freightIncluded" />
+                                    <input class="form-check-input" type="checkbox" id="freight-included" v-model="form.freightIncluded" />
+                                    <!-- 0 ou 1 response + cond Fret total inclue sur le clacule ou non if 1 inclue sinon 0 non -->
                                     <label class="form-check-label" for="freight-included">compris dans la facture</label>
                                 </div>
                             </div>
@@ -48,10 +50,13 @@
                                             <th class="text-white">N° tapis</th>
                                             <th class="text-white">Prix m²</th>
                                             <th class="text-white">Surface facture</th>
+                                            <!--response.workshopOrder.workshopInformation.orderedSurface-->
                                             <th class="text-white">Prix de la facture</th>
                                             <th class="text-white">Prix théorique</th>
                                             <th class="text-white">Pénalité</th>
+                                            <!--response.workshopOrder.workshopInformation.penalty-->
                                             <th class="text-white">Surface produite</th>
+                                            <!--response.workshopOrder.workshopInformation.realSurface-->
                                             <th class="text-white">Montant réel avoir</th>
                                             <th class="text-white">Avoir théorique</th>
                                             <th class="text-white">Montant final tapis</th>
@@ -63,20 +68,22 @@
                                     </thead>
                                     <tbody>
                                         <tr v-for="(line, index) in lines" :key="index">
-                                            <td class="rn-custom-td"><d-rn-number-dropdown v-model="line.rn" @dataOfRn="ResultasRnData" :showActionRn="true"></d-rn-number-dropdown></td>
+                                            <td class="rn-custom-td">
+                                                <d-rn-number-dropdown v-model="line.rn" @dataOfRn="(data) => ResultasRnData(data, index)" :showActionRn="true"></d-rn-number-dropdown>
+                                            </td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.carpetNumber" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.pricePerSquareMeter" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.invoiceSurface" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.invoiceAmount" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.theoreticalPrice" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.penalty" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.producedSurface" /></td>
+                                            <td><input type="number" disabled class="form-control form-control-sm" v-model="line.theoreticalPrice" /></td>
+                                            <td><input type="number" disabled class="form-control form-control-sm" v-model="line.penalty" /></td>
+                                            <td><input type="number" disabled class="form-control form-control-sm" v-model="line.producedSurface" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.actualCreditAmount" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.theoreticalCredit" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.finalCarpetAmount" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.weight" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.weightPercentage" /></td>
-                                            <td><input type="number" class="form-control form-control-sm" v-model="line.fret" /></td>
+                                            <td><input type="number" disabled class="form-control form-control-sm" v-model="line.theoreticalCredit" /></td>
+                                            <td><input type="number" disabled class="form-control form-control-sm" v-model="line.finalCarpetAmount" /></td>
+                                            <td><input type="number" disabled class="form-control form-control-sm" v-model="line.weight" /></td>
+                                            <td><input type="number" disabled class="form-control form-control-sm" v-model="line.weightPercentage" /></td>
+                                            <td><input type="number" disabled class="form-control form-control-sm" v-model="line.fret" /></td>
                                             <td class="text-center td-actions">
                                                 <button class="btn btn-add btn-sm me-1" @click="saveLine(index)">
                                                     <vue-feather type="save" size="16" />
@@ -110,10 +117,10 @@
                                     <d-panel-title title="Avoir sur cette facture" class-name="ps-2 mt-0" />
                                     <div class="row">
                                         <div class="col d-block__item">
-                                            <d-input label="Montant théorique" v-model="form.amountTheoretical" />
+                                            <d-input label="Montant théorique" disabled v-model="form.amountTheoretical" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Montant réel" v-model="form.amountReal" />
+                                            <d-input label="Montant réel" disabled v-model="form.amountReal" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -133,23 +140,23 @@
                                 <div class="col-md-8">
                                     <div class="row">
                                         <div class="col d-block__item">
-                                            <d-input label="Total facture" v-model="form.invoiceTotal" />
+                                            <d-input label="Total facture" disabled v-model="form.invoiceTotal" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Total théorique" v-model="form.theoreticalTotal" />
+                                            <d-input label="Total théorique" disabled v-model="form.theoreticalTotal" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Total surface" v-model="form.surfaceTotal" />
+                                            <d-input label="Total surface" disabled v-model="form.surfaceTotal" />
                                         </div>
                                         <div class="col d-block__item">
-                                            <d-input label="Total Poids" v-model="form.weightTotal" />
+                                            <d-input label="Total Poids" disabled v-model="form.weightTotal" />
                                         </div>
                                     </div>
 
                                     <d-panel-title title="Paiement" class-name="ps-2" />
                                     <div class="row">
                                         <div class="col d-block__item">
-                                            <d-input label="Montant théorique" v-model="form.paymentTheoretical" />
+                                            <d-input label="Montant théorique" disabled v-model="form.paymentTheoretical" />
                                         </div>
                                         <div class="col d-block__item">
                                             <d-input label="Montant réel" v-model="form.paymentReal" />
@@ -227,7 +234,7 @@
         currencyId: null,
         freightIncluded: false, //0:1
         amountOther: '',
-        weight: '',
+        weight: '', //response.workshopOrder.workshopInformation.quality.weight (surface real)
         description: '',
         amountTheoretical: '',
         amountReal: '',
@@ -259,8 +266,8 @@
             theoreticalCredit: null,
             finalCarpetAmount: null,
             weight: null,
-            weightPercentage: null,
-            fret: null,
+            weightPercentage: null, //,% poids : % de poids parmi tous les tapis de la facture
+            fret: null, //fret total x % de poids
         });
     };
 
@@ -276,7 +283,7 @@
             penalite: null,
             surfaceProduite: null,
             montantReelAvoir: null,
-            avoirTheorique: null,
+            theoreticalCredit: null,
             montantReelAvoir2: null,
             montantFinalTapis: null,
             weight: null,
@@ -284,16 +291,29 @@
             fret: null,
         },
     ]);
-    const ResultasRnData = (data) => {
-        console.log('ResultasRnData', data);
+    const ResultasRnData = (data, index) => {
+        console.log('ResultasRnData', data, index);
         if (data && data.data && data.data.response) {
             const rnData = data.data.response;
 
             rnId.value = rnData.id; // Assuming rnData has an ID
-            console.log('rnId.value', rnId.value);
-
-            // form.value.rn = rnData.rnNumber; // Don't set form.rn here, it's for the header
-            carpetOrderDetailsId.value = rnData.imageCommand.carpetSpecification.id; // This seems incorrect, should be the detail ID
+            carpetOrderDetailsId.value = rnData.imageCommand.carpetSpecification.id;
+            lines.value[index] = {
+                rn: rnData.rnNumber,
+                id: lines.value[index].id || null, // Add ID for updates/deletes
+                carpetNumber: lines.value[index].carpet_number || null,
+                pricePerSquareMeter: lines.value[index].price_per_square_meter || null,
+                invoiceAmount: lines.value[index].invoice_amount || null,
+                theoreticalPrice: lines.value[index].theoretical_price || null,
+                producedSurface: rnData.workshopOrder.workshopInformation.realSurface,
+                theoreticalCredit: lines.value[index].theoretical_credit || null,
+                finalCarpetAmount: lines.value[index].final_carpet_amount || null,
+                invoiceSurface: rnData.workshopOrder.workshopInformation.orderedSurface,
+                penalty: rnData.workshopOrder.workshopInformation.penalty,
+                actualCreditAmount: lines.value[index].actualCreditAmount || null,
+                weight: rnData.workshopOrder.workshopInformation.quality.weight,
+            };
+            calculate();
         }
     };
     const loadInvoice = async (id) => {
@@ -312,9 +332,9 @@
                 packingList: data.packing_list || '',
                 airWay: data.air_way || '',
 
-                freightTotal: data.fret_total || '',
+                freightTotal: data.freightTotal || '',
                 currencyId: data.currency_id || null,
-                freightIncluded: data.freightIncluded === 1, // Convert to boolean
+                freightIncluded: data.freightIncluded == false ? 0 : 1, // Convert to boolean
                 amountOther: data.amount_other || '',
                 weight: data.weight || '',
                 description: data.description || '',
@@ -424,8 +444,8 @@
                 suiviRestant: form.value.suiviRestant,
                 valeurCommande: form.value.valeurCommande,
                 montantReelAvoir: form.value.montantReelAvoir,
-                avoirTheorique: form.value.avoirTheorique,
-                invoice_date: moment(form.value.invoice_date).toISOString(),
+                theoreticalCredit: form.value.theoreticalCredit,
+                invoice_date: moment(form.value.invoiceDate).toISOString(),
                 creditDate: form.value.creditDate ? moment(form.value.creditDate).format('YYYY-MM-DD') : null,
                 paymentDate: form.value.paymentDate ? moment(form.value.paymentDate).format('YYYY-MM-DD') : null,
             };
@@ -515,33 +535,39 @@
             const srfReal = parseFloat(l.producedSurface) || 0;
             const priceM2Cmd = parseFloat(l.pricePerSquareMeter) || 0;
             const priceCmd = parseFloat(l.invoiceAmount) || 0; // Use prixFacture
-
+            let realAvoirAmount = 0;
+            realAvoirAmount += parseFloat(l.actualCreditAmount) || 0;
             // Correct the syntax error in the if condition
-            if (srfReal && srfReal < srfCmd) {
+
+            if (srfReal < srfCmd) {
                 l.theoreticalPrice = srfReal * priceM2Cmd; // Use prixTheorique
             } else {
                 l.theoreticalPrice = priceCmd; // Use prixTheorique
             }
 
             // Use updated property names
-            l.avoirTtheoreticalCreditheorique = (parseFloat(l.theoreticalPrice) || 0) - (parseFloat(l.penalty) || 0); // Use avoirTheorique and penalite
+            l.theoreticalCredit = (parseFloat(l.theoreticalPrice) || 0) - (parseFloat(l.penalty) || 0); // Use theoreticalCredit and penalite
 
             totalFacture += priceCmd;
-            // Use updated property names - assuming amountTheoretical in form is different from avoirTheorique in line
-            // If totalTheorique should sum avoirTheorique from lines, change l.amountTheoretical to l.avoirTheorique
-            totalTheorique += parseFloat(l.theoreticalCredit) || 0; // Assuming totalTheorique sums avoirTheorique from lines
+            // Use updated property names - assuming amountTheoretical in form is different from theoreticalCredit in line
+            // If totalTheorique should sum theoreticalCredit from lines, change l.amountTheoretical to l.theoreticalCredit
+            totalTheorique += parseFloat(l.theoreticalCredit) || 0; // Assuming totalTheorique sums theoreticalCredit from lines
             totalSurface += srfCmd;
             totalWeight += parseFloat(l.weight) || 0; // Use poids
         });
+        if (form.value.creditDate && form.value.creditNumber) {
+            form.value.amountTheoretical += realAvoirAmount;
+            form.value.amountReal = form.value.amountTheoretical;
+        }
 
         lines.value.forEach((l) => {
             const poids = parseFloat(l.weight) || 0; // Use poids
             l.weightPercentage = totalWeight ? (poids / totalWeight) * 100 : 0; // Use pourcentPoids
-            l.fret = (parseFloat(form.value.freightTotal) || 0) * (l.weightPercentage / 100); // Use pourcentPoids
+            l.fret = form.value.freightIncluded == true ? (parseFloat(form.value.freightTotal) || 0) * (l.weightPercentage / 100) : l.weightPercentage / 100; // Use pourcentPoids
         });
 
         form.value.invoiceTotal = totalFacture;
-        // Assuming theoretical_total in form sums avoirTheorique from lines + amount_other from form
+        // Assuming theoretical_total in form sums theoreticalCredit from lines + amount_other from form
         form.value.theoreticalTotal = totalTheorique + (parseFloat(form.value.amountOther) || 0);
         form.value.surfaceTotal = totalSurface;
         form.value.weightTotal = totalWeight;
@@ -560,7 +586,17 @@
     );
 
     watch(
-        () => [form.value.amountOther, form.value.freightTotal, form.value.amountReal, form.value.suiviAnterieur, form.value.paymentReal],
+        () => [
+            form.value.producedSurface,
+            form.value.invoiceSurface,
+            form.value.pricePerSquareMeter,
+            form.value.amountOther,
+            form.value.freightTotal,
+            form.value.amountReal,
+            form.value.suiviAnterieur,
+            form.value.paymentReal,
+            form.value.theoreticalPrice,
+        ],
         () => {
             calculate();
         }

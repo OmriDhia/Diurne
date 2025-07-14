@@ -384,12 +384,12 @@ label,
     }
 }
 .btn-add {
-    background-color: black !important;
+    background-color: black;
     border: 0;
     text-decoration: underline;
     box-shadow: none;
-    width: 24px;
-    height: 24px;
+    width: 33px;
+    height: 33px;
     padding: 0px;
     border-radius: 50px;
 
@@ -438,7 +438,32 @@ label,
             }
         }
     }
-
+    .table {
+        thead {
+            th {
+                border: 0;
+                text-align: center;
+            }
+        }
+        td {
+            .multiselect {
+                min-height: 35px;
+                .multiselect__tags {
+                    width: 120px;
+                }
+            }
+        }
+        .btn-add {
+            width: 33px;
+            height: 33px;
+            .btn svg {
+                width: 18px;
+            }
+        }
+        .td-actions {
+            width: 105px;
+        }
+    }
     .bloc-btns-actions {
         .btn-custom {
             display: block;
@@ -511,27 +536,10 @@ label,
 .rn-custom-td .col-8 {
     width: 100%;
 }
-.table {
-    thead {
-        th {
-            border: 0;
-            text-align: center;
-        }
-    }
-    td {
-        .multiselect {
-            min-height: 35px;
-            .multiselect__tags {
-                width: 120px;
-            }
-        }
-    }
-
-    .td-actions {
-        width: 143px;
-        .btn-add {
-            width: 40px;
-            height: 40px;
-        }
-    }
+input[disabled] {
+    color: black;
+}
+.btn-add:hover,
+.btn-add:focus {
+    background-color: black !important;
 }
