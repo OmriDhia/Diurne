@@ -91,7 +91,7 @@
                                                 <button class="btn btn-add btn-sm me-1" @click="addLine">
                                                     <vue-feather type="plus" size="16" />
                                                 </button>
-                                                <button class="btn btn-add btn-sm" @click="removeLine(index)">
+                                                <button v-if="lines.length > 1" class="btn btn-add btn-sm" @click="removeLine(index)">
                                                     <vue-feather type="x" size="16" />
                                                 </button>
                                             </td>
@@ -167,9 +167,9 @@
                                             <input id="date-avoir" class="form-control custom-date" type="date" v-model="form.paymentDate" />
                                         </div>
                                     </div>
-                                    <div class="valeur-commande">
+                                    <!-- <div class="valeur-commande">
                                         <d-input label="Valeur de la commande" v-model="form.valeurCommande" />
-                                    </div>
+                                    </div> -->
                                 </div>
                                 <div class="col-md-4">
                                     <d-panel-title title="Suivi avoir fournisseur" class-name="ps-2" />
@@ -301,20 +301,20 @@
             lines.value[index] = {
                 rn: rnData.rnNumber,
                 id: lines.value[index].id || null, // Add ID for updates/deletes
-                carpetNumber: lines.value[index].carpet_number || null,
-                pricePerSquareMeter: lines.value[index].price_per_square_meter || null,
-                invoiceAmount: lines.value[index].invoice_amount || null,
-                theoreticalPrice: lines.value[index].theoretical_price || null,
+                carpetNumber: lines.value[index].carpetNumber || null,
+                pricePerSquareMeter: rnData.workshopOrder.workshopInformation.carpetPurchasePricePerM2 || null,
+                invoiceAmount: lines.value[index].invoiceAmount || null,
+                theoreticalPrice: lines.value[index].theoreticalPrice || null,
                 producedSurface: rnData.workshopOrder.workshopInformation.realSurface,
-                theoreticalCredit: lines.value[index].theoretical_credit || null,
-                finalCarpetAmount: lines.value[index].final_carpet_amount || null,
+                theoreticalCredit: lines.value[index].theoreticalCredit || null,
+                finalCarpetAmount: lines.value[index].finalCarpetAmount || null,
                 invoiceSurface: rnData.workshopOrder.workshopInformation.orderedSurface,
                 penalty: rnData.workshopOrder.workshopInformation.penalty,
                 actualCreditAmount: lines.value[index].actualCreditAmount || null,
                 weight: rnData.workshopOrder.workshopInformation.quality.weight,
             };
-            calculate();
         }
+        calculate();
     };
     const loadInvoice = async (id) => {
         try {
@@ -539,9 +539,14 @@
             realAvoirAmount += parseFloat(l.actualCreditAmount) || 0;
             // Correct the syntax error in the if condition
 
-            if (srfReal < srfCmd) {
-                l.theoreticalPrice = srfReal * priceM2Cmd; // Use prixTheorique
+            if (parseFloat(l.producedSurface) < parseFloat(l.invoiceSurface)) {
+                console.log('parseFloat(l.producedSurface) < parseFloat(l.invoiceSurface)', parseFloat(l.producedSurface) < parseFloat(l.invoiceSurface));
+
+                l.theoreticalPrice = parseFloat(l.producedSurface) * priceM2Cmd; // Use prixTheorique
             } else {
+                console.log('parseFloat(l.producedSurface) > parseFloat(l.invoiceSurface)', parseFloat(l.producedSurface) > parseFloat(l.invoiceSurface));
+                console.log('l.theoreticalPrice ', l.theoreticalPrice);
+
                 l.theoreticalPrice = priceCmd; // Use prixTheorique
             }
 
@@ -596,6 +601,8 @@
             form.value.suiviAnterieur,
             form.value.paymentReal,
             form.value.theoreticalPrice,
+            form.value.creditDate,
+            form.value.creditNumber,
         ],
         () => {
             calculate();

@@ -125,33 +125,14 @@
                                                 <div class="col-12">
                                                     <!-- <d-RN-dropdown v-model="form.rn" :carpetOrderDetailsId="form.rn" :showOnlyDropdown="true" /> -->
                                                     <d-rn-number-dropdown v-model="form.rn" @dataOfRn="ResultasRnData" :showActionRn="true"></d-rn-number-dropdown>
-                                                    <!-- <d-RN-dropdown
-                                                        :required="true"
-                                                        :hideBtn="true"
-                                                        v-model="carpetOrderDetailsId"
-                                                        :carpetOrderDetailsId="carpetOrderDetailsId"
-                                                        :error="validationSubmitErrors.collectionId"
-                                                    ></d-RN-dropdown> -->
-                                                    <!-- <div class="row w-100 d-block" v-for="(rn, index) in form.otherRns" :key="index">
-                                                        <div class="d-flex align-items-center">
-                                                            <d-input label="Numéro RN" v-model="form.otherRns[index]" />
-                                                            <button v-if="form.otherRns.length > 1" class="btn btn-add me-2 ms-2" @click="form.otherRns.splice(index, 1)" type="button">
-                                                                <vue-feather type="trash-2" stroke-width="1" class="cursor-pointer"></vue-feather>
-                                                            </button>
-                                                            <button class="btn btn-add m-2" @click="addAutreRn">
-                                                                <vue-feather type="plus" stroke-width="1" class="cursor-pointer"></vue-feather>
-                                                            </button>
-                                                        </div>
-                                                    </div> -->
                                                 </div>
                                             </div>
                                         </div>
                                     </template>
                                 </d-panel>
                             </div>
-                        </div>
-                    </template></d-panel
-                >
+                        </div> </template
+                ></d-panel>
 
                 <div class="mt-3">
                     <d-panel>
@@ -181,8 +162,10 @@
                                     <tbody>
                                         <tr v-for="(line, index) in lines" :key="index">
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.percent" /></td>
-                                            <td><input type="text" class="form-control form-control-sm" v-model="line.rn" /></td>
-                                            <td><d-collections-dropdown v-if="line.collection" :disabled="false" :showOnlyDropdown="true" v-model="line.collection"></d-collections-dropdown></td>
+                                            <td class="invoiceclient-rn"><d-rn-number-dropdown v-model="line.rn" @dataOfRn="ResultasRnData" :showActionRn="false"></d-rn-number-dropdown></td>
+                                            <td>
+                                                <d-collections-dropdown v-if="line.collection" :disabled="false" :showOnlyDropdown="true" v-model="line.collection"></d-collections-dropdown>
+                                            </td>
                                             <td><d-model-dropdown v-if="line.model" :disabled="false" :showOnlyDropdown="true" v-model="line.model"></d-model-dropdown></td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.refDevis" /></td>
                                             <td><input type="text" class="form-control form-control-sm" v-model="line.refCommande" /></td>
@@ -344,28 +327,30 @@
         }
     );
     const mapDetailsToLines = (details, originalQuoteReference = null) => {
-        if (!details || !Array.isArray(details)) {
-            // Add check if details is an array
-            return [];
+        // if (!details || !Array.isArray(details)) {
+        //     // Add check if details is an array
+        //     return [];
+        // }
+        console.log('khhkhjhkhk', details);
+        if (!Array.isArray(details)) {
+            details = Object.values(details);
         }
-        console.log(details);
-
         return details.map((d) => {
             // Use map instead of for...of with early return
             return {
                 id: d.id, // Add ID for updates/deletes
                 percent: d.impactOnTheQuotePrice || 100,
                 rn: d.rn,
-                collection: d.quote ? d.carpetSpecification.collection.id : d.collection || null,
-                model: d.quote ? d.carpetSpecification.model.id : d.model || null,
+                collection: d.quote ? d.carpetSpecification.collection.id : d.collection,
+                model: d.quote ? d.carpetSpecification.model.id : d.model,
                 // If loading from a quote, refDevis comes from the original quote header, refCommande from the quote detail.
                 refDevis: originalQuoteReference || d.refQuote || '', // Use originalQuoteReference if provided (from quote), otherwise try d.refQuote (from invoice detail)
                 refCommande: d.reference || d.refCommand || '', // Use d.reference (from quote detail) or d.refCommand (from invoice detail)
                 versement: d.payment || 0, // Assuming payment might be on the detail line, or default to 0
-                priceM2: formatNumber(d.m2), // à coriger
-                priceSqft: formatNumber(d.sqft),
-                priceHt: formatNumber(d.ht),
-                priceTtc: formatNumber(d.ttc),
+                priceM2: formatNumber(d.m2) || Helper.getPrice(d.prices, 'prix-propose.m².price'), // à coriger
+                priceSqft: formatNumber(d.sqft) || Helper.getPrice(d.prices, 'prix-propose.sqft.price'),
+                priceHt: formatNumber(d.ht) || Helper.getPrice(d.prices, 'prix-propose.totalPriceHt'),
+                priceTtc: formatNumber(d.ttc) || Helper.getPrice(d.prices, 'prix-propose.totalPriceTtc'),
                 carpetOrderDetailId: d.carpetOrderDetail || null, // Keep track of the source detail ID
                 cleared: d.cleared || false, // Keep track of cleared status
             };
@@ -395,8 +380,8 @@
                 id: null, // New line, no ID yet
                 percent: formatNumber(rnData.carpetOrderDetail.QuoteDetail.impactOnTheQuotePrice) || null, // Percentage needs to be entered
                 rn: rnData.rnNumber,
-                collection: rnData.imageCommand.carpetSpecification.collection?.id || null,
-                model: rnData.imageCommand.carpetSpecification.model?.id || null,
+                collection: rnData.imageCommand.carpetSpecification.collection.id || null,
+                model: rnData.imageCommand.carpetSpecification.model.id || null,
                 refDevis: rnData.imageCommand.reference || rnData.carpetOrderDetail.carpetOrder.refQuote, // Assuming RN data provides a reference
                 refCommande: rnData.carpetOrderDetail.QuoteDetail.reference, // Command reference needs to be entered
                 versement: 0, // Versement needs to be entered
@@ -491,7 +476,6 @@
 
                     // carpetOrderDetailsId.value = invoiceData.customerInvoiceDetails?.[0].carpetOrderDetail || invoiceData.customerInvoiceDetails.carpetOrderDetail;
                     // console.log('carpetOrderDetailsId', carpetOrderDetailsId.value);
-
                     form.value = {
                         languageId: invoiceData.language_id || 0,
                         prescripteur: invoiceData.prescriber_id || '',
@@ -535,7 +519,7 @@
                     if (invoiceData.customerInvoiceDetails.length) {
                         carpetOrderDetailsId.value = invoiceData.customerInvoiceDetails[0].carpetOrderDetail || null; // Assuming this is the ID or value
                     }
-
+                    lines.value = mapDetailsToLines(invoiceData.customerInvoiceDetails);
                     lines.value = mapDetailsToLines(invoiceData.customerInvoiceDetails);
                 }
             }
@@ -619,27 +603,31 @@
 
                 if (form.value.rn) {
                     for (const line of lines.value) {
-                        const linePayload = {
-                            customerInvoiceId: parseInt(invoiceId), // Link to the new invoice
-                            carpetOrderDetailId: carpetOrderDetailsId.value || null,
-                            cleared: line.cleared || false,
-                            rn: line.rn,
-                            collectionId: line.collectionId || null,
-                            modelId: line.modelId || null,
-                            m2: String(line.priceM2) || null,
-                            sqft: String(line.priceSqft) || null,
-                            ht: String(line.priceHt) || null,
-                            ttc: String(line.priceTtc) || null,
-                            refCommand: line.refCommande,
-                            refQuote: line.refDevis,
-                            payment: line.versement || null,
-                            percent: line.percent || null,
-                        };
-                        const lineResult = await customerInvoiceDetailsService.create(linePayload);
-                        line.id = lineResult.id;
+                        if (!line.id) {
+                            const linePayload = {
+                                customerInvoiceId: parseInt(invoiceId), // Link to the new invoice
+                                carpetOrderDetailId: carpetOrderDetailsId.value || null,
+                                cleared: line.cleared || false,
+                                rn: line.rn,
+                                collectionId: line.collection,
+                                modelId: line.model,
+                                m2: String(line.priceM2) || null,
+                                sqft: String(line.priceSqft) || null,
+                                ht: String(line.priceHt) || null,
+                                ttc: String(line.priceTtc) || null,
+                                refCommand: line.refCommande,
+                                refQuote: line.refDevis,
+                                payment: line.versement || null,
+                                percent: line.percent || null,
+                            };
+                            const lineResult = await customerInvoiceDetailsService.create(linePayload);
+                            line.id = lineResult.id;
+                        }
                     }
                 } else {
                     for (const line of lines.value) {
+                        console.log(line);
+
                         const linePayload = {
                             customerInvoiceId: parseInt(invoiceId), // Link to the new invoice
                             // Use the carpetOrderDetailId stored on the line object (from RN data or quote mapping)
@@ -666,26 +654,29 @@
             } else {
                 const resultat = await customerInvoiceService.create(payload); // test pour commande client (creation facture)
                 if (form.value.rn) {
+                    const linePayload = {};
                     for (const line of lines.value) {
-                        const linePayload = {
-                            customerInvoiceId: parseInt(resultat.id), // Link to the new invoice
-                            // Use the carpetOrderDetailId stored on the line object (from RN data or quote mapping)
-                            carpetOrderDetailId: carpetOrderDetailsId.value || null,
-                            cleared: line.cleared || false,
-                            rn: line.rn,
-                            collectionId: line.collection,
-                            modelId: line.model,
-                            m2: String(line.priceM2) || null,
-                            sqft: String(line.priceSqft) || null,
-                            ht: String(line.priceHt) || null,
-                            ttc: String(line.priceTtc) || null,
-                            refCommand: line.refCommande,
-                            refQuote: line.refDevis,
-                            payment: line.versement || null,
-                            percent: line.percent || null,
-                        };
-                        const lineResult = await customerInvoiceDetailsService.create(linePayload);
-                        line.id = lineResult.id;
+                        if (!line.id) {
+                            linePayload = {
+                                customerInvoiceId: parseInt(resultat.id), // Link to the new invoice
+                                // Use the carpetOrderDetailId stored on the line object (from RN data or quote mapping)
+                                carpetOrderDetailId: carpetOrderDetailsId.value || null,
+                                cleared: line.cleared || false,
+                                rn: line.rn,
+                                collection: line.collection,
+                                model: line.model,
+                                m2: String(line.priceM2) || null,
+                                sqft: String(line.priceSqft) || null,
+                                ht: String(line.priceHt) || null,
+                                ttc: String(line.priceTtc) || null,
+                                refCommand: line.refCommande,
+                                refQuote: line.refDevis,
+                                payment: line.versement || null,
+                                percent: line.percent || null,
+                            };
+                            const lineResult = await customerInvoiceDetailsService.create(linePayload);
+                            line.id = lineResult.id;
+                        }
                     }
                 }
                 window.showMessage('Ajout avec succés.');
