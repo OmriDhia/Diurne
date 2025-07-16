@@ -18,6 +18,7 @@
                                                     :workshop-info="workshopInfo"
                                                     :image-commande="imageCommande"
                                                     :order-id="workshopOrderId" 
+                                                    :lastprogressReporting="lastprogressReporting"
                                                     ref="infoTab"
                                                     :imageCommandId="imageCommandId"
                                                     v-if="activeTab === 'information'"/>
@@ -27,7 +28,7 @@
                         </div>
                         <div class="col-md-4">
 <!--                            <HistoryPanel v-if="workshopOrderId"></HistoryPanel>-->
-                            <d-progress-report-histories  v-if="workshopOrderId" :workshopOrderId="workshopOrderId"></d-progress-report-histories>
+                            <d-progress-report-histories  v-if="workshopOrderId" :workshopOrderId="workshopOrderId" @lastOne="changeLastProgressReporting"></d-progress-report-histories>
                             <div class="status-options">
                                 <RadioButton class="w-100" v-model="formData.disponibleVente" :value="true"
                                              label="Disponible à la vente"/>
@@ -41,9 +42,10 @@
                                         @click="enregistrer">
                                     ENREGISTRER
                                 </button>
-                                <button class="command-btn btn btn-custom  text-uppercase w-100 my-2"
-                                        @click="commandeAtelier">COMMANDE ATELIER
+                                <button class="command-btn btn btn-custom  text-uppercase w-100 my-2" data-bs-toggle="modal" data-bs-target="#downloadWorkshopFacture">
+                                    COMMANDE ATELIER
                                 </button>
+                                <d-modal-bon-commande-atelier :workshopOrderId="workshopOrderId"></d-modal-bon-commande-atelier>
                             </div>
                         </div>
                     </div>
@@ -66,6 +68,7 @@ import workshopService from "@/Services/workshop-service.js";
 import DPageTitle from "@/components/common/d-page-title.vue";
 import DAnimatedSkeleton from "@/components/base/d-animated-skeleton.vue";
 import axiosInstance from "@/config/http.js";
+import DModalBonCommandeAtelier from "@/components/workshop/_partial/d-modal-bon-commande-atelier.vue";
 
 const activeTab = ref('information');
 const route = useRoute();
@@ -76,6 +79,7 @@ const workshopInfoId = ref(null);
 const workshopOrder = ref({})
 const workshopInfo = ref({})
 const imageCommande = ref({})
+const lastprogressReporting = ref({})
 const loading = ref(false);
 
 const getWorkshopOrder = async () => {
@@ -112,6 +116,11 @@ const changeTab = (tabId) => {
 const enregistrer = () => {
     infoTab.value?.saveWorkshopInformation();
 };
+
+const changeLastProgressReporting = (event) => {
+    lastprogressReporting.value = event
+    console.log("lastOne: ", props.lastprogressReporting)
+}
 
 const commandeAtelier = () => {
     infoTab.value?.commandeAtelier();

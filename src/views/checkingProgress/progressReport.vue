@@ -14,7 +14,7 @@
                             <d-input type="date" label="Date PR" v-model="form.datePr" />
                         </div>
                         <div class="col-md-6">
-                            <d-users-dropdown label="auteur" v-model="form.authorId" :required="true" />
+                            <d-users-dropdown label="Auteur" v-model="form.authorId" :required="true" />
                         </div>
                         <div class="col-md-6">
                             <d-input type="text" label="RN" v-model="form.rn" />
@@ -26,15 +26,24 @@
                         </div>
 
                     </div>
-                    <!--                    <div class="row mt-3">
-                                            <div class="col-md-4">
-                                                <d-input type="date" label="Date évènement" v-model="form.dateEvent" />
-                                            </div>
-                                            <div class="col-md-4">
-                                                <d-input type="date" label="Date atelier" v-model="form.dateWorkshop" />
-                                            </div>
-                    
-                                        </div>-->
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <div class="row mt-2" v-for="(process,index) in processes" :key="index">
+                                <div class="col-md-3">
+                                    <d-progress-process-dropdown :disabled="true" v-model="process.processId"></d-progress-process-dropdown>
+                                </div>
+                                <div class="col-md-3">
+                                    <d-input type="date" label="fin"  v-model="process.debut"></d-input>
+                                </div>
+                                <div class="col-md-3">
+                                    <d-input type="date" label="fin" v-model="process.fin"></d-input>
+                                </div>
+                                <div class="col-md-3">
+                                    <d-input v-model="process.comment"></d-input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <d-contremarque-dropdown v-model="form.contremarque" :disabled="true" />
@@ -66,7 +75,7 @@
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue';
+import {ref, onMounted, watch} from 'vue';
     import dBasePage from '@/components/base/d-base-page.vue';
     import dInput from '@/components/base/d-input.vue';
     import dTextarea from '@/components/base/d-textarea.vue';
@@ -79,6 +88,9 @@
     import {useRoute, useRouter} from "vue-router";
     import axiosInstance from "@/config/http.js";
     import DContremarqueDropdown from "@/components/common/d-contremarque-dropdown.vue";
+import {async} from "vue3-number-spinner";
+import DProgressProcessDropdown from "@/components/workshop/dropdown/d-progress-process-dropdown.vue";
+import userService from "@/Services/user-service.js";
 
     const route = useRoute();
     const router = useRouter();
@@ -96,6 +108,7 @@
         statusId: null,
         provisionalCalendarId: parseInt(route.params.provisionalCalendarId),
     });
+    const processes = ref([])
     const statuses = ref([]);
     const loadStatuses = async () => {
         try {
@@ -110,6 +123,8 @@
             const res = await axiosInstance.get(`/api/provisionalCalendar/${form.value.provisionalCalendarId}`);
             provisionalCalendar.value = res.data?.response;
             form.value.rn = provisionalCalendar.value.workshopOrder.workshopInformation.rn
+            const userData = userService.getUserInfo()
+            form.value.authorId = [parseInt(userData?.id)];
             form.value.contremarque = provisionalCalendar.value.workshopOrder.imageCommand.carpetDesignOrder.location.contremarque_id
         } catch (e) {
             window.showMessage(e.message, 'error');
@@ -124,7 +139,7 @@
     const save = async () => {
         try {
             loading.value = true;
-            await progressReportService.create({
+            const res = await progressReportService.create({
                 authorId: form.value.authorId[0],
                 datePr: form.value.datePr,
                 comment: form.value.comment,
@@ -134,6 +149,20 @@
                 statusId: form.value.statusId?.id,
                 provisionalCalendarId: form.value.provisionalCalendarId
             });
+            for (const process of processes.value){
+                try {
+                    const response = await axiosInstance.post('/api/processDeadline', {
+                        progressReportId: res.id,
+                        processId:  process.processId,
+                        dateStart:  process.debut,
+                        dateEnd:  process.fin,
+                        comment: process.comment
+                    });
+                } catch (error) {
+                    throw error;
+                }
+            }
+            
             window.showMessage('Ajout avec succées.');
         } catch (e) {
             window.showMessage(e.message, 'error');
@@ -144,6 +173,38 @@
     const goToWorkshop = () => {
         router.back();
     };
+    
+    const switchProcessByStatusId = async () => {
+        processes.value = [];
+        const statusId = form.value.statusId?.id;
+        switch (statusId) {
+            case 1 || 2:
+                processes.value.push({
+                    processId: 1,
+                    debut: "",
+                    fin: "",
+                    comment: ""
+                });
+                if(statusId === 1){
+                    processes.value.push({
+                        processId: 2,
+                        debut: "",
+                        fin: "",
+                        comment: ""
+                    });
+                }
+                break;
+            case 3:
+                processes.value.push({
+                    processId: 4,
+                    debut: "",
+                    fin: "",
+                    comment: ""
+                });
+                break;
+        }
+    };
+    watch(() => form.value.statusId, switchProcessByStatusId);
 </script>
 
 <style scoped></style>

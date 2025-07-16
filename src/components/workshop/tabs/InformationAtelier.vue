@@ -26,6 +26,10 @@ const props = defineProps({
         type: Object,
         required: false
     },
+    lastprogressReporting: {
+        type: Object,
+        required: false
+    },
     imageCommande: {
         type: Object,
         required: false
@@ -52,6 +56,7 @@ const formData = ref({
         srfReelle: '0',
         anneeGrilleTarif: ''
     },
+    currencyId: 1,
     tarifSpecial: true,
     prixAchat: [],
     reductionTapis: '0',
@@ -192,6 +197,7 @@ const saveWorkshopInformation = async () => {
         manufacturerId: parseInt(formData.value.tapisDuProjet.fabricant),
         Rn: formData.value.tapisDuProjet.rn,
         idQuality: props.imageCommande?.carpetSpecification?.quality?.id,
+        currencyId: formData.value.currencyId,
     };
     try {
         if(props.workshopInfoId){
@@ -244,6 +250,7 @@ const setDataForUpdate = () => {
         formData.value.infoCommande.longueurReelle = Helper.FormatNumber(props.workshopInfo.realHeight);
         formData.value.infoCommande.srfReelle = Helper.FormatNumber(props.workshopInfo.realSurface);
         formData.value.infoCommande.anneeGrilleTarif = props.workshopInfo.idTarifTexture || "";
+        formData.value.currencyId = props.workshopInfo.idCurrency || 1;
         formData.value.prixAchat = [];
 
         formData.value.reductionTapis = Helper.FormatNumber(props.workshopInfo.reductionRate);
@@ -313,10 +320,14 @@ const updatePurchasePrice = async (index, price) => {
         }
     }
 }
+const goToImageDetails = () => {
+    router.push({name: "imagesCommadeDetails", params:{id: props.imageCommandId}})
+}
 onMounted(() =>{
     loadCheckingLists();
     setDataForUpdate();
     setDataFromImageCommande();
+    console.log("lastOne: ", props.lastprogressReporting)
 });
 watch(
     () => props.workshopInfo,
@@ -329,6 +340,13 @@ watch(
     () => props.imageCommande,
     () => {
         setDataFromImageCommande()
+    },
+    { deep: true }
+);
+watch(
+    () => props.lastprogressReporting,
+    () => {
+        console.log("lastOne: ", props.lastprogressReporting)
     },
     { deep: true }
 );
@@ -396,7 +414,7 @@ watch(
 
                             <div class="form-row row py-2">
                                 <d-currency :required="true"
-                                            :error=0 model-value="">
+                                            :error="error.currencyId" v-model="formData.currencyId">
 
                                 </d-currency>
                             </div>
@@ -441,7 +459,8 @@ watch(
                                        type="text" 
                                        :name="`price_${index}`" 
                                        :id="`price_${index}`" 
-                                       :value="material.price" 
+                                       :value="material.price"
+                                       :disabled="!formData.tarifSpecial"
                                        @change="updatePurchasePrice(index, $event)"/>
                             </div>
                         </div>
@@ -539,10 +558,10 @@ watch(
 
                 <d-panel-title title="Tapis du projet" className="ps-2"></d-panel-title>
                 <div class="text-center py-2">
-                    <img src="https://placehold.co/100x200?text=Carpet+Image" alt="Carpet placeholder image">
+                    <img :src="$Helper.getImagePath(props.imageCommande?.technicalImages?.[0]?.attachment)" alt="Carpet Image" class="img-thumbnail" style="width: 100px; height: auto;">
                 </div>
 
-                <button class="btn btn-outline-dark btn-reset text-uppercase w-100" @click="voir">VOIR LA DI
+                <button class="btn btn-outline-dark btn-reset text-uppercase w-100" @click="goToImageDetails">VOIR LA DI
                     COMMANDE
                 </button>
 

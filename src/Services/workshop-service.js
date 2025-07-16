@@ -40,4 +40,12 @@ export default {
         const res = await axiosInstance.put(`/api/materialPurchasePrices/${id}`, price);
         return res.data;
     },
+    async getWorkshopHtml(workshopOrderId) {
+        try {
+            const res = await axiosInstance.get(`/api/workshopOrdersBonCmd/${workshopOrderId}`);
+            return res.data;
+        } catch (error) {
+            throw new Error('Échec de récupération de html devis');
+        }
+    },
 };
