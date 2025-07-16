@@ -19,7 +19,7 @@
         </div>
     </div>
     <div class="row">
-        <d-date-start-end :hideDateEnd="true" :dates="dates" @update:dates="updateDates($event)"></d-date-start-end>
+        <d-date-start-end :hideDateStart="true" :hideDateEnd="true" :dates="dates" @update:dates="updateDates($event)"></d-date-start-end>
     </div>
     <div class="row justify-content-end mt-3">
         <div class="col-auto p-0">

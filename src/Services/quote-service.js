@@ -48,5 +48,13 @@ export default {
         } catch (error) {
             throw new Error('Échec de récupération de html devis');
         }
+    },
+    async getQuoteHtmlProforma(id) {
+        try {
+            const res = await axiosInstance.get(`/api/proforma/download/${id}`);
+            return res.data;
+        } catch (error) {
+            throw new Error('Échec de récupération de html devis proforma');
+        }
     }
 };
