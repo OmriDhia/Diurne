@@ -1,13 +1,13 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Contact diurne<span class="required" v-if="required">*</span> :</label></div>
+        <div class="col-4"><label class="form-label">{{ label }}<span class="required" v-if="required">*</span> :</label></div>
         <div class="col-8">
             <multiselect
                 :class="{ 'is-invalid': error}"
                 :multiple="true"
                 v-model="userId"
                 :options="users"
-                placeholder="Contact diurne"
+                :placeholder="label"
                 track-by="id"
                 label="name"
                 :searchable="true"
@@ -48,6 +48,10 @@
             required:{
                 type: Boolean,
                 default: false
+            },
+            label:{
+                type: String,
+                default: "Contact diurne"
             }
         },
         data() {
@@ -59,7 +63,7 @@
         methods: {
             handleChange(value) {
                 this.$emit('update:modelValue', value.map(e => {
-                    return e.id
+                    return parseInt(e.id)
                 }));
             },
             addTag(newTag){

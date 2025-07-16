@@ -103,7 +103,9 @@
             <tbody>
               <tr v-for="order in rows" :key="order.id">
                 <td v-if="!cols.find(c => c.field === 'image')?.hide" class="text-center">
-                  <img src="" alt="Carpet" style="width: 60px" />
+                    <div class="d-flex justify-content-center">
+                        <img :src="$Helper.getImagePath(order.workshopImages?.[0]?.attachment)" alt="Carpet Image" class="img-thumbnail" style="width: 80px; height: auto;">
+                    </div>
                 </td>
                 <td v-if="!cols.find(c => c.field === 'contremarque')?.hide">
                   <strong>Contremarque :</strong> {{ order.designation }}

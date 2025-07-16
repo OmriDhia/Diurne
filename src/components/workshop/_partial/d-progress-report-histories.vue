@@ -77,7 +77,7 @@ const props = defineProps({
 
 const data = ref([]);
 const router = useRouter();
-
+const emit = defineEmits(['lastOne']);
 const getData = async () => {
     if (props.workshopOrderId) {
         const res = await axiosInstance.get(`/api/provisionalCalendar/workshopOrder/${props.workshopOrderId}`);
@@ -88,7 +88,7 @@ const getData = async () => {
                 item.event = item.status?.status;
                 return item;
             })
-            console.log(data.value)
+            emit('lastOne', data.value[data.value.length - 1]);
         }
     }
 }
