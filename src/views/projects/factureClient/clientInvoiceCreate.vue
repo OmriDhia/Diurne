@@ -175,7 +175,7 @@
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.priceHt" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.priceTtc" /></td>
                                             <td class="text-center td-actions">
-                                                <button class="btn btn-add btn-sm me-1" @click="saveLine(index)">
+                                                <button class="btn btn-add btn-sm me-1" @click="saveLine(index)" v-if="route.params.id && route.query.quote_id == null">
                                                     <vue-feather type="save" size="16" />
                                                 </button>
                                                 <button class="btn btn-add btn-sm" @click="removeLine(index)">
@@ -331,7 +331,7 @@
         //     // Add check if details is an array
         //     return [];
         // }
-        console.log('khhkhjhkhk', details);
+
         if (!Array.isArray(details)) {
             details = Object.values(details);
         }
@@ -654,29 +654,26 @@
             } else {
                 const resultat = await customerInvoiceService.create(payload); // test pour commande client (creation facture)
                 if (form.value.rn) {
-                    const linePayload = {};
                     for (const line of lines.value) {
-                        if (!line.id) {
-                            linePayload = {
-                                customerInvoiceId: parseInt(resultat.id), // Link to the new invoice
-                                // Use the carpetOrderDetailId stored on the line object (from RN data or quote mapping)
-                                carpetOrderDetailId: carpetOrderDetailsId.value || null,
-                                cleared: line.cleared || false,
-                                rn: line.rn,
-                                collection: line.collection,
-                                model: line.model,
-                                m2: String(line.priceM2) || null,
-                                sqft: String(line.priceSqft) || null,
-                                ht: String(line.priceHt) || null,
-                                ttc: String(line.priceTtc) || null,
-                                refCommand: line.refCommande,
-                                refQuote: line.refDevis,
-                                payment: line.versement || null,
-                                percent: line.percent || null,
-                            };
-                            const lineResult = await customerInvoiceDetailsService.create(linePayload);
-                            line.id = lineResult.id;
-                        }
+                        const linePayload = {
+                            customerInvoiceId: parseInt(resultat.id), // Link to the new invoice
+                            // Use the carpetOrderDetailId stored on the line object (from RN data or quote mapping)
+                            carpetOrderDetailId: carpetOrderDetailsId.value || null,
+                            cleared: line.cleared || false,
+                            rn: line.rn,
+                            collectionId: line.collection,
+                            modelId: line.model,
+                            m2: String(line.priceM2) || null,
+                            sqft: String(line.priceSqft) || null,
+                            ht: String(line.priceHt) || null,
+                            ttc: String(line.priceTtc) || null,
+                            refCommand: line.refCommande,
+                            refQuote: line.refDevis,
+                            payment: line.versement || null,
+                            percent: line.percent || null,
+                        };
+                        const lineResult = await customerInvoiceDetailsService.create(linePayload);
+                        line.id = lineResult.id;
                     }
                 }
                 window.showMessage('Ajout avec succés.');
@@ -691,10 +688,11 @@
 
     onMounted(async () => {
         // Check if creating from a quote
-        console.log(route.query.quote_id);
 
         if (route.query.quote_id) {
             await getQuote(route.query.quote_id);
+            const responseRn = await axiosInstance.get(`/api/carpetOrder/${route.query.quote_id}`); //carpet idcarpetOrderDetail[0].rnAttributions[0].carpet
+            console.log('responseRn', responseRn);
         } else if (route.params.id) {
             await fetchInvoiceById(route.params.id);
         }
@@ -753,6 +751,7 @@
         if (line.id) {
             try {
                 loading.value = true; // Add loading state for deletion
+                lines.value.splice(index, 1);
                 await customerInvoiceDetailsService.delete(line.id);
                 window.showMessage('Ligne supprimée avec succès.');
             } catch (e) {
@@ -764,7 +763,6 @@
             }
         }
         // Remove from array only after successful API delete if line had an ID
-        lines.value.splice(index, 1);
     };
 </script>
 

@@ -80,12 +80,12 @@
                                             <td><input type="number" disabled class="form-control form-control-sm" v-model="line.producedSurface" /></td>
                                             <td><input type="number" class="form-control form-control-sm" v-model="line.actualCreditAmount" /></td>
                                             <td><input type="number" disabled class="form-control form-control-sm" v-model="line.theoreticalCredit" /></td>
-                                            <td><input type="number" disabled class="form-control form-control-sm" v-model="line.finalCarpetAmount" /></td>
+                                            <td><input type="number" class="form-control form-control-sm" v-model="line.finalCarpetAmount" /></td>
                                             <td><input type="number" disabled class="form-control form-control-sm" v-model="line.weight" /></td>
                                             <td><input type="number" disabled class="form-control form-control-sm" v-model="line.weightPercentage" /></td>
                                             <td><input type="number" disabled class="form-control form-control-sm" v-model="line.fret" /></td>
                                             <td class="text-center td-actions">
-                                                <button class="btn btn-add btn-sm me-1" @click="saveLine(index)">
+                                                <button class="btn btn-add btn-sm me-1" @click="saveLine(index)" v-if="route.params.id">
                                                     <vue-feather type="save" size="16" />
                                                 </button>
                                                 <button class="btn btn-add btn-sm me-1" @click="addLine">
@@ -125,12 +125,12 @@
                                     </div>
                                     <div class="row">
                                         <div class="col d-block__item">
-                                            <d-input label="Numéro de l'avoir" v-model="form.creditNumber" />
+                                            <d-input label="Numéro de l'avoir" v-model="form.creditNumber" @input="verif" />
                                         </div>
 
                                         <div class="col pt-2">
                                             <label for="date-avoir">Date de l'avoir</label>
-                                            <input id="date-avoir" class="form-control custom-date" type="date" v-model="form.creditDate" />
+                                            <input id="date-avoir" class="form-control custom-date" type="date" v-model="form.creditDate" @input="verif" />
                                         </div>
                                     </div>
                                 </div>
@@ -211,6 +211,7 @@
     import { useMeta } from '/src/composables/use-meta';
     import VueFeather from 'vue-feather';
     import dCurrency from '../../../components/common/d-currency.vue';
+    import userService from '../../../Services/user-service';
     import moment from 'moment';
     import dRnNumberDropdown from '../../../components/common/d-rn-number-dropdown.vue';
     import supplierInvoiceService from '../../../Services/supplier-invoice-service';
@@ -264,7 +265,7 @@
             producedSurface: null,
             actualCreditAmount: null,
             theoreticalCredit: null,
-            finalCarpetAmount: null,
+            finalCarpetAmount: 0,
             weight: null,
             weightPercentage: null, //,% poids : % de poids parmi tous les tapis de la facture
             fret: null, //fret total x % de poids
@@ -283,7 +284,7 @@
             penalite: null,
             surfaceProduite: null,
             montantReelAvoir: null,
-            theoreticalCredit: null,
+            theoreticalCredit: 0,
             montantReelAvoir2: null,
             montantFinalTapis: null,
             weight: null,
@@ -324,7 +325,7 @@
             const dataRn = await axiosInstance.get('api/carpets');
 
             const resDataRn = dataRn.data.response;
-            console.log();
+
             form.value = {
                 invoiceNumber: data.invoice_number || '',
                 invoiceDate: data.invoice_date ? moment(data.invoice_date).format('YYYY-MM-DD') : '',
@@ -332,23 +333,23 @@
                 packingList: data.packing_list || '',
                 airWay: data.air_way || '',
 
-                freightTotal: data.freightTotal || '',
+                freightTotal: data.fret_total || '',
                 currencyId: data.currency_id || null,
                 freightIncluded: data.freightIncluded == false ? 0 : 1, // Convert to boolean
                 amountOther: data.amount_other || '',
                 weight: data.weight || '',
                 description: data.description || '',
-                amountTheoretical: data.amount_theoretical || '',
-                amountReal: data.amount_real || '',
-                creditNumber: data.credit_number || '',
-                creditDate: data.credit_date ? moment(data.credit_date).format('YYYY-MM-DD') : '',
+                amountTheoretical: data.prices.amount_theoretical || '',
+                amountReal: data.prices.amount_real || '',
+                creditNumber: data.prices.credit_number || '',
+                creditDate: data.prices.credit_date ? moment(data.prices.credit_date).format('YYYY-MM-DD') : '',
                 invoiceTotal: data.invoice_total || '',
                 theoreticalTotal: data.theoretical_total || '',
                 surfaceTotal: data.surface_total || '',
                 weightTotal: data.weight_total || '',
-                paymentTheoretical: data.payment_theoretical || '',
-                paymentReal: data.payment_real || '',
-                paymentDate: data.payment_date ? moment(data.payment_date).format('YYYY-MM-DD') : '',
+                paymentTheoretical: data.prices.payment_theoretical || '',
+                paymentReal: data.prices.payment_real || '',
+                paymentDate: data.prices.payment_date ? moment(data.prices.payment_date).format('YYYY-MM-DD') : '',
                 valeurCommande: data.valeurCommande || '',
                 suiviAnterieur: data.suiviAnterieur || '',
                 suiviRestant: data.suiviRestant || '',
@@ -385,7 +386,7 @@
                         producedSurface: null,
                         actualCreditAmount: null,
                         theoreticalCredit: null,
-                        finalCarpetAmount: null,
+                        finalCarpetAmount: 0,
                         weight: null,
                         weightPercentage: null,
                         fret: null,
@@ -416,6 +417,7 @@
 
     const save = async () => {
         try {
+            const userData = userService.getUserInfo();
             loading.value = true;
             const payload = {
                 id: parseInt(route.params.id) || null,
@@ -425,7 +427,6 @@
                 invoiceDate: moment(form.value.invoiceDate).toISOString(),
                 fretTotal: String(form.value.freightTotal) || null,
                 supplier: String(form.value.supplier) || null,
-                authorId: 0,
                 currencyId: parseInt(form.value.currencyId) || null,
                 freightIncluded: form.value.freightIncluded ? 1 : 0,
                 amountOther: String(form.value.amountOther) || null,
@@ -434,10 +435,10 @@
                 amountTheoretical: form.value.amountTheoretical,
                 amountReal: form.value.amountReal,
                 creditNumber: parseInt(form.value.creditNumber) || null,
-                invoiceTotal: form.value.invoiceTotal,
-                theoreticalTotal: form.value.theoreticalTotal,
-                surfaceTotal: form.value.surfaceTotal,
-                weightTotal: form.value.weightTotal,
+                invoiceTotal: String(form.value.invoiceTotal) || null,
+                theoreticalTotal: String(form.value.theoreticalTotal) || null,
+                surfaceTotal: String(form.value.surfaceTotal) || null,
+                weightTotal: String(form.value.weightTotal) || null,
                 paymentTheoretical: String(form.value.paymentTheoretical) || null,
                 paymentReal: form.value.paymentReal,
                 suiviAnterieur: form.value.suiviAnterieur,
@@ -448,12 +449,36 @@
                 invoice_date: moment(form.value.invoiceDate).toISOString(),
                 creditDate: form.value.creditDate ? moment(form.value.creditDate).format('YYYY-MM-DD') : null,
                 paymentDate: form.value.paymentDate ? moment(form.value.paymentDate).format('YYYY-MM-DD') : null,
+                authorId: parseInt(userData.id),
             };
             if (route.params.id) {
                 await supplierInvoiceService.update(route.params.id, payload);
                 window.showMessage('Mise à jour avec succès.');
             } else {
-                await supplierInvoiceService.create(payload);
+                const response = await supplierInvoiceService.create(payload);
+                for (const line of lines.value) {
+                    if (!line.id) {
+                        const lineAdd = {
+                            supplierInvoiceId: parseInt(response.id),
+                            rnId: rnId.value || null,
+                            rn: line.rn,
+                            carpetNumber: line.carpetNumber,
+                            pricePerSquareMeter: String(line.pricePerSquareMeter) || '0',
+                            invoiceSurface: String(line.invoiceSurface) || '0',
+                            invoiceAmount: String(line.invoiceAmount) || '0',
+                            theoreticalPrice: String(line.theoreticalPrice) || '0',
+                            penalty: String(line.penalty) || '0',
+                            producedSurface: String(line.producedSurface) || '0',
+                            actualCreditAmount: String(line.actualCreditAmount) || '0',
+                            theoreticalCredit: String(line.theoreticalCredit) || '0',
+                            finalCarpetAmount: String(line.finalCarpetAmount) || '0',
+                            weight: String(line.weight) || null,
+                            weightPercentage: String(line.weightPercentage) || '0',
+                            freight: String(line.fret) || '0',
+                        };
+                        await supplierInvoiceDetailsService.create(lineAdd);
+                    }
+                }
                 window.showMessage('Ajout avec succès.');
                 router.push({ name: 'fournisseur-invoice-list' });
             }
@@ -522,7 +547,16 @@
         }
         lines.value.splice(index, 1);
     };
-
+    const verif = () => {
+        lines.value.forEach((l) => {
+            let realAvoirAmount = 0;
+            realAvoirAmount += parseFloat(l.actualCreditAmount) || 0;
+            if (form.value.creditDate && form.value.creditNumber) {
+                form.value.amountTheoretical += realAvoirAmount;
+                form.value.amountReal = form.value.amountTheoretical;
+            }
+        });
+    };
     const calculate = () => {
         let totalFacture = 0;
         let totalTheorique = 0;
@@ -535,18 +569,12 @@
             const srfReal = parseFloat(l.producedSurface) || 0;
             const priceM2Cmd = parseFloat(l.pricePerSquareMeter) || 0;
             const priceCmd = parseFloat(l.invoiceAmount) || 0; // Use prixFacture
-            let realAvoirAmount = 0;
-            realAvoirAmount += parseFloat(l.actualCreditAmount) || 0;
+
             // Correct the syntax error in the if condition
 
             if (parseFloat(l.producedSurface) < parseFloat(l.invoiceSurface)) {
-                console.log('parseFloat(l.producedSurface) < parseFloat(l.invoiceSurface)', parseFloat(l.producedSurface) < parseFloat(l.invoiceSurface));
-
                 l.theoreticalPrice = parseFloat(l.producedSurface) * priceM2Cmd; // Use prixTheorique
             } else {
-                console.log('parseFloat(l.producedSurface) > parseFloat(l.invoiceSurface)', parseFloat(l.producedSurface) > parseFloat(l.invoiceSurface));
-                console.log('l.theoreticalPrice ', l.theoreticalPrice);
-
                 l.theoreticalPrice = priceCmd; // Use prixTheorique
             }
 
@@ -560,10 +588,6 @@
             totalSurface += srfCmd;
             totalWeight += parseFloat(l.weight) || 0; // Use poids
         });
-        if (form.value.creditDate && form.value.creditNumber) {
-            form.value.amountTheoretical += realAvoirAmount;
-            form.value.amountReal = form.value.amountTheoretical;
-        }
 
         lines.value.forEach((l) => {
             const poids = parseFloat(l.weight) || 0; // Use poids
@@ -601,8 +625,6 @@
             form.value.suiviAnterieur,
             form.value.paymentReal,
             form.value.theoreticalPrice,
-            form.value.creditDate,
-            form.value.creditNumber,
         ],
         () => {
             calculate();
