@@ -102,9 +102,8 @@
                                          class="cursor-pointer"></vue-feather>
                         </router-link>
                         <p></p>
-                        <button class="btn btn-custom" type="button" @click="copyDemandeNumber" title="Copier">
-                                <vue-feather type="clipboard" size="16"></vue-feather>
-                        </button>
+                        <vue-feather @click="copyDemandeNumber" style="padding: 11px 0px 1px 0px;" type="clipboard" stroke-width="1"
+                                     class="cursor-pointer"></vue-feather>
                     </div>
 
 
@@ -159,19 +158,23 @@
                                 <td aria-colindex="6" role="cell" class="p-0">
                                     <div class="row ps-4 align-items-center">
                                         <div class="col-auto p-1">
-                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"
+                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"  title="Mise a jour image"
                                                     @click="goToUpdateOrder(item.id)">
                                                 <vue-feather type="search" size="14"></vue-feather>
                                             </button>
                                         </div>
-                                        <!--div class="col-auto p-1">
-                                            <d-btn-outlined label="Copie  " icon="arrow-right" buttonClass="ps-1"></d-btn-outlined>
-                                        </div-->
+                                        <div class="col-auto p-1">
+                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" title="Copier image"
+                                                    @click="CopieImage(item.id)">
+                                                <vue-feather type="clipboard" size="14"></vue-feather>
+                                            </button>
+                                        </div>
                                         <div class="col-auto p-1">
                                             <d-delete
                                                 :api="`/api/carpet-design-orders/${item.id}`"
                                                 message="Voulez-vous vraiment supprimer cette commande de design de tapis?"
                                                 @isDone="handleDeleteSuccess"
+                                                title="Supprimer image"
                                             >
                                             </d-delete>
                                         </div>
@@ -198,6 +201,11 @@
                     <div class="col-auto">
                         <button class="btn btn-custom pe-5 ps-5" data-bs-toggle="modal" data-bs-target="#modalDIManage">
                             NOUVELLE DI
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-custom pe-5 ps-5" @click.prevent="CopieDI">
+                            Copier DI
                         </button>
                     </div>
                     <div class="col-auto">
@@ -270,6 +278,29 @@ const getProjectDIS = async () => {
         console.log('Erreur get events customer');
     }
 };
+
+const CopieImage = async (carpetDesignOrderId) => {
+    try {
+        const res = await axiosInstance.post(`/api/cloneCarpetDesignOrders/${carpetDesignOrderId}`);
+        window.showMessage(`Image d'id ${carpetDesignOrderId} a été dupliqué avec succées`)
+        carpetDesign.value = await contremarqueService.getcarpetDesign(contremarque_id, selectedData.value.project_di);
+    } catch (e) {
+        console.log(e);
+        console.log('Erreur get events customer');
+    }
+};
+
+const CopieDI = async () => {
+    try {
+        const res = await axiosInstance.post(`/api/cloneProjectDi/${selectedData.value.project_di}`);
+        window.showMessage(`Une demande d'image d'id ${selectedData.value.project_di} a été dupliqué avec succées`)
+        getDIS()
+    } catch (e) {
+        console.log(e);
+        console.log('Erreur get events customer');
+    }
+};
+
 const TransStudio = async () => {
     try {
         const d = {
@@ -405,42 +436,4 @@ onMounted(() => {
     color: #fff !important;
 }
 
-.copy-btn-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 8px;
-}
-.copy-btn-row .btn-custom {
-    height: 30px;
-    width: 30px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%!important;
-    background-color: #4260EB !important;
-    border-color: #4260EB !important;
-    box-shadow: none !important;
-    cursor: pointer;
-}
-.copy-btn-row .btn-custom svg {
-    color: #fff !important;
-}
-
-.btn-custom {
-    height: 30px;
-    width: 30px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%!important;
-    background-color: #4260EB !important;
-    border-color: #4260EB !important;
-    box-shadow: none !important;
-    cursor: pointer;
-}
-.btn-custom svg {
-    color: #fff !important;
-}
 </style>

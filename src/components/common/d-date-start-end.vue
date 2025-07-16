@@ -1,7 +1,7 @@
 <template>
     <div class="date-range-picker">
         <div class="row">
-            <div class="col-md-6 col-sm-12">
+            <div class="col-md-6 col-sm-12"  v-if="!props.hideDateStart">
                 <div class="row align-items-center">
                     <div class="col-4">
                         <label for="start-date">Date d'attribution:</label>
@@ -37,6 +37,10 @@
         hideDateEnd:{
             type: Boolean,
             default: false,
+        },
+        hideDateStart:{
+            type: Boolean,
+            default: false, 
         }
     });
     const date = Helper.FormatDate(new Date());

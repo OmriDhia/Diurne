@@ -67,6 +67,7 @@
             handleChange(value) {
                 if (value) {
                     this.$emit('update:modelValue', parseInt(value.nomenclature_id));
+                    this.$emit('changeNomenclature', value)
                 } else {
                     this.$emit('update:modelValue', null);  // Reset if no selection
                 }

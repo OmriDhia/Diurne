@@ -144,11 +144,15 @@
                                     {{ data.value.last_event.next_reminder_deadline ? $Helper.FormatDate(data.value.last_event.next_reminder_deadline) : ''}}
                                 </div>
                             </template>
+                            <template #action="data">
+                                <d-btn-outlined icon="plus" label="Ajouter" @clickBtn="addNewEvent(data.value)"></d-btn-outlined>
+                            </template>
                         </vue3-datatable>
                     </div>
                 </div>
             </div>
             <d-modal-event :customerId="selectedCustomerId" :contremarqueId="selectedContremarqueId"></d-modal-event>
+            <d-modal-manage-event ref="modalAddEvent" :customerId="selectedCustomerId" :contremarqueId="selectedContremarqueId" action="Add"></d-modal-manage-event>
         </div>
     </div>
 </template>
@@ -169,6 +173,8 @@ import dModalEvent from "../../../components/contacts/_partial/d-modal-event.vue
 import { useRouter } from 'vue-router';
 
 import { useMeta } from '/src/composables/use-meta';
+import DBtnOutlined from "@/components/base/d-btn-outlined.vue";
+import DModalManageEvent from "@/components/contacts/d-modal-manage-event.vue";
 useMeta({ title: 'Contremarque' });
 
 const router = useRouter();
@@ -199,6 +205,7 @@ const cols = ref([
     { field: 'lastEvent', title: 'Dernière évènement', sort: false },
     { field: 'lastEventDate', title: 'Date dernier évèn.', sort: false  },
     { field: 'relanceDate', title: 'Date next relance', sort: false },
+    { field: 'action', title: 'Action', sort: false },
 ]) || [];
 
 onMounted(() => {
@@ -267,6 +274,16 @@ const getFilterParams = () => {
     }
     return param;
 };
+
+const modalAddEvent = ref(null);
+const addNewEvent = async (event) => {
+    if (modalAddEvent.value) {
+        modalAddEvent.value.setCustomerId(event.customer.customer_id);
+        modalAddEvent.value.setContremarqueId(event.contremarque_id);
+        modalAddEvent.value.show();
+    }
+};
+
 const overWeek = (date) => {
     const now = moment();
     const startOfWeek = now.clone();

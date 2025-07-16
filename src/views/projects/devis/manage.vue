@@ -135,8 +135,8 @@
                             <d-input type="Date" label="Date commande"></d-input>
                             <div class="row justify-content-center align-items-center mt-5">
                                 <div class="col-md-6">
-                                    <button class="btn btn-custom font-size-0-7 text-uppercase" data-bs-toggle="modal" data-bs-target="#downloadFacture">Facture proforma</button>
-                                    <d-modal-facture-devis :quoteId="quote_id"></d-modal-facture-devis>
+                                    <button class="btn btn-custom font-size-0-7 text-uppercase" data-bs-toggle="modal" data-bs-target="#downloadFactureProforma">Facture proforma</button>
+                                    <d-modal-facture-proforma-devis :quoteId="quote_id"></d-modal-facture-proforma-devis>
                                 </div>
                                 <div class="col-md-6">
                                     <button class="btn btn-custom font-size-0-7 text-uppercase">Copie de devis</button>
@@ -144,7 +144,8 @@
                             </div>
                             <div class="row justify-content-center align-items-center mt-2">
                                 <div class="col-md-6">
-                                    <button class="btn btn-custom font-size-0-7 text-uppercase">Facture d'acompte</button>
+                                    <button class="btn btn-custom font-size-0-7 text-uppercase" data-bs-toggle="modal" data-bs-target="#downloadFacture">Facture d'acompte</button>
+                                    <d-modal-facture-devis :quoteId="quote_id"></d-modal-facture-devis>
                                 </div>
                                 <div class="col-md-6">
                                     <button class="btn btn-custom font-size-0-7 text-uppercase" @click="goToAttachReglement">rattacher un règlement</button>
@@ -272,6 +273,7 @@
     import dTransportCondition from '../../../components/common/d-transportCondition.vue';
     import dQuoteDetails from '../../../components/projet/devis/d-quote-details.vue';
     import dModalFactureDevis from '../../../components/projet/devis/d-modal-facture-devis.vue';
+    import DModalFactureProformaDevis from "@/components/projet/devis/d-modal-facture-proforma-devis.vue";
 
     useMeta({ title: 'Gestion Contremarque' });
 

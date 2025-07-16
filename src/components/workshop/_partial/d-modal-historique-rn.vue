@@ -88,8 +88,8 @@
         } catch (e) {
             if (e.response.data.violations) {
                 error.value = formatErrorViolations(e.response.data.violations);
-            }else if(e.status === 500 && e.response.data?.detail?.includes('Duplicate entry')){
-                window.showMessage("Une commande atelier existe déja pour cette commande image", 'error');
+            }else if(e.status === 500 && e.response.data?.response?.message?.includes('Duplicate entry')){
+                window.showMessage("Une historique stock existe déja pour cette RN", 'error');
                 return
             }
             console.log(e);

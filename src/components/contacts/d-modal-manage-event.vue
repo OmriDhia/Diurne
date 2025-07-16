@@ -10,7 +10,7 @@
                     <div class="row align-items-center">
                         <div class="col-lg-6 col-md-12">
                             <d-customer-dropdown :required="true" v-model="eventCustomerId" :error="error.customerId"></d-customer-dropdown>
-                            <d-nomenclatures :required="true" v-model="data.nomenclatureId" :error="error.nomenclatureId"></d-nomenclatures>
+                            <d-nomenclatures :required="true" v-model="data.nomenclatureId" :error="error.nomenclatureId" @changeNomenclature="changeNomenclature"></d-nomenclatures>
                             <d-input :required="true" :type="'date'" label="Date évènement" v-model="data.event_date" :error="error.event_date"></d-input>
                             <d-contremarque-dropdown v-model="data.contremarqueId" :error="error.contremarqueId" :customerId="eventCustomerId" :disabled="data.contremarqueId === 0"></d-contremarque-dropdown>
                             <d-input label="Devis" :disabled="true"></d-input>
@@ -64,6 +64,7 @@
     import dContremarqueDropdown from "../common/d-contremarque-dropdown.vue";
     import dContactCustomerDropdown from "../common/d-contact-customer-dropdown.vue";
     import { Modal } from "bootstrap";
+    import moment from "moment";
 
     const props = defineProps({
         customerId: {
@@ -95,7 +96,7 @@
         quoteId: 0,
         reminder_disabled: false,
         commentaire: "",
-        event_date: "",
+        event_date:  moment().format('YYYY-MM-DD'),
         next_reminder_deadline: "",
         people_present: {
             contacts: [],
@@ -155,7 +156,7 @@
             quoteId: 0,
             reminder_disabled: false,
             commentaire: null,
-            event_date: "",
+            event_date: moment().format('YYYY-MM-DD'),
             next_reminder_deadline: "",
             people_present: {
                 contacts: [],
@@ -186,6 +187,22 @@
             contactId.value = event.people_present?.contacts ?? [];
             
             console.log("Données après affectation:", JSON.stringify(data.value, null, 2));
+        }
+    };
+    const changeNomenclature = (event) => {
+        if (event.is_automatic && event.automatic_followup_delay > 0 ){
+            data.value.reminder_disabled = true;
+            data.value.next_reminder_deadline = moment()
+                .add(event.automatic_followup_delay, 'days')
+                .format('YYYY-MM-DD');
+        }else if(props.eventData && props.eventData.nomenclature?.nomenclature_id === data.value.nomenclatureId){
+            data.value.reminder_disabled = props.eventData.reminder_disabled || false;
+            data.value.next_reminder_deadline = props.eventData.next_reminder_deadline
+                ? Helper.FormatDate(event.next_reminder_deadline.date, "YYYY-MM-DD")
+                : ""
+        } else {
+            data.value.reminder_disabled = false;
+            data.value.next_reminder_deadline = ""
         }
     };
 
