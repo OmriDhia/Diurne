@@ -106,7 +106,6 @@ const columns = ref([
   },
 ]);
 
-// Utilisation de shallowRef pour les données qui ne changent pas souvent
 const processedColumns = computed(() => {
   return columns.value.map(col => {
     const newCol = { ...col };
@@ -135,7 +134,6 @@ const processedColumns = computed(() => {
   });
 });
 
-// Chargement initial en parallèle
 onMounted(async () => {
   try {
     loading.value = true;
@@ -187,7 +185,6 @@ async function fetchCustomers() {
       if (!seenIds.has(customer.id)) {
         seenIds.add(customer.id);
         uniqueCustomers.push(customer);
-        // Pré-remplir le cache
         customersCache.value.set(customer.id, { response: { customerData: customer } });
       }
     });
@@ -203,7 +200,6 @@ async function fetchCommercials() {
     const res = await axiosInstance.get('/api/commercials');
     commercials.value = res.data.response.commercials || [];
 
-    // Pré-remplir le cache de manière plus robuste
     commercials.value.forEach(commercial => {
       if (commercial.user_id) {
         commercialsCache.value.set(commercial.user_id, {
@@ -214,7 +210,6 @@ async function fetchCommercials() {
       }
     });
 
-    // Attendre que les données soient complètement disponibles
     await new Promise(resolve => {
       if (commercials.value.length > 0) {
         resolve();
@@ -247,8 +242,7 @@ const fetchData = async ({ page, itemsPerPage, sort }) => {
     const data = response.data.response;
     const payments = data.data || data;
 
-    // Utilisation de Promise.all avec un nombre limité de requêtes simultanées
-    rows.value = await batchTransformPayments(payments, 5); // 5 requêtes simultanées max
+    rows.value = await batchTransformPayments(payments, 5);
 
     return {
       response: {
@@ -269,7 +263,6 @@ const fetchData = async ({ page, itemsPerPage, sort }) => {
   }
 };
 
-// Fonction pour traiter les paiements par lots
 async function batchTransformPayments(payments, batchSize = 5) {
   const result = [];
   for (let i = 0; i < payments.length; i += batchSize) {
@@ -284,10 +277,8 @@ async function batchTransformPayments(payments, batchSize = 5) {
 async function transformPayment(payment) {
   const rawPayment = toRaw(payment);
 
-  // Traitement du client
   const customerData = await processCustomer(rawPayment);
 
-  // Traitement spécial pour les commerciaux - vérification synchrone d'abord
   let commercialData = { commercialId: null, commercialName: 'N/A' };
 
   if (rawPayment.commercial) {
@@ -300,7 +291,6 @@ async function transformPayment(payment) {
       };
     } else {
       const commercialId = rawPayment.commercial;
-      // Vérification synchrone d'abord dans les données déjà chargées
       const foundCommercial = commercials.value.find(c => c.user_id == commercialId);
 
       if (foundCommercial) {
@@ -309,7 +299,6 @@ async function transformPayment(payment) {
           commercialName: `${foundCommercial.firstname || ''} ${foundCommercial.lastname || ''}`.trim()
         };
       } else {
-        // Fallback asynchrone seulement si nécessaire
         commercialData = await processCommercial(rawPayment);
       }
     }

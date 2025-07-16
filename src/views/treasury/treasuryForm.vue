@@ -293,7 +293,6 @@ const selectedOrderObject = ref(null);
 const DEFAULT_RN_PREFIX = 'RN-';
 const DEFAULT_DISTRIBUTION = '100.00';
 
-// --- Allocation logic for quote selection ---
 const handleQuoteSelection = async (quoteFullObject) => {
     if (!quoteFullObject?.quote_id) {
         window.showMessage('Veuillez sélectionner un devis valide.', 'warning');
@@ -335,7 +334,6 @@ const handleQuoteSelection = async (quoteFullObject) => {
     }
 };
 
-// --- Allocation logic for invoice selection ---
 const handleOrderSelection = async (invoiceFullObject) => {
     if (!invoiceFullObject?.id) {
         window.showMessage('Veuillez sélectionner une facture valide.', 'warning');
@@ -572,8 +570,7 @@ const createAllocationDetailPayload = (paymentId, allocation) => {
     } else if (allocation.type === 'order') {
         payload.customerInvoiceId = parseInt(allocation.orderId);
         payload.customerInvoiceDetailId = parseInt(allocation.orderInvoiceId);
-        payload.orderInvoiceId = parseInt(allocation.orderInvoiceId); // if backend expects it
-        // Do NOT include orderId
+        payload.orderInvoiceId = parseInt(allocation.orderInvoiceId); 
     }
 
     return payload;
