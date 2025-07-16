@@ -51,6 +51,12 @@
             </template>
         </d-panel>
         <div class="row mt-2 justify-content-end">
+            <d-btn-outlined
+                icon="calendar"
+                label="Calendrier prévisionnel"
+                @click.prevent="goToProvisionalCalendar"
+                class="me-2"
+            />
             <d-btn-outlined icon="plus" label="Ajouter" @click.prevent="addNewProgressReport"></d-btn-outlined>
         </div>
     </div>
@@ -99,13 +105,30 @@ const addNewProgressReport = async () => {
         if (provisionalCalendar.length > 0) {
             router.push({name: "progressReport", params :{provisionalCalendarId: provisionalCalendar[0].id}})
         } else {
-            router.push({name: "provisionalCalendarView", params :{workshopOrderId: props.workshopOrderId}})
+            window.showMessage("Veuillez d'abord renseigner le calendrier prévisionnel avant d'ajouter un progress report.", 'info');
+            setTimeout(() => {
+                router.push({name: "provisionalCalendarView", params :{workshopOrderId: props.workshopOrderId}})
+            }, 1000);
         }
     } else {
         window.showMessage("Identifiant commande atelier introuvable",'error');
     }
    
 }
+
+const goToProvisionalCalendar = async () => {
+    if (props.workshopOrderId) {
+        const res = await axiosInstance.get(`/api/provisionalCalendar/workshopOrder/${props.workshopOrderId}`);
+        const provisionalCalendar = res.data?.response;
+        if (provisionalCalendar.length > 0) {
+            router.push({name: "provisionalCalendarView", params: {workshopOrderId: props.workshopOrderId, id: provisionalCalendar[0].id}});
+        } else {
+            router.push({name: "provisionalCalendarView", params: {workshopOrderId: props.workshopOrderId}});
+        }
+    } else {
+        window.showMessage("Identifiant commande atelier introuvable", 'error');
+    }
+};
 
 onMounted(getData)
 </script>
