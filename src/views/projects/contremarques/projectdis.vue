@@ -158,14 +158,15 @@
                                 <td aria-colindex="6" role="cell" class="p-0">
                                     <div class="row ps-4 align-items-center">
                                         <div class="col-auto p-1">
-                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"  title="Mise a jour image"
+                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"  title="Mise à jour de l'image"
                                                     @click="goToUpdateOrder(item.id)">
                                                 <vue-feather type="search" size="14"></vue-feather>
                                             </button>
                                         </div>
                                         <div class="col-auto p-1">
-                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" title="Copier image"
-                                                    @click="CopieImage(item.id)">
+                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" 
+                                                :title="'Dupliquer cette image (crée une nouvelle image avec les mêmes infos tant que la DI n\'est pas transmise)'"
+                                                @click="CopieImage(item.id)">
                                                 <vue-feather type="clipboard" size="14"></vue-feather>
                                             </button>
                                         </div>
@@ -204,13 +205,17 @@
                         </button>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-custom pe-5 ps-5" @click.prevent="CopieDI">
+                        <button class="btn btn-custom pe-5 ps-5" @click.prevent="CopieDI"
+                            :title="'Dupliquer la DI (copie tous les éléments sauf la Dead Line)'"
+                            :disabled="selectedData.transmitted_to_studio">
                             Copier DI
                         </button>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-custom pe-5 ps-5" v-if="!selectedData.transmitted_to_studio"
-                                @click="TransStudio">Transmettre au studio
+                        <button class="btn btn-custom pe-5 ps-5" :disabled="selectedData.transmitted_to_studio"
+                                @click="TransStudio"
+                                title="Transmettre toutes les demandes de cette DI au studio">
+                            Transmettre au studio
                         </button>
                     </div>
                 </div>

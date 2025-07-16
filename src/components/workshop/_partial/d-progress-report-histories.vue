@@ -53,7 +53,7 @@
         <div class="row mt-2 justify-content-end">
             <d-btn-outlined
                 icon="calendar"
-                label="Calendrier prévisionnel"
+                label="Calendrier"
                 @click.prevent="goToProvisionalCalendar"
                 class="me-2"
             />
