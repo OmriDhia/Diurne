@@ -56,7 +56,7 @@
                                 </button>
                             </div>
                             <div class="col-auto">
-                                <button class="btn btn-outline-secondary" @click="goToWorkshop">
+                                <button class="btn btn-custom" @click="goToWorkshop">
                                     Retour à la workshop
                                 </button>
                             </div>
@@ -177,7 +177,7 @@
 
     const goToWorkshop = () => {
         if (workshopOrderId) {
-            router.push({ name: 'showCarpetWorkshop', params: { workshopOrderId } });
+            router.push({ name: 'updateCarpetWorkshop', params: { workshopOrderId } });
         }
     };
 
