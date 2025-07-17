@@ -45,6 +45,7 @@
                                 </button>
                                 <d-modal-bon-commande-atelier :workshopOrderId="workshopOrderId"></d-modal-bon-commande-atelier>
                             </div>
+                            <d-coherence-check v-if="workshopOrderId && imageCommandId" :workshopOrderId="workshopOrderId" :imageCommandId="imageCommandId" class="my-2" />
                         </div>
                     </div>
                 </div>
@@ -67,6 +68,7 @@ import DPageTitle from "@/components/common/d-page-title.vue";
 import DAnimatedSkeleton from "@/components/base/d-animated-skeleton.vue";
 import axiosInstance from "@/config/http.js";
 import DModalBonCommandeAtelier from "@/components/workshop/_partial/d-modal-bon-commande-atelier.vue";
+import DCoherenceCheck from "@/components/workshop/_partial/d-coherence-check.vue";
 
 const activeTab = ref('information');
 const route = useRoute();

@@ -173,7 +173,11 @@ const formatDimensions = (dimensions) => {
 const formatMaterials = (materials) => {
     if (!materials) return 'N/A';
     return Object.values(materials)
-        .sort((a, b) => b.reference.localeCompare(a.reference))
+        .sort((a, b) => {
+            const refA = a.reference || '';
+            const refB = b.reference || '';
+            return refB.localeCompare(refA);
+        })
         .map(m => `${m.name}`) 
         .join(', ');
     //${parseFloat(m.rate)}%
