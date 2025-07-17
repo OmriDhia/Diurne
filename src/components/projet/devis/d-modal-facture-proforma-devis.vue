@@ -25,7 +25,7 @@
     import { ref, watch, onMounted, computed } from 'vue';
     import btnLoadIcon from '../../common/svg/btn-load-icon.vue';
     import { TINYMCE_API_KEY } from '../../../config/config'
-    import { devisDocxStyle } from '../../../composables/constants'
+    import { proformaStyle } from '../../../composables/constants'
     import axiosInstance from '../../../config/http';
     import dBaseModal from "../../base/d-base-modal.vue";
     import quoteService from '../../../Services/quote-service';
@@ -56,7 +56,7 @@
                 file_picker_types: 'image',
                 automatic_uploads: true,
                 image_title: true,
-                content_style: devisDocxStyle,
+                content_style: proformaStyle,
                 file_picker_callback: function (cb, value, meta) {
                     let input = document.createElement('input');
                     input.setAttribute('type', 'file');
@@ -91,7 +91,7 @@
                                         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
                                         <title>A document with a short head</title>
                                         <style> 
-                                            ${devisDocxStyle} 
+                                            ${proformaStyle} 
                                         </style> 
                                     </head>
                                     <body> 
@@ -125,7 +125,7 @@
     const getQuoteHtml = async (id) => {
         try {
             if (id) {
-                const fetchedHtml = await quoteService.getQuoteHtml(id);
+                const fetchedHtml = await quoteService.getQuoteHtmlProforma(id);
                 editorData.value = fetchedHtml;
             }
         } catch (e) {

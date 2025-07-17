@@ -326,3 +326,120 @@ export const devisDocxStyle = '@media print {' +
     '        .page-break {' +
     '            page-break-before: always;' +
     '        }';
+
+export const proformaStyle = '@font-face {' +
+    '            font-family: \'Garamond\';' +
+    '            font-style: normal;' +
+    '            font-weight: 400;' +
+    '            src: url(\'file:///var/www/html/api_diurne/templates/Fonts/static/EBGaramond-Regular.ttf\') format(\'truetype\');' +
+    '        }' +
+    '        @font-face {' +
+    '            font-family: \'Garamond\';' +
+    '            font-style: italic;' +
+    '            font-weight: 400;' +
+    '            src: url(\'file:///var/www/html/api_diurne/templates/Fonts/static/EBGaramond-Italic.ttf\') format(\'truetype\');' +
+    '        }' +
+    '        @font-face {' +
+    '            font-family: \'Garamond\';' +
+    '            font-style: normal;' +
+    '            font-weight: 500;' +
+    '            src: url(\'file:///var/www/html/api_diurne/templates/Fonts/static/EBGaramond-Medium.ttf\') format(\'truetype\');' +
+    '        }' +
+    '        @font-face {' +
+    '            font-family: \'Garamond\';' +
+    '            font-style: italic;' +
+    '            font-weight: 500;' +
+    '            src: url(\'file:///var/www/html/api_diurne/templates/Fonts/static/EBGaramond-MediumItalic.ttf\') format(\'truetype\');' +
+    '        }' +
+    '        @font-face {' +
+    '            font-family: \'Garamond\';' +
+    '            font-style: normal;' +
+    '            font-weight: 600;' +
+    '            src: url(\'file:///var/www/html/api_diurne/templates/Fonts/static/EBGaramond-SemiBold.ttf\') format(\'truetype\');' +
+    '        }' +
+    '        @font-face {' +
+    '            font-family: \'Garamond\';' +
+    '            font-style: italic;' +
+    '            font-weight: 600;' +
+    '            src: url(\'file:///var/www/html/api_diurne/templates/Fonts/static/EBGaramond-SemiBoldItalic.ttf\') format(\'truetype\');' +
+    '        }' +
+    '        @font-face {' +
+    '            font-family: \'Garamond\';' +
+    '            font-style: normal;' +
+    '            font-weight: 700;' +
+    '            src: url(\'file:///var/www/html/api_diurne/templates/Fonts/static/EBGaramond-Bold.ttf\') format(\'truetype\');' +
+    '        }' +
+    '        @font-face {' +
+    '            font-family: \'Garamond\';' +
+    '            font-style: italic;' +
+    '            font-weight: 700;' +
+    '            src: url(\'file:///var/www/html/api_diurne/templates/Fonts/static/EBGaramond-BoldItalic.ttf\') format(\'truetype\');' +
+    '        }' +
+    '        @media print {' +
+    '            .page-number:after {' +
+    '                content: counter(page) " sur " counter(pages);' +
+    '            }' +
+    '        }' +
+    '        body {' +
+    '            margin: auto;' +
+    '            width: 90%;' +
+    '            font-family: Garamond, serif;' +
+    '        }' +
+    '        h2 {' +
+    '            color: #585858;' +
+    '            font-weight: bold;' +
+    '            font-size: 11pt;' +
+    '        }' +
+    '        .p, p {' +
+    '            color: #585858;' +
+    '            font-weight: normal;' +
+    '            font-size: 11pt;' +
+    '            margin: 0pt;' +
+    '        }' +
+    '        .s1 {' +
+    '            font-size: 9pt;' +
+    '        }' +
+    '        .s2 {' +
+    '            font-style: italic;' +
+    '            text-decoration: underline;' +
+    '            font-size: 12pt;' +
+    '        }' +
+    '        .s3 {' +
+    '            font-weight: bold;' +
+    '            font-size: 9pt;' +
+    '        }' +
+    '        .s4 {' +
+    '            font-weight: bold;' +
+    '            font-size: 12pt;' +
+    '        }' +
+    '        .s5 {' +
+    '            font-style: italic;' +
+    '            font-size: 12pt;' +
+    '        }' +
+    '        .s6 {' +
+    '            text-decoration: underline;' +
+    '            font-size: 11pt;' +
+    '        }' +
+    '        table, tbody {' +
+    '            width: 100%;' +
+    '            vertical-align: top;' +
+    '            overflow: visible;' +
+    '        }' +
+    '        .header {' +
+    '            text-align: center;' +
+    '            font-size: 14pt;' +
+    '            font-weight: bold;' +
+    '            margin-bottom: 20pt;' +
+    '        }'+
+    '.table-compact {' +
+    '        color: #585858;' +
+    '    }'+
+    ' body * {' +
+    '        font-family: Garamond, serif;' +
+    '       table, th, td {' +
+    '            border: 1px solid black;' +
+    '            color: #585858;' +
+    '        }' +
+    '    }'
+
+export const bonCommandeStyle = ''

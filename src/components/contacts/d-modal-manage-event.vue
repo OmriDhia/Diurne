@@ -1,5 +1,5 @@
 <template>
-    <div :ref="`modalEventManage${action}`" class="modal animated fadeInDown" :id="`modalEventManage${action}`" tabindex="-1" role="dialog" aria-labelledby="fadeinModalLabel">
+    <div ref="modalEventManage" class="modal animated fadeInDown" :id="`modalEventManage${action}`" tabindex="-1" role="dialog" aria-labelledby="fadeinModalLabel">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -104,7 +104,6 @@
         }
     });
     const modalEventManage = ref(null);
-    const modalEventManageAdd = ref(null);
     let modalInstance = null;
     const contactId = ref([]);
     const eventCustomerId = ref(0);
@@ -218,9 +217,8 @@
     onMounted(() => {
         if (modalEventManage.value) {
             modalInstance = new Modal(modalEventManage.value, { backdrop: "static" });
-        }
-        if (modalEventManageAdd.value) {
-            modalInstance = new Modal(modalEventManageAdd.value, { backdrop: "static" });
+        }else{
+            console.log("Modal instance vide")
         }
         affectData(props.eventData);
     });

@@ -196,6 +196,12 @@ import userService from "@/Services/user-service.js";
                 break;
             case 3:
                 processes.value.push({
+                    processId: 3,
+                    debut: "",
+                    fin: "",
+                    comment: ""
+                });
+                processes.value.push({
                     processId: 4,
                     debut: "",
                     fin: "",
