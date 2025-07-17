@@ -14,7 +14,7 @@
                             />
     
                             <div class="tab-content">
-                                <InformationAtelier :workshop-info-id="workshopInfoId" 
+                                <InformationAtelier :form-data="formData" :workshop-info-id="workshopInfoId" 
                                                     :workshop-info="workshopInfo"
                                                     :image-commande="imageCommande"
                                                     :order-id="workshopOrderId" 
@@ -30,11 +30,9 @@
 <!--                            <HistoryPanel v-if="workshopOrderId"></HistoryPanel>-->
                             <d-progress-report-histories  v-if="workshopOrderId" :workshopOrderId="workshopOrderId" @lastOne="changeLastProgressReporting"></d-progress-report-histories>
                             <div class="status-options">
-                                <RadioButton class="w-100" v-model="formData.disponibleVente" :value="true"
-                                             label="Disponible à la vente"/>
-                                <RadioButton class="w-100" v-model="formData.envoye" :value="true" label="Envoyé"/>
-                                <RadioButton class="w-100" v-model="formData.receptionParis" :value="true"
-                                             label="Réception Paris"/>
+                                <RadioButton class="w-100" v-model="formData.disponibleVente" label="Disponible à la vente"/>
+                                <RadioButton class="w-100" v-model="formData.envoye" label="Envoyé"/>
+                                <RadioButton class="w-100" v-model="formData.receptionParis" label="Réception Paris"/>
                             </div>
     
                             <div class="action-buttons">
@@ -107,7 +105,50 @@ const tabs = [
 const formData = ref({
     disponibleVente: false,
     envoye: false,
-    receptionParis: true
+    receptionParis: false,
+    tarifSpecial: false,
+    infoCommande: {
+        dateCmdAtelier: '',
+        dateFinTheo: '',
+        dateFinAtelierPrev: '',
+        delaisProd: '',
+        pourcentCommande: '',
+        deviseAchat: '',
+        largeurCmd: '',
+        largeurReelle: '',
+        longueurCmd: '',
+        longueurReelle: '',
+        srfCmd: '',
+        srfReelle: '',
+        anneeGrilleTarif: ''
+    },
+    currencyId: 1,
+    prixAchat: [],
+    reductionTapis: '',
+    complexiteAtelier: false,
+    multiLevelAtelier: false,
+    formeSpeciale: false,
+    tapisDuProjet: {
+        fabricant: '',
+        typeCommande: '',
+        rn: '',
+        exemplaire: ''
+    },
+    prixAchatTapis: {
+        auM2: '',
+        cmd: '',
+        theorique: '',
+        facture: ''
+    },
+    others: {
+        penalite: '',
+        transport: '',
+        taxe: '',
+        margeBrute: '',
+        referenceSurFacture: '',
+        numeroDuFacture: null
+    },
+    dateValidationClient: ''
 });
 const changeTab = (tabId) => {
     activeTab.value = tabId;

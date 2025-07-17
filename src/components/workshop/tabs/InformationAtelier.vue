@@ -14,6 +14,10 @@ import DMaterialsDropdown from "@/components/projet/contremarques/dropdown/d-mat
 import DCoherenceCheck from "@/components/workshop/_partial/d-coherence-check.vue";
 
 const props = defineProps({
+    formData: {
+        type: Object,
+        required: true
+    },
     orderId: {
         type: Number,
         required: false
@@ -38,55 +42,6 @@ const props = defineProps({
         type: Number,
         required: true
     }
-});
-// Form data
-const formData = ref({
-    infoCommande: {
-        dateCmdAtelier: '24-10-2021',
-        dateFinTheo: '24-10-2021',
-        dateFinAtelierPrev: '',
-        delaisProd: '2',
-        pourcentCommande: '0.00',
-        deviseAchat: '',
-        largeurCmd: '30',
-        largeurReelle: '0',
-        longueurCmd: '30',
-        longueurReelle: '0',
-        srfCmd: '0.9',
-        srfReelle: '0',
-        anneeGrilleTarif: ''
-    },
-    currencyId: 1,
-    tarifSpecial: true,
-    prixAchat: [],
-    reductionTapis: '0',
-    complexiteAtelier: false,
-    multiLevelAtelier: true,
-    formeSpeciale: true,
-    tapisDuProjet: {
-        fabricant: '',
-        typeCommande: '',
-        rn: 'M0025',
-        exemplaire: '3'
-    },
-    prixAchatTapis: {
-        auM2: '32',
-        cmd: '2.88',
-        theorique: '2.88',
-        facture: '0'
-    },
-    others: {
-        penalite: '0',
-        transport: '0',
-        taxe: '0',
-        margeBrute: '0',
-        referenceSurFacture: '0',
-        numeroDuFacture: null
-    },
-    dateValidationClient: '24-10-2021',
-    disponibleVente: false,
-    envoye: false,
-    receptionParis: true
 });
 
 const manufacturers = ref<Array<{ value: number | string, label: string }>>([]);
@@ -115,9 +70,9 @@ const loadCheckingLists = async () => {
             checkingLists.value = response || [];
             const lastcheckingList = checkingLists.value[checkingLists.value.length - 1];
             if(lastcheckingList){
-                formData.value.infoCommande.largeurReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.realWidth);
-                formData.value.infoCommande.longueurReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.realLength);
-                formData.value.infoCommande.srfReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.surface);
+                props.formData.infoCommande.largeurReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.realWidth);
+                props.formData.infoCommande.longueurReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.realLength);
+                props.formData.infoCommande.srfReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.surface);
             } 
         }
     } catch (e) {
@@ -129,9 +84,9 @@ const loadCheckingLists = async () => {
 const generateRN = async () => {
     try {
         error.value = {}
-        const manufacturerId = parseInt(formData.value.tapisDuProjet.fabricant);
+        const manufacturerId = parseInt(props.formData.tapisDuProjet.fabricant);
         const data = await workshopService.generateRN(manufacturerId, props.imageCommandId);
-        formData.value.tapisDuProjet.rn = data.response?.rnNumber || data.response?.rnNumber || '';
+        props.formData.tapisDuProjet.rn = data.response?.rnNumber || data.response?.rnNumber || '';
     } catch (e) {
         if (e.response.data.violations) {
             error.value = formatErrorViolations(e.response.data.violations);
@@ -149,9 +104,9 @@ const updatePrixTapis = async() => {
         await saveWorkshopInformation();
         const res = await workshopService.calculatePrices(props.workshopInfoId);
         const prices = res.response.prices;
-        formData.value.prixAchatTapis.auM2 =  `${Helper.FormatNumber(prices.carpet_purchase_price_per_m2)}`;
-        formData.value.prixAchatTapis.cmd = `${Helper.FormatNumber(prices.carpet_purchase_price_cmd)}`;
-        formData.value.prixAchatTapis.theorique = `${Helper.FormatNumber(prices.carpet_purchase_price_theoretical)}`;
+        props.formData.prixAchatTapis.auM2 =  `${Helper.FormatNumber(prices.carpet_purchase_price_per_m2)}`;
+        props.formData.prixAchatTapis.cmd = `${Helper.FormatNumber(prices.carpet_purchase_price_cmd)}`;
+        props.formData.prixAchatTapis.theorique = `${Helper.FormatNumber(prices.carpet_purchase_price_theoretical)}`;
     }catch(e){
         window.showMessage('Erreur au niveau de calcule des prix','error');
     }
@@ -167,47 +122,54 @@ const attribuer = () => {
 
 const saveWorkshopInformation = async () => {
     error.value = {}
+    console.log("formData",props.formData)
     const payload = {
-        launchDate: formData.value.infoCommande.dateCmdAtelier || "",
-        expectedEndDate: formData.value.infoCommande.dateFinTheo || "",
-        productionTime: Number(formData.value.infoCommande.delaisProd) || 0,
-        orderSilkPercentage: formData.value.infoCommande.pourcentCommande,
-        orderedWidth: formData.value.infoCommande.largeurCmd,
-        orderedHeigh: formData.value.infoCommande.longueurCmd,
-        orderedSurface: formData.value.infoCommande.srfCmd,
-        realWidth: formData.value.infoCommande.largeurReelle,
-        realHeight: formData.value.infoCommande.longueurReelle,
-        realSurface: formData.value.infoCommande.srfReelle,
-        idTarifGroup: Number(formData.value.infoCommande.anneeGrilleTarif) || 0,
-        idTarifTexture: Number(formData.value.infoCommande.anneeGrilleTarif) || 0,
-        reductionRate: formData.value.reductionTapis,
-        hasComplixityWorkshop: formData.value.complexiteAtelier,
-        hasMultilevelWorkshop: formData.value.multiLevelAtelier,
-        hasSpecialShape: formData.value.formeSpeciale,
-        carpetPurchasePricePerM2: formData.value.prixAchatTapis.auM2,
-        carpetPurchasePriceCmd: formData.value.prixAchatTapis.cmd,
-        carpetPurchasePriceTheoretical: formData.value.prixAchatTapis.theorique,
-        carpetPurchasePriceInvoice: formData.value.prixAchatTapis.facture,
-        penalty: formData.value.others.penalite,
-        shipping: formData.value.others.transport,
-        tva: formData.value.others.taxe,
-        grossMargin: formData.value.others.margeBrute,
-        referenceOnInvoice: formData.value.others.referenceSurFacture,
-        invoiceNumber: formData.value.others.numeroDuFacture,
-        manufacturerId: parseInt(formData.value.tapisDuProjet.fabricant),
-        Rn: formData.value.tapisDuProjet.rn,
+        launchDate: props.formData.infoCommande.dateCmdAtelier || "",
+        expectedEndDate: props.formData.infoCommande.dateFinTheo || "",
+        productionTime: Number(props.formData.infoCommande.delaisProd) || 0,
+        orderSilkPercentage: props.formData.infoCommande.pourcentCommande,
+        orderedWidth: props.formData.infoCommande.largeurCmd,
+        orderedHeigh: props.formData.infoCommande.longueurCmd,
+        orderedSurface: props.formData.infoCommande.srfCmd,
+        realWidth: props.formData.infoCommande.largeurReelle,
+        realHeight: props.formData.infoCommande.longueurReelle,
+        realSurface: props.formData.infoCommande.srfReelle,
+        idTarifGroup: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
+        idTarifTexture: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
+        reductionRate: props.formData.reductionTapis,
+        hasComplixityWorkshop: props.formData.complexiteAtelier,
+        hasMultilevelWorkshop: props.formData.multiLevelAtelier,
+        hasSpecialShape: props.formData.formeSpeciale,
+        carpetPurchasePricePerM2: props.formData.prixAchatTapis.auM2,
+        carpetPurchasePriceCmd: props.formData.prixAchatTapis.cmd,
+        carpetPurchasePriceTheoretical: props.formData.prixAchatTapis.theorique,
+        carpetPurchasePriceInvoice: props.formData.prixAchatTapis.facture,
+        penalty: props.formData.others.penalite,
+        shipping: props.formData.others.transport,
+        tva: props.formData.others.taxe,
+        grossMargin: props.formData.others.margeBrute,
+        referenceOnInvoice: props.formData.others.referenceSurFacture,
+        invoiceNumber: props.formData.others.numeroDuFacture,
+        manufacturerId: parseInt(props.formData.tapisDuProjet.fabricant),
+        Rn: props.formData.tapisDuProjet.rn,
         idQuality: props.imageCommande?.carpetSpecification?.quality?.id,
-        currencyId: formData.value.currencyId,
+        currencyId: props.formData.currencyId,
+        availableForSale: props.formData.disponibleVente,
+        sent: props.formData.envoye,
+        receivedInParis: props.formData.receptionParis,
+        specialRateInParis: props.formData.tarifSpecial,
+        specialRate: props.formData.tarifSpecial
     };
     try {
         if(props.workshopInfoId){
             const res = await workshopService.updateWorkshopInformation(props.workshopInfoId,payload);
+            // Removed updateWorkshopOrder call for these fields
         } else {
             const res = await workshopService.createWorkshopInformation(payload);
             
             if(res?.response?.id){
                 const resWorkshopOrder = await workshopService.createWorkshopOrder({
-                    reference: formData.value.tapisDuProjet.rn,
+                    reference: props.formData.tapisDuProjet.rn,
                     image_command_id: props.imageCommandId,
                     workshop_information_id: res?.response?.id
                 })
@@ -239,46 +201,51 @@ defineExpose({
 
 const setDataForUpdate = () => {
     if(Object.keys(props.workshopInfo).length > 0){
-        formData.value.infoCommande.dateCmdAtelier = props.workshopInfo.launchDate;
-        formData.value.infoCommande.dateFinTheo = props.workshopInfo.expectedEndDate;
-        formData.value.infoCommande.delaisProd = props.workshopInfo.productionTime?.toString() || "";
-        formData.value.infoCommande.pourcentCommande = Helper.FormatNumber(props.workshopInfo.orderSilkPercentage);
-        formData.value.infoCommande.largeurCmd =  Helper.FormatNumber(props.workshopInfo.orderedWidth);
-        formData.value.infoCommande.longueurCmd = Helper.FormatNumber(props.workshopInfo.orderedHeigh);
-        formData.value.infoCommande.srfCmd = Helper.FormatNumber(props.workshopInfo.orderedSurface);
-        formData.value.infoCommande.largeurReelle = Helper.FormatNumber(props.workshopInfo.realWidth);
-        formData.value.infoCommande.longueurReelle = Helper.FormatNumber(props.workshopInfo.realHeight);
-        formData.value.infoCommande.srfReelle = Helper.FormatNumber(props.workshopInfo.realSurface);
-        formData.value.infoCommande.anneeGrilleTarif = props.workshopInfo.idTarifTexture || "";
-        formData.value.currencyId = props.workshopInfo.idCurrency || 1;
-        formData.value.prixAchat = [];
+        props.formData.infoCommande.dateCmdAtelier = props.workshopInfo.launchDate;
+        props.formData.infoCommande.dateFinTheo = props.workshopInfo.expectedEndDate;
+        props.formData.infoCommande.delaisProd = props.workshopInfo.productionTime?.toString() || "";
+        props.formData.infoCommande.pourcentCommande = Helper.FormatNumber(props.workshopInfo.orderSilkPercentage);
+        props.formData.infoCommande.largeurCmd =  Helper.FormatNumber(props.workshopInfo.orderedWidth);
+        props.formData.infoCommande.longueurCmd = Helper.FormatNumber(props.workshopInfo.orderedHeigh);
+        props.formData.infoCommande.srfCmd = Helper.FormatNumber(props.workshopInfo.orderedSurface);
+        props.formData.infoCommande.largeurReelle = Helper.FormatNumber(props.workshopInfo.realWidth);
+        props.formData.infoCommande.longueurReelle = Helper.FormatNumber(props.workshopInfo.realHeight);
+        props.formData.infoCommande.srfReelle = Helper.FormatNumber(props.workshopInfo.realSurface);
+        props.formData.infoCommande.anneeGrilleTarif = props.workshopInfo.idTarifTexture || "";
+        props.formData.currencyId = props.workshopInfo.idCurrency || 1;
+        props.formData.prixAchat = [];
 
-        formData.value.reductionTapis = Helper.FormatNumber(props.workshopInfo.reductionRate);
-        formData.value.complexiteAtelier = props.workshopInfo.hasComplixityWorkshop;
-        formData.value.multiLevelAtelier = props.workshopInfo.hasMultilevelWorkshop;
-        formData.value.formeSpeciale = props.workshopInfo.hasSpecialShape;
+        props.formData.reductionTapis = Helper.FormatNumber(props.workshopInfo.reductionRate);
+        props.formData.complexiteAtelier = props.workshopInfo.hasComplixityWorkshop;
+        props.formData.multiLevelAtelier = props.workshopInfo.hasMultilevelWorkshop;
+        props.formData.formeSpeciale = props.workshopInfo.hasSpecialShape;
 
-        formData.value.prixAchatTapis.auM2 = Helper.FormatNumber(props.workshopInfo.carpetPurchasePricePerM2);
-        formData.value.prixAchatTapis.cmd = Helper.FormatNumber(props.workshopInfo.carpetPurchasePriceCmd);
-        formData.value.prixAchatTapis.theorique = Helper.FormatNumber(props.workshopInfo.carpetPurchasePriceTheoretical);
-        formData.value.prixAchatTapis.facture = Helper.FormatNumber(props.workshopInfo.carpetPurchasePriceInvoice);
+        props.formData.prixAchatTapis.auM2 = Helper.FormatNumber(props.workshopInfo.carpetPurchasePricePerM2);
+        props.formData.prixAchatTapis.cmd = Helper.FormatNumber(props.workshopInfo.carpetPurchasePriceCmd);
+        props.formData.prixAchatTapis.theorique = Helper.FormatNumber(props.workshopInfo.carpetPurchasePriceTheoretical);
+        props.formData.prixAchatTapis.facture = Helper.FormatNumber(props.workshopInfo.carpetPurchasePriceInvoice);
 
-        formData.value.others.penalite = Helper.FormatNumber(props.workshopInfo.penalty);
-        formData.value.others.transport = Helper.FormatNumber(props.workshopInfo.shipping);
-        formData.value.others.taxe = Helper.FormatNumber(props.workshopInfo.tva);
-        formData.value.others.margeBrute = Helper.FormatNumber(props.workshopInfo.grossMargin);
-        formData.value.others.referenceSurFacture = props.workshopInfo.referenceOnInvoice;
-        formData.value.others.numeroDuFacture = props.workshopInfo.invoiceNumber;
+        props.formData.others.penalite = Helper.FormatNumber(props.workshopInfo.penalty);
+        props.formData.others.transport = Helper.FormatNumber(props.workshopInfo.shipping);
+        props.formData.others.taxe = Helper.FormatNumber(props.workshopInfo.tva);
+        props.formData.others.margeBrute = Helper.FormatNumber(props.workshopInfo.grossMargin);
+        props.formData.others.referenceSurFacture = props.workshopInfo.referenceOnInvoice;
+        props.formData.others.numeroDuFacture = props.workshopInfo.invoiceNumber;
 
-        formData.value.tapisDuProjet.fabricant = props.workshopInfo.manufacturerId?.toString() || "";
-        formData.value.tapisDuProjet.rn = props.workshopInfo.rn;
+        props.formData.tapisDuProjet.fabricant = props.workshopInfo.manufacturerId?.toString() || "";
+        props.formData.tapisDuProjet.rn = props.workshopInfo.rn;
 
         if(props.workshopInfo?.materialPurchasePrices.length > 0){
-            formData.value.prixAchat = props.workshopInfo?.materialPurchasePrices.map(item => {
+            props.formData.prixAchat = props.workshopInfo?.materialPurchasePrices.map(item => {
                 item.price = Helper.FormatNumber(item.price);
                 return item;
             });  
         }
+        // Map API boolean fields to formData
+        props.formData.disponibleVente = props.workshopInfo.availableForSale ?? false;
+        props.formData.envoye = props.workshopInfo.sent ?? false;
+        props.formData.receptionParis = props.workshopInfo.receivedInParis ?? false;
+        props.formData.tarifSpecial = (props.workshopInfo.specialRateInParis ?? props.workshopInfo.specialRate) ?? false;
     }
 }
 const createNewCheckingList = async () => {
@@ -298,13 +265,13 @@ const setDataFromImageCommande = () => {
     if(!props.orderId){
         const long = props.imageCommande?.carpetSpecification?.carpetDimensions?.[2]?.[0]?.value ?? 0
         const larg = props.imageCommande?.carpetSpecification?.carpetDimensions?.[1]?.[0]?.value ?? 0
-        formData.value.infoCommande.largeurCmd =  Helper.FormatNumber(larg);
-        formData.value.infoCommande.longueurCmd = Helper.FormatNumber(long);
-        formData.value.infoCommande.srfCmd = Helper.FormatNumber(long * larg);
+        props.formData.infoCommande.largeurCmd =  Helper.FormatNumber(larg);
+        props.formData.infoCommande.longueurCmd = Helper.FormatNumber(long);
+        props.formData.infoCommande.srfCmd = Helper.FormatNumber(long * larg);
     }
 }
 const updatePurchasePrice = async (index, price) => {
-    const pa = formData.value.prixAchat[index]
+    const pa = props.formData.prixAchat[index]
     if(pa){
         const p = {
             materialId: pa.material_id,
@@ -362,39 +329,40 @@ watch(
 
                         <div class="form-row">
                             <d-input label="Date de cmd. atelier" type="datetime-local"
-                                     v-model="formData.infoCommande.dateCmdAtelier"/>
+                                     v-model="props.formData.infoCommande.dateCmdAtelier"/>
                         </div>
 
                         <div class="form-row">
                             <d-input label="Date fin atelier Prev" type="datetime-local"
-                                     v-model="formData.infoCommande.dateFinAtelierPrev"
+                                     v-model="props.formData.infoCommande.dateFinAtelierPrev"
                                      rootClass="pink-bg"/>
                         </div>
 
                         <div class="form-row">
-                            <d-input label="% commande soie" v-model="formData.infoCommande.pourcentCommande"
+                            <d-input label="% commande soie" v-model="props.formData.infoCommande.pourcentCommande"
                                      rootClass="pink-bg"/>
                         </div>
 
                         <div class="form-row">
-                            <d-input label="Largeur cmd. atelier" v-model="formData.infoCommande.largeurCmd"
+                            <d-input label="Largeur cmd. atelier" v-model="props.formData.infoCommande.largeurCmd"
                                      rootClass="pink-bg"/>
                         </div>
 
                         <div class="form-row">
-                            <d-input label="Longueur cmd. atelier" v-model="formData.infoCommande.longueurCmd"
+                            <d-input label="Longueur cmd. atelier" v-model="props.formData.infoCommande.longueurCmd"
                                      rootClass="pink-bg"/>
                         </div>
 
                         <div class="form-row">
-                            <d-input label="Srf cmd. atelier" v-model="formData.infoCommande.srfCmd"/>
+                            <d-input label="Srf cmd. atelier" v-model="props.formData.infoCommande.srfCmd"/>
                         </div>
                         
-                        <d-tarif-texture-dropdown v-model="formData.infoCommande.anneeGrilleTarif" rootClass="pink-bg" :error="error.idTarifGroup"/>
+                        <d-tarif-texture-dropdown v-model="props.formData.infoCommande.anneeGrilleTarif" rootClass="pink-bg" :error="error.idTarifGroup"/>
 
                         <div class="form-row special-tarif row py-3">
                             <div class="col-12 p-0">
-                                <RadioButton v-model="formData.tarifSpecial" :value="true" label="Tarif spécial"/>
+                                <RadioButton class="w-100" v-model="props.formData.tarifSpecial"
+                                             label="Tarif spécial"/>
                             </div>
 
                         </div>
@@ -403,32 +371,32 @@ watch(
                         <div class="theoretical-section">
                             <div class="form-row">
                                 <d-input label="Date fin Théo" type="datetime-local"
-                                         v-model="formData.infoCommande.dateFinTheo"/>
+                                         v-model="props.formData.infoCommande.dateFinTheo"/>
                             </div>
 
                             <div class="form-row">
                                 <div class="col-12">
-                                    <d-input label="Délais de prod" v-model="formData.infoCommande.delaisProd"/>
+                                    <d-input label="Délais de prod" v-model="props.formData.infoCommande.delaisProd"/>
                                 </div>
                             </div>
 
                             <div class="form-row row py-2">
                                 <d-currency :required="true"
-                                            :error="error.currencyId" v-model="formData.currencyId">
+                                            :error="error.currencyId" v-model="props.formData.currencyId">
 
                                 </d-currency>
                             </div>
 
                             <div class="form-row">
-                                <d-input label="Lrg. réelle" v-model="formData.infoCommande.largeurReelle"/>
+                                <d-input label="Lrg. réelle" v-model="props.formData.infoCommande.largeurReelle"/>
                             </div>
 
                             <div class="form-row">
-                                <d-input label="Lng. réelle" v-model="formData.infoCommande.longueurReelle"/>
+                                <d-input label="Lng. réelle" v-model="props.formData.infoCommande.longueurReelle"/>
                             </div>
 
                             <div class="form-row">
-                                <d-input label="Srf réelle" v-model="formData.infoCommande.srfReelle"/>
+                                <d-input label="Srf réelle" v-model="props.formData.infoCommande.srfReelle"/>
                             </div>
 
                             <div class="form-row py-2">
@@ -438,7 +406,7 @@ watch(
                             </div>
 
                             <div class="form-row">
-                                <d-input label="% Réduc. tapis " v-model="formData.reductionTapis"/>
+                                <d-input label="% Réduc. tapis " v-model="props.formData.reductionTapis"/>
                             </div>
                         </div>
                     </div>
@@ -446,7 +414,7 @@ watch(
                 
                 <div class="row mb-4 my-4 align-items-center">
                     <div class="col-md-12">
-                        <div class="row align-items-center" v-for="(material, index) in formData.prixAchat"
+                        <div class="row align-items-center" v-for="(material, index) in props.formData.prixAchat"
                              :key="index">
                             <div class="col-md-3">
                                 <label class="pt-2">Prix d'achat :</label>
@@ -460,7 +428,7 @@ watch(
                                        :name="`price_${index}`" 
                                        :id="`price_${index}`" 
                                        :value="material.price"
-                                       :disabled="!formData.tarifSpecial"
+                                       :disabled="!props.formData.tarifSpecial"
                                        @change="updatePurchasePrice(index, $event)"/>
                             </div>
                         </div>
@@ -468,55 +436,55 @@ watch(
                 </div>
                 
                 <div class="radio-options my-4">
-                    <RadioButton v-model="formData.complexiteAtelier" :value="true" label="Complexité atelier"/>
-                    <RadioButton v-model="formData.multiLevelAtelier" :value="true" label="Multi-level atelier"/>
-                    <RadioButton v-model="formData.formeSpeciale" :value="true" label="Forme spéciale"/>
+                    <RadioButton v-model="props.formData.complexiteAtelier" :value="true" label="Complexité atelier"/>
+                    <RadioButton v-model="props.formData.multiLevelAtelier" :value="true" label="Multi-level atelier"/>
+                    <RadioButton v-model="props.formData.formeSpeciale" :value="true" label="Forme spéciale"/>
                 </div>
 
 
                 <div class="row" v-if="props.workshopInfoId">
                     <div class="col-6 ps-0">
                         <div class="price-row">
-                            <d-input label="Prix d'achat tapis au m² " v-model="formData.prixAchatTapis.auM2"/>
+                            <d-input label="Prix d'achat tapis au m² " v-model="props.formData.prixAchatTapis.auM2"/>
                         </div>
                         <div class="price-row">
                             <d-input label="Prix d'achat tapis théorique"
-                                     v-model="formData.prixAchatTapis.theorique"/>
+                                     v-model="props.formData.prixAchatTapis.theorique"/>
                         </div>
                         <div class="price-row">
-                            <d-input label="Pénalité" v-model="formData.others.penalite"/>
+                            <d-input label="Pénalité" v-model="props.formData.others.penalite"/>
                         </div>
                         <div class="price-row">
-                            <d-input label="Taxe" v-model="formData.others.taxe"/>
+                            <d-input label="Taxe" v-model="props.formData.others.taxe"/>
                         </div>
                         <div class="price-row">
-                            <d-input label="Référence sur facture" v-model="formData.others.referenceSurFacture"/>
+                            <d-input label="Référence sur facture" v-model="props.formData.others.referenceSurFacture"/>
                         </div>
                     </div>
                     <div class="col-6">
 
 
                         <div class="price-row">
-                            <d-input label="Prix d'achat tapis Cmd" v-model="formData.prixAchatTapis.cmd"/>
+                            <d-input label="Prix d'achat tapis Cmd" v-model="props.formData.prixAchatTapis.cmd"/>
                         </div>
 
 
                         <div class="price-row">
-                            <d-input label="Prix d'achat tapis facture" v-model="formData.prixAchatTapis.facture"/>
+                            <d-input label="Prix d'achat tapis facture" v-model="props.formData.prixAchatTapis.facture"/>
                         </div>
 
 
                         <div class="price-row">
-                            <d-input label="Transport" v-model="formData.others.transport"/>
+                            <d-input label="Transport" v-model="props.formData.others.transport"/>
                         </div>
 
 
                         <div class="price-row">
-                            <d-input label="Marge brute" v-model="formData.others.margeBrute"/>
+                            <d-input label="Marge brute" v-model="props.formData.others.margeBrute"/>
                         </div>
 
                         <div class="price-row">
-                            <d-input label="Numéro du facture" v-model="formData.others.numeroDuFacture"/>
+                            <d-input label="Numéro du facture" v-model="props.formData.others.numeroDuFacture"/>
                         </div>
                     </div>
                 </div>
@@ -577,7 +545,7 @@ watch(
                 <button class="btn btn-custom  text-uppercase w-100" @click="attribuer">ATTRIBUER</button>
 
                 <div class="form-row">
-                    <d-input label="Date validation client" type="datetime-local" v-model="formData.dateValidationClient"/>
+                    <d-input label="Date validation client" type="datetime-local" v-model="props.formData.dateValidationClient"/>
                 </div>
 
                 <!--button class="coherence-btn btn btn-custom  text-uppercase w-100 py-2"
@@ -589,7 +557,7 @@ watch(
                 <div class="form-row row py-2 align-items-center">
                     <div class="col-4"><label>Fabricant :</label></div>
                     <div class="col-8">
-                        <SelectInput v-model="formData.tapisDuProjet.fabricant" :options="manufacturers"  :error="error.manufacturerId"
+                        <SelectInput v-model="props.formData.tapisDuProjet.fabricant" :options="manufacturers"  :error="error.manufacturerId"
                                      rootClass="pink-bg"/>
                         <div v-if="error.manufacturerId" class="invalid-feedback">{{ $t("Le champ fabricant est abligatoire.") }}</div>
                     </div>
@@ -597,16 +565,16 @@ watch(
                 <div class="form-row row py-2">
                     <div class="col-4"><label>Type commandé :</label></div>
                     <div class="col-8">
-                        <SelectInput v-model="formData.tapisDuProjet.fabricant" rootClass="pink-bg"/>
+                        <SelectInput v-model="props.formData.tapisDuProjet.fabricant" rootClass="pink-bg"/>
                     </div>
                 </div>
 
                 <div class="form-row">
-                    <d-input label="RN" v-model="formData.tapisDuProjet.rn" rootClass="pink-bg" disabled/>
+                    <d-input label="RN" v-model="props.formData.tapisDuProjet.rn" rootClass="pink-bg" disabled/>
                 </div>
 
                 <div class="form-row">
-                    <d-input label="N° d'exemplaire" v-model="formData.tapisDuProjet.exemplaire"/>
+                    <d-input label="N° d'exemplaire" v-model="props.formData.tapisDuProjet.exemplaire"/>
                 </div>
 
                 <button class="generate-btn btn btn-outline-dark   text-uppercase w-100" @click="generateRN">
