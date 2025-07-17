@@ -489,6 +489,14 @@ label,
 .custom-droupdown-exist .col-8 {
     width: 100% !important;
 }
+.invoiceclient-rn {
+    .col-4 {
+        display: none;
+    }
+    .col-8 {
+        width: 100%;
+    }
+}
 .create-fournisseur-invoice {
     .d-block__item {
         .col-4,
