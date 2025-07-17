@@ -264,57 +264,44 @@
     let carpetOrderDetailsId = ref(null);
     const contremarque = ref({});
     const selectedCustomer = ref(null);
-    const prescriber = ref(null);
+    const rnLists = ref([]);
     const currentCustomer = ref({});
     const regulations = ref([]);
     const invoiceTypes = ref([]);
-    const rnId = ref(null); // To store the RN ID from the fetched data
+    const arrayRnDetaill = ref([]);
+
+    const rnId = ref(null);
     const form = ref({
-        customerRef: null, //??
-        invoiceNumber: '', //invoiceNumber == customerId
+        customerRef: null,
+        invoiceNumber: '',
         invoiceDate: '',
-        project: '', //??
+        project: '',
         invoiceType: '',
-        tva: '', //?
-        currency: null, //?
-        rate: '', //?
-        languageId: 0, //?
-        unitOfMeasurement: null, //?
-        contremarque: null, //?
-        prescripteur: '', //?
-        description: '', //?
-        reglement: '', //?
-        tarifExpedition: '', //?
-        carrierId: null, //?
-        numero: '', //?
-        rn: null, //?
+        tva: '',
+        currency: null,
+        rate: '',
+        languageId: 0,
+        unitOfMeasurement: null,
+        contremarque: null,
+        prescripteur: '',
+        description: '',
+        reglement: '',
+        tarifExpedition: '',
+        carrierId: null,
+        numero: '',
+        rn: null,
         quantityTotal: null,
         shippingCostsHt: '',
-        versement: '', //Versement==payment
+        versement: '',
         billed: '',
         totalHt: null,
         amountHt: null,
         amountTva: null,
         amountTtc: null,
-        carpetOrderId: null, // Quel champ???
+        carpetOrderId: null,
     });
 
-    const lines = ref([
-        // Initial empty line
-        // {
-        //     percent: null,
-        //     rn: '',
-        //     collection: null,
-        //     model: null,
-        //     refDevis: '',
-        //     refCommande: '',
-        //     versement: null,
-        //     priceM2: null,
-        //     priceSqft: null,
-        //     priceHt: null,
-        //     priceTtc: null,
-        // },
-    ]);
+    const lines = ref([]);
 
     watch(selectedCustomer, (customerId) => {
         getCustomer(customerId);
@@ -327,20 +314,20 @@
         }
     );
     const mapDetailsToLines = (details, originalQuoteReference = null) => {
-        // if (!details || !Array.isArray(details)) {
-        //     // Add check if details is an array
-        //     return [];
-        // }
-
         if (!Array.isArray(details)) {
             details = Object.values(details);
         }
-        return details.map((d) => {
-            // Use map instead of for...of with early return
+        let foundCarpet;
+        return details.map((d, index) => {
+            if (route.query.quote_id) {
+                const carpetId = arrayRnDetaill.value[index].rnAttributions[0].carpet;
+                foundCarpet = rnLists.value.find((item) => item.id === carpetId);
+                console.log(foundCarpet.rnNumber);
+            }
             return {
                 id: d.id, // Add ID for updates/deletes
                 percent: d.impactOnTheQuotePrice || 100,
-                rn: d.rn,
+                rn: d.rn || foundCarpet.rnNumber,
                 collection: d.quote ? d.carpetSpecification.collection.id : d.collection,
                 model: d.quote ? d.carpetSpecification.model.id : d.model,
                 // If loading from a quote, refDevis comes from the original quote header, refCommande from the quote detail.
@@ -364,15 +351,22 @@
             console.error('Failed to fetch regulations:', error);
         }
     };
+    const fetchRnList = async () => {
+        try {
+            const res = await axiosInstance.get('/api/carpets');
+            rnLists.value = res.data.response || [];
+        } catch (error) {
+            console.error('Failed to fetch regulations:', error);
+        }
+    };
     function formatNumber(num) {
         return parseFloat(Number(num).toFixed(3));
     }
     const ResultasRnData = (data) => {
         if (data && data.data && data.data.response) {
             const rnData = data.data.response;
-            console.log('data', data);
+
             rnId.value = rnData.id; // Assuming rnData has an ID
-            // form.value.rn = rnData.rnNumber; // Don't set form.rn here, it's for the header
             carpetOrderDetailsId.value = rnData.imageCommand.id; // This seems incorrect, should be the detail ID
 
             // Push a new line to lines array with RN data
@@ -439,7 +433,13 @@
                     form.value.versement = parseFloat(quote.value.totalTaxIncluded) || '';
                     form.value.billed = parseFloat(quote.value.totalDiscountPercentage) || '';
                     form.value.amountTva = parseFloat(quote.value.tax) || '';
+                    if (route.query.quote_id) {
+                        await fetchRnList();
+                        const responseRn = await axiosInstance.get(`/api/carpetOrder/${route.query.quote_id}`); //carpet idcarpetOrderDetail[0].rnAttributions[0].carpet
+                        arrayRnDetaill.value = responseRn.data.carpetOrderDetail;
 
+                        carpetOrderDetailsId.value = responseRn.data.id || null; // Assuming this is the ID or value
+                    }
                     // Populate lines from quote details using the helper
                     if (quoteData.quoteDetails) {
                         lines.value = mapDetailsToLines(quoteData.quoteDetails, originalQuoteData?.reference);
@@ -519,7 +519,7 @@
                     if (invoiceData.customerInvoiceDetails.length) {
                         carpetOrderDetailsId.value = invoiceData.customerInvoiceDetails[0].carpetOrderDetail || null; // Assuming this is the ID or value
                     }
-                    lines.value = mapDetailsToLines(invoiceData.customerInvoiceDetails);
+
                     lines.value = mapDetailsToLines(invoiceData.customerInvoiceDetails);
                 }
             }
@@ -653,29 +653,29 @@
                 router.push({ name: 'client-invoice-list' });
             } else {
                 const resultat = await customerInvoiceService.create(payload); // test pour commande client (creation facture)
-                if (form.value.rn) {
-                    for (const line of lines.value) {
-                        const linePayload = {
-                            customerInvoiceId: parseInt(resultat.id), // Link to the new invoice
-                            // Use the carpetOrderDetailId stored on the line object (from RN data or quote mapping)
-                            carpetOrderDetailId: carpetOrderDetailsId.value || null,
-                            cleared: line.cleared || false,
-                            rn: line.rn,
-                            collectionId: line.collection,
-                            modelId: line.model,
-                            m2: String(line.priceM2) || null,
-                            sqft: String(line.priceSqft) || null,
-                            ht: String(line.priceHt) || null,
-                            ttc: String(line.priceTtc) || null,
-                            refCommand: line.refCommande,
-                            refQuote: line.refDevis,
-                            payment: line.versement || null,
-                            percent: line.percent || null,
-                        };
-                        const lineResult = await customerInvoiceDetailsService.create(linePayload);
-                        line.id = lineResult.id;
-                    }
+
+                for (const line of lines.value) {
+                    const linePayload = {
+                        customerInvoiceId: parseInt(resultat.id), // Link to the new invoice
+                        // Use the carpetOrderDetailId stored on the line object (from RN data or quote mapping)
+                        carpetOrderDetailId: carpetOrderDetailsId.value || null,
+                        cleared: line.cleared || false,
+                        rn: line.rn,
+                        collectionId: line.collection,
+                        modelId: line.model,
+                        m2: String(line.priceM2) || null,
+                        sqft: String(line.priceSqft) || null,
+                        ht: String(line.priceHt) || null,
+                        ttc: String(line.priceTtc) || null,
+                        refCommand: line.refCommande,
+                        refQuote: line.refDevis,
+                        payment: line.versement || null,
+                        percent: line.percent || null,
+                    };
+                    const lineResult = await customerInvoiceDetailsService.create(linePayload);
+                    line.id = lineResult.id;
                 }
+
                 window.showMessage('Ajout avec succés.');
                 router.push({ name: 'client-invoice-list' });
             }
@@ -691,8 +691,10 @@
 
         if (route.query.quote_id) {
             await getQuote(route.query.quote_id);
-            const responseRn = await axiosInstance.get(`/api/carpetOrder/${route.query.quote_id}`); //carpet idcarpetOrderDetail[0].rnAttributions[0].carpet
-            console.log('responseRn', responseRn);
+            // await fetchRnList();
+            // const responseRn = await axiosInstance.get(`/api/carpetOrder/${route.query.quote_id}`); //carpet idcarpetOrderDetail[0].rnAttributions[0].carpet
+            // arrayRnDetaill.value = responseRn.data.carpetOrderDetail;
+            // console.log('responseRn', arrayRnDetaill.value);
         } else if (route.params.id) {
             await fetchInvoiceById(route.params.id);
         }
@@ -747,6 +749,7 @@
     };
 
     const removeLine = async (index) => {
+        lines.value.splice(index, 1);
         const line = lines.value[index];
         if (line.id) {
             try {

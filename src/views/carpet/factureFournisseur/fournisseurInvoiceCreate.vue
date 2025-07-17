@@ -535,6 +535,7 @@
     };
 
     const removeLine = async (index) => {
+        lines.value.splice(index, 1);
         const line = lines.value[index];
         if (line.id) {
             try {
@@ -545,7 +546,6 @@
                 return;
             }
         }
-        lines.value.splice(index, 1);
     };
     const verif = () => {
         lines.value.forEach((l) => {
