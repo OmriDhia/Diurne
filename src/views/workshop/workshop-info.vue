@@ -45,7 +45,6 @@
                                 </button>
                                 <d-modal-bon-commande-atelier :workshopOrderId="workshopOrderId"></d-modal-bon-commande-atelier>
                             </div>
-                            <d-coherence-check v-if="workshopOrderId && imageCommandId" :workshopOrderId="workshopOrderId" :imageCommandId="imageCommandId" class="my-2" />
                         </div>
                     </div>
                 </div>
