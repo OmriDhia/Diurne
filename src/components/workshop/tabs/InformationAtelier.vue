@@ -442,7 +442,7 @@ watch(
                 </div>
 
 
-                <div class="row" v-if="props.workshopInfoId">
+                <div class="row">
                     <div class="col-6 ps-0">
                         <div class="price-row">
                             <d-input label="Prix d'achat tapis au m² " v-model="props.formData.prixAchatTapis.auM2"/>
@@ -462,27 +462,18 @@ watch(
                         </div>
                     </div>
                     <div class="col-6">
-
-
                         <div class="price-row">
                             <d-input label="Prix d'achat tapis Cmd" v-model="props.formData.prixAchatTapis.cmd"/>
                         </div>
-
-
                         <div class="price-row">
                             <d-input label="Prix d'achat tapis facture" v-model="props.formData.prixAchatTapis.facture"/>
                         </div>
-
-
                         <div class="price-row">
                             <d-input label="Transport" v-model="props.formData.others.transport"/>
                         </div>
-
-
                         <div class="price-row">
                             <d-input label="Marge brute" v-model="props.formData.others.margeBrute"/>
                         </div>
-
                         <div class="price-row">
                             <d-input label="Numéro du facture" v-model="props.formData.others.numeroDuFacture"/>
                         </div>
