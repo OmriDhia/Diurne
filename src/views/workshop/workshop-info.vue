@@ -105,52 +105,52 @@ const tabs = [
     {id: 'historique', label: 'Historique stockage RN'}
 ];
 const formData = ref({
-    disponibleVente: false,
-    envoye: false,
-    receptionParis: false,
-    tarifSpecial: false,
     infoCommande: {
-        dateCmdAtelier: '',
-        dateFinTheo: '',
-        dateFinAtelierPrev: '',
-        delaisProd: '',
-        pourcentCommande: '',
+        dateCmdAtelier: '', // visualisé
+        dateFinTheo: '', // visualisé
+        dateFinAtelierPrev: '', // visualisé
+        delaisProd: '', // visualisé
+        pourcentCommande: '', // visualisé
         deviseAchat: '',
-        largeurCmd: '',
-        largeurReelle: '',
-        longueurCmd: '',
-        longueurReelle: '',
-        srfCmd: '',
-        srfReelle: '',
-        anneeGrilleTarif: ''
+        largeurCmd: '', // visualisé
+        largeurReelle: '', // visualisé
+        longueurCmd: '', // visualisé
+        longueurReelle: '', // visualisé
+        srfCmd: '', // visualisé
+        srfReelle: '', // visualisé
+        anneeGrilleTarif: '' // visualisé
     },
-    currencyId: 1,
+    currencyId: 1, // visualisé
+    tarifSpecial: false, // visualisé
     prixAchat: [],
-    reductionTapis: '',
-    complexiteAtelier: false,
-    multiLevelAtelier: false,
-    formeSpeciale: false,
+    reductionTapis: '', // visualisé
+    complexiteAtelier: false, // visualisé
+    multiLevelAtelier: false, // visualisé
+    formeSpeciale: false, // visualisé
     tapisDuProjet: {
-        fabricant: '',
+        fabricant: '', // visualisé
         typeCommande: '',
-        rn: '',
-        exemplaire: ''
+        rn: '', // visualisé
+        exemplaire: '' // visualisé
     },
     prixAchatTapis: {
-        auM2: '',
-        cmd: '',
-        theorique: '',
-        facture: ''
+        auM2: '32', // non visualisé à la création
+        cmd: '2.88', // non visualisé à la création
+        theorique: '2.88', // non visualisé à la création
+        facture: '0' // non visualisé à la création
     },
     others: {
-        penalite: '',
-        transport: '',
-        taxe: '',
-        margeBrute: '',
-        referenceSurFacture: '',
-        numeroDuFacture: null
+        penalite: '0', // non visualisé à la création
+        transport: '0', // non visualisé à la création
+        taxe: '0', // non visualisé à la création
+        margeBrute: '0', // non visualisé à la création
+        referenceSurFacture: '0', // non visualisé à la création
+        numeroDuFacture: null // non visualisé à la création
     },
-    dateValidationClient: ''
+    dateValidationClient: '', // visualisé
+    disponibleVente: false, // visualisé
+    envoye: false, // visualisé
+    receptionParis: false // visualisé
 });
 const changeTab = (tabId) => {
     activeTab.value = tabId;
