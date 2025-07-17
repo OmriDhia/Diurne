@@ -173,6 +173,17 @@ const saveWorkshopInformation = async () => {
                     image_command_id: props.imageCommandId,
                     workshop_information_id: res?.response?.id
                 })
+                // Déclencher automatiquement le calcul des prix après la création
+                try {
+                    const calcRes = await workshopService.calculatePrices(res?.response?.id);
+                    const prices = calcRes.response.prices;
+                    props.formData.prixAchatTapis.auM2 =  `${Helper.FormatNumber(prices.carpet_purchase_price_per_m2)}`;
+                    props.formData.prixAchatTapis.cmd = `${Helper.FormatNumber(prices.carpet_purchase_price_cmd)}`;
+                    props.formData.prixAchatTapis.theorique = `${Helper.FormatNumber(prices.carpet_purchase_price_theoretical)}`;
+                    props.formData.prixAchatTapis.facture = `${Helper.FormatNumber(prices.carpet_purchase_price_invoice)}`;
+                } catch (e) {
+                    window.showMessage('Erreur au niveau du calcul automatique des prix','error');
+                }
                 router.push({name: "updateCarpetWorkshop",params:{workshopOrderId:resWorkshopOrder?.response?.id}})
             }
         }
@@ -442,7 +453,7 @@ watch(
                 </div>
 
 
-                <div class="row" v-if="props.workshopInfoId">
+                <div class="row calculte-price-custom" v-if="props.workshopInfoId">
                     <div class="col-6 ps-0">
                         <div class="price-row">
                             <d-input label="Prix d'achat tapis au m² " v-model="props.formData.prixAchatTapis.auM2"/>
@@ -462,27 +473,18 @@ watch(
                         </div>
                     </div>
                     <div class="col-6">
-
-
                         <div class="price-row">
                             <d-input label="Prix d'achat tapis Cmd" v-model="props.formData.prixAchatTapis.cmd"/>
                         </div>
-
-
                         <div class="price-row">
                             <d-input label="Prix d'achat tapis facture" v-model="props.formData.prixAchatTapis.facture"/>
                         </div>
-
-
                         <div class="price-row">
                             <d-input label="Transport" v-model="props.formData.others.transport"/>
                         </div>
-
-
                         <div class="price-row">
                             <d-input label="Marge brute" v-model="props.formData.others.margeBrute"/>
                         </div>
-
                         <div class="price-row">
                             <d-input label="Numéro du facture" v-model="props.formData.others.numeroDuFacture"/>
                         </div>
