@@ -400,9 +400,9 @@ watch(
                             </div>
 
                             <div class="form-row py-2">
-                                <button class="btn btn-custom  text-uppercase w-100">
+                                <router-link :to="{ name: 'tarification-taxes' }" class="btn btn-custom text-uppercase w-100">
                                     GESTION GRILLE TARIFAIRE
-                                </button>
+                                </router-link>
                             </div>
 
                             <div class="form-row">
