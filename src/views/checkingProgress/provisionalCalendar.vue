@@ -55,6 +55,11 @@
                                     {{ route.params.id ? 'Update' : 'Enregistrer' }}
                                 </button>
                             </div>
+                            <div class="col-auto">
+                                <button class="btn btn-outline-secondary" @click="goToWorkshop">
+                                    Retour à la workshop
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </template>
@@ -167,6 +172,12 @@
             window.showMessage(e.message, 'error');
         } finally {
             loading.value = false;
+        }
+    };
+
+    const goToWorkshop = () => {
+        if (workshopOrderId) {
+            router.push({ name: 'showCarpetWorkshop', params: { workshopOrderId } });
         }
     };
 
