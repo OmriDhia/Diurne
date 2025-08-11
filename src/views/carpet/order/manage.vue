@@ -62,7 +62,12 @@
                         <div class="col-md-4 col-sm-12 pe-sm-3">
                             <d-panel-title title="Autres informations" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0">
-                                <d-transport-condition :required="true" v-model="data.transportConditionId" :error="error.transportConditionId"></d-transport-condition>
+                                <d-transport-condition
+                                    :required="true"
+                                    v-model="data.transportConditionId"
+                                    :error="error.transportConditionId"
+                                    :language-id="data.languageId"
+                                ></d-transport-condition>
                                 <div class="col-12 pt-2 pe-sm-0">
                                     <d-contremarque-dropdown v-model="contremarqueId" customer-id=""></d-contremarque-dropdown>
                                 </div>

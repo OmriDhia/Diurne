@@ -91,7 +91,12 @@
                         <div class="col-md-6 col-sm-12 pe-sm-0">
                             <d-panel-title title="Autres informations" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-0">
-                                <d-transport-condition :required="true" v-model="data.transportConditionId" :error="error.transportConditionId"></d-transport-condition>
+                                <d-transport-condition
+                                    :required="true"
+                                    v-model="data.transportConditionId"
+                                    :error="error.transportConditionId"
+                                    :language-id="data.languageId"
+                                ></d-transport-condition>
                             </div>
                         </div>
                         <div class="col-md-6 col-sm-12 pe-sm-0">
