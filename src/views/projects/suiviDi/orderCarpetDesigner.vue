@@ -8,13 +8,15 @@
                         <div class="col-auto pe-1 ps-2 text-black">Format:</div>
                         <div class="col-auto pe-1 ps-2">
                             <div class="custom-control custom-radio">
-                                <input type="radio" class="custom-control-input" id="formatA3" v-model="format" name="format" value="A3" disabled />
+                                <input type="radio" class="custom-control-input" id="formatA3" v-model="format"
+                                       name="format" value="A3" disabled />
                                 <label class="custom-control-label text-black" for="formatA3"> {{ $t('A3') }} </label>
                             </div>
                         </div>
                         <div class="col-auto pe-1 ps-1">
                             <div class="radio-success custom-control custom-radio">
-                                <input type="radio" class="custom-control-input" id="formatA4" v-model="format" name="warningAdd" value="A4" disabled />
+                                <input type="radio" class="custom-control-input" id="formatA4" v-model="format"
+                                       name="warningAdd" value="A4" disabled />
                                 <label class="custom-control-label text-black" for="formatA4"> {{ $t('A4') }} </label>
                             </div>
                         </div>
@@ -36,46 +38,63 @@
                                     <div class="col-md-12 col-xl-9 pe-4">
                                         <div class="row">
                                             <div class="col-xl-4 col-md-12">
-                                                <d-input :disabled="true" v-model="customer.customerName" label="Client"></d-input>
-                                                <d-input :disabled="true" v-model="contremarque.designation" label="Contremarque"></d-input>
+                                                <d-input :disabled="true" v-model="customer.customerName"
+                                                         label="Client"></d-input>
+                                                <d-input :disabled="true" v-model="contremarque.designation"
+                                                         label="Contremarque"></d-input>
                                                 <d-location-dropdown
                                                     :disabled="store.getters.isFinStatus"
                                                     :contremarqueId="projectDi.contremarque"
                                                     v-model="dataCarpetOrder.location_id"
                                                     :error="errorCarpetOrder.location_id"
                                                 ></d-location-dropdown>
-                                                <d-input :disabled="true" v-model="transDate" label="Date trasmission"></d-input>
-                                                <label class="form-label" style="font-weight: 500;">N° de la demande:</label>
+                                                <d-input :disabled="true" v-model="transDate"
+                                                         label="Date trasmission"></d-input>
+                                                <label class="form-label" style="font-weight: 500;">N° de la
+                                                    demande:</label>
                                                 <div class="d-flex align-items-center mb-2">
-                                                    <input type="text" class="form-control me-2" :value="projectDi.demande_number" readonly style="max-width: 220px;" />
-                                                    <button class="btn btn-custom btn-custom-copy" type="button" @click="copyDemandeNumber" title="Copier">
+                                                    <input type="text" class="form-control me-2"
+                                                           :value="projectDi.demande_number" readonly
+                                                           style="max-width: 220px;" />
+                                                    <button class="btn btn-custom btn-custom-copy" type="button"
+                                                            @click="copyDemandeNumber" title="Copier">
                                                         <vue-feather type="clipboard" size="16"></vue-feather>
                                                     </button>
                                                 </div>
                                                 <d-input :disabled="true" v-model="deadline" label="Deadline"></d-input>
-                                                <d-input :disabled="true" v-model="commercial" label="Commercial"></d-input>
+                                                <d-input :disabled="true" v-model="commercial"
+                                                         label="Commercial"></d-input>
                                             </div>
                                             <div class="col-xl-8 col-md-12 pe-2">
-                                                <d-attachments :disable="disableDocuments" :carpetDesignOrderId="carpetDesignOrderId"></d-attachments>
+                                                <d-attachments :disable="disableDocuments"
+                                                               :carpetDesignOrderId="carpetDesignOrderId"></d-attachments>
                                             </div>
                                         </div>
-                                        <div class="row align-items-center justify-content-between mt-5" v-if="carpetDesignOrderId">
+                                        <div class="row align-items-center justify-content-between mt-5"
+                                             v-if="carpetDesignOrderId">
                                             <div class="col-md-auto col-sm-6">
-                                                <d-carpet-status-dropdown :disabled="true" v-model="dataCarpetOrder.status_id"></d-carpet-status-dropdown>
+                                                <d-carpet-status-dropdown :disabled="true"
+                                                                          v-model="dataCarpetOrder.status_id"></d-carpet-status-dropdown>
                                             </div>
                                             <div class="col-md-auto col-sm-6" v-if="!disableForDesigner">
-                                                <button class="btn btn-custom mb-2 text-uppercase" @click="applyDefaultMaterials">Générer matière par defaut</button>
+                                                <button class="btn btn-custom mb-2 text-uppercase"
+                                                        @click="applyDefaultMaterials">Générer matière par defaut
+                                                </button>
                                             </div>
                                         </div>
                                         <div class="row ps-2 mt-4 mb-2" v-if="carpetDesignOrderId && firstLoad">
-                                            <div class="alert alert-light-primary alert-dismissible border-0 mb-4" role="alert">
-                                                <strong>Pour des raisons de performance, la sauvegarde automatique sera bloquée pendant 5 secondes.</strong>
+                                            <div class="alert alert-light-primary alert-dismissible border-0 mb-4"
+                                                 role="alert">
+                                                <strong>Pour des raisons de performance, la sauvegarde automatique sera
+                                                    bloquée pendant 5 secondes.</strong>
                                             </div>
                                         </div>
                                         <div class="panel-body border-tab tabs">
                                             <ul class="nav nav-tabs mt-3" id="border-tabs" role="tablist">
                                                 <li class="nav-item">
-                                                    <a class="nav-link active" id="project-tab-tab" data-bs-toggle="tab" href="#project-tab" role="tab" aria-controls="border-home" aria-selected="true"
+                                                    <a class="nav-link active" id="project-tab-tab" data-bs-toggle="tab"
+                                                       href="#project-tab" role="tab" aria-controls="border-home"
+                                                       aria-selected="true"
                                                     >
                                                         Projet
                                                     </a>
@@ -88,7 +107,8 @@
                                                 </li-->
                                             </ul>
                                             <div class="tab-content mb-4" id="border-tabsContent">
-                                                <div class="tab-pane fade show active" id="project-tab" role="tabpanel" aria-labelledby="project-tab-tab">
+                                                <div class="tab-pane fade show active" id="project-tab" role="tabpanel"
+                                                     aria-labelledby="project-tab-tab">
                                                     <div class="row ps-2 mt-4 mb-2" v-if="carpetDesignOrderId">
                                                         <div class="col-xl-4 col-md-12">
                                                             <d-materials-list
@@ -132,7 +152,8 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId">
+                                                    <div class="row ps-2 mt-4 mb-2 justify-content-between"
+                                                         v-if="carpetDesignOrderId">
                                                         <d-measurements-di
                                                             :disabled="disableForDesigner"
                                                             :firstLoad="firstLoad"
@@ -140,9 +161,11 @@
                                                             :error="errorCarpetDesignOrder.measurments"
                                                         ></d-measurements-di>
                                                     </div>
-                                                    <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId">
+                                                    <div class="row ps-2 mt-4 mb-2 justify-content-between"
+                                                         v-if="carpetDesignOrderId">
                                                         <div class="col-12">
-                                                            <div class="text-black p-0 pb-2">Description de l'image <span class="required">*</span></div>
+                                                            <div class="text-black p-0 pb-2">Description de l'image
+                                                                <span class="required">*</span></div>
                                                         </div>
                                                         <div class="col-12">
                                                 <textarea
@@ -151,13 +174,59 @@
                                                     :class="{ 'is-invalid': error?.description || errorCarpetDesignOrder.description }"
                                                     class="w-100 h-130-forced block-custom-border"
                                                 ></textarea>
-                                                            <div v-if="error?.description || errorCarpetDesignOrder.description" class="invalid-feedback">La description est obligatoire.</div>
+                                                            <div
+                                                                v-if="error?.description || errorCarpetDesignOrder.description"
+                                                                class="invalid-feedback">La description est obligatoire.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row ps-2 mt-4 mb-2 justify-content-between"
+                                                         v-if="carpetDesignOrderId">
+                                                        <div class="col-xl-6 col-md-12 mb-2">
+                                                            <label class="form-label text-black">Nom du modèle</label>
+                                                            <input type="text" class="form-control"
+                                                                   :disabled="disableForDesigner"
+                                                                   v-model="dataCarpetOrder.modelName" />
+                                                        </div>
+                                                        <div class="col-xl-6 col-md-12 mb-2">
+                                                            <label class="form-label text-black">Variation</label>
+                                                            <input type="text" class="form-control"
+                                                                   :disabled="disableForDesigner"
+                                                                   v-model="dataCarpetOrder.variation" />
+                                                        </div>
+                                                        <div class="col-12 d-flex flex-wrap">
+                                                            <div class="form-check me-3">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                       id="jpeg" :disabled="disableForDesigner"
+                                                                       v-model="dataCarpetOrder.jpeg" />
+                                                                <label class="form-check-label text-black" for="jpeg">JPEG</label>
+                                                            </div>
+                                                            <div class="form-check me-3">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                       id="impression" :disabled="disableForDesigner"
+                                                                       v-model="dataCarpetOrder.impression" />
+                                                                <label class="form-check-label text-black"
+                                                                       for="impression">Impression</label>
+                                                            </div>
+                                                            <div class="form-check me-3">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                       id="impressionBarreDeLaine"
+                                                                       :disabled="disableForDesigner"
+                                                                       v-model="dataCarpetOrder.impressionBarreDeLaine" />
+                                                                <label class="form-check-label text-black"
+                                                                       for="impressionBarreDeLaine">Impression Barre De
+                                                                    Laine</label>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="row ps-2 mt-4 mb-2 justify-content-between">
-                                                        <d-transmis-studio @saveCarpetOrderSpecifications="saveCarpetOrderSpecifications()" @transmisStudio="updateCarpetDesignStatus($event)" :can-show="carpetDesignOrderId && !hideForTrans"></d-transmis-studio>
+                                                        <d-transmis-studio
+                                                            @saveCarpetOrderSpecifications="saveCarpetOrderSpecifications()"
+                                                            @transmisStudio="updateCarpetDesignStatus($event)"
+                                                            :can-show="carpetDesignOrderId && !hideForTrans"></d-transmis-studio>
                                                     </div>
-                                                    <div class="row ps-2 mt-4 mb-2 justify-content-between"  v-if="!hideForTrans">
+                                                    <div class="row ps-2 mt-4 mb-2 justify-content-between"
+                                                         v-if="!hideForTrans">
                                                         <div class="col-12" v-if="carpetSpecificationId">
                                                             <d-compositions
                                                                 :disabled="CommercialAccess"
@@ -166,7 +235,8 @@
                                                                 v-if="carpetDesignOrderId"
                                                             ></d-compositions>
                                                         </div>
-                                                        <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId && !hideForAttributePause">
+                                                        <div class="row ps-2 mt-4 mb-2 justify-content-between"
+                                                             v-if="carpetDesignOrderId && !hideForAttributePause">
                                                             <d-transmis-adv
                                                                 :customerInstruction="currentCarpetObject?.customerInstruction"
                                                                 :id_di="id_di"
@@ -177,8 +247,10 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="tab-pane fade" id="samples-tab" role="tabpanel" aria-labelledby="samples-tab-tab">
-                                                    <d-samples :carpetDesignOrderId="carpetDesignOrderId" :contremarqueId="projectDi.contremarque"></d-samples>
+                                                <div class="tab-pane fade" id="samples-tab" role="tabpanel"
+                                                     aria-labelledby="samples-tab-tab">
+                                                    <d-samples :carpetDesignOrderId="carpetDesignOrderId"
+                                                               :contremarqueId="projectDi.contremarque"></d-samples>
                                                 </div>
                                             </div>
                                         </div>
@@ -209,10 +281,14 @@
                                         ></d-designer-composition-list>
                                         <div class="row align-items-end mt-auto" v-if="displayFin  && !hideForTrans">
                                             <div class="col-md-12">
-                                                <button class="disbaled btn btn-custom text-center w-100 mb-3" @click="FinDIStatus(6)">FIN</button>
+                                                <button class="disbaled btn btn-custom text-center w-100 mb-3"
+                                                        @click="FinDIStatus(6)">FIN
+                                                </button>
                                             </div>
                                             <div class="col-md-12" v-if="DesignerAccess">
-                                                <button class="disbaled btn btn-custom text-center w-100" @click="CreateVariation()">Créer Variation</button>
+                                                <button class="disbaled btn btn-custom text-center w-100"
+                                                        @click="CreateVariation()">Créer Variation
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -263,7 +339,7 @@
     import dTransmisStudio from '../../../components/projet/contremarques/d-transmis-studio.vue';
     import dTransmisAdv from '../../../components/projet/contremarques/d-transmis-adv.vue';
     import moment from 'moment';
-    import DSamples from "../../../components/projet/contremarques/samples/d-samples.vue";
+    import DSamples from '../../../components/projet/contremarques/samples/d-samples.vue';
     // src/views/projects/suiviDi/orderImageDesigner.vue
     // src/composables/global-methods.js
     const selectedImageTypes = ref([]);
@@ -329,6 +405,11 @@
     const dataCarpetOrder = ref({
         location_id: 0,
         status_id: carpetStatus.nonTransmisId,
+        modelName: '',
+        variation: '',
+        jpeg: false,
+        impression: false,
+        impressionBarreDeLaine: false
     });
     const handleDesignerAdded = (status) => {
         // You can perform other actions here, like updating the list of designers, etc.
@@ -348,7 +429,7 @@
         isOversized: false,
         specialShapeId: 0,
         dimensions: {},
-        materials: [],
+        materials: []
     });
     const projectDi = ref({});
     const compositionData = ref({});
@@ -359,7 +440,7 @@
     const setHideForTrans = () => {
         hideForTrans.value = (dataCarpetOrder.value.status_id === carpetStatus.transmisId || dataCarpetOrder.value.status_id === carpetStatus.nonTransmisId);
         hideForTransStudio.value = (dataCarpetOrder.value.status_id === carpetStatus.transmisId);
-        hideForAttributePause.value = (dataCarpetOrder.value.status_id === carpetStatus.attribuId || dataCarpetOrder.value.status_id === carpetStatus.enPauseId || dataCarpetOrder.value.status_id === carpetStatus.enCoursId)
+        hideForAttributePause.value = (dataCarpetOrder.value.status_id === carpetStatus.attribuId || dataCarpetOrder.value.status_id === carpetStatus.enPauseId || dataCarpetOrder.value.status_id === carpetStatus.enCoursId);
     };
     // const disableForCommercial = computed(() => {
     //     return ((store.getters.isCommertial || store.getters.isCommercialManager) && !store.getters.isNonTrasmisStatus) || store.getters.isFinStatus;
@@ -419,6 +500,11 @@
                 currentCarpetObject.value = res.data.response;
                 dataCarpetOrder.value.location_id = currentCarpetObject.value.location && currentCarpetObject.value.location.location_id ? currentCarpetObject.value.location.location_id : 0;
                 dataCarpetOrder.value.status_id = currentCarpetObject.value.status && currentCarpetObject.value.status.id ? currentCarpetObject.value.status.id : 1;
+                dataCarpetOrder.value.modelName = currentCarpetObject.value.modelName ?? currentCarpetObject.value.modelName ?? '';
+                dataCarpetOrder.value.variation = currentCarpetObject.value.variation ?? '';
+                dataCarpetOrder.value.jpeg = currentCarpetObject.value.jpeg ?? false;
+                dataCarpetOrder.value.impression = currentCarpetObject.value.impression ?? false;
+                dataCarpetOrder.value.impressionBarreDeLaine = currentCarpetObject.value.impressionBarreDeLaine ?? currentCarpetObject.value.impressionBarreDeLaine ?? false;
                 setHideForTrans();
                 transDate.value = currentCarpetObject.value.transmition_date ? Helper.FormatDate(currentCarpetObject.value.transmition_date.date) : '';
                 applyCarpetStatus(dataCarpetOrder.value.status_id);
@@ -438,7 +524,7 @@
                         qualityId: dSP.quality ? dSP.quality.id : 0,
                         hasSpecialShape: dSP.has_special_shape,
                         isOversized: dSP.is_oversized,
-                        specialShapeId: dSP.specialShape ? dSP.specialShape.id : 0,
+                        specialShapeId: dSP.specialShape ? dSP.specialShape.id : 0
                     };
                 }
             }
@@ -464,44 +550,47 @@
         try {
             const response = await axiosInstance.post('/api/createCarpetDesignOrderVariation', {
                 orderId: parseInt(carpetDesignOrderId),
-                variation: '',
+                variation: ''
             });
 
             console.log('Variation created:', response.data);
             // Handle success response, maybe show a notification or update the UI
-            router.push({ name: 'di_orderDesigner_update', params: { id_di: id_di, carpetDesignOrderId: response.data.response.id } });
+            router.push({
+                name: 'di_orderDesigner_update',
+                params: { id_di: id_di, carpetDesignOrderId: response.data.response.id }
+            });
         } catch (error) {
             console.error('Error creating variation:', error);
             // Handle error, show an error message to the user
         }
     };
-    const transmisAdv = async (data)=> {
+    const transmisAdv = async (data) => {
         try {
             const d = {
-                commandNumber: "",
-                commercialComment: "",
-                advComment: "",
-                rn: "",
-                studioComment: "",
+                commandNumber: '',
+                commercialComment: '',
+                advComment: '',
+                rn: '',
+                studioComment: '',
                 orderNumber: data.orderNumber,
                 transmi_adv: data.transmi_adv,
                 customerComment: data.customerComment,
                 objectId: parseInt(carpetDesignOrderId),
-                objectType: "CarpetDesignOrder",
-                customerValidationDate:  moment().format('YYYY-MM-DD HH:mm:ss'),
+                objectType: 'CarpetDesignOrder',
+                customerValidationDate: moment().format('YYYY-MM-DD HH:mm:ss'),
                 status_id: carpetStatus.finiId
-            }
+            };
             const res = await axiosInstance.post(`/api/transmettre-object/to-adv`, d);
-            await saveCarpetOrder(carpetStatus.transmisAdvId)
-            window.showMessage("Project di transmis a l'adv avec succées.");
+            await saveCarpetOrder(carpetStatus.transmisAdvId);
+            window.showMessage('Project di transmis a l\'adv avec succées.');
         } catch (e) {
             console.log(e);
         }
-    }
+    };
     const saveCarpetOrder = async (statusId) => {
         try {
             if (carpetDesignOrderId) {
-                if(statusId){
+                if (statusId) {
                     dataCarpetOrder.value.status_id = statusId;
                 }
                 const res = await axiosInstance.put(`/api/carpet-design-order/${carpetDesignOrderId}`, dataCarpetOrder.value);
@@ -512,7 +601,10 @@
                 const res = await axiosInstance.post(`/api/projectDi/${id_di}/carpet-design-order`, dataCarpetOrder.value);
                 window.showMessage('Ajout avec succées.');
                 setTimeout(() => {
-                    router.push({ name: 'di_orderDesigner_update', params: { id_di: id_di, carpetDesignOrderId: res.data.response.id } });
+                    router.push({
+                        name: 'di_orderDesigner_update',
+                        params: { id_di: id_di, carpetDesignOrderId: res.data.response.id }
+                    });
                 }, 2000);
             }
         } catch (e) {
@@ -530,7 +622,7 @@
         collectionID: false, // New error field for collection ID
         qualityID: false, // New error field for quality ID
         ModelID: false, // New error field for model ID
-        measurments: false, // New error field for measurements
+        measurments: false // New error field for measurements
     });
 
     const errorTransmis = ref(false);
@@ -624,29 +716,30 @@
         }
     };
 
-    const updateCarpetDesignStatus = async (statusId,forced = false) => {
+    const updateCarpetDesignStatus = async (statusId, forced = false) => {
         ValidateBeforeTransmission();
-        if (!errorTransmis.value || forced ) {
+        if (!errorTransmis.value || forced) {
             await saveCarpetOrder(statusId);
         }
     };
     //dataCarpetOrder.location_id
     watch(
         () => dataCarpetOrder.value.location_id,
-        async (newID) => {
-            if (!firstLoad.value) {
+        async (newID, oldID) => {
+            if (!firstLoad.value && newID !== oldID) {
                 await saveCarpetOrder();
             }
-        },
-        { deep: true }
+        }
     );
     watch(
-        () => dataCarpetOrder.value.status_id, 
-        (newID) => {
-            console.log('newID', newID);
-            setHideForTrans();
-        },
-        { deep: true }
+        () => dataCarpetOrder.value.status_id,
+
+        (newID, oldID) => {
+            if (newID !== oldID) {
+                console.log('newID', newID);
+                setHideForTrans();
+            }
+        }
     );
     watch(
         () => CommercialAccessADV.value,
@@ -659,7 +752,7 @@
         store.commit('setIsFinStatus', statusId === carpetStatus.finiId);
         // console.log('applyCarpetStatus : ', statusId,carpetStatus.nonTransmisId);
         store.commit('setIsNonTrasmisStatus', statusId === carpetStatus.nonTransmisId);
-        if (statusId === 0){
+        if (statusId === 0) {
             store.commit('setIsNonTrasmisStatus', true);
         }
     };
@@ -672,7 +765,7 @@
                 acc[dimension.id] = dimension.unit.map((u) => {
                     return {
                         dimension_id: u.id,
-                        value: u.value ? parseFloat(u.value) : 0,
+                        value: u.value ? parseFloat(u.value) : 0
                     };
                 });
                 return acc;
@@ -680,13 +773,24 @@
 
             dataRequest.materials = store.getters.materials;
             ValidateBeforeTransmission();
-            if (carpetSpecificationId.value && !errorTransmis.value) {
-                const res = await axiosInstance.put(`/api/carpetDesignOrder/${carpetDesignOrderId}/updateCarpetSpecification/${carpetSpecificationId.value}`, dataRequest);
-                window.showMessage('Mise a jour avec succées.');
-            } else if (!errorTransmis.value) {
-                const res = await axiosInstance.post(`/api/carpetDesignOrder/${carpetDesignOrderId}/createCarpetSpecification`, dataRequest);
-                window.showMessage('Ajout avec succées.');
-                carpetSpecificationId.value = res.data.response.id;
+            if (!errorTransmis.value) {
+                if (carpetSpecificationId.value) {
+                    await axiosInstance.put(
+                        `/api/carpetDesignOrder/${carpetDesignOrderId}/updateCarpetSpecification/${carpetSpecificationId.value}`,
+                        dataRequest
+                    );
+                    window.showMessage('Mise a jour avec succées.');
+                } else {
+                    const res = await axiosInstance.post(
+                        `/api/carpetDesignOrder/${carpetDesignOrderId}/createCarpetSpecification`,
+                        dataRequest
+                    );
+                    window.showMessage('Ajout avec succées.');
+                    carpetSpecificationId.value = res.data.response.id;
+                }
+
+                // Save carpet order fields (e.g., model name, variation, etc.)
+                await saveCarpetOrder();
             }
         } catch (e) {
             if (e.response.data && e.response.data.violations) {
@@ -704,7 +808,7 @@
             currentMaterials.value = materials.map((m) => {
                 return {
                     material_id: m.materialId,
-                    rate: parseFloat(m.percentage),
+                    rate: parseFloat(m.percentage)
                 };
             });
             window.showMessage('Les matières par défaut sont bien appliquées.');
@@ -722,11 +826,11 @@
         },
         { deep: true }
     );*/
-    
-    const goToDis = ()=>{
-        router.push({ name: 'di_list'});
-    }
-    
+
+    const goToDis = () => {
+        router.push({ name: 'di_list' });
+    };
+
     const copyDemandeNumber = () => {
         if (projectDi.value.demande_number) {
             navigator.clipboard.writeText(projectDi.value.demande_number);
@@ -740,6 +844,7 @@
         border: 1px solid red !important;
         /* background-color: #ffe6e6 !important; */
     }
+
     .invalid-feedback {
         color: red;
         font-size: 12px;
@@ -754,7 +859,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50%!important;
+        border-radius: 50% !important;
         background-color: #4260EB !important;
         border-color: #4260EB !important;
         box-shadow: none !important;

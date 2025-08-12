@@ -19,7 +19,7 @@
                 deselect-label=""
                 @select="handleChange"
             ></multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le sujet évènement est abligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t('Le sujet évènement est abligatoire.') }}</div>
         </div>
     </div>
 </template>
@@ -28,7 +28,7 @@
     import axiosInstance from '../../config/http';
     import Multiselect from 'vue-multiselect';
     import 'vue-multiselect/dist/vue-multiselect.css';
-    import store from "../../store/index";
+    import store from '../../store/index';
 
     export default {
         components: {
@@ -50,7 +50,7 @@
         },
         data() {
             return {
-                nomenclature: null,  // To bind to the dropdown
+                nomenclature: null  // To bind to the dropdown
             };
         },
         computed: {
@@ -67,7 +67,7 @@
             handleChange(value) {
                 if (value) {
                     this.$emit('update:modelValue', parseInt(value.nomenclature_id));
-                    this.$emit('changeNomenclature', value)
+                    this.$emit('changeNomenclature', value);
                 } else {
                     this.$emit('update:modelValue', null);  // Reset if no selection
                 }
@@ -76,7 +76,9 @@
                 if (this.nomenclatures.length === 0) {
                     try {
                         const res = await axiosInstance.get('/api/nomenclatures');
-                        this.nomenclatures = res.data.response.nomenclatures;
+                        // Keep only non-automatic ones
+                        const filtered = res.data.response.nomenclatures.filter(n => !n.is_automatic);
+                        this.nomenclatures = filtered;
                         this.affectModalValue();
                     } catch (error) {
                         console.error('Failed to fetch nomenclatures:', error);

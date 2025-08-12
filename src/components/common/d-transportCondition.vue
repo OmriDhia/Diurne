@@ -2,8 +2,13 @@
     <div class="row align-items-center">
         <div class="col-4"><label for="droit" class="form-label">Conditions de transports<span class="required" v-if="required">*</span>:</label></div>
         <div class="col-8">
-            <select id="droit" :class="{ 'is-invalid': error, 'form-select': true }" :value="discount" @input="handleChange($event.target.value)">
-                <option v-for="(prof, key) in discounts" :key="key" :value="prof.id">{{ prof.name }}</option>
+            <select
+                id="droit"
+                :class="{ 'is-invalid': error, 'form-select': true }"
+                :value="discount"
+                @input="handleChange($event.target.value)"
+            >
+                <option v-for="(prof, key) in filteredDiscounts" :key="key" :value="prof.id">{{ prof.name }}</option>
             </select>
             <div v-if="error" class="invalid-feedback">{{ $t('Conditions de transports est abligatoire.') }}</div>
         </div>
@@ -27,6 +32,10 @@
                 type: Boolean,
                 default: false
             },
+            languageId: {
+                type: [Number, null],
+                required: true
+            }
         },
         data() {
             return {
@@ -34,10 +43,24 @@
                 discounts: []
             };
         },
+        computed: {
+            filteredDiscounts() {
+                if (!this.languageId) {
+                    return [];
+                }
+                return this.discounts
+                    .filter(tc => tc.languages && tc.languages.some(l => l.lang_id === this.languageId))
+                    .map(tc => {
+                        const lang = tc.languages.find(l => l.lang_id === this.languageId);
+                        return { id: tc.id, name: lang ? lang.label : tc.name };
+                    });
+            }
+        },
         methods: {
             handleChange(newValue) {
-                this.discount = parseInt(newValue);
-                this.$emit('update:modelValue', parseInt(newValue));
+                const value = newValue ? parseInt(newValue) : null;
+                this.discount = value;
+                this.$emit('update:modelValue', value);
             },
             async getDiscounts() {
                 try {
@@ -53,7 +76,13 @@
         },
         watch: {
             modelValue(newValue) {
-                this.discount = parseInt(newValue);
+                this.discount = newValue ? parseInt(newValue) : null;
+            },
+            languageId() {
+                if (!this.filteredDiscounts.find(tc => tc.id === this.discount)) {
+                    this.discount = null;
+                    this.$emit('update:modelValue', null);
+                }
             }
         }
     };

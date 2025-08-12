@@ -15,10 +15,10 @@
                             <d-customer-dropdown v-model="filter.customer"></d-customer-dropdown>
                         </div>
                         <div class="row">
-                            <d-input label="Contremarque" v-model="filter.contremarque" ></d-input>
+                            <d-input label="Contremarque" v-model="filter.contremarque"></d-input>
                         </div>
                         <div class="row">
-                            <d-input label="N° de DI" v-model="filter.diNumber" ></d-input>
+                            <d-input label="N° de DI" v-model="filter.diNumber"></d-input>
                         </div>
                         <div class="row">
                             <d-carpet-status-dropdown v-model="filter.carpetStatus"></d-carpet-status-dropdown>
@@ -28,7 +28,8 @@
                         <div class="row mt-2">
                             <div class="col-auto" v-if="filterActive">
                                 <button class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">
-                                    Reset filtre </button>
+                                    Reset filtre
+                                </button>
                             </div>
                             <div class="col-auto me-2">
                                 <button class="btn btn-custom pe-3 ps-3" @click.prevent="doSearch">Recherche</button>
@@ -43,14 +44,18 @@
                         <div class="row mb-4 relative align-items-center justify-content-between">
                             <div class="col-auto">
                                 <div class="btn-group custom-dropdown me-2 btn-group-lg">
-                                    <button class="btn btn-outline-custom p-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button class="btn btn-outline-custom p-2 dropdown-toggle" type="button"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Cacher / Montrer Colonnes
                                     </button>
                                     <ul class="dropdown-menu p-2">
                                         <li v-for="col in cols" :key="col.field">
                                             <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" :checked="!col.hide" :id="col.field" @change="col.hide = !$event.target.checked" :name="col.field"/>
-                                                <label class="custom-control-label text-black" :for="col.field"> {{ col.title }} </label>
+                                                <input type="checkbox" class="custom-control-input" :checked="!col.hide"
+                                                       :id="col.field" @change="col.hide = !$event.target.checked"
+                                                       :name="col.field" />
+                                                <label class="custom-control-label text-black" :for="col.field">
+                                                    {{ col.title }} </label>
                                             </div>
                                         </li>
                                     </ul>
@@ -58,24 +63,26 @@
                             </div>
                             <d-btn-fullscreen></d-btn-fullscreen>
                         </div>
-                        <vue3-datatable :rows="rows" :columns="cols" :loading="loading" :isServerMode="true" :sortColumn="params.orderBy" :sortDirection="params.orderWay"
+                        <vue3-datatable :rows="rows" :columns="cols" :loading="loading" :isServerMode="true"
+                                        :sortColumn="params.orderBy" :sortDirection="params.orderWay"
                                         :totalRows="total_rows" :page="params.current_page" :pageSize="params.pagesize"
                                         :pageSizeOptions="[10, 25, 50, 75, 100]" noDataContent="Aucun contact trouvé."
                                         paginationInfo="Affichage de {0} à {1} sur {2} entrées" :sortable="true"
                                         @change="changeServer" class="advanced-table text-nowrap">
                             <template #image="data">
                                 <div class="d-flex justify-content-center">
-                                    <img :src="$Helper.getImagePathNew(data.value.image_path, data.value.image_name)" alt="Carpet Image" class="img-thumbnail" style="width: 80px; height: auto;">
+                                    <img :src="$Helper.getImagePathNew(data.value.image_path, data.value.model_name)"
+                                         alt="Carpet Image" class="img-thumbnail" style="width: 80px; height: auto;">
                                 </div>
                             </template>
-                            <template #image_name="data">
+                            <template #model_name="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong class="text-truncate" :title="data.value.image_name">
-                                        {{ truncateText(data.value.image_name, 14) }}
+                                    <strong class="text-truncate" :title="data.value.model_name">
+                                        {{ truncateText(data.value.model_name, 14) }}
                                     </strong>
                                     <div>
-                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer" 
-                                            @click="goTodetails(data.value.di_id, data.value.order_design_id)">
+                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"
+                                                     @click="goTodetails(data.value.di_id, data.value.order_design_id)">
                                         </vue-feather>
                                     </div>
                                 </div>
@@ -83,45 +90,53 @@
 
                             <template #diNumber="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.diNumber}}</strong>
+                                    <strong>{{ data.value.diNumber }}</strong>
                                     <div>
-                                        <vue-feather type="search"  stroke-width="1" class="cursor-pointer" @click="goToContreMarqueDetails(data.value.contremarque_id)"></vue-feather>
+                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"
+                                                     @click="goToContreMarqueDetails(data.value.contremarque_id)"></vue-feather>
                                     </div>
                                 </div>
                             </template>
                             <template #diDate="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ $Helper.FormatDate(data.value.diDate,"DD/MM/YYYY")}}
+                                    {{ $Helper.FormatDate(data.value.diDate, 'DD/MM/YYYY') }}
                                 </div>
                             </template>
                             <template #lastAssignmentDate="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ $Helper.FormatDate(data.value.lastAssignmentDate,"DD/MM/YYYY")}}
+                                    {{ $Helper.FormatDate(data.value.lastAssignmentDate, 'DD/MM/YYYY') }}
                                 </div>
                             </template>
                             <template #deadline="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ $Helper.FormatDate(data.value.deadline,"DD/MM/YYYY")}}
+                                    {{ $Helper.FormatDate(data.value.deadline, 'DD/MM/YYYY') }}
                                 </div>
                             </template>
                             <template #wrong_image="data">
                                 <div class="d-flex justify-content-between">
-                                    <div title="test" class="t-dot" :class="data.value.wrong_image === 0 ? 'bg-warning' :'bg-success'"></div>
+                                    <div title="test" class="t-dot"
+                                         :class="data.value.wrong_image === 0 ? 'bg-warning' :'bg-success'"></div>
                                 </div>
                             </template>
                             <template #customer="data">
                                 <div class="d-flex align-items-center">
                                     <span>{{ data.value.customer || '' }}</span>
-                                    <router-link v-if="data.value.customer_id" :to="'/contacts/manage/' + data.value.customer_id" class="ms-1" title="Voir fiche client">
-                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    <router-link v-if="data.value.customer_id"
+                                                 :to="'/contacts/manage/' + data.value.customer_id" class="ms-1"
+                                                 title="Voir fiche client">
+                                        <vue-feather type="search" stroke-width="1"
+                                                     class="cursor-pointer"></vue-feather>
                                     </router-link>
                                 </div>
                             </template>
                             <template #contremarque="data">
                                 <div class="d-flex align-items-center">
                                     <span>{{ data.value.contremarqueName || data.value.contremarque || '' }}</span>
-                                    <router-link v-if="data.value.contremarque_id" :to="'/projet/contremarques/manage/' + data.value.contremarque_id" class="ms-1" title="Voir fiche contremarque">
-                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    <router-link v-if="data.value.contremarque_id"
+                                                 :to="'/projet/contremarques/manage/' + data.value.contremarque_id"
+                                                 class="ms-1" title="Voir fiche contremarque">
+                                        <vue-feather type="search" stroke-width="1"
+                                                     class="cursor-pointer"></vue-feather>
                                     </router-link>
                                 </div>
                             </template>
@@ -135,157 +150,157 @@
 </template>
 
 <script setup>
-import dInput from '../../../components/base/d-input.vue';
-import dBtnFullscreen from '../../../components/base/d-btn-fullscreen.vue';
-import dCustomerDropdown from '../../../components/common/d-customer-dropdown.vue';
-import dCarpetStatusDropdown from '../../../components/common/d-carpet-status-dropdown.vue';
-import dPageTitle from '../../../components/common/d-page-title.vue';
-import VueFeather from 'vue-feather';
-import Vue3Datatable from '@bhplugin/vue3-datatable';
-import dModalManageDi from "../../../components/projet/contremarques/_Partials/d-modal-manage-di.vue"
-import axiosInstance from '../../../config/http';
-import { ref, reactive, onMounted } from 'vue';
-import {FILTER_SUIVI_DI_STORAGE_NAME, filterSuiviDi} from '../../../composables/constants';
-import { useMeta } from '/src/composables/use-meta';
-import { Helper } from "../../../composables/global-methods";
-import { useRoute } from "vue-router";
+    import dInput from '../../../components/base/d-input.vue';
+    import dBtnFullscreen from '../../../components/base/d-btn-fullscreen.vue';
+    import dCustomerDropdown from '../../../components/common/d-customer-dropdown.vue';
+    import dCarpetStatusDropdown from '../../../components/common/d-carpet-status-dropdown.vue';
+    import dPageTitle from '../../../components/common/d-page-title.vue';
+    import VueFeather from 'vue-feather';
+    import Vue3Datatable from '@bhplugin/vue3-datatable';
+    import dModalManageDi from '../../../components/projet/contremarques/_Partials/d-modal-manage-di.vue';
+    import axiosInstance from '../../../config/http';
+    import { ref, reactive, onMounted } from 'vue';
+    import { FILTER_SUIVI_DI_STORAGE_NAME, filterSuiviDi } from '../../../composables/constants';
+    import { useMeta } from '/src/composables/use-meta';
+    import { Helper } from '../../../composables/global-methods';
+    import { useRoute } from 'vue-router';
 
-useMeta({ title: 'Contremarque' });
-const route = useRoute();
-const loading = ref(true);
-const loadingAttribution = ref(false);
-const total_rows = ref(0);
+    useMeta({ title: 'Contremarque' });
+    const route = useRoute();
+    const loading = ref(true);
+    const loadingAttribution = ref(false);
+    const total_rows = ref(0);
 
-const params = reactive({
-    current_page: 1,
-    pagesize: 50,
-    orderBy: 'order_design_id',
-    orderWay: 'desc'
-});
-const truncateText = (text, length) => {
-    if (!text) return '';
-    return text.length > length ? text.substring(0, length) + '...' : text;
-};
+    const params = reactive({
+        current_page: 1,
+        pagesize: 50,
+        orderBy: 'order_design_id',
+        orderWay: 'desc'
+    });
+    const truncateText = (text, length) => {
+        if (!text) return '';
+        return text.length > length ? text.substring(0, length) + '...' : text;
+    };
 
-const filter = ref(Object.assign({}, filterSuiviDi));
-const filterActive = ref(false);
-const rows = ref(null);
-const selectedDiId = ref(0);
-const contremarqueId = ref(null);
+    const filter = ref(Object.assign({}, filterSuiviDi));
+    const filterActive = ref(false);
+    const rows = ref(null);
+    const selectedDiId = ref(0);
+    const contremarqueId = ref(null);
 
-const cols = ref([
-    { field: 'order_design_id', title: 'ID' },
-    { field: 'image', title: 'Image' },
-    { field: 'image_name', title: 'Nom' },
-    { field: 'diNumber', title: 'N° de la DI' },
-    { field: 'diDate', title: 'Date de la DI' },
-    { field: 'customer', title: 'Client'},
-    { field: 'contremarque', title: 'contremarque' },
-    { field: 'location', title: 'Emplacement'},
-    { field: 'designer', title: 'Designer'},
-    { field: 'lastAssignmentDate', title: 'Date d\'attribution'},
-    { field: 'deadline', title: 'Deadline'},
-    { field: 'carpet_status', title: 'Etat de tapis dans le DI'},
-    { field: 'wrong_image', title: 'Image eronnée'},
-]) || [];
-const getImageUrl = (imageName) => {
-    if (!imageName) return ''; // Handle missing images
-    return `/uploads/attachments/${imageName}`;
-};
-onMounted(() => {
-    const f = Helper.getStorage(FILTER_SUIVI_DI_STORAGE_NAME);
-    if(f && Helper.hasDefinedValue(f)){
-        filter.value = f;
-        filterActive.value = true;
-    }
-    contremarqueId.value = route.query.contremarqueId || null;
-    getDI();
-});
-const getDI = async () => {
-    try {
-        loading.value = true;
-        let url = `/api/carpetDesignOrders/all?page=${params.current_page}&itemsPerPage=${params.pagesize}`;
-        if(params.orderBy){
-            url += `&orderBy=${params.orderBy}`
-            if(params.orderWay){
-                url += `&orderWay=${params.orderWay}`
-            }else{
-                url += `&orderWay=asc`
+    const cols = ref([
+        { field: 'order_design_id', title: 'ID' },
+        { field: 'image', title: 'Image' },
+        { field: 'model_name', title: 'Nom' },
+        { field: 'diNumber', title: 'N° de la DI' },
+        { field: 'diDate', title: 'Date de la DI' },
+        { field: 'customer', title: 'Client' },
+        { field: 'contremarque', title: 'contremarque' },
+        { field: 'location', title: 'Emplacement' },
+        { field: 'designer', title: 'Designer' },
+        { field: 'lastAssignmentDate', title: 'Date d\'attribution' },
+        { field: 'deadline', title: 'Deadline' },
+        { field: 'carpet_status', title: 'Etat de tapis dans le DI' },
+        { field: 'wrong_image', title: 'Image eronnée' }
+    ]) || [];
+    const getImageUrl = (imageName) => {
+        if (!imageName) return ''; // Handle missing images
+        return `/uploads/attachments/${imageName}`;
+    };
+    onMounted(() => {
+        const f = Helper.getStorage(FILTER_SUIVI_DI_STORAGE_NAME);
+        if (f && Helper.hasDefinedValue(f)) {
+            filter.value = f;
+            filterActive.value = true;
+        }
+        contremarqueId.value = route.query.contremarqueId || null;
+        getDI();
+    });
+    const getDI = async () => {
+        try {
+            loading.value = true;
+            let url = `/api/carpetDesignOrders/all?page=${params.current_page}&itemsPerPage=${params.pagesize}`;
+            if (params.orderBy) {
+                url += `&orderBy=${params.orderBy}`;
+                if (params.orderWay) {
+                    url += `&orderWay=${params.orderWay}`;
+                } else {
+                    url += `&orderWay=asc`;
+                }
             }
+
+            // Append contremarqueId in the required format
+            if (contremarqueId.value) {
+                url += `&filter[contremarqueId]=${contremarqueId.value}`;
+            }
+
+            url += getFilterParams();
+            const response = await axiosInstance.get(url);
+            const data = response.data;
+            total_rows.value = data.response.count;
+            rows.value = data.response.carpetDesignOrders;
+        } catch {
         }
 
-        // Append contremarqueId in the required format
-        if (contremarqueId.value) {
-            url += `&filter[contremarqueId]=${contremarqueId.value}`;
+        loading.value = false;
+    };
+    const changeServer = (data) => {
+        params.current_page = data.current_page;
+        params.pagesize = data.pagesize;
+        params.orderBy = data.sort_column;
+        params.orderWay = data.sort_direction;
+        getDI();
+    };
+    const doSearch = () => {
+        filterActive.value = true;
+        Helper.setStorage(FILTER_SUIVI_DI_STORAGE_NAME, filter.value);
+        getDI();
+    };
+    const getFilterParams = () => {
+
+        let param = '';
+        if (filter.value.customer) {
+            param += '&filter[customer]=' + filter.value.customer;
         }
-        
-        url += getFilterParams();
-        const response = await axiosInstance.get(url);
-        const data = response.data;
-        total_rows.value = data.response.count;
-        rows.value = data.response.carpetDesignOrders;
-    } catch { }
+        if (filter.value.contremarque) {
+            param += '&filter[contremarque]=' + filter.value.contremarque;
+        }
+        if (filter.value.diNumber) {
+            param += '&filter[diNumber]=' + filter.value.diNumber;
+        }
+        if (filter.value.carpetStatus) {
+            param += '&filter[statusId]=' + filter.value.carpetStatus;
+        }
+        return param;
+    };
 
-    loading.value = false;
-};
-const changeServer = (data) => {
-    params.current_page = data.current_page;
-    params.pagesize = data.pagesize;
-    params.orderBy = data.sort_column;
-    params.orderWay = data.sort_direction;
-    getDI();
-};
-const doSearch = () => {
-    filterActive.value = true;
-    Helper.setStorage(FILTER_SUIVI_DI_STORAGE_NAME, filter.value);
-    getDI();
-};
-const getFilterParams = () => {
+    const doReset = () => {
+        filterActive.value = false;
+        filter.value = Object.assign({}, filterSuiviDi);
+        Helper.setStorage(FILTER_SUIVI_DI_STORAGE_NAME, filter.value);
+        getDI();
+    };
+    const handleUpdateDI = async (diId) => {
+        selectedDiId.value = diId;
+    };
+    const goTodetails = (id_di, carperOrderId = 0) => {
+        location.href = `/projet/dis/model/${id_di}/update/${carperOrderId}`;
+    };
+    const goToContreMarqueDetails = (id_contremarque) => {
+        location.href = `/projet/contremarques/projectdis/${id_contremarque}`;
+    };
+    const handleClose = () => {
+        //selectedDiId.value = null;
+    };
 
-    let param = "";
-    if (filter.value.customer) {
-        param += "&filter[customer]=" + filter.value.customer
-    }
-    if (filter.value.contremarque) {
-        param += "&filter[contremarque]=" + filter.value.contremarque
-    }
-    if (filter.value.diNumber) {
-        param += "&filter[diNumber]=" + filter.value.diNumber
-    }
-    if (filter.value.carpetStatus) {
-        param += "&filter[statusId]=" + filter.value.carpetStatus
-    }
-    return param;
-};
-
-const doReset = () => {
-    filterActive.value = false;
-    filter.value = Object.assign({}, filterSuiviDi);
-    Helper.setStorage(FILTER_SUIVI_DI_STORAGE_NAME, filter.value);
-    getDI();
-};
-const handleUpdateDI = async (diId) => {
-    selectedDiId.value = diId;
-};
-const goTodetails = (id_di,carperOrderId = 0) => {
-    location.href = `/projet/dis/model/${id_di}/update/${carperOrderId}`;
-}
-const goToContreMarqueDetails = (id_contremarque) => {
-    location.href = `/projet/contremarques/projectdis/${id_contremarque}`;
-}
-const handleClose = () => {
-    //selectedDiId.value = null;
-};
-
-const goToNewContremarque = () => {
-    location.href = "/projet/contremarques/manage"
-};
+    const goToNewContremarque = () => {
+        location.href = '/projet/contremarques/manage';
+    };
 
 
-    
 </script>
 <style>
-    .text-size-16{
+    .text-size-16 {
         font-size: 16px !important;
     }
 </style>
