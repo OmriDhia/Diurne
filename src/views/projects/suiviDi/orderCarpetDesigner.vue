@@ -154,6 +154,30 @@
                                                             <div v-if="error?.description || errorCarpetDesignOrder.description" class="invalid-feedback">La description est obligatoire.</div>
                                                         </div>
                                                     </div>
+                                                    <div class="row ps-2 mt-4 mb-2 justify-content-between" v-if="carpetDesignOrderId">
+                                                        <div class="col-xl-6 col-md-12 mb-2">
+                                                            <label class="form-label text-black">Nom du modèle</label>
+                                                            <input type="text" class="form-control" :disabled="disableForDesigner" v-model="dataCarpetOrder.modelName" />
+                                                        </div>
+                                                            <div class="col-xl-6 col-md-12 mb-2">
+                                                            <label class="form-label text-black">Variation</label>
+                                                            <input type="text" class="form-control" :disabled="disableForDesigner" v-model="dataCarpetOrder.variation" />
+                                                        </div>
+                                                        <div class="col-12 d-flex flex-wrap">
+                                                            <div class="form-check me-3">
+                                                                <input class="form-check-input" type="checkbox" id="jpeg" :disabled="disableForDesigner" v-model="dataCarpetOrder.jpeg" />
+                                                                <label class="form-check-label text-black" for="jpeg">JPEG</label>
+                                                            </div>
+                                                            <div class="form-check me-3">
+                                                                <input class="form-check-input" type="checkbox" id="impression" :disabled="disableForDesigner" v-model="dataCarpetOrder.impression" />
+                                                                <label class="form-check-label text-black" for="impression">Impression</label>
+                                                            </div>
+                                                            <div class="form-check me-3">
+                                                                <input class="form-check-input" type="checkbox" id="impressionBarreDeLaine" :disabled="disableForDesigner" v-model="dataCarpetOrder.impressionBarreDeLaine" />
+                                                                <label class="form-check-label text-black" for="impressionBarreDeLaine">Impression Barre De Laine</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <div class="row ps-2 mt-4 mb-2 justify-content-between">
                                                         <d-transmis-studio @saveCarpetOrderSpecifications="saveCarpetOrderSpecifications()" @transmisStudio="updateCarpetDesignStatus($event)" :can-show="carpetDesignOrderId && !hideForTrans"></d-transmis-studio>
                                                     </div>
@@ -329,6 +353,11 @@
     const dataCarpetOrder = ref({
         location_id: 0,
         status_id: carpetStatus.nonTransmisId,
+        modelName: '',
+        variation: '',
+        jpeg: false,
+        impression: false,
+        impressionBarreDeLaine: false,
     });
     const handleDesignerAdded = (status) => {
         // You can perform other actions here, like updating the list of designers, etc.
@@ -419,6 +448,11 @@
                 currentCarpetObject.value = res.data.response;
                 dataCarpetOrder.value.location_id = currentCarpetObject.value.location && currentCarpetObject.value.location.location_id ? currentCarpetObject.value.location.location_id : 0;
                 dataCarpetOrder.value.status_id = currentCarpetObject.value.status && currentCarpetObject.value.status.id ? currentCarpetObject.value.status.id : 1;
+                dataCarpetOrder.value.modelName = currentCarpetObject.value.modelName ?? currentCarpetObject.value.model_name ?? '';
+                dataCarpetOrder.value.variation = currentCarpetObject.value.variation ?? '';
+                dataCarpetOrder.value.jpeg = currentCarpetObject.value.jpeg ?? false;
+                dataCarpetOrder.value.impression = currentCarpetObject.value.impression ?? false;
+                dataCarpetOrder.value.impressionBarreDeLaine = currentCarpetObject.value.impressionBarreDeLaine ?? currentCarpetObject.value.impression_barre_de_laine ?? false;
                 setHideForTrans();
                 transDate.value = currentCarpetObject.value.transmition_date ? Helper.FormatDate(currentCarpetObject.value.transmition_date.date) : '';
                 applyCarpetStatus(dataCarpetOrder.value.status_id);
@@ -633,20 +667,20 @@
     //dataCarpetOrder.location_id
     watch(
         () => dataCarpetOrder.value.location_id,
-        async (newID) => {
-            if (!firstLoad.value) {
+        async (newID, oldID) => {
+            if (!firstLoad.value && newID !== oldID) {
                 await saveCarpetOrder();
             }
-        },
-        { deep: true }
+        }
     );
     watch(
-        () => dataCarpetOrder.value.status_id, 
-        (newID) => {
-            console.log('newID', newID);
-            setHideForTrans();
-        },
-        { deep: true }
+        () => dataCarpetOrder.value.status_id,
+        (newID, oldID) => {
+            if (newID !== oldID) {
+                console.log('newID', newID);
+                setHideForTrans();
+            }
+        }
     );
     watch(
         () => CommercialAccessADV.value,
