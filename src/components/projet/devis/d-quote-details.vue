@@ -51,6 +51,13 @@
                                     <vue-feather type="search" size="14"></vue-feather>
                                 </button>
                             </div>
+                            <div class="col-auto p-1">
+                                <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"
+                                        :title="'Dupliquer ce détail (crée une nouvelle ligne avec les mêmes infos)'"
+                                        @click="cloneQuoteDetail(row.id)">
+                                    <vue-feather type="clipboard" size="14"></vue-feather>
+                                </button>
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -124,6 +131,15 @@
     };
     const goToQuoteDetails = (id) => {
         router.push({name: 'devisDetails', params: { qouteId: props.quoteId, id: id }});
+    };
+    const cloneQuoteDetail = async (quoteDetailId) => {
+        try {
+            await axiosInstance.post(`/api/cloneQuoteDetail/${quoteDetailId}`);
+            window.showMessage(`Détail de devis d'id ${quoteDetailId} a été dupliqué avec succées`);
+            emit('changeStatus');
+        } catch (e) {
+            window.showMessage(e.message, 'error');
+        }
     };
 </script>
 
