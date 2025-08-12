@@ -500,11 +500,11 @@
                 currentCarpetObject.value = res.data.response;
                 dataCarpetOrder.value.location_id = currentCarpetObject.value.location && currentCarpetObject.value.location.location_id ? currentCarpetObject.value.location.location_id : 0;
                 dataCarpetOrder.value.status_id = currentCarpetObject.value.status && currentCarpetObject.value.status.id ? currentCarpetObject.value.status.id : 1;
-                dataCarpetOrder.value.modelName = currentCarpetObject.value.modelName ?? currentCarpetObject.value.model_name ?? '';
+                dataCarpetOrder.value.modelName = currentCarpetObject.value.modelName ?? currentCarpetObject.value.modelName ?? '';
                 dataCarpetOrder.value.variation = currentCarpetObject.value.variation ?? '';
                 dataCarpetOrder.value.jpeg = currentCarpetObject.value.jpeg ?? false;
                 dataCarpetOrder.value.impression = currentCarpetObject.value.impression ?? false;
-                dataCarpetOrder.value.impressionBarreDeLaine = currentCarpetObject.value.impressionBarreDeLaine ?? currentCarpetObject.value.impression_barre_de_laine ?? false;
+                dataCarpetOrder.value.impressionBarreDeLaine = currentCarpetObject.value.impressionBarreDeLaine ?? currentCarpetObject.value.impressionBarreDeLaine ?? false;
                 setHideForTrans();
                 transDate.value = currentCarpetObject.value.transmition_date ? Helper.FormatDate(currentCarpetObject.value.transmition_date.date) : '';
                 applyCarpetStatus(dataCarpetOrder.value.status_id);
