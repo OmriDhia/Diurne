@@ -773,13 +773,24 @@
 
             dataRequest.materials = store.getters.materials;
             ValidateBeforeTransmission();
-            if (carpetSpecificationId.value && !errorTransmis.value) {
-                const res = await axiosInstance.put(`/api/carpetDesignOrder/${carpetDesignOrderId}/updateCarpetSpecification/${carpetSpecificationId.value}`, dataRequest);
-                window.showMessage('Mise a jour avec succées.');
-            } else if (!errorTransmis.value) {
-                const res = await axiosInstance.post(`/api/carpetDesignOrder/${carpetDesignOrderId}/createCarpetSpecification`, dataRequest);
-                window.showMessage('Ajout avec succées.');
-                carpetSpecificationId.value = res.data.response.id;
+            if (!errorTransmis.value) {
+                if (carpetSpecificationId.value) {
+                    await axiosInstance.put(
+                        `/api/carpetDesignOrder/${carpetDesignOrderId}/updateCarpetSpecification/${carpetSpecificationId.value}`,
+                        dataRequest
+                    );
+                    window.showMessage('Mise a jour avec succées.');
+                } else {
+                    const res = await axiosInstance.post(
+                        `/api/carpetDesignOrder/${carpetDesignOrderId}/createCarpetSpecification`,
+                        dataRequest
+                    );
+                    window.showMessage('Ajout avec succées.');
+                    carpetSpecificationId.value = res.data.response.id;
+                }
+
+                // Save carpet order fields (e.g., model name, variation, etc.)
+                await saveCarpetOrder();
             }
         } catch (e) {
             if (e.response.data && e.response.data.violations) {
