@@ -675,12 +675,59 @@
     );
     watch(
         () => dataCarpetOrder.value.status_id,
+
         (newID, oldID) => {
             if (newID !== oldID) {
                 console.log('newID', newID);
                 setHideForTrans();
             }
         }
+
+    );
+    watch(
+        () => dataCarpetOrder.value.modelName,
+        async () => {
+            if (!firstLoad.value) {
+                await saveCarpetOrder();
+            }
+        },
+        { deep: true }
+    );
+    watch(
+        () => dataCarpetOrder.value.variation,
+        async () => {
+            if (!firstLoad.value) {
+                await saveCarpetOrder();
+            }
+        },
+        { deep: true }
+    );
+    watch(
+        () => dataCarpetOrder.value.jpeg,
+        async () => {
+            if (!firstLoad.value) {
+                await saveCarpetOrder();
+            }
+        },
+        { deep: true }
+    );
+    watch(
+        () => dataCarpetOrder.value.impression,
+        async () => {
+            if (!firstLoad.value) {
+                await saveCarpetOrder();
+            }
+        },
+        { deep: true }
+    );
+    watch(
+        () => dataCarpetOrder.value.impressionBarreDeLaine,
+        async () => {
+            if (!firstLoad.value) {
+                await saveCarpetOrder();
+            }
+        },
+        { deep: true }
     );
     watch(
         () => CommercialAccessADV.value,
