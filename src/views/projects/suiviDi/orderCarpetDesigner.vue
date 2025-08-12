@@ -667,20 +667,22 @@
     //dataCarpetOrder.location_id
     watch(
         () => dataCarpetOrder.value.location_id,
-        async (newID) => {
-            if (!firstLoad.value) {
+        async (newID, oldID) => {
+            if (!firstLoad.value && newID !== oldID) {
                 await saveCarpetOrder();
             }
-        },
-        { deep: true }
+        }
     );
     watch(
         () => dataCarpetOrder.value.status_id,
-        (newID) => {
-            console.log('newID', newID);
-            setHideForTrans();
-        },
-        { deep: true }
+
+        (newID, oldID) => {
+            if (newID !== oldID) {
+                console.log('newID', newID);
+                setHideForTrans();
+            }
+        }
+
     );
     watch(
         () => dataCarpetOrder.value.modelName,
