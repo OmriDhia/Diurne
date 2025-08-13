@@ -48,7 +48,13 @@
                     </div> -->
                 </div>
             </template>
-            <div v-if="error" class="invalid-feedback">{{ $t('tous Les champs sont obligatoire.') }}</div>
+            <div v-if="error" class="invalid-feedback">
+                <div v-if="!measurements.some(m => m.name === 'Largeur')">Largeur est obligatoire</div>
+                <div v-if="!measurements.some(m => m.name === 'Longueur')">Longueur est obligatoire</div>
+                <div v-if="measurements.some(m => m.name === 'Largeur') && measurements.some(m => m.name === 'Longueur')">
+                    Tous Les champs sont obligatoires
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -124,6 +130,16 @@
     const calculateInchesFeet = async () => {
         const larg = measurements.value.find((m) => m.name === 'Largeur');
         const long = measurements.value.find((m) => m.name === 'Longueur');
+
+        if (!larg || !long) {
+            console.error("Missing width or length measurement");
+            return;
+        }
+
+        // Debug logs
+        console.log("Width measurement before calculation:", larg);
+        console.log("Length measurement before calculation:", long);
+
         if (larg) {
             setMeasurements(larg.unit, 'larg');
         }
@@ -134,14 +150,35 @@
         try {
             const result = await contremarqueService.calculateMesurementsNew(data.value);
             const dimension = result.dimension;
+
+            // Debug logs
+            console.log("Calculation results:", dimension);
+
             setMeasurementResults(larg.unit, dimension.width);
             setMeasurementResults(long.unit, dimension.length);
-            store.commit('setMeasurements', measurements);
+
+            // Verify values after calculation
+            console.log("Width measurement after calculation:", larg);
+            console.log("Length measurement after calculation:", long);
+
+            store.commit('setMeasurements', measurements.value);
         } catch (error) {
             console.error(`Error calculation mesurements:`, error);
         }
     };
+    const validateMeasurements = () => {
+        const larg = measurements.value.find((m) => m.name === 'Largeur');
+        const long = measurements.value.find((m) => m.name === 'Longueur');
 
+        if (!larg || !long) {
+            return false;
+        }
+
+        const isWidthValid = larg.unit.some(u => u.value && parseFloat(u.value) > 0);
+        const isLengthValid = long.unit.some(u => u.value && parseFloat(u.value) > 0);
+
+        return isWidthValid && isLengthValid;
+    };
     const formatDataValue = () => {
         if (props.dimensionsProps) {
             measurements.value = measurements.value.map((m, idx) => {
