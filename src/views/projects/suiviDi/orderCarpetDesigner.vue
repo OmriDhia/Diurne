@@ -303,6 +303,9 @@
             <div class="col-auto">
                 <button class="btn btn-custom pe-5 ps-5" @click="goToDis">Retour à la liste</button>
             </div>
+            <div class="col-auto">
+                <button class="btn btn-custom pe-5 ps-5" @click="goToDi">Retour au DI</button>
+            </div>
         </div>
     </div>
 </template>
@@ -829,6 +832,12 @@
 
     const goToDis = () => {
         router.push({ name: 'di_list' });
+    };
+
+    const goToDi = () => {
+        if (projectDi.value.contremarque) {
+            router.push({ name: 'projectDIS', params: { id: projectDi.value.contremarque } });
+        }
     };
 
     const copyDemandeNumber = () => {
