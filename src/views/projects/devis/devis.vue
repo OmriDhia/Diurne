@@ -58,19 +58,21 @@
                             </div>
                             <d-btn-fullscreen></d-btn-fullscreen>
                         </div>
-                        <vue3-datatable :rows="rows" 
-                        :columns="cols" :loading="loading" 
-                        :isServerMode="true" :sortColumn="params.orderBy" 
+                        <vue3-datatable :rows="rows"
+                        :columns="cols" :loading="loading"
+                        :isServerMode="true" :sortColumn="params.orderBy"
                         :sortDirection="params.orderWay"
-                        :totalRows="total_rows" :page="params.current_page" 
+                        :totalRows="total_rows" :page="params.current_page"
                         :pageSize="params.pagesize"
-                        :pageSizeOptions="[10, 25, 50, 75, 100]" 
+                        :pageSizeOptions="[10, 25, 50, 75, 100]"
                         noDataContent="Aucun devis trouvé."
                         paginationInfo="Affichage de {0} à {1} sur {2} entrées" :sortable="true"
                         @change="changeServer" class="advanced-table text-nowrap">
                             <template #reference="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.reference}}</strong>
+                                    <strong class="text-truncate" :title="data.value.reference">
+                                        {{ truncateText(data.value.reference, 14) }}
+                                    </strong>
                                     <router-link :to="'/projet/devis/manage/' + data.value.quote_id"  v-if="$hasPermission('update quote')">
                                         <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
@@ -78,7 +80,9 @@
                             </template>
                             <template #contremarque="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.designation}}</strong>
+                                    <strong class="text-truncate" :title="data.value.designation">
+                                        {{ truncateText(data.value.designation, 14) }}
+                                    </strong>
                                     <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id"  v-if="$hasPermission('update contremarque')">
                                         <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
@@ -86,11 +90,18 @@
                             </template>
                             <template #customer="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.customer}}</strong>
+                                    <strong class="text-truncate" :title="data.value.customer">
+                                        {{ truncateText(data.value.customer, 14) }}
+                                    </strong>
                                     <router-link :to="'/contacts/manage/' + data.value.customer_id"  v-if="$hasPermission('update contremarque')">
                                         <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
                                 </div>
+                            </template>
+                            <template #commercial="data">
+                                <span class="text-truncate" :title="data.value.commercial">
+                                    {{ truncateText(data.value.commercial, 14) }}
+                                </span>
                             </template>
                             <template #creationDate="data">
                                 <div class="d-flex justify-content-between">
@@ -119,7 +130,7 @@ import dPageTitle from '../../../components/common/d-page-title.vue';
 import VueFeather from 'vue-feather';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
 import axiosInstance from '../../../config/http';
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, nextTick, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { filterDevis, FILTER_DEVIS_STORAGE_NAME } from '../../../composables/constants';
 import moment from "moment";
@@ -162,6 +173,18 @@ onMounted(() => {
         filterActive.value = true;
     }
     getDevis();
+});
+
+const setCellTitles = () => {
+    const cells = document.querySelectorAll('.vue3-datatable td');
+    cells.forEach(cell => {
+        cell.setAttribute('title', cell.textContent || '');
+    });
+};
+
+watch(rows, async () => {
+    await nextTick();
+    setCellTitles();
 });
 
 const getDevis = async () => {
@@ -227,6 +250,11 @@ const doReset = () => {
     filter.value = Object.assign({}, filterDevis);
     Helper.setStorage(FILTER_DEVIS_STORAGE_NAME, filter.value);
     getDevis();
+};
+
+const truncateText = (text, length) => {
+    if (!text) return '';
+    return text.length > length ? text.substring(0, length) + '...' : text;
 };
 
 const goToNewDevis = () => {
