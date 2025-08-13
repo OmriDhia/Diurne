@@ -54,7 +54,7 @@
                                                     demande:</label>
                                                 <div class="d-flex align-items-center mb-2">
                                                     <input type="text" class="form-control me-2"
-                                                           :value="projectDi.demande_number" readonly
+                                                           :value="dataSpecification.reference" readonly
                                                            style="max-width: 220px;" />
                                                     <button class="btn btn-custom btn-custom-copy" type="button"
                                                             @click="copyDemandeNumber" title="Copier">
@@ -520,7 +520,7 @@
                     designerComposition.value = dSP.designMaterials;
                     dataSpecification.value = {
                         id: dSP.id,
-                        reference: '',
+                        reference: dSP.reference,
                         description: dSP.description,
                         collectionId: dSP.collection ? dSP.collection.id : 0,
                         modelId: dSP.model ? dSP.model.id : 0,
