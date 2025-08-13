@@ -144,11 +144,13 @@
 
     const formatDataValue = () => {
         if (props.dimensionsProps) {
-            measurements.value = measurements.value.map((m) => {
-                const d = props.dimensionsProps[m.id];
+            measurements.value = measurements.value.map((m, idx) => {
+                const d = Array.isArray(props.dimensionsProps)
+                    ? props.dimensionsProps[idx]
+                    : props.dimensionsProps[m.id];
                 if (d) {
                     m.unit = m.unit.map((u) => {
-                        let tmpU = d.find((t) => t.unit_id === u.id);
+                        const tmpU = d.find((t) => (t.unit_id ?? t.dimension_id) === u.id);
                         if (tmpU) {
                             u.value = parseFloat(tmpU.value);
                         }

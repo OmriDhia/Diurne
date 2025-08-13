@@ -765,12 +765,10 @@
             const measurements = store.getters.measurements;
             const dataRequest = Object.assign({}, dataSpecification.value);
             dataRequest.dimensions = measurements.reduce((acc, dimension) => {
-                acc[dimension.id] = dimension.unit.map((u) => {
-                    return {
-                        dimension_id: u.id,
-                        value: u.value ? parseFloat(u.value) : 0
-                    };
-                });
+                acc[dimension.id] = dimension.unit.map((u) => ({
+                    dimension_id: u.id,
+                    value: u.value ? parseFloat(u.value) : 0,
+                }));
                 return acc;
             }, {});
 
