@@ -159,7 +159,7 @@
     import Vue3Datatable from '@bhplugin/vue3-datatable';
     import dModalManageDi from '../../../components/projet/contremarques/_Partials/d-modal-manage-di.vue';
     import axiosInstance from '../../../config/http';
-    import { ref, reactive, onMounted } from 'vue';
+    import { ref, reactive, onMounted, nextTick, watch } from 'vue';
     import { FILTER_SUIVI_DI_STORAGE_NAME, filterSuiviDi } from '../../../composables/constants';
     import { useMeta } from '/src/composables/use-meta';
     import { Helper } from '../../../composables/global-methods';
@@ -188,6 +188,13 @@
     const selectedDiId = ref(0);
     const contremarqueId = ref(null);
 
+    const setCellTitles = () => {
+        const cells = document.querySelectorAll('.vue3-datatable td');
+        cells.forEach(cell => {
+            cell.setAttribute('title', cell.textContent || '');
+        });
+    };
+
     const cols = ref([
         { field: 'order_design_id', title: 'ID' },
         { field: 'image', title: 'Image' },
@@ -215,6 +222,11 @@
         }
         contremarqueId.value = route.query.contremarqueId || null;
         getDI();
+    });
+
+    watch(rows, async () => {
+        await nextTick();
+        setCellTitles();
     });
     const getDI = async () => {
         try {
@@ -302,5 +314,22 @@
 <style>
     .text-size-16 {
         font-size: 16px !important;
+    }
+    .vue3-datatable table {
+        table-layout: fixed;
+    }
+    .vue3-datatable table th,
+    .vue3-datatable table td {
+        width: 150px;
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 14px;
+    }
+    .vue3-datatable table th:hover,
+    .vue3-datatable table td:hover {
+        overflow: visible;
+        white-space: normal;
     }
 </style>
