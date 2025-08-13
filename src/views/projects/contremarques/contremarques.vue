@@ -102,7 +102,9 @@
                                         @change="changeServer" class="advanced-table text-nowrap">
                             <template #designation="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.designation}}</strong>
+                                    <strong class="text-truncate" :title="data.value.designation">
+                                        {{ truncateText(data.value.designation, 14) }}
+                                    </strong>
                                     <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id"  v-if="$hasPermission('update contremarque')">
                                         <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
@@ -110,7 +112,9 @@
                             </template>
                             <template #customer_name="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.customer_name}}</strong>
+                                    <strong class="text-truncate" :title="data.value.customer_name">
+                                        {{ truncateText(data.value.customer_name, 14) }}
+                                    </strong>
                                     <router-link :to="'/contacts/manage/' + data.value.customer.customer_id"  v-if="$hasPermission('update contact')">
                                         <vue-feather type="search"  stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
@@ -118,17 +122,28 @@
                             </template>
                             <template #target_date="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ (data.value.target_date && data.value.target_date.date) ? $Helper.FormatDate(data.value.target_date.date) : ''}}
+                                    <span class="text-truncate" :title="(data.value.target_date && data.value.target_date.date) ? $Helper.FormatDate(data.value.target_date.date) : ''">
+                                        {{ (data.value.target_date && data.value.target_date.date) ? $Helper.FormatDate(data.value.target_date.date) : ''}}
+                                    </span>
                                 </div>
                             </template>
                             <template #createdAt="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ (data.value.createdAt && data.value.createdAt.date) ? $Helper.FormatDate(data.value.createdAt.date) : ''}}
+                                    <span class="text-truncate" :title="(data.value.createdAt && data.value.createdAt.date) ? $Helper.FormatDate(data.value.createdAt.date) : ''">
+                                        {{ (data.value.createdAt && data.value.createdAt.date) ? $Helper.FormatDate(data.value.createdAt.date) : ''}}
+                                    </span>
                                 </div>
+                            </template>
+                            <template #commercial_name="data">
+                                <span class="text-truncate" :title="data.value.commercial_name">
+                                    {{ truncateText(data.value.commercial_name, 14) }}
+                                </span>
                             </template>
                             <template #lastEvent="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ (data.value.last_event) ? data.value.last_event.subject : '' }}
+                                    <span class="text-truncate" :title="data.value.last_event ? data.value.last_event.subject : ''">
+                                        {{ truncateText(data.value.last_event ? data.value.last_event.subject : '', 14) }}
+                                    </span>
                                     <button type="button" class="btn btn-icon p-0"  data-bs-toggle="modal" data-bs-target="#ModalUpdateEventContact" @click="selectContremarque(data.value.contremarque_id, data.value.customer.customer_id)">
                                         <vue-feather type="file-text"></vue-feather>
                                     </button>
@@ -136,12 +151,16 @@
                             </template>
                             <template #lastEventDate="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ (data.value.last_event) ? $Helper.FormatDate(data.value.last_event.event_date) : ''}}
+                                    <span class="text-truncate" :title="data.value.last_event ? $Helper.FormatDate(data.value.last_event.event_date) : ''">
+                                        {{ (data.value.last_event) ? $Helper.FormatDate(data.value.last_event.event_date) : ''}}
+                                    </span>
                                 </div>
                             </template>
                             <template #relanceDate="data">
                                 <div :class="{'d-flex':true,'justify-content-between':true, 'text-danger fw-bold':overDate(data.value.last_event.next_reminder_deadline), 'text-warning fw-bold':overWeek(data.value.last_event.next_reminder_deadline)}">
-                                    {{ data.value.last_event.next_reminder_deadline ? $Helper.FormatDate(data.value.last_event.next_reminder_deadline) : ''}}
+                                    <span class="text-truncate" :title="data.value.last_event.next_reminder_deadline ? $Helper.FormatDate(data.value.last_event.next_reminder_deadline) : ''">
+                                        {{ data.value.last_event.next_reminder_deadline ? $Helper.FormatDate(data.value.last_event.next_reminder_deadline) : ''}}
+                                    </span>
                                 </div>
                             </template>
                             <template #action="data">
@@ -188,6 +207,11 @@ const params = reactive({
     orderBy: 'contremarque_id',
     orderWay: 'desc'
 });
+
+const truncateText = (text, length) => {
+    if (!text) return '';
+    return text.length > length ? text.substring(0, length) + '...' : text;
+};
 
 const filter = ref(Object.assign({}, filterContremarque));
 const filterActive = ref(false);

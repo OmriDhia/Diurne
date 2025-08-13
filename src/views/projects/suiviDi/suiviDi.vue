@@ -90,7 +90,9 @@
 
                             <template #diNumber="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.diNumber }}</strong>
+                                    <strong class="text-truncate" :title="data.value.diNumber">
+                                        {{ truncateText(data.value.diNumber, 14) }}
+                                    </strong>
                                     <div>
                                         <vue-feather type="search" stroke-width="1" class="cursor-pointer"
                                                      @click="goToContreMarqueDetails(data.value.contremarque_id)"></vue-feather>
@@ -99,17 +101,23 @@
                             </template>
                             <template #diDate="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ $Helper.FormatDate(data.value.diDate, 'DD/MM/YYYY') }}
+                                    <span class="text-truncate" :title="$Helper.FormatDate(data.value.diDate, 'DD/MM/YYYY')">
+                                        {{ $Helper.FormatDate(data.value.diDate, 'DD/MM/YYYY') }}
+                                    </span>
                                 </div>
                             </template>
                             <template #lastAssignmentDate="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ $Helper.FormatDate(data.value.lastAssignmentDate, 'DD/MM/YYYY') }}
+                                    <span class="text-truncate" :title="$Helper.FormatDate(data.value.lastAssignmentDate, 'DD/MM/YYYY')">
+                                        {{ $Helper.FormatDate(data.value.lastAssignmentDate, 'DD/MM/YYYY') }}
+                                    </span>
                                 </div>
                             </template>
                             <template #deadline="data">
                                 <div class="d-flex justify-content-between">
-                                    {{ $Helper.FormatDate(data.value.deadline, 'DD/MM/YYYY') }}
+                                    <span class="text-truncate" :title="$Helper.FormatDate(data.value.deadline, 'DD/MM/YYYY')">
+                                        {{ $Helper.FormatDate(data.value.deadline, 'DD/MM/YYYY') }}
+                                    </span>
                                 </div>
                             </template>
                             <template #wrong_image="data">
@@ -120,7 +128,9 @@
                             </template>
                             <template #customer="data">
                                 <div class="d-flex align-items-center">
-                                    <span>{{ data.value.customer || '' }}</span>
+                                    <span class="text-truncate" :title="data.value.customer || ''">
+                                        {{ truncateText(data.value.customer || '', 14) }}
+                                    </span>
                                     <router-link v-if="data.value.customer_id"
                                                  :to="'/contacts/manage/' + data.value.customer_id" class="ms-1"
                                                  title="Voir fiche client">
@@ -131,7 +141,9 @@
                             </template>
                             <template #contremarque="data">
                                 <div class="d-flex align-items-center">
-                                    <span>{{ data.value.contremarqueName || data.value.contremarque || '' }}</span>
+                                    <span class="text-truncate" :title="data.value.contremarqueName || data.value.contremarque || ''">
+                                        {{ truncateText(data.value.contremarqueName || data.value.contremarque || '', 14) }}
+                                    </span>
                                     <router-link v-if="data.value.contremarque_id"
                                                  :to="'/projet/contremarques/manage/' + data.value.contremarque_id"
                                                  class="ms-1" title="Voir fiche contremarque">
@@ -139,6 +151,21 @@
                                                      class="cursor-pointer"></vue-feather>
                                     </router-link>
                                 </div>
+                            </template>
+                            <template #location="data">
+                                <span class="text-truncate" :title="data.value.location">
+                                    {{ truncateText(data.value.location, 14) }}
+                                </span>
+                            </template>
+                            <template #designer="data">
+                                <span class="text-truncate" :title="data.value.designer">
+                                    {{ truncateText(data.value.designer, 14) }}
+                                </span>
+                            </template>
+                            <template #carpet_status="data">
+                                <span class="text-truncate" :title="data.value.carpet_status">
+                                    {{ truncateText(data.value.carpet_status, 14) }}
+                                </span>
                             </template>
                         </vue3-datatable>
                     </div>
@@ -159,7 +186,7 @@
     import Vue3Datatable from '@bhplugin/vue3-datatable';
     import dModalManageDi from '../../../components/projet/contremarques/_Partials/d-modal-manage-di.vue';
     import axiosInstance from '../../../config/http';
-    import { ref, reactive, onMounted } from 'vue';
+    import { ref, reactive, onMounted, nextTick, watch } from 'vue';
     import { FILTER_SUIVI_DI_STORAGE_NAME, filterSuiviDi } from '../../../composables/constants';
     import { useMeta } from '/src/composables/use-meta';
     import { Helper } from '../../../composables/global-methods';
@@ -188,6 +215,13 @@
     const selectedDiId = ref(0);
     const contremarqueId = ref(null);
 
+    const setCellTitles = () => {
+        const cells = document.querySelectorAll('.vue3-datatable td');
+        cells.forEach(cell => {
+            cell.setAttribute('title', cell.textContent || '');
+        });
+    };
+
     const cols = ref([
         { field: 'order_design_id', title: 'ID' },
         { field: 'image', title: 'Image' },
@@ -215,6 +249,11 @@
         }
         contremarqueId.value = route.query.contremarqueId || null;
         getDI();
+    });
+
+    watch(rows, async () => {
+        await nextTick();
+        setCellTitles();
     });
     const getDI = async () => {
         try {
@@ -302,5 +341,22 @@
 <style>
     .text-size-16 {
         font-size: 16px !important;
+    }
+    .vue3-datatable table {
+        table-layout: fixed;
+    }
+    .vue3-datatable table th,
+    .vue3-datatable table td {
+        width: 150px;
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 14px;
+    }
+    .vue3-datatable table th:hover,
+    .vue3-datatable table td:hover {
+        overflow: visible;
+        white-space: normal;
     }
 </style>

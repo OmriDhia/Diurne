@@ -63,7 +63,9 @@
                         >
                             <template #invoice_number="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.invoice_number }}</strong>
+                                    <strong class="text-truncate" :title="data.value.invoice_number">
+                                        {{ truncateText(data.value.invoice_number, 14) }}
+                                    </strong>
                                     <router-link :to="{ name: 'fournisseur-invoice-edit', params: { id: data.value.id } }">
                                         <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
@@ -78,7 +80,7 @@
 </template>
 
 <script setup>
-    import { ref, reactive, onMounted } from 'vue';
+    import { ref, reactive, onMounted, nextTick, watch } from 'vue';
     import VueFeather from 'vue-feather';
     import Vue3Datatable from '@bhplugin/vue3-datatable';
     import dInput from '../../../components/base/d-input.vue';
@@ -124,6 +126,18 @@
             filterActive.value = true;
         }
         getInvoices();
+    });
+
+    const setCellTitles = () => {
+        const cells = document.querySelectorAll('.vue3-datatable td');
+        cells.forEach(cell => {
+            cell.setAttribute('title', cell.textContent || '');
+        });
+    };
+
+    watch(rows, async () => {
+        await nextTick();
+        setCellTitles();
     });
 
     const getInvoices = async () => {
@@ -175,6 +189,11 @@
 
     const goToNewInvoice = () => {
         router.push({ name: 'fournisseur-invoice-create' });
+    };
+
+    const truncateText = (text, length) => {
+        if (!text) return '';
+        return text.length > length ? text.substring(0, length) + '...' : text;
     };
 </script>
 <style>
