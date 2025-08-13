@@ -208,37 +208,84 @@
                 >
                     <template #customer="data">
                         <div class="d-flex justify-content-between">
-                            <strong>{{ data.value.customer }}</strong>
+                            <strong class="text-truncate" :title="data.value.customer">
+                                {{ truncateText(data.value.customer, 14) }}
+                            </strong>
                             <router-link :to="'/contacts/manage/' + data.value.id" v-if="$hasPermission('update contact')">
                                 <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
                             </router-link>
                         </div>
                     </template>
+                    <template #contact="data">
+                        <span class="text-truncate" :title="data.value.contact">
+                            {{ truncateText(data.value.contact, 14) }}
+                        </span>
+                    </template>
                     <template #commercial="data">
                         <div class="d-flex justify-content-between align-items-center">
-                            <strong>
-                                {{ data.value.last_commercial }} 
-                                <span class="font-size-0-7" v-if="data.value.before_last_commercial && data.value.before_last_commercial !== ' '"> 
-                                    / {{ data.value.before_last_commercial }}
+                            <strong
+                                class="text-truncate"
+                                :title="data.value.last_commercial + (data.value.before_last_commercial && data.value.before_last_commercial !== ' ' ? ' / ' + data.value.before_last_commercial : '')"
+                            >
+                                {{ truncateText(data.value.last_commercial, 14) }}
+                                <span
+                                    class="font-size-0-7"
+                                    v-if="data.value.before_last_commercial && data.value.before_last_commercial !== ' '"
+                                >
+                                    / {{ truncateText(data.value.before_last_commercial, 14) }}
                                 </span>
                             </strong>
                             <div v-if="data.value.s_last_name == 'Pending'">
                                 <button type="button" class="btn btn-icon p-0" v-if="data.value.loading">
                                     <vue-feather type="loader" animation="spin"></vue-feather>
                                 </button>
-                                <button type="button" class="btn btn-icon p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-if="!data.value.loading">
+                                <button
+                                    type="button"
+                                    class="btn btn-icon p-0"
+                                    data-bs-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                    v-if="!data.value.loading"
+                                >
                                     <vue-feather type="clipboard"></vue-feather>
                                 </button>
                                 <ul class="dropdown-menu p-0" style="will-change: transform" v-if="!loadingAttribution">
                                     <li class="p-2 text-uppercase" style="background-color: green">
-                                        <a href="javascript:void(0);" class="dropdown-item text-white" @click.prevent="doValidation('validation', data)">Valider</a>
+                                        <a
+                                            href="javascript:void(0);"
+                                            class="dropdown-item text-white"
+                                            @click.prevent="doValidation('validation', data)"
+                                        >
+                                            Valider
+                                        </a>
                                     </li>
                                     <li class="p-2 text-uppercase" style="background-color: red">
-                                        <a href="javascript:void(0);" class="dropdown-item text-white" @click.prevent="doValidation('reject', data)">Annuler</a>
+                                        <a
+                                            href="javascript:void(0);"
+                                            class="dropdown-item text-white"
+                                            @click.prevent="doValidation('reject', data)"
+                                        >
+                                            Annuler
+                                        </a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
+                    </template>
+                    <template #phone="data">
+                        <span class="text-truncate" :title="data.value.phone">
+                            {{ truncateText(data.value.phone, 14) }}
+                        </span>
+                    </template>
+                    <template #mobile_phone="data">
+                        <span class="text-truncate" :title="data.value.mobile_phone">
+                            {{ truncateText(data.value.mobile_phone, 14) }}
+                        </span>
+                    </template>
+                    <template #email="data">
+                        <span class="text-truncate" :title="data.value.email">
+                            {{ truncateText(data.value.email, 14) }}
+                        </span>
                     </template>
                     <template #has_completed_address="data">
                         <div :title="data.value.has_completed_address === 'true' ? 'Ok' : 'Err'" class="t-dot" :class="data.value.has_completed_address === 'true' ? 'bg-success' : 'bg-danger'"></div>
@@ -379,6 +426,11 @@
         orderBy: 'customer',
         orderWay: 'asc',
     });
+
+    const truncateText = (text, length) => {
+        if (!text) return '';
+        return text.length > length ? text.substring(0, length) + '...' : text;
+    };
 
     const filter = ref(Object.assign({}, filterContact));
     const rows = ref(null);
