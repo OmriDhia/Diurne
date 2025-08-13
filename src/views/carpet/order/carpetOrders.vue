@@ -83,7 +83,9 @@
                         >
                             <template #reference="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.reference }}</strong>
+                                    <strong class="text-truncate" :title="data.value.reference">
+                                        {{ truncateText(data.value.reference, 14) }}
+                                    </strong>
                                     <router-link :to="'/projet/commande/manage/' + data.value.cloned_quote" v-if="$hasPermission('update carpet')">
                                         <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
@@ -91,7 +93,9 @@
                             </template>
                             <template #contremarque="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.designation }}</strong>
+                                    <strong class="text-truncate" :title="data.value.designation">
+                                        {{ truncateText(data.value.designation, 14) }}
+                                    </strong>
                                     <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id" v-if="$hasPermission('update contremarque')">
                                         <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
@@ -99,11 +103,18 @@
                             </template>
                             <template #customer="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.customer }}</strong>
+                                    <strong class="text-truncate" :title="data.value.customer">
+                                        {{ truncateText(data.value.customer, 14) }}
+                                    </strong>
                                     <router-link :to="'/contacts/manage/' + data.value.customer_id" v-if="$hasPermission('update contremarque')">
                                         <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
                                 </div>
+                            </template>
+                            <template #commercial="data">
+                                <span class="text-truncate" :title="data.value.commercial">
+                                    {{ truncateText(data.value.commercial, 14) }}
+                                </span>
                             </template>
                             <template #creationDate="data">
                                 <div class="d-flex justify-content-between">
@@ -132,7 +143,7 @@
     import VueFeather from 'vue-feather';
     import Vue3Datatable from '@bhplugin/vue3-datatable';
     import axiosInstance from '../../../config/http';
-    import { ref, reactive, onMounted } from 'vue';
+    import { ref, reactive, onMounted, nextTick, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { filterDevis, FILTER_DEVIS_STORAGE_NAME } from '../../../composables/constants';
     import moment from 'moment';
@@ -177,6 +188,18 @@
             filterActive.value = true;
         }
         getCarpetOrders();
+    });
+
+    const setCellTitles = () => {
+        const cells = document.querySelectorAll('.vue3-datatable td');
+        cells.forEach(cell => {
+            cell.setAttribute('title', cell.textContent || '');
+        });
+    };
+
+    watch(rows, async () => {
+        await nextTick();
+        setCellTitles();
     });
 
     const getCarpetOrders = async () => {
@@ -249,6 +272,11 @@
         } else {
             router.push({ name: 'devisManage' });
         }
+    };
+
+    const truncateText = (text, length) => {
+        if (!text) return '';
+        return text.length > length ? text.substring(0, length) + '...' : text;
     };
 </script>
 <style>

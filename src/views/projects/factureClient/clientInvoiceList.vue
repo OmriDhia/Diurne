@@ -63,7 +63,9 @@
                         >
                             <template #customer="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.customer }}</strong>
+                                    <strong class="text-truncate" :title="data.value.customer">
+                                        {{ truncateText(data.value.customer, 14) }}
+                                    </strong>
                                     <router-link :to="'/contacts/manage/' + data.value.customer_id" v-if="$hasPermission('update contact')">
                                         <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
@@ -71,7 +73,9 @@
                             </template>
                             <template #contremarque="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.contremarque }}</strong>
+                                    <strong class="text-truncate" :title="data.value.contremarque">
+                                        {{ truncateText(data.value.contremarque, 14) }}
+                                    </strong>
                                     <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id">
                                         <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
@@ -79,14 +83,18 @@
                             </template>
                             <template #invoice_number="data">
                                 <div class="d-flex justify-content-between">
-                                    <strong>{{ data.value.invoice_number }}</strong>
+                                    <strong class="text-truncate" :title="data.value.invoice_number">
+                                        {{ truncateText(data.value.invoice_number, 14) }}
+                                    </strong>
                                     <router-link :to="{ name: 'client-invoice-edit', params: { id: data.value.id } }">
                                         <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
                                     </router-link>
                                 </div>
                             </template>
                             <template #amount_ttc="data">
-                                {{ formatNumber(data.value.amount_ttc) }}
+                                <span :title="formatNumber(data.value.amount_ttc)">
+                                    {{ formatNumber(data.value.amount_ttc) }}
+                                </span>
                             </template>
                         </vue3-datatable>
                     </div>
@@ -97,7 +105,7 @@
 </template>
 
 <script setup>
-    import { ref, reactive, onMounted } from 'vue';
+    import { ref, reactive, onMounted, nextTick, watch } from 'vue';
     import VueFeather from 'vue-feather';
     import Vue3Datatable from '@bhplugin/vue3-datatable';
     import dInput from '../../../components/base/d-input.vue';
@@ -144,6 +152,18 @@
             filterActive.value = true;
         }
         getInvoices();
+    });
+
+    const setCellTitles = () => {
+        const cells = document.querySelectorAll('.vue3-datatable td');
+        cells.forEach(cell => {
+            cell.setAttribute('title', cell.textContent || '');
+        });
+    };
+
+    watch(rows, async () => {
+        await nextTick();
+        setCellTitles();
     });
 
     const getInvoices = async () => {
@@ -200,6 +220,11 @@
 
     const goToNewInvoice = () => {
         router.push({ name: 'client-invoice-create' });
+    };
+
+    const truncateText = (text, length) => {
+        if (!text) return '';
+        return text.length > length ? text.substring(0, length) + '...' : text;
     };
 </script>
 <style>
