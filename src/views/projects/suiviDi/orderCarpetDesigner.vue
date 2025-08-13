@@ -763,28 +763,18 @@
     const saveCarpetOrderSpecifications = async () => {
         try {
             const measurements = store.getters.measurements;
-
-            // Debug log to verify measurements before processing
-            console.log('All measurements before processing:', measurements);
-
             const dataRequest = Object.assign({}, dataSpecification.value);
             dataRequest.dimensions = measurements.reduce((acc, dimension) => {
-                // Ensure we have valid values for all units
-                const processedUnits = dimension.unit.map((u) => ({
-                    dimension_id: u.id,
-                    value: u.value ? parseFloat(u.value) : 0
-                }));
-
-                // Debug log for each dimension
-                console.log(`Processing ${dimension.name} (ID: ${dimension.id}):`, processedUnits);
-
-                acc[dimension.id] = processedUnits;
+                acc[dimension.id] = dimension.unit.map((u) => {
+                    return {
+                        dimension_id: u.id,
+                        value: u.value ? parseFloat(u.value) : 0
+                    };
+                });
                 return acc;
             }, {});
 
-            // Debug log of final dimensions payload
-            console.log('Final dimensions payload:', dataRequest.dimensions);
-
+            dataRequest.materials = store.getters.materials;
             ValidateBeforeTransmission();
             if (!errorTransmis.value) {
                 if (carpetSpecificationId.value) {
@@ -801,11 +791,15 @@
                     window.showMessage('Ajout avec succées.');
                     carpetSpecificationId.value = res.data.response.id;
                 }
+
+                // Save carpet order fields (e.g., model name, variation, etc.)
                 await saveCarpetOrder();
             }
         } catch (e) {
             if (e.response.data && e.response.data.violations) {
                 error.value = formatErrorViolations(e.response.data.violations);
+                //errorCarpetDesignOrder.value.measurments = !!error.value["dimensions"];
+                //errorCarpetDesignOrder.value.description = !!error.value["description"];
             }
             window.showMessage(e.message, 'error');
         }
