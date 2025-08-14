@@ -2,30 +2,35 @@
     <div>
         <div class="row justify-content-between">
             <div class="col-auto">
-                <d-btn-outlined icon="map" label="Nouvelle composition" data-bs-toggle="modal" data-bs-target="#modalNewComposition"></d-btn-outlined>
+                <d-btn-outlined icon="map" label="Nouvelle composition" data-bs-toggle="modal"
+                                data-bs-target="#modalNewComposition"></d-btn-outlined>
             </div>
             <div class="col-auto">
                 <d-btn-fullscreen></d-btn-fullscreen>
             </div>
         </div>
-        
-        <d-base-modal id="modalNewComposition" :title="(step === 1) ? 'Nouveau composition': 'Choix couleurs des fils'" @onClose="handleClose">
+
+        <d-base-modal id="modalNewComposition" :title="(step === 1) ? 'Nouveau composition': 'Choix couleurs des fils'"
+                      @onClose="handleClose">
             <template v-slot:modal-body>
                 <div class="col-8">
                     <template v-if="step === 1">
                         <d-input label="trame" v-model="data.trame" :disabled="true"></d-input>
                         <!-- <d-input type="number" label="fil" v-model="data.threadCount" v-if="!props.carpetCompositionId"></d-input> -->
-                        <d-input type="number" label="couche" v-model="data.layerCount" v-if="!props.carpetCompositionId"></d-input>
+                        <d-input type="number" label="couche" v-model="data.layerCount"
+                                 v-if="!props.carpetCompositionId"></d-input>
                     </template>
                     <template v-else>
-                       <div class="row" v-for="(thread, index) in threads" :key="index">
-                           <d-colors-dominants-dropdown v-model="thread.techColorId" :index="index + 1"></d-colors-dominants-dropdown>
-                       </div>
+                        <div class="row" v-for="(thread, index) in threads" :key="index">
+                            <d-colors-dominants-dropdown v-model="thread.techColorId"
+                                                         :index="index + 1"></d-colors-dominants-dropdown>
+                        </div>
                     </template>
                 </div>
             </template>
             <template v-slot:modal-footer>
-                <button v-if="step === 1" class="btn btn-custom pe-2 ps-2" @click.prevent="addComposition" :disabled="loadStepOne">
+                <button v-if="step === 1" class="btn btn-custom pe-2 ps-2" @click.prevent="addComposition"
+                        :disabled="loadStepOne">
                     suivant
                     <vue-feather type="loader" animation="spin" v-if="loadStepOne"></vue-feather>
                 </button>
@@ -38,28 +43,28 @@
     </div>
 </template>
 <script setup>
-    import { ref, onMounted, watch } from "vue";
+    import { ref, onMounted, watch } from 'vue';
     import VueFeather from 'vue-feather';
-    import dInput from "../../../base/d-input.vue";
-    import axiosInstance from "../../../../config/http";
-    import { formatErrorViolations } from "../../../../composables/global-methods";
-    import dBtnOutlined from "../../../base/d-btn-outlined.vue";
-    import dColorsDominantsDropdown from "../dropdown/d-colors-dominants-dropdown.vue"
-    import dBaseModal from "../../../base/d-base-modal.vue";
-    import dBtnFullscreen from "../../../base/d-btn-fullscreen.vue";
-    import contremarqueService from "../../../../Services/contremarque-service";
-    
+    import dInput from '../../../base/d-input.vue';
+    import axiosInstance from '../../../../config/http';
+    import { formatErrorViolations } from '../../../../composables/global-methods';
+    import dBtnOutlined from '../../../base/d-btn-outlined.vue';
+    import dColorsDominantsDropdown from '../dropdown/d-colors-dominants-dropdown.vue';
+    import dBaseModal from '../../../base/d-base-modal.vue';
+    import dBtnFullscreen from '../../../base/d-btn-fullscreen.vue';
+    import contremarqueService from '../../../../Services/contremarque-service';
+
     const props = defineProps({
         carpetSpecificationId: {
-            type: Number,
-        },
+            type: Number
+        }
     });
-    
+
     const emit = defineEmits(['onClose', 'newCarpetComposition', 'addThreads']);
-    
+
     const color = ref(null);
     const data = ref({
-        trame: 3,
+        trame: '3',
         threadCount: 3,
         layerCount: 0
     });
@@ -67,9 +72,9 @@
     const threads = ref([]);
     const loadStepOne = ref(false);
     const loadStepTwo = ref(false);
-    
+
     let carpetCompositionId = 0;
-    
+
 
     const addComposition = async () => {
         if (step.value === 1 && props.carpetSpecificationId) {
@@ -82,27 +87,27 @@
                 };
                 const res = await axiosInstance.post(`/api/CarpetSpecification/${props.carpetSpecificationId}/CarpetComposition/create`, query);
                 carpetCompositionId = res.data.response.id;
-                
+
                 for (let i = 0; i < data.value.threadCount; i++) {
                     threads.value.push(
-                        {techColorId: 1}
+                        { techColorId: 1 }
                     );
                 }
                 step.value = 2;
             } catch (e) {
-                window.showMessage('Erreur au niveau de la création du composition de tapis', 'error')
+                window.showMessage('Erreur au niveau de la création du composition de tapis', 'error');
                 throw new Error(e.message);
             } finally {
-                loadStepOne.value = false; 
+                loadStepOne.value = false;
             }
         } else {
-            window.showMessage('Identifiant de spécification tapis inccorrect.', 'error')
+            window.showMessage('Identifiant de spécification tapis inccorrect.', 'error');
         }
-    }
-    
+    };
+
     const addThreads = async () => {
-        if(step.value === 2 && carpetCompositionId){
-            try{
+        if (step.value === 2 && carpetCompositionId) {
+            try {
                 loadStepTwo.value = true;
                 const ths = await Promise.all(
                     threads.value.map(async (f, index) => {
@@ -123,10 +128,10 @@
                 loadStepTwo.value = false;
                 const validThreads = ths.filter(thread => thread !== null);
                 emit('newCarpetComposition', carpetCompositionId);
-                emit('addThreads', {threads: validThreads, layerCount: data.value.layerCount});
-                
-                document.querySelector("#modalNewComposition .btn-close").click();
-            }catch(err){
+                emit('addThreads', { threads: validThreads, layerCount: data.value.layerCount });
+
+                document.querySelector('#modalNewComposition .btn-close').click();
+            } catch (err) {
                 console.log(err.message);
             }
         }
@@ -134,6 +139,6 @@
     const handleClose = () => {
         color.value = null;
         trame.value = 3;
-        emit('onClose')
-    }
+        emit('onClose');
+    };
 </script>
