@@ -217,33 +217,18 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="custom-control custom-radio">
-
-                                            <input
-                                                type="checkbox"
-                                                class="custom-control-input"
-                                                id="applyProposedDiscount"
-                                                name="applyProposedDiscount"
-                                                v-model="data.quoteDetail.applyProposedDiscount"
-                                                :disabled="data.quoteDetail.calculateFromTotalExcludingTax"
-                                                value="true"
-                                            />
-
+                                            <input type="checkbox" class="custom-control-input"
+                                                   id="applyProposedDiscount" name="applyProposedDiscount"
+                                                   v-model="data.quoteDetail.applyProposedDiscount" value="true" />
                                             <label class="custom-control-label text-black" for="applyProposedDiscount">
                                                 Appliquer remise proposée
                                             </label>
                                         </div>
-
-                                        <div class="input-group">
-                                            <d-input
-                                                v-model="data.quoteDetail.proposedDiscountRate"
-
-                                                :disabled="!data.quoteDetail.applyProposedDiscount || data.quoteDetail.calculateFromTotalExcludingTax"
-
-                                                class="form-control"
-                                            ></d-input>
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">%</span>
-                                            </div>
+                                        <div class="input-group mt-2">
+                                            <input type="text" class="form-control"
+                                                   v-model="data.quoteDetail.proposedDiscountRate"
+                                                   :disabled="false" />
+                                            <span class="input-group-text">%</span>
                                         </div>
                                     </div>
 
@@ -586,7 +571,6 @@
         locationId: '',
         collectionId: '',
         modelId: '',
-        locationId: '',
         tarifId: '',
         qualityId: ''
     });
@@ -628,6 +612,7 @@
                     }
                     const res = await axiosInstance.put(`/api/Quote/${quote_id}/updateQuoteDetail/${quoteDetailId}`, dataToSent);
                     window.showMessage('Mise a jour avec succées.');
+                    getQuoteDetails(quoteDetailId);
                     if (leave) {
                         setTimeout(() => {
                             goToDevis();
@@ -653,7 +638,6 @@
                 window.showMessage('Veuillez sélectionner une contremarque valide.', 'error');
             }
         } catch (e) {
-            console.log(error.value);
             if (e.response.data.violations) {
                 error.value = formatErrorViolationsComposed(e.response.data.violations);
                 console.log(error.value);
@@ -682,6 +666,7 @@
     };
     const changePrices = async (price) => {
         applyStopAutoSave();
+        await getQuoteDetails(quoteDetailId);
         if (price.tarif && price.grand_public) {
             prices.value = price;
         }
@@ -820,37 +805,7 @@
             prices.value?.tarif_avant_remise_complementaire?.total_ht
         ],
 
-
-watch(
-    () => data.value.quoteDetail.calculateFromTotalExcludingTax,
-    (calculateFromTotalExcludingTax) => {
-        if (calculateFromTotalExcludingTax) {
-            data.value.quoteDetail.applyProposedDiscount = false;
-        }
-    }
-);
-
-watch(
-    () => data.value.quoteDetail.applyProposedDiscount,
-    (applyProposedDiscount) => {
-        if (applyProposedDiscount) {
-            data.value.quoteDetail.calculateFromTotalExcludingTax = false;
-        }
-    }
-);
-
-const confirmHandle = async () => {
-    new window.Swal({
-        title: 'Êtes-vous sûr ?',
-        text: "Changer le tarif affectera le tarif par défaut du client. Voulez-vous continuer ?",
-        type: 'warning',
-        showCancelButton: true,
-        cancelButtonText: 'Annuler',
-        confirmButtonText: 'Confirmer',
-        padding: '2em'
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-
+        async (newCarpert, oldCarpet) => {
             await saveAndCalculate();
         },
         { deep: true }
@@ -858,7 +813,7 @@ const confirmHandle = async () => {
     watch(
         () => data.value.quoteDetail.TarifId,
         async (newTarifId, oldTarifId) => {
-            if (quoteDetailId && !disableAutoSave && applyConfirmationTarifId) {
+            if (!disableAutoSave && applyConfirmationTarifId) {
                 await confirmHandle();
             }
             applyConfirmationTarifId = true;
