@@ -214,18 +214,24 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="custom-control custom-radio">
-                                            <input type="checkbox" class="custom-control-input"
-                                                id="applyProposedDiscount" name="applyProposedDiscount"
-                                                v-model="data.quoteDetail.applyProposedDiscount" value="true" />
+                                            <input
+                                                type="checkbox"
+                                                class="custom-control-input"
+                                                id="applyProposedDiscount"
+                                                name="applyProposedDiscount"
+                                                v-model="data.quoteDetail.applyProposedDiscount"
+                                                :disabled="data.quoteDetail.calculateFromTotalExcludingTax"
+                                                value="true"
+                                            />
                                             <label class="custom-control-label text-black" for="applyProposedDiscount">
                                                 Appliquer remise proposée
                                             </label>
                                         </div>
-                                    
+
                                         <div class="input-group">
                                             <d-input
                                                 v-model="data.quoteDetail.proposedDiscountRate"
-                                                :disabled="!data.quoteDetail.applyProposedDiscount"
+                                                :disabled="!data.quoteDetail.applyProposedDiscount || data.quoteDetail.calculateFromTotalExcludingTax"
                                                 class="form-control"
                                             ></d-input>
                                             <div class="input-group-append">
@@ -837,6 +843,24 @@ watch(
         }
     },
     { deep: true }
+);
+
+watch(
+    () => data.value.quoteDetail.calculateFromTotalExcludingTax,
+    (calculateFromTotalExcludingTax) => {
+        if (calculateFromTotalExcludingTax) {
+            data.value.quoteDetail.applyProposedDiscount = false;
+        }
+    }
+);
+
+watch(
+    () => data.value.quoteDetail.applyProposedDiscount,
+    (applyProposedDiscount) => {
+        if (applyProposedDiscount) {
+            data.value.quoteDetail.calculateFromTotalExcludingTax = false;
+        }
+    }
 );
 
 const confirmHandle = async () => {
