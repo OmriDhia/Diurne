@@ -217,9 +217,17 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="custom-control custom-radio">
-                                            <input type="checkbox" class="custom-control-input"
-                                                   id="applyProposedDiscount" name="applyProposedDiscount"
-                                                   v-model="data.quoteDetail.applyProposedDiscount" value="true" />
+
+                                            <input
+                                                type="checkbox"
+                                                class="custom-control-input"
+                                                id="applyProposedDiscount"
+                                                name="applyProposedDiscount"
+                                                v-model="data.quoteDetail.applyProposedDiscount"
+                                                :disabled="data.quoteDetail.calculateFromTotalExcludingTax"
+                                                value="true"
+                                            />
+
                                             <label class="custom-control-label text-black" for="applyProposedDiscount">
                                                 Appliquer remise proposée
                                             </label>
@@ -228,7 +236,9 @@
                                         <div class="input-group">
                                             <d-input
                                                 v-model="data.quoteDetail.proposedDiscountRate"
-                                                :disabled="false"
+
+                                                :disabled="!data.quoteDetail.applyProposedDiscount || data.quoteDetail.calculateFromTotalExcludingTax"
+
                                                 class="form-control"
                                             ></d-input>
                                             <div class="input-group-append">
@@ -810,7 +820,37 @@
             prices.value?.tarif_avant_remise_complementaire?.total_ht
         ],
 
-        async (newCarpert, oldCarpet) => {
+
+watch(
+    () => data.value.quoteDetail.calculateFromTotalExcludingTax,
+    (calculateFromTotalExcludingTax) => {
+        if (calculateFromTotalExcludingTax) {
+            data.value.quoteDetail.applyProposedDiscount = false;
+        }
+    }
+);
+
+watch(
+    () => data.value.quoteDetail.applyProposedDiscount,
+    (applyProposedDiscount) => {
+        if (applyProposedDiscount) {
+            data.value.quoteDetail.calculateFromTotalExcludingTax = false;
+        }
+    }
+);
+
+const confirmHandle = async () => {
+    new window.Swal({
+        title: 'Êtes-vous sûr ?',
+        text: "Changer le tarif affectera le tarif par défaut du client. Voulez-vous continuer ?",
+        type: 'warning',
+        showCancelButton: true,
+        cancelButtonText: 'Annuler',
+        confirmButtonText: 'Confirmer',
+        padding: '2em'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+
             await saveAndCalculate();
         },
         { deep: true }
