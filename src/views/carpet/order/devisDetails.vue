@@ -879,14 +879,6 @@
         },
         { deep: true }
     );
-    watch(
-        () => data.value.quoteDetail.calculateFromTotalExcludingTax,
-        (val) => {
-            if (val) {
-                data.value.quoteDetail.applyProposedDiscount = false;
-            }
-        }
-    );
     const confirmHandle = async () => {
         new window.Swal({
             title: 'Êtes-vous sûr ?',
