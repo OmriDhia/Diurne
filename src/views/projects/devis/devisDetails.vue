@@ -843,7 +843,6 @@
         },
         { deep: true }
     );
-
     const confirmHandle = async () => {
         new window.Swal({
             title: 'Êtes-vous sûr ?',
