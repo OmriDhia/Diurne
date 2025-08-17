@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDelete">
+        <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDelete" :disabled="disabled">
             <vue-feather type="x" :size="14"></vue-feather>
         </button>
     </div>
@@ -17,6 +17,10 @@ const props = defineProps({
     },
     api: {
         type: String
+    },
+    disabled: {
+        type: Boolean,
+        default: false
     },
 });
 const emit = defineEmits(['isDone']);
