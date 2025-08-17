@@ -785,7 +785,9 @@
     };
     const saveAndCalculate = async () => {
         if (quoteDetailId && !disableAutoSave) {
+
             await saveDevisDetails();
+
             document.getElementById('clickConvertCalculation').click();
         }
     };
