@@ -159,14 +159,16 @@
                                     <div class="row ps-4 align-items-center">
                                         <div class="col-auto p-1">
                                             <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"  title="Mise à jour de l'image"
-                                                    @click="goToUpdateOrder(item.id)">
+                                                    @click="goToUpdateOrder(item.id)"
+                                                    :disabled="item.status && item.status.id === 2">
                                                 <vue-feather type="search" size="14"></vue-feather>
                                             </button>
                                         </div>
                                         <div class="col-auto p-1">
-                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" 
+                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"
                                                 :title="'Dupliquer cette image (crée une nouvelle image avec les mêmes infos tant que la DI n\'est pas transmise)'"
-                                                @click="CopieImage(item.id)">
+                                                @click="CopieImage(item.id)"
+                                                :disabled="item.status && item.status.id === 2">
                                                 <vue-feather type="clipboard" size="14"></vue-feather>
                                             </button>
                                         </div>
@@ -176,6 +178,7 @@
                                                 message="Voulez-vous vraiment supprimer cette commande de design de tapis?"
                                                 @isDone="handleDeleteSuccess"
                                                 title="Supprimer image"
+                                                :disabled="item.status && item.status.id === 2"
                                             >
                                             </d-delete>
                                         </div>
