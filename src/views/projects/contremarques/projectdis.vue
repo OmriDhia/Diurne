@@ -102,7 +102,8 @@
                                          class="cursor-pointer"></vue-feather>
                         </router-link>
                         <p></p>
-                        <vue-feather @click="copyDemandeNumber" style="padding: 11px 0px 1px 0px;" type="clipboard" stroke-width="1"
+                        <vue-feather @click="copyDemandeNumber" style="padding: 11px 0px 1px 0px;" type="clipboard"
+                                     stroke-width="1"
                                      class="cursor-pointer"></vue-feather>
                     </div>
 
@@ -158,15 +159,18 @@
                                 <td aria-colindex="6" role="cell" class="p-0">
                                     <div class="row ps-4 align-items-center">
                                         <div class="col-auto p-1">
-                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"  title="Mise à jour de l'image"
-                                                    @click="goToUpdateOrder(item.id)">
+                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"
+                                                    title="Mise à jour de l'image"
+                                                    @click="goToUpdateOrder(item.id)"
+                                                    :disabled="item.status && item.status.id === 2">
                                                 <vue-feather type="search" size="14"></vue-feather>
                                             </button>
                                         </div>
                                         <div class="col-auto p-1">
-                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" 
-                                                :title="'Dupliquer cette image (crée une nouvelle image avec les mêmes infos tant que la DI n\'est pas transmise)'"
-                                                @click="CopieImage(item.id)">
+                                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"
+                                                    :title="'Dupliquer cette image (crée une nouvelle image avec les mêmes infos tant que la DI n\'est pas transmise)'"
+                                                    @click="CopieImage(item.id)"
+                                                    :disabled="item.status && item.status.id === 2">
                                                 <vue-feather type="clipboard" size="14"></vue-feather>
                                             </button>
                                         </div>
@@ -176,6 +180,7 @@
                                                 message="Voulez-vous vraiment supprimer cette commande de design de tapis?"
                                                 @isDone="handleDeleteSuccess"
                                                 title="Supprimer image"
+                                                :disabled="item.status && item.status.id === 2"
                                             >
                                             </d-delete>
                                         </div>
@@ -206,8 +211,8 @@
                     </div>
                     <div class="col-auto">
                         <button class="btn btn-custom pe-5 ps-5" @click.prevent="CopieDI"
-                            :title="'Dupliquer la DI (copie tous les éléments sauf la Dead Line)'"
-                            :disabled="selectedData.transmitted_to_studio">
+                                :title="'Dupliquer la DI (copie tous les éléments sauf la Dead Line)'"
+                        >
                             Copier DI
                         </button>
                     </div>
@@ -226,219 +231,221 @@
 </template>
 
 <script setup>
-import dInput from '../../../components/base/d-input.vue';
-import dPageTitle from '../../../components/common/d-page-title.vue';
-import dUnitMeasurements from '../../../components/common/d-unit-measurements.vue';
-import dBtnOutlined from '../../../components/base/d-btn-outlined.vue';
-import dDelete from '../../../components/common/d-delete.vue';
-import dModalManageDi from '../../../components/projet/contremarques/_Partials/d-modal-manage-di.vue';
-import VueFeather from 'vue-feather';
-import axiosInstance from '../../../config/http';
-import { useRoute, useRouter } from 'vue-router';
-import { ref, onMounted, watch } from 'vue';
-import contremarqueService from '../../../Services/contremarque-service';
-import dAttachment from '../../../components/projet/contremarques/_Partials/d-attachments.vue';
+    import dInput from '../../../components/base/d-input.vue';
+    import dPageTitle from '../../../components/common/d-page-title.vue';
+    import dUnitMeasurements from '../../../components/common/d-unit-measurements.vue';
+    import dBtnOutlined from '../../../components/base/d-btn-outlined.vue';
+    import dDelete from '../../../components/common/d-delete.vue';
+    import dModalManageDi from '../../../components/projet/contremarques/_Partials/d-modal-manage-di.vue';
+    import VueFeather from 'vue-feather';
+    import axiosInstance from '../../../config/http';
+    import { useRoute, useRouter } from 'vue-router';
+    import { ref, onMounted, watch } from 'vue';
+    import contremarqueService from '../../../Services/contremarque-service';
+    import dAttachment from '../../../components/projet/contremarques/_Partials/d-attachments.vue';
 
-import Store from '../../../store/index';
+    import Store from '../../../store/index';
 
-import { useMeta } from '/src/composables/use-meta';
-import { Helper } from '../../../composables/global-methods';
+    import { useMeta } from '/src/composables/use-meta';
+    import { Helper } from '../../../composables/global-methods';
 
-useMeta({ title: 'Demande Image' });
+    useMeta({ title: 'Demande Image' });
 
-const router = useRouter();
-const route = useRoute();
-const contremarque_id = route.params.id;
-const datas = ref([]);
-const selected = ref(null);
-const selectedData = ref({});
-const comment = ref('');
-const format = ref('');
-const unitOfMesurements = ref('');
-const contremarque = ref({});
-const customer = ref({});
-const transDate = ref('');
-const carpetDesign = ref([]);
-const deadline = ref(null);
-const commercial = ref(null);
-const selectedDiId = ref(null);
-const getDIS = async () => {
-    try {
-        const res = await axiosInstance.get(`/api/contremarque/${contremarque_id}/projectDis`);
-        datas.value = res.data.response.projectDis;
-        selectedDiId.value = null;
-        await handleSelected(0);
-    } catch (e) {
-        console.log('Erreur get data di');
-    }
-};
-const getProjectDIS = async () => {
-    try {
-        getDIS();
-        contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
-        commercial.value = (contremarque.value.commercials) ? contremarque.value.commercials[0].firstname + ' ' + contremarque.value.commercials[0].lastname : '';
-        customer.value = contremarque.value.customer;
-    } catch (e) {
-        console.log(e);
-        console.log('Erreur get events customer');
-    }
-};
+    const router = useRouter();
+    const route = useRoute();
+    const contremarque_id = route.params.id;
+    const datas = ref([]);
+    const selected = ref(null);
+    const selectedData = ref({});
+    const comment = ref('');
+    const format = ref('');
+    const unitOfMesurements = ref('');
+    const contremarque = ref({});
+    const customer = ref({});
+    const transDate = ref('');
+    const carpetDesign = ref([]);
+    const deadline = ref(null);
+    const commercial = ref(null);
+    const selectedDiId = ref(null);
+    const getDIS = async () => {
+        try {
+            const res = await axiosInstance.get(`/api/contremarque/${contremarque_id}/projectDis`);
+            datas.value = res.data.response.projectDis;
+            selectedDiId.value = null;
+            await handleSelected(0);
+        } catch (e) {
+            console.log('Erreur get data di');
+        }
+    };
+    const getProjectDIS = async () => {
+        try {
+            getDIS();
+            contremarque.value = await contremarqueService.getContremarqueById(contremarque_id);
+            commercial.value = (contremarque.value.commercials) ? contremarque.value.commercials[0].firstname + ' ' + contremarque.value.commercials[0].lastname : '';
+            customer.value = contremarque.value.customer;
+        } catch (e) {
+            console.log(e);
+            console.log('Erreur get events customer');
+        }
+    };
 
-const CopieImage = async (carpetDesignOrderId) => {
-    try {
-        const res = await axiosInstance.post(`/api/cloneCarpetDesignOrders/${carpetDesignOrderId}`);
-        window.showMessage(`Image d'id ${carpetDesignOrderId} a été dupliqué avec succées`)
+    const CopieImage = async (carpetDesignOrderId) => {
+        try {
+            const res = await axiosInstance.post(`/api/cloneCarpetDesignOrders/${carpetDesignOrderId}`);
+            window.showMessage(`Image d'id ${carpetDesignOrderId} a été dupliqué avec succées`);
+            carpetDesign.value = await contremarqueService.getcarpetDesign(contremarque_id, selectedData.value.project_di);
+        } catch (e) {
+            console.log(e);
+            console.log('Erreur get events customer');
+        }
+    };
+
+    const CopieDI = async () => {
+        try {
+            const res = await axiosInstance.post(`/api/cloneProjectDi/${selectedData.value.project_di}`);
+            window.showMessage(`Une demande d'image d'id ${selectedData.value.project_di} a été dupliqué avec succées`);
+            getDIS();
+        } catch (e) {
+            console.log(e);
+            console.log('Erreur get events customer');
+        }
+    };
+
+    const TransStudio = async () => {
+        try {
+            const d = {
+                transmitted_to_studio: true,
+                transmition_date: new Date()
+            };
+            const res = await axiosInstance.put(`/api/projectDi/${selectedData.value.project_di}/update`, d);
+            getDIS();
+            window.showMessage('Demande d\'image est transmis avec succées.');
+        } catch (e) {
+            console.log(e);
+            console.log('Erreur get events customer');
+        }
+    };
+    const handleSelected = async (index) => {
+        selected.value = index;
+        comment.value = datas.value[index].commentaire;
+        selectedData.value = datas.value[index];
+        unitOfMesurements.value = selectedData.value.unit;
+        transDate.value = (selectedData.value.transmition_date && selectedData.value.transmitted_to_studio) ? Helper.FormatDate(selectedData.value.transmition_date.date) : '';
         carpetDesign.value = await contremarqueService.getcarpetDesign(contremarque_id, selectedData.value.project_di);
-    } catch (e) {
-        console.log(e);
-        console.log('Erreur get events customer');
-    }
-};
+        deadline.value = (selectedData.value.deadline) ? Helper.FormatDate(selectedData.value.deadline.date) : '';
+    };
+    const selectDiId = () => {
+        selectedDiId.value = selectedData.value.project_di;
+    };
+    const goTocreateOrder = () => {
+        if (selectedData.value.project_di) {
+            router.push({ name: 'di_orderDesigner_create', params: { id_di: selectedData.value.project_di } });
+        } else {
+            window.showMessage('Auccun demande d\'image selectionner', 'error');
+        }
 
-const CopieDI = async () => {
-    try {
-        const res = await axiosInstance.post(`/api/cloneProjectDi/${selectedData.value.project_di}`);
-        window.showMessage(`Une demande d'image d'id ${selectedData.value.project_di} a été dupliqué avec succées`)
-        getDIS()
-    } catch (e) {
-        console.log(e);
-        console.log('Erreur get events customer');
-    }
-};
+    };
+    const goToUpdateOrder = (id) => {
+        if (selectedData.value.project_di) {
+            router.push({
+                name: 'di_orderDesigner_update',
+                params: { id_di: selectedData.value.project_di, carpetDesignOrderId: id }
+            });
+        } else {
+            window.showMessage('Auccun demande d\'image selectionner', 'error');
+        }
+    };
+    const handleDeleteSuccess = () => {
 
-const TransStudio = async () => {
-    try {
-        const d = {
-            transmitted_to_studio: true,
-            transmition_date: new Date()
-        };
-        const res = await axiosInstance.put(`/api/projectDi/${selectedData.value.project_di}/update`, d);
-        getDIS();
-        window.showMessage('Demande d\'image est transmis avec succées.');
-    } catch (e) {
-        console.log(e);
-        console.log('Erreur get events customer');
-    }
-};
-const handleSelected = async (index) => {
-    selected.value = index;
-    comment.value = datas.value[index].commentaire;
-    selectedData.value = datas.value[index];
-    unitOfMesurements.value = selectedData.value.unit;
-    transDate.value = (selectedData.value.transmition_date && selectedData.value.transmitted_to_studio) ? Helper.FormatDate(selectedData.value.transmition_date.date) : '';
-    carpetDesign.value = await contremarqueService.getcarpetDesign(contremarque_id, selectedData.value.project_di);
-    deadline.value = (selectedData.value.deadline) ? Helper.FormatDate(selectedData.value.deadline.date) : '';
-};
-const selectDiId = () => {
-    selectedDiId.value = selectedData.value.project_di;
-};
-const goTocreateOrder = () => {
-    if (selectedData.value.project_di) {
-        router.push({ name: 'di_orderDesigner_create', params: { id_di: selectedData.value.project_di } });
-    } else {
-        window.showMessage('Auccun demande d\'image selectionner', 'error');
-    }
-
-};
-const goToUpdateOrder = (id) => {
-    if (selectedData.value.project_di) {
-        router.push({
-            name: 'di_orderDesigner_update',
-            params: { id_di: selectedData.value.project_di, carpetDesignOrderId: id }
-        });
-    } else {
-        window.showMessage('Auccun demande d\'image selectionner', 'error');
-    }
-};
-const handleDeleteSuccess = () => {
-
-    contremarqueService.getcarpetDesign(contremarque_id, selectedData.value.project_di)
-        .then(data => {
-            carpetDesign.value = data;
-        })
-        .catch(error => {
-            console.error('Error refreshing carpet designs:', error);
-        });
-};
-const copyDemandeNumber = () => {
-    if (selectedData.value.demande_number) {
-        navigator.clipboard.writeText(selectedData.value.demande_number);
-        window.showMessage && window.showMessage('Numéro de demande copié !', 'success');
-    }
-};
-onMounted(() => {
-    getProjectDIS();
-});
-/*watch(
-    () => props.customerId,
-    (newVal) => {
-        console.log(newVal);
-        getEventHistories(newVal)
-    }
-);*/
+        contremarqueService.getcarpetDesign(contremarque_id, selectedData.value.project_di)
+            .then(data => {
+                carpetDesign.value = data;
+            })
+            .catch(error => {
+                console.error('Error refreshing carpet designs:', error);
+            });
+    };
+    const copyDemandeNumber = () => {
+        if (selectedData.value.demande_number) {
+            navigator.clipboard.writeText(selectedData.value.demande_number);
+            window.showMessage && window.showMessage('Numéro de demande copié !', 'success');
+        }
+    };
+    onMounted(() => {
+        getProjectDIS();
+    });
+    /*watch(
+        () => props.customerId,
+        (newVal) => {
+            console.log(newVal);
+            getEventHistories(newVal)
+        }
+    );*/
 </script>
 
 <style scoped>
-.table > thead > tr > th {
-    background-color: #D4EFF8;
-    color: black;
-    font-weight: 700;
-    font-size: 12px;
-}
+    .table > thead > tr > th {
+        background-color: #D4EFF8;
+        color: black;
+        font-weight: 700;
+        font-size: 12px;
+    }
 
-.table > thead > tr > th:first-child {
-    border-radius: 20px 0px 0px 20px;
-}
+    .table > thead > tr > th:first-child {
+        border-radius: 20px 0px 0px 20px;
+    }
 
-.table > thead > tr > th:last-child {
-    border-radius: 0px 20px 20px 0px;
-}
+    .table > thead > tr > th:last-child {
+        border-radius: 0px 20px 20px 0px;
+    }
 
-.table > tbody > tr > td:last-child {
-    border-radius: 0px 10px 10px 0px;
-}
+    .table > tbody > tr > td:last-child {
+        border-radius: 0px 10px 10px 0px;
+    }
 
-.table > tbody > tr > td:first-child {
-    border-radius: 10px 0px 0px 10px;
-}
+    .table > tbody > tr > td:first-child {
+        border-radius: 10px 0px 0px 10px;
+    }
 
-.table > tbody > tr > td {
-    font-size: 0.8rem;
-    border: none;
-}
+    .table > tbody > tr > td {
+        font-size: 0.8rem;
+        border: none;
+    }
 
-.table > tbody > tr > td:not(:last-child) {
-    border-right: 1px solid #D4EFF8;
-}
+    .table > tbody > tr > td:not(:last-child) {
+        border-right: 1px solid #D4EFF8;
+    }
 
-.table-striped > tbody > tr:nth-of-type(odd) > * {
-    --bs-table-accent-bg: var(--bs-table-bg);
-}
+    .table-striped > tbody > tr:nth-of-type(odd) > * {
+        --bs-table-accent-bg: var(--bs-table-bg);
+    }
 
-.table > :not(caption) > * > * {
-    --bs-table-accent-bg: #EDF9FD;
-}
+    .table > :not(caption) > * > * {
+        --bs-table-accent-bg: #EDF9FD;
+    }
 
-.input-group {
-    display: flex;
-    align-items: stretch;
-}
-.input-group .btn-custom {
-    height: 100%;
-    min-width: 30px;
-    width: 30px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%!important;
-    background-color: #4260EB !important;
-    border-color: #4260EB !important;
-    box-shadow: none !important;
-    cursor: pointer;
-}
-.input-group .btn-custom svg {
-    color: #fff !important;
-}
+    .input-group {
+        display: flex;
+        align-items: stretch;
+    }
+
+    .input-group .btn-custom {
+        height: 100%;
+        min-width: 30px;
+        width: 30px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50% !important;
+        background-color: #4260EB !important;
+        border-color: #4260EB !important;
+        box-shadow: none !important;
+        cursor: pointer;
+    }
+
+    .input-group .btn-custom svg {
+        color: #fff !important;
+    }
 
 </style>
