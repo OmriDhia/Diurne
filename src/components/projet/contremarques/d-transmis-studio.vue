@@ -25,10 +25,14 @@
                 </div>
             </div-->
             <div class="col-auto">
-                <button class="btn btn-custom ps-4 pe-4 text-uppercase" @click="saveDI" :disabled="canSaveSpecifications">Enregistrer</button>
+                <button class="btn btn-custom ps-4 pe-4 text-uppercase" @click="saveDI"
+                        :disabled="canSaveSpecifications">Enregistrer
+                </button>
             </div>
             <div class="col-auto" v-if="canShowTransmisStudio">
-                <button class="btn btn-custom ps-4 pe-4 text-uppercase font-size-0-7" @click="transmisStudio">Transmettre la demande au studio</button>
+                <button class="btn btn-custom ps-4 pe-4 text-uppercase font-size-0-7" @click="transmisStudio">
+                    Transmettre la demande au studio
+                </button>
             </div>
         </div>
         <div class="row justify-content-end align-items-center mt-3">
@@ -50,36 +54,37 @@
                 <button class="btn btn-custom ps-4 pe-4 text-uppercase font-size-0-7">Incoherence DI STUDIO</button>
             </div>
         </div>
-        
+
     </div>
 </template>
 
 <script setup>
     import { ref, watch, onMounted, computed } from 'vue';
-    import { useStore } from "vuex";
+    import { useStore } from 'vuex';
     import VueFeather from 'vue-feather';
-    import dInput from "../../base/d-input.vue";
-    import {carpetStatus} from "../../../composables/constants";
+    import dInput from '../../base/d-input.vue';
+    import { carpetStatus } from '../../../composables/constants';
 
     const props = defineProps({
         carpetDesignOrderId: {
-            type: Number,
+            type: Number
         },
         disableSave: {
             type: Boolean,
-            default: false,
-        },
+            default: false
+        }
     });
 
     const store = useStore();
-    const emit = defineEmits(['transmisStudio','saveCarpetOrderSpecifications']);
-    const canShowTransmisStudio = computed(() => (store.getters.isCommertial || store.getters.isSuperAdmin) && !store.getters.isFinStatus);
+    console.log(store);
+    const emit = defineEmits(['transmisStudio', 'saveCarpetOrderSpecifications']);
+    const canShowTransmisStudio = computed(() => (store.getters.isCommertial || store.getters.isSuperAdmin) && !store.getters.isFinStatus && store.getters.isNonTrasmisStatus);
     const canSaveSpecifications = computed(() => (store.getters.isDesigner || store.getters.isDesignerManager || !store.getters.isNonTrasmisStatus));
-    
+
     const transmisStudio = () => {
-        emit('transmisStudio',carpetStatus.transmisId);
-    }
+        emit('transmisStudio', carpetStatus.transmisId);
+    };
     const saveDI = () => {
         emit('saveCarpetOrderSpecifications');
-    }
+    };
 </script>

@@ -257,7 +257,7 @@
                                     </div>
                                     <div class="col-md-12 col-xl-3 ps-1 d-flex flex-column" v-if="carpetDesignOrderId">
                                         <d-designer-list
-                                            v-if="!hideForTransStudio || designerManagerAccess"
+                                            v-if="hideForTransStudio || designerManagerAccess"
                                             :disabled="CommercialAccess"
                                             @endCarpetDesignOrder="updateCarpetDesignStatus($event,true)"
                                             :carpetDesignOrderId="carpetDesignOrderId"
@@ -461,7 +461,8 @@
         return store.getters.isDesigner || store.getters.isDesignerManager || store.getters.isSuperAdmin;
     });
     const designerManagerAccess = computed(() => {
-        return store.getters.isDesignerManager || store.getters.isSuperAdmin;
+        //return store.getters.isDesignerManager || store.getters.isSuperAdmin;
+        return store.getters.isDesignerManager;
     });
     const disableForDesigner = computed(() => {
         return store.getters.isDesigner || store.getters.isDesignerManager || !store.getters.isNonTrasmisStatus;

@@ -33,7 +33,7 @@
                             <div class="row">
                                 <div class="col-sm-12 col-md-4 text-black">Image:</div>
                                 <div class="col-sm-12 col-md-8">
-                                    <d-upload-file @file-selected="slectedFile($event)"></d-upload-file>
+                                    <d-upload-file @file-selected="slectedFile($event)" :file-name="displayFileName"></d-upload-file>
                                     <div class="pt-3" v-if="uploadProgress">
                                         <div class="progress">
                                             <div
@@ -59,7 +59,7 @@
     </div>
 </template>
 <script setup>
-    import { ref, watch } from 'vue';
+    import { ref, watch, computed } from 'vue';
     import attachmentService from '../../../../Services/attachment-service';
     import dInput from '../../../../components/base/d-input.vue';
     import dBaseModal from '../../../../components/base/d-base-modal.vue';
@@ -83,6 +83,15 @@
     let uplodedImage = null;
     let createdImage = null;
 
+    const sanitizeReference = (value) => {
+        return value
+            .toString()
+            .normalize('NFD')
+            .replace(/[^\w\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '_');
+    };
+
     const data = ref({
         image_reference: '',
         carpetDesignOrderId: 0,
@@ -98,6 +107,16 @@
     const slectedFile = (event) => {
         file.value = event;
     };
+
+    const displayFileName = computed(() => {
+        if (!file.value) return '';
+        if (data.value.image_reference) {
+            const extension = file.value.name.substring(file.value.name.lastIndexOf('.'));
+            const sanitized = sanitizeReference(data.value.image_reference);
+            return sanitized ? `${sanitized}${extension}` : file.value.name;
+        }
+        return file.value.name;
+    });
     watch(
         () => data.value.imageTypeId,
         (newVal) => {
@@ -118,13 +137,22 @@
         console.log(data.value.imageTypeId);
         try {
             if (!uplodedImage) {
+                let fileToUpload = file.value;
+                if (data.value.image_reference) {
+                    const extension = file.value.name.substring(file.value.name.lastIndexOf('.'));
+                    const sanitized = sanitizeReference(data.value.image_reference);
+                    if (sanitized) {
+                        fileToUpload = new File([file.value], `${sanitized}${extension}`, { type: file.value.type });
+                    }
+                }
                 const response = await attachmentService.uploadFile(
-                    file.value, 
-                    store.getters.defaultTypeImageId, 
-                    distantFilePath.value, 
+                    fileToUpload,
+                    store.getters.defaultTypeImageId,
+                    distantFilePath.value,
                     (progress) => {
-                    uploadProgress.value = progress;
-                });
+                        uploadProgress.value = progress;
+                    }
+                );
                 window.showMessage('Upload image avec succées');
                 uplodedImage = response.id;
             }
