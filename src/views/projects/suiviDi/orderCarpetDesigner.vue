@@ -257,7 +257,7 @@
                                     </div>
                                     <div class="col-md-12 col-xl-3 ps-1 d-flex flex-column" v-if="carpetDesignOrderId">
                                         <d-designer-list
-                                            v-if="!hideForTransStudio || designerManagerAccess"
+                                            v-if="hideForTransStudio || designerManagerAccess"
                                             :disabled="CommercialAccess"
                                             @endCarpetDesignOrder="updateCarpetDesignStatus($event,true)"
                                             :carpetDesignOrderId="carpetDesignOrderId"
