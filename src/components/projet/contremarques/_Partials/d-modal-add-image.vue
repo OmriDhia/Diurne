@@ -83,6 +83,15 @@
     let uplodedImage = null;
     let createdImage = null;
 
+    const sanitizeReference = (value) => {
+        return value
+            .toString()
+            .normalize('NFD')
+            .replace(/[^\w\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '_');
+    };
+
     const data = ref({
         image_reference: '',
         carpetDesignOrderId: 0,
@@ -118,13 +127,22 @@
         console.log(data.value.imageTypeId);
         try {
             if (!uplodedImage) {
+                let fileToUpload = file.value;
+                if (data.value.image_reference) {
+                    const extension = file.value.name.substring(file.value.name.lastIndexOf('.'));
+                    const sanitized = sanitizeReference(data.value.image_reference);
+                    if (sanitized) {
+                        fileToUpload = new File([file.value], `${sanitized}${extension}`, { type: file.value.type });
+                    }
+                }
                 const response = await attachmentService.uploadFile(
-                    file.value, 
-                    store.getters.defaultTypeImageId, 
-                    distantFilePath.value, 
+                    fileToUpload,
+                    store.getters.defaultTypeImageId,
+                    distantFilePath.value,
                     (progress) => {
-                    uploadProgress.value = progress;
-                });
+                        uploadProgress.value = progress;
+                    }
+                );
                 window.showMessage('Upload image avec succées');
                 uplodedImage = response.id;
             }
