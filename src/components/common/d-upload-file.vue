@@ -5,6 +5,13 @@
     const emit = defineEmits(['file-selected']);
     const file = ref(null);
 
+    const props = defineProps({
+        fileName: {
+            type: String,
+            default: '',
+        },
+    });
+
     const handleDrop = (event) => {
         event.preventDefault();
         if (event.dataTransfer.files.length > 0) {
@@ -45,7 +52,7 @@
             </div>
 
             <div v-if="file" class="d-flex justify-content-between align-items-center mt-4 mb-4">
-                <p class="mb-0"><strong>Fichier sélectionné :</strong> {{ file.name }}</p>
+                <p class="mb-0"><strong>Fichier sélectionné :</strong> {{ fileName || file.name }}</p>
                 <VueFeather type="x-circle" size="24" class="text-danger" @click.stop="removeFile" style="cursor: pointer;" />
             </div>
         </div>

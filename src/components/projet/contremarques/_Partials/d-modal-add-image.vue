@@ -33,7 +33,7 @@
                             <div class="row">
                                 <div class="col-sm-12 col-md-4 text-black">Image:</div>
                                 <div class="col-sm-12 col-md-8">
-                                    <d-upload-file @file-selected="slectedFile($event)"></d-upload-file>
+                                    <d-upload-file @file-selected="slectedFile($event)" :file-name="displayFileName"></d-upload-file>
                                     <div class="pt-3" v-if="uploadProgress">
                                         <div class="progress">
                                             <div
@@ -59,7 +59,7 @@
     </div>
 </template>
 <script setup>
-    import { ref, watch } from 'vue';
+    import { ref, watch, computed } from 'vue';
     import attachmentService from '../../../../Services/attachment-service';
     import dInput from '../../../../components/base/d-input.vue';
     import dBaseModal from '../../../../components/base/d-base-modal.vue';
@@ -107,6 +107,16 @@
     const slectedFile = (event) => {
         file.value = event;
     };
+
+    const displayFileName = computed(() => {
+        if (!file.value) return '';
+        if (data.value.image_reference) {
+            const extension = file.value.name.substring(file.value.name.lastIndexOf('.'));
+            const sanitized = sanitizeReference(data.value.image_reference);
+            return sanitized ? `${sanitized}${extension}` : file.value.name;
+        }
+        return file.value.name;
+    });
     watch(
         () => data.value.imageTypeId,
         (newVal) => {
