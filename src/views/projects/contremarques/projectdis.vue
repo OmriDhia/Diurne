@@ -161,8 +161,7 @@
                                         <div class="col-auto p-1">
                                             <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"
                                                     title="Mise à jour de l'image"
-                                                    @click="goToUpdateOrder(item.id)"
-                                                    :disabled="item.status && item.status.id === 2">
+                                                    @click="goToUpdateOrder(item.id)">
                                                 <vue-feather type="search" size="14"></vue-feather>
                                             </button>
                                         </div>
