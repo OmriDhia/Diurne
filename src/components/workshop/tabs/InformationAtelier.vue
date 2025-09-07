@@ -63,6 +63,12 @@ onMounted(() => {
 const checkingLists = ref([]);
 const router = useRouter();
 const error = ref({});
+
+const setDefaultDateCmdAtelier = () => {
+    if (!props.formData.infoCommande.dateCmdAtelier) {
+        props.formData.infoCommande.dateCmdAtelier = Helper.FormatDateTime(new Date(), 'YYYY-MM-DDTHH:mm');
+    }
+};
 const loadCheckingLists = async () => {
     try {
         if(props.orderId){
@@ -305,12 +311,14 @@ onMounted(() =>{
     loadCheckingLists();
     setDataForUpdate();
     setDataFromImageCommande();
+    setDefaultDateCmdAtelier();
     console.log("lastOne: ", props.lastprogressReporting)
 });
 watch(
     () => props.workshopInfo,
     () => {
         setDataForUpdate()
+        setDefaultDateCmdAtelier();
     },
     { deep: true }
 );
@@ -318,6 +326,7 @@ watch(
     () => props.imageCommande,
     () => {
         setDataFromImageCommande()
+        setDefaultDateCmdAtelier();
     },
     { deep: true }
 );
