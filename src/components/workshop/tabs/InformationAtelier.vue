@@ -132,6 +132,7 @@ const saveWorkshopInformation = async () => {
     const payload = {
         launchDate: props.formData.infoCommande.dateCmdAtelier || "",
         expectedEndDate: props.formData.infoCommande.dateFinTheo || "",
+        dateEndAtelierPrev: props.formData.infoCommande.dateFinAtelierPrev || "",
         productionTime: Number(props.formData.infoCommande.delaisProd) || 0,
         orderSilkPercentage: props.formData.infoCommande.pourcentCommande,
         orderedWidth: props.formData.infoCommande.largeurCmd,
@@ -220,6 +221,7 @@ const setDataForUpdate = () => {
     if(Object.keys(props.workshopInfo).length > 0){
         props.formData.infoCommande.dateCmdAtelier = props.workshopInfo.launchDate;
         props.formData.infoCommande.dateFinTheo = props.workshopInfo.expectedEndDate;
+        props.formData.infoCommande.dateFinAtelierPrev = props.workshopInfo.dateEndAtelierPrev;
         props.formData.infoCommande.delaisProd = props.workshopInfo.productionTime?.toString() || "";
         props.formData.infoCommande.pourcentCommande = Helper.FormatNumber(props.workshopInfo.orderSilkPercentage);
         props.formData.infoCommande.largeurCmd =  Helper.FormatNumber(props.workshopInfo.orderedWidth);

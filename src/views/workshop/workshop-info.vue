@@ -91,6 +91,12 @@ const getWorkshopOrder = async () => {
         imageCommande.value = workshopOrder.value.imageCommand;
         imageCommandId.value = imageCommande.value.id;
 
+        if (workshopInfo.value.dateEndAtelierPrev) {
+            const formattedPrev = Helper.FormatDateTime(workshopInfo.value.dateEndAtelierPrev, 'YYYY-MM-DDTHH:mm');
+            formData.value.infoCommande.dateFinAtelierPrev = formattedPrev;
+            workshopInfo.value.dateEndAtelierPrev = formattedPrev;
+        }
+
         if (workshopOrder.value.dateEndFinition) {
             const formatted = Helper.FormatDateTime(workshopOrder.value.dateEndFinition, 'YYYY-MM-DDTHH:mm');
             formData.value.infoCommande.dateFinTheo = formatted;
