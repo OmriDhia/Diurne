@@ -68,6 +68,7 @@ import DAnimatedSkeleton from "@/components/base/d-animated-skeleton.vue";
 import axiosInstance from "@/config/http.js";
 import DModalBonCommandeAtelier from "@/components/workshop/_partial/d-modal-bon-commande-atelier.vue";
 import DCoherenceCheck from "@/components/workshop/_partial/d-coherence-check.vue";
+import { Helper } from "@/composables/global-methods";
 
 const activeTab = ref('information');
 const route = useRoute();
@@ -89,6 +90,12 @@ const getWorkshopOrder = async () => {
         workshopInfoId.value = workshopInfo.value.id;
         imageCommande.value = workshopOrder.value.imageCommand;
         imageCommandId.value = imageCommande.value.id;
+
+        if (workshopOrder.value.dateEndFinition) {
+            const formatted = Helper.FormatDateTime(workshopOrder.value.dateEndFinition, 'YYYY-MM-DDTHH:mm');
+            formData.value.infoCommande.dateFinTheo = formatted;
+            workshopInfo.value.expectedEndDate = formatted;
+        }
     }else if (imageCommandId.value) {
         const res = await axiosInstance.get(`/api/image-command/${imageCommandId.value}`);
         imageCommande.value = res.data.response;
