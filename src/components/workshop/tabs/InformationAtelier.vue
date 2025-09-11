@@ -52,7 +52,7 @@ const fetchManufacturers = async () => {
         const list = data.response?.data || data.data || [];
         manufacturers.value = list.map((m: any) => ({value: m.id, label: m.name}));
     } catch (e) {
-        console.error('Failed to load manufacturers', e);
+        handleApiError(e, 'Failed to load manufacturers');
     }
 };
 
@@ -63,6 +63,19 @@ onMounted(() => {
 const checkingLists = ref([]);
 const router = useRouter();
 const error = ref({});
+
+const handleApiError = (e: any, defaultMessage: string) => {
+    console.error(e);
+    const data = e?.response?.data || {};
+    if (data.violations) {
+        error.value = formatErrorViolations(data.violations);
+        const message = Object.values(error.value).join(', ');
+        window.showMessage(message || defaultMessage, 'error');
+        return;
+    }
+    const message = data.message || data.detail || e.message || defaultMessage;
+    window.showMessage(message, 'error');
+};
 
 const setDefaultDateCmdAtelier = () => {
     if (!props.formData.infoCommande.dateCmdAtelier) {
@@ -79,10 +92,10 @@ const loadCheckingLists = async () => {
                 props.formData.infoCommande.largeurReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.realWidth);
                 props.formData.infoCommande.longueurReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.realLength);
                 props.formData.infoCommande.srfReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.surface);
-            } 
+            }
         }
     } catch (e) {
-        console.error('Error loading checking lists:', e);
+        handleApiError(e, 'Error loading checking lists');
     }
 };
 
@@ -94,10 +107,7 @@ const generateRN = async () => {
         const data = await workshopService.generateRN(manufacturerId, props.imageCommandId);
         props.formData.tapisDuProjet.rn = data.response?.rnNumber || data.response?.rnNumber || '';
     } catch (e) {
-        if (e.response.data.violations) {
-            error.value = formatErrorViolations(e.response.data.violations);
-        }
-        window.showMessage('Erreur de génération RN','error');
+        handleApiError(e, 'Erreur de génération RN');
     }
 };
 
@@ -114,7 +124,7 @@ const updatePrixTapis = async() => {
         props.formData.prixAchatTapis.cmd = `${Helper.FormatNumber(prices.carpet_purchase_price_cmd)}`;
         props.formData.prixAchatTapis.theorique = `${Helper.FormatNumber(prices.carpet_purchase_price_theoretical)}`;
     }catch(e){
-        window.showMessage('Erreur au niveau de calcule des prix','error');
+        handleApiError(e, 'Erreur au niveau de calcule des prix');
     }
 };
 
@@ -189,21 +199,18 @@ const saveWorkshopInformation = async () => {
                     props.formData.prixAchatTapis.theorique = `${Helper.FormatNumber(prices.carpet_purchase_price_theoretical)}`;
                     props.formData.prixAchatTapis.facture = `${Helper.FormatNumber(prices.carpet_purchase_price_invoice)}`;
                 } catch (e) {
-                    window.showMessage('Erreur au niveau du calcul automatique des prix','error');
+                    handleApiError(e, 'Erreur au niveau du calcul automatique des prix');
                 }
                 router.push({name: "updateCarpetWorkshop",params:{workshopOrderId:resWorkshopOrder?.response?.id}})
             }
         }
         window.showMessage("Commande atelier enregistrer avec succées");
     } catch (e) {
-        if (e.response.data.violations) {
-            error.value = formatErrorViolations(e.response.data.violations);
-        }else if(e.status === 500 && e.response.data?.detail?.includes('Duplicate entry')){
+        if(e.status === 500 && e.response?.data?.detail?.includes('Duplicate entry')){
             window.showMessage("Une commande atelier existe déja pour cette commande image", 'error');
-            return
+            return;
         }
-        console.log(e);
-        window.showMessage(e.message, 'error');
+        handleApiError(e, "Erreur lors de l'enregistrement de la commande atelier");
     }
 };
 
@@ -277,7 +284,7 @@ const createNewCheckingList = async () => {
             router.push(`/checking-progress/list/${newList.id}`);
         }
     } catch (e) {
-        console.error('Failed to create checking list:', e);
+        handleApiError(e, 'Failed to create checking list');
     }
 };
 const setDataFromImageCommande = () => {
@@ -302,7 +309,7 @@ const updatePurchasePrice = async (index, price) => {
             const res = await workshopService.updatePruchasePrices(pa.id, p);
             window.showMessage("Mise a jour de prix d'achat materials avec succées");
         } catch (e) {
-            console.error('Failed to create checking list:', e);
+            handleApiError(e, 'Failed to update purchase price');
         }
     }
 }
