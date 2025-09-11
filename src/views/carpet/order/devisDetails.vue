@@ -46,6 +46,7 @@
                                     <div class="row">
                                         <d-model-dropdown :required="true" :hideBtn="true"
                                                           v-model="data.carpetSpecification.modelId"
+                                                          :collection-id="data.carpetSpecification.collectionId"
                                                           :error="validationSubmitErrors.modelId"></d-model-dropdown>
                                     </div>
                                     <d-panel-title title="Prix" className="ps-2"></d-panel-title>
@@ -825,6 +826,13 @@
             document.getElementById('clickConvertCalculation').click();
         }
     };
+
+    watch(
+        () => data.value.carpetSpecification.collectionId,
+        () => {
+            data.value.carpetSpecification.modelId = 0;
+        }
+    );
 
     watch(
         () => [
