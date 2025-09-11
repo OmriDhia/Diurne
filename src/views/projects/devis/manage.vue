@@ -545,7 +545,32 @@
             // You might want to redirect or update the UI here
         } catch (error) {
             console.error('Error creating carpet order:', error);
-            window.showMessage('Erreur lors de la création de la commande tapis', 'error');
+
+            let message = 'Erreur lors de la création de la commande tapis';
+
+            if (error.response && error.response.data) {
+                const { violations, message: apiMessage, detail } = error.response.data;
+
+                if (apiMessage) {
+                    message = apiMessage;
+                } else if (detail) {
+                    message = detail;
+                } else if (violations) {
+                    if (Array.isArray(violations)) {
+                        // Violations may be an array of strings or objects
+                        const msgs = violations.map((v) => (typeof v === 'string' ? v : v.title)).filter(Boolean);
+                        if (msgs.length) {
+                            message = msgs.join('\n');
+                        }
+                    } else if (typeof violations === 'string') {
+                        message = violations;
+                    }
+                }
+            } else if (error.message) {
+                message = error.message;
+            }
+
+            window.showMessage(message, 'error');
         } finally {
             loading.value = false;
         }
