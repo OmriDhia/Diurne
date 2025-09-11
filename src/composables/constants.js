@@ -10,6 +10,7 @@ export const FILTER_CONTREMARQUE_STORAGE_NAME = "filterContremarque";
 export const FILTER_DEVIS_STORAGE_NAME = "filterDevis";
 export const FILTER_FACTURE_CLIENT_STORAGE_NAME = "filterFactureClient";
 export const FILTER_SUIVI_DI_STORAGE_NAME = "filterSuiviDi";
+export const FILTER_IMAGE_COMMAND_STORAGE_NAME = "filterImageCommand";
 export const FILTER_WORKSHOP_STORAGE_NAME = "filterWorkshop";
 export const FILTER_FOURNISSEUR_INVOICE_STORAGE_NAME = "filterFactureFournisseur";
 export const FILTER_CLIENT_INVOICE_STORAGE_NAME = "filterClientInvoice";
@@ -135,6 +136,25 @@ export const filterSuiviDi = {
     diNumber: null,
     carpetStatus: null,
     contremarqueId: null,
+};
+
+export const filterImageCommand = {
+    designerId: null,
+    customer: null,
+    contremarque: null,
+    commercial: null,
+    command: null,
+    status: null,
+    model: null,
+    collection: null,
+    quality: null,
+    location: null,
+    measurementName1: null,
+    minDimensionValue1: null,
+    maxDimensionValue1: null,
+    measurementName2: null,
+    minDimensionValue2: null,
+    maxDimensionValue2: null,
 };
 
 export const filterClientInvoice = {
