@@ -67,12 +67,17 @@
             errorModel: {
                 type: Boolean,
                 default: false
+            },
+            collectionId: {
+                type: [Number, String, null],
+                default: null
             }
         },
         data() {
             return {
                 value: null,
-                data: []
+                data: [],
+                models: []
             };
         },
         methods: {
@@ -82,13 +87,28 @@
             async getData() {
                 try {
                     const res = await axiosInstance.get('/api/models');
-                    this.data = res.data.response.data;
-
-                    if(this.modelValue){
-                        this.value = this.data.filter(ad => ad.id === this.modelValue)[0]
-                    }
+                    this.models = res.data.response.data;
+                    this.filterData();
                 } catch (error) {
                     console.error('Failed to fetch address types:', error);
+                }
+            },
+            filterData() {
+                if (this.collectionId) {
+                    this.data = this.models.filter(m => m.carpet_collection_id === parseInt(this.collectionId));
+                } else {
+                    this.data = this.models;
+                }
+                if (this.modelValue) {
+                    const found = this.data.find(ad => ad.id === this.modelValue);
+                    if (found) {
+                        this.value = found;
+                    } else {
+                        this.value = null;
+                        this.$emit('update:modelValue', null);
+                    }
+                } else {
+                    this.value = null;
                 }
             },
             goToSettings() {
@@ -101,6 +121,12 @@
         watch: {
             modelValue(newValue) {
                 this.value = this.data.filter(ad => ad.id === newValue)[0]
+            },
+            collectionId: {
+                handler() {
+                    this.filterData();
+                },
+                immediate: true
             }
         }
     };
