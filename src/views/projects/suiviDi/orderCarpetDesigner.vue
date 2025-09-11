@@ -136,6 +136,7 @@
                                                                         :required="true"
                                                                         :disabled="disableForDesigner"
                                                                         v-model="dataSpecification.modelId"
+                                                                        :collection-id="dataSpecification.collectionId"
                                                                         :error="error?.modelId || errorCarpetDesignOrder.ModelID"
                                                                     ></d-model-dropdown>
                                                                 </div>
@@ -726,6 +727,12 @@
             await saveCarpetOrder(statusId);
         }
     };
+    watch(
+        () => dataSpecification.value.collectionId,
+        () => {
+            dataSpecification.value.modelId = 0;
+        }
+    );
     //dataCarpetOrder.location_id
     watch(
         () => dataCarpetOrder.value.location_id,
