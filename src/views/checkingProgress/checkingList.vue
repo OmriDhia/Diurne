@@ -590,7 +590,7 @@
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import checkingListService from '@/Services/checkingList-service';
     import dBasePage from '@/components/base/d-base-page.vue';
@@ -679,6 +679,19 @@
         orderStatus: true,
         penaltyDate: ''
     });
+
+    watch(
+        () => [form.value.realWidth, form.value.realLength],
+        ([realWidth, realLength]) => {
+            const width = parseFloat(realWidth);
+            const length = parseFloat(realLength);
+            if (!isNaN(width) && !isNaN(length)) {
+                form.value.surface = width * length;
+            } else {
+                form.value.surface = '';
+            }
+        }
+    );
 
     const fillForm = (data) => {
         form.value.rn = data.workShopOrder?.workshopInformation?.rn || '';
