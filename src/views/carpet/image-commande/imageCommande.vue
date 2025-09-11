@@ -2,27 +2,44 @@
     <div class="layout-px-spacing mt-4">
         <d-page-title :title="'Image commande'"></d-page-title>
         <div class="row layout-top-spacing mt-3 p-2">
-            <!-- div class="panel br-6 p-2">
-                <div class="row d-flex justify-content-center align-items-center p-2">
+            <div class="panel br-6 p-2">
+                <div class="row d-flex justify-content-center align-items-start p-2">
                     <div class="col-md-6 col-sm-12">
                         <div class="row">
-                            <d-customer-dropdown v-model="filter.customer"></d-customer-dropdown>
+                            <d-input label="Client" v-model="filter.customer"></d-input>
                         </div>
                         <div class="row">
-                            <d-input label="Contremarque" v-model="filter.contremarque" ></d-input>
+                            <d-input label="Contremarque" v-model="filter.contremarque"></d-input>
                         </div>
                         <div class="row">
-                            <d-input label="N° de DI" v-model="filter.diNumber" ></d-input>
+                            <d-input label="Commercial" v-model="filter.commercial"></d-input>
                         </div>
                         <div class="row">
-                            <d-carpet-status-dropdown v-model="filter.carpetStatus"></d-carpet-status-dropdown>
+                            <d-input label="Commande" v-model="filter.command"></d-input>
+                        </div>
+                        <div class="row">
+                            <d-designer-dropdown v-model="filter.designerId" :hideLabel="true"></d-designer-dropdown>
                         </div>
                     </div>
                     <div class="col-md-6 col-sm-12">
+                        <div class="row">
+                            <d-input label="Status" v-model="filter.status"></d-input>
+                        </div>
+                        <div class="row">
+                            <d-collections-dropdown v-model="filter.collection" :hideBtn="true" :showOnlyDropdown="true"></d-collections-dropdown>
+                        </div>
+                        <div class="row">
+                            <d-model-dropdown v-model="filter.model" :hideBtn="true" :showOnlyDropdown="true"></d-model-dropdown>
+                        </div>
+                        <div class="row">
+                            <d-qualities-dropdown v-model="filter.quality" :hideBtn="true" :showOnlyDropdown="true"></d-qualities-dropdown>
+                        </div>
+                        <div class="row">
+                            <d-location-dropdown v-model="filter.location" :hideBtn="true" :showOnlyDropdown="true"></d-location-dropdown>
+                        </div>
                         <div class="row mt-2">
                             <div class="col-auto" v-if="filterActive">
-                                <button class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">
-                                    Reset filtre </button>
+                                <button class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">Reset filtre</button>
                             </div>
                             <div class="col-auto me-2">
                                 <button class="btn btn-custom pe-3 ps-3" @click.prevent="doSearch">Recherche</button>
@@ -30,7 +47,7 @@
                         </div>
                     </div>
                 </div>
-            </div-->
+            </div>
             <div class="panel br-6 p-2 mt-3" id="fullscreen">
                 <div class="row mt-2 mb-4">
                     <div class="vue3-datatable w-100">
@@ -108,18 +125,21 @@
 <script setup>
 import dInput from '../../../components/base/d-input.vue';
 import dBtnFullscreen from '../../../components/base/d-btn-fullscreen.vue';
-import dCustomerDropdown from '../../../components/common/d-customer-dropdown.vue';
-import dCarpetStatusDropdown from '../../../components/common/d-carpet-status-dropdown.vue';
 import dPageTitle from '../../../components/common/d-page-title.vue';
+import dDesignerDropdown from '../../../components/common/d-designer-dropdown.vue';
+import dCollectionsDropdown from '../../../components/projet/contremarques/dropdown/d-collections-dropdown.vue';
+import dModelDropdown from '../../../components/projet/contremarques/dropdown/d-model-dropdown.vue';
+import dQualitiesDropdown from '../../../components/projet/contremarques/dropdown/d-qualities-dropdown.vue';
+import dLocationDropdown from '../../../components/projet/contremarques/dropdown/d-location-dropdown.vue';
 import VueFeather from 'vue-feather';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
-import dModalManageDi from "../../../components/projet/contremarques/_Partials/d-modal-manage-di.vue"
+import dModalManageDi from "../../../components/projet/contremarques/_Partials/d-modal-manage-di.vue";
 import axiosInstance from '../../../config/http';
 import { ref, reactive, onMounted } from 'vue';
-import {FILTER_SUIVI_DI_STORAGE_NAME, filterSuiviDi} from '../../../composables/constants';
+import { FILTER_IMAGE_COMMAND_STORAGE_NAME, filterImageCommand } from '../../../composables/constants';
 import { useMeta } from '/src/composables/use-meta';
 import { Helper } from "../../../composables/global-methods";
-import { useRoute,useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 useMeta({ title: 'Contremarque' });
 const route = useRoute();
@@ -139,7 +159,7 @@ const truncateText = (text, length) => {
     return text.length > length ? text.substring(0, length) + '...' : text;
 };
 
-const filter = ref(Object.assign({}, filterSuiviDi));
+const filter = ref(Object.assign({}, filterImageCommand));
 const filterActive = ref(false);
 const rows = ref(null);
 const selectedDiId = ref(0);
@@ -162,7 +182,7 @@ const getImageUrl = (imageName) => {
     return `/uploads/attachments/${imageName}`;
 };
 onMounted(() => {
-    const f = Helper.getStorage(FILTER_SUIVI_DI_STORAGE_NAME);
+    const f = Helper.getStorage(FILTER_IMAGE_COMMAND_STORAGE_NAME);
     if(f && Helper.hasDefinedValue(f)){
         filter.value = f;
         filterActive.value = true;
@@ -188,7 +208,7 @@ const getDI = async () => {
             url += `&filter[contremarqueId]=${contremarqueId.value}`;
         }*/
 
-        //url += getFilterParams();
+        url += getFilterParams();
         const response = await axiosInstance.get(url);
         const data = response.data;
         total_rows.value = data.response.meta.total;
@@ -207,31 +227,49 @@ const changeServer = (data) => {
 };
 const doSearch = () => {
     filterActive.value = true;
-    Helper.setStorage(FILTER_SUIVI_DI_STORAGE_NAME, filter.value);
+    Helper.setStorage(FILTER_IMAGE_COMMAND_STORAGE_NAME, filter.value);
     getDI();
 };
 const getFilterParams = () => {
 
     let param = "";
     if (filter.value.customer) {
-        param += "&filter[customer]=" + filter.value.customer
+        param += "&customer=" + filter.value.customer;
     }
     if (filter.value.contremarque) {
-        param += "&filter[contremarque]=" + filter.value.contremarque
+        param += "&contremarque=" + filter.value.contremarque;
     }
-    if (filter.value.diNumber) {
-        param += "&filter[diNumber]=" + filter.value.diNumber
+    if (filter.value.commercial) {
+        param += "&commercial=" + filter.value.commercial;
     }
-    if (filter.value.carpetStatus) {
-        param += "&filter[statusId]=" + filter.value.carpetStatus
+    if (filter.value.command) {
+        param += "&command=" + filter.value.command;
+    }
+    if (filter.value.status) {
+        param += "&status=" + filter.value.status;
+    }
+    if (filter.value.model) {
+        param += "&model=" + filter.value.model;
+    }
+    if (filter.value.collection) {
+        param += "&collection=" + filter.value.collection;
+    }
+    if (filter.value.quality) {
+        param += "&quality=" + filter.value.quality;
+    }
+    if (filter.value.location) {
+        param += "&location=" + filter.value.location;
+    }
+    if (filter.value.designerId) {
+        param += "&designerId=" + filter.value.designerId;
     }
     return param;
 };
 
 const doReset = () => {
     filterActive.value = false;
-    filter.value = Object.assign({}, filterSuiviDi);
-    Helper.setStorage(FILTER_SUIVI_DI_STORAGE_NAME, filter.value);
+    filter.value = Object.assign({}, filterImageCommand);
+    Helper.setStorage(FILTER_IMAGE_COMMAND_STORAGE_NAME, filter.value);
     getDI();
 };
 
@@ -241,6 +279,9 @@ const goToContreMarqueDetails = (id_contremarque) => {
 const goToImageDetails = (id) => {
     router.push({name: "imagesCommadeDetails", params:{id: id}})
 }
+const handleClose = () => {
+    selectedDiId.value = 0;
+};
 
 </script>
 <style>
