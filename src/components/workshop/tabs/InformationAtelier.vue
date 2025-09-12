@@ -69,6 +69,7 @@ const handleApiError = (e: any, defaultMessage: string) => {
     const data = e?.response?.data || {};
     if (data.violations) {
         error.value = formatErrorViolations(data.violations);
+
         const message = Object.entries(error.value)
             .map(([field, msg]) => `${field}: ${msg}`)
             .join(', ');
@@ -82,6 +83,7 @@ const handleApiError = (e: any, defaultMessage: string) => {
         window.showMessage(`${field.trim()}: ${msg}`, 'error');
         return;
     }
+
     const message = data.message || data.detail || e.message || defaultMessage;
     window.showMessage(message, 'error');
 };
