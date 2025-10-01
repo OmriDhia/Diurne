@@ -162,14 +162,20 @@
                 error.value = formatErrorViolations(e.response.data.violations);
             }
 
-            if (e?.response?.data?.message === 'There is a contact with same user') {
+
+            const backendMessage = e?.response?.data?.message ?? e?.response?.data?.detail;
+
+            if (backendMessage === 'There is a contact with same user') {
+
                 error.value = {
                     ...error.value,
                     email: 'Cette adresse e-mail est déjà utilisée. Merci d\'en choisir une autre.'
                 };
                 errorMessage = "Cette adresse e-mail est déjà utilisée. Merci d'en choisir une autre.";
-            } else if (e?.response?.data?.message) {
-                errorMessage = e.response.data.message;
+
+            } else if (backendMessage) {
+                errorMessage = backendMessage;
+
             }
 
             window.showMessage(errorMessage, 'error');
