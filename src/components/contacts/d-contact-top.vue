@@ -156,12 +156,12 @@
                 window.location.reload();
             }
         } catch (e) {
-            let errorMessage = e?.message ?? "Une erreur s'est produite.";
+            let errorMessage = e?.message ?? 'Une erreur s\'est produite.';
 
             if (e?.response?.data?.violations) {
                 error.value = formatErrorViolations(e.response.data.violations);
             }
-
+            console.log(e?.response?.data?.message);
 
             const backendMessage = e?.response?.data?.message ?? e?.response?.data?.detail;
 
@@ -171,7 +171,7 @@
                     ...error.value,
                     email: 'Cette adresse e-mail est déjà utilisée. Merci d\'en choisir une autre.'
                 };
-                errorMessage = "Cette adresse e-mail est déjà utilisée. Merci d'en choisir une autre.";
+                errorMessage = 'Cette adresse e-mail est déjà utilisée. Merci d\'en choisir une autre.';
 
             } else if (backendMessage) {
                 errorMessage = backendMessage;
