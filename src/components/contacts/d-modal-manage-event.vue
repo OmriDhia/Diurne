@@ -111,6 +111,17 @@
     const error = ref({});
 
     const saveEvent = async () => {
+        if (!data.value.next_reminder_deadline && !data.value.reminder_disabled) {
+            error.value = {
+                ...error.value,
+                next_reminder_deadline: "Veuillez renseigner une date de prochaine relance ou cocher \"Plus de relance\"."
+            };
+            window.showMessage(
+                "Veuillez renseigner une date de prochaine relance ou cocher \"Plus de relance\".",
+                "error"
+            );
+            return;
+        }
         try {
             data.value.people_present.contacts = contactId.value;
             data.value.people_present.users = userId.value;
@@ -234,6 +245,17 @@
         () => props.customerId,
         () => {
             data.value.customerId = props.customerId;
+        },
+        { deep: true }
+    );
+
+    watch(
+        () => [data.value.next_reminder_deadline, data.value.reminder_disabled],
+        ([nextReminder, reminderDisabled]) => {
+            if (nextReminder || reminderDisabled) {
+                const { next_reminder_deadline, ...rest } = error.value;
+                error.value = rest;
+            }
         },
         { deep: true }
     );
