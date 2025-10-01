@@ -156,10 +156,23 @@
                 window.location.reload();
             }
         } catch (e) {
-            if (e.response.data.violations) {
+            let errorMessage = e?.message ?? "Une erreur s'est produite.";
+
+            if (e?.response?.data?.violations) {
                 error.value = formatErrorViolations(e.response.data.violations);
             }
-            window.showMessage(e.message, 'error');
+
+            if (e?.response?.data?.message === 'There is a contact with same user') {
+                error.value = {
+                    ...error.value,
+                    email: 'Cette adresse e-mail est déjà utilisée. Merci d\'en choisir une autre.'
+                };
+                errorMessage = "Cette adresse e-mail est déjà utilisée. Merci d'en choisir une autre.";
+            } else if (e?.response?.data?.message) {
+                errorMessage = e.response.data.message;
+            }
+
+            window.showMessage(errorMessage, 'error');
         }
     };
 
