@@ -5,7 +5,7 @@ import SelectInput from '../ui/SelectInput.vue';
 import RadioButton from '../ui/RadioButton.vue';
 import dInput from '../../../components/base/d-input.vue';
 import DCurrency from '@/components/common/d-currency.vue';
-import { Helper, formatErrorViolations, formatErrorViolationsComposed } from '@/composables/global-methods';
+import { Helper, formatErrorViolations } from '@/composables/global-methods';
 import DPanelTitle from '@/components/common/d-panel-title.vue';
 import checkingListService from '../../../Services/checkingList-service';
 import workshopService from '@/Services/workshop-service.js';
@@ -52,7 +52,7 @@ const fetchManufacturers = async () => {
         const list = data.response?.data || data.data || [];
         manufacturers.value = list.map((m: any) => ({value: m.id, label: m.name}));
     } catch (e) {
-        console.error('Failed to load manufacturers', e);
+        handleApiError(e, 'Failed to load manufacturers');
     }
 };
 
@@ -63,6 +63,30 @@ onMounted(() => {
 const checkingLists = ref([]);
 const router = useRouter();
 const error = ref({});
+
+const handleApiError = (e: any, defaultMessage: string) => {
+    console.error(e);
+    const data = e?.response?.data || {};
+    if (data.violations) {
+        error.value = formatErrorViolations(data.violations);
+
+        const message = Object.entries(error.value)
+            .map(([field, msg]) => `${field}: ${msg}`)
+            .join(', ');
+        window.showMessage(message || defaultMessage, 'error');
+        return;
+    }
+    if (typeof data.detail === 'string' && data.detail.includes(':')) {
+        const [field, ...rest] = data.detail.split(':');
+        const msg = rest.join(':').trim();
+        error.value = { [field.trim()]: msg };
+        window.showMessage(`${field.trim()}: ${msg}`, 'error');
+        return;
+    }
+
+    const message = data.message || data.detail || e.message || defaultMessage;
+    window.showMessage(message, 'error');
+};
 
 const setDefaultDateCmdAtelier = () => {
     if (!props.formData.infoCommande.dateCmdAtelier) {
@@ -79,10 +103,10 @@ const loadCheckingLists = async () => {
                 props.formData.infoCommande.largeurReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.realWidth);
                 props.formData.infoCommande.longueurReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.realLength);
                 props.formData.infoCommande.srfReelle = Helper.FormatNumber(lastcheckingList.shapeValidation.surface);
-            } 
+            }
         }
     } catch (e) {
-        console.error('Error loading checking lists:', e);
+        handleApiError(e, 'Error loading checking lists');
     }
 };
 
@@ -94,10 +118,7 @@ const generateRN = async () => {
         const data = await workshopService.generateRN(manufacturerId, props.imageCommandId);
         props.formData.tapisDuProjet.rn = data.response?.rnNumber || data.response?.rnNumber || '';
     } catch (e) {
-        if (e.response.data.violations) {
-            error.value = formatErrorViolations(e.response.data.violations);
-        }
-        window.showMessage('Erreur de génération RN','error');
+        handleApiError(e, 'Erreur de génération RN');
     }
 };
 
@@ -114,7 +135,7 @@ const updatePrixTapis = async() => {
         props.formData.prixAchatTapis.cmd = `${Helper.FormatNumber(prices.carpet_purchase_price_cmd)}`;
         props.formData.prixAchatTapis.theorique = `${Helper.FormatNumber(prices.carpet_purchase_price_theoretical)}`;
     }catch(e){
-        window.showMessage('Erreur au niveau de calcule des prix','error');
+        handleApiError(e, 'Erreur au niveau de calcule des prix');
     }
 };
 
@@ -189,21 +210,18 @@ const saveWorkshopInformation = async () => {
                     props.formData.prixAchatTapis.theorique = `${Helper.FormatNumber(prices.carpet_purchase_price_theoretical)}`;
                     props.formData.prixAchatTapis.facture = `${Helper.FormatNumber(prices.carpet_purchase_price_invoice)}`;
                 } catch (e) {
-                    window.showMessage('Erreur au niveau du calcul automatique des prix','error');
+                    handleApiError(e, 'Erreur au niveau du calcul automatique des prix');
                 }
                 router.push({name: "updateCarpetWorkshop",params:{workshopOrderId:resWorkshopOrder?.response?.id}})
             }
         }
         window.showMessage("Commande atelier enregistrer avec succées");
     } catch (e) {
-        if (e.response.data.violations) {
-            error.value = formatErrorViolations(e.response.data.violations);
-        }else if(e.status === 500 && e.response.data?.detail?.includes('Duplicate entry')){
+        if(e.status === 500 && e.response?.data?.detail?.includes('Duplicate entry')){
             window.showMessage("Une commande atelier existe déja pour cette commande image", 'error');
-            return
+            return;
         }
-        console.log(e);
-        window.showMessage(e.message, 'error');
+        handleApiError(e, "Erreur lors de l'enregistrement de la commande atelier");
     }
 };
 
@@ -277,7 +295,7 @@ const createNewCheckingList = async () => {
             router.push(`/checking-progress/list/${newList.id}`);
         }
     } catch (e) {
-        console.error('Failed to create checking list:', e);
+        handleApiError(e, 'Failed to create checking list');
     }
 };
 const setDataFromImageCommande = () => {
@@ -302,7 +320,7 @@ const updatePurchasePrice = async (index, price) => {
             const res = await workshopService.updatePruchasePrices(pa.id, p);
             window.showMessage("Mise a jour de prix d'achat materials avec succées");
         } catch (e) {
-            console.error('Failed to create checking list:', e);
+            handleApiError(e, 'Failed to update purchase price');
         }
     }
 }
@@ -351,7 +369,8 @@ watch(
 
                         <div class="form-row">
                             <d-input label="Date de cmd. atelier" type="datetime-local"
-                                     v-model="props.formData.infoCommande.dateCmdAtelier"/>
+                                     v-model="props.formData.infoCommande.dateCmdAtelier"
+                                     :required="true" :error="error.launchDate"/>
                         </div>
 
                         <div class="form-row">
@@ -362,24 +381,25 @@ watch(
 
                         <div class="form-row">
                             <d-input label="% commande soie" v-model="props.formData.infoCommande.pourcentCommande"
-                                     rootClass="pink-bg"/>
+                                     rootClass="pink-bg" :required="true" :error="error.orderSilkPercentage"/>
                         </div>
 
                         <div class="form-row">
                             <d-input label="Largeur cmd. atelier" v-model="props.formData.infoCommande.largeurCmd"
-                                     rootClass="pink-bg"/>
+                                     rootClass="pink-bg" :required="true" :error="error.orderedWidth"/>
                         </div>
 
                         <div class="form-row">
                             <d-input label="Longueur cmd. atelier" v-model="props.formData.infoCommande.longueurCmd"
-                                     rootClass="pink-bg"/>
+                                     rootClass="pink-bg" :required="true" :error="error.orderedHeigh"/>
                         </div>
 
                         <div class="form-row">
-                            <d-input label="Srf cmd. atelier" v-model="props.formData.infoCommande.srfCmd"/>
+                            <d-input label="Srf cmd. atelier" v-model="props.formData.infoCommande.srfCmd"
+                                     :required="true" :error="error.orderedSurface"/>
                         </div>
                         
-                        <d-tarif-texture-dropdown v-model="props.formData.infoCommande.anneeGrilleTarif" rootClass="pink-bg" :error="error.idTarifGroup"/>
+                        <d-tarif-texture-dropdown v-model="props.formData.infoCommande.anneeGrilleTarif" rootClass="pink-bg" :required="true" :error="error.idTarifGroup || error.idTarifTexture"/>
 
                         <div class="form-row special-tarif row py-3">
                             <div class="col-12 p-0">
@@ -393,7 +413,8 @@ watch(
                         <div class="theoretical-section">
                             <div class="form-row">
                                 <d-input label="Date fin Théo" type="datetime-local"
-                                         v-model="props.formData.infoCommande.dateFinTheo"/>
+                                         v-model="props.formData.infoCommande.dateFinTheo"
+                                         :required="true" :error="error.expectedEndDate"/>
                             </div>
 
                             <div class="form-row">
@@ -410,15 +431,18 @@ watch(
                             </div>
 
                             <div class="form-row">
-                                <d-input label="Lrg. réelle" v-model="props.formData.infoCommande.largeurReelle"/>
+                                <d-input label="Lrg. réelle" v-model="props.formData.infoCommande.largeurReelle"
+                                         :required="true" :error="error.realWidth"/>
                             </div>
 
                             <div class="form-row">
-                                <d-input label="Lng. réelle" v-model="props.formData.infoCommande.longueurReelle"/>
+                                <d-input label="Lng. réelle" v-model="props.formData.infoCommande.longueurReelle"
+                                         :required="true" :error="error.realHeight"/>
                             </div>
 
                             <div class="form-row">
-                                <d-input label="Srf réelle" v-model="props.formData.infoCommande.srfReelle"/>
+                                <d-input label="Srf réelle" v-model="props.formData.infoCommande.srfReelle"
+                                         :required="true" :error="error.realSurface"/>
                             </div>
 
                             <div class="form-row py-2">
@@ -467,11 +491,13 @@ watch(
                 <div class="row calculte-price-custom" v-if="props.workshopInfoId">
                     <div class="col-6 ps-0">
                         <div class="price-row">
-                            <d-input label="Prix d'achat tapis au m² " v-model="props.formData.prixAchatTapis.auM2"/>
+                            <d-input label="Prix d'achat tapis au m² " v-model="props.formData.prixAchatTapis.auM2"
+                                     :required="true" :error="error.carpetPurchasePricePerM2"/>
                         </div>
                         <div class="price-row">
                             <d-input label="Prix d'achat tapis théorique"
-                                     v-model="props.formData.prixAchatTapis.theorique"/>
+                                     v-model="props.formData.prixAchatTapis.theorique"
+                                     :required="true" :error="error.carpetPurchasePriceTheoretical"/>
                         </div>
                         <div class="price-row">
                             <d-input label="Pénalité" v-model="props.formData.others.penalite"/>
@@ -488,7 +514,8 @@ watch(
                             <d-input label="Prix d'achat tapis Cmd" v-model="props.formData.prixAchatTapis.cmd"/>
                         </div>
                         <div class="price-row">
-                            <d-input label="Prix d'achat tapis facture" v-model="props.formData.prixAchatTapis.facture"/>
+                            <d-input label="Prix d'achat tapis facture" v-model="props.formData.prixAchatTapis.facture"
+                                     :required="true" :error="error.carpetPurchasePriceInvoice"/>
                         </div>
                         <div class="price-row">
                             <d-input label="Transport" v-model="props.formData.others.transport"/>
@@ -568,9 +595,9 @@ watch(
                 <d-coherence-check v-if="props.orderId" :imageCommandId="props.imageCommandId" :workshopOrderId="props.orderId"></d-coherence-check>
 
                 <div class="form-row row py-2 align-items-center">
-                    <div class="col-4"><label>Fabricant :</label></div>
+                    <div class="col-4"><label>Fabricant <span class="required">*</span> :</label></div>
                     <div class="col-8">
-                        <SelectInput v-model="props.formData.tapisDuProjet.fabricant" :options="manufacturers"  :error="error.manufacturerId"
+                        <SelectInput v-model="props.formData.tapisDuProjet.fabricant" :options="manufacturers"
                                      rootClass="pink-bg"/>
                         <div v-if="error.manufacturerId" class="invalid-feedback">{{ $t("Le champ fabricant est abligatoire.") }}</div>
                     </div>
@@ -583,7 +610,8 @@ watch(
                 </div>
 
                 <div class="form-row">
-                    <d-input label="RN" v-model="props.formData.tapisDuProjet.rn" rootClass="pink-bg" disabled/>
+                    <d-input label="RN" v-model="props.formData.tapisDuProjet.rn" rootClass="pink-bg" disabled
+                             :required="true" :error="error.Rn"/>
                 </div>
 
                 <div class="form-row">
