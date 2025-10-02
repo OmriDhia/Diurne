@@ -133,7 +133,8 @@
                                                     @changeWeight="changeWeight"></d-mesurement-quote>
                             </div>
                             <div class="col-md-4 col-sm-12 p-4">
-                                <d-input label="Quantité de tapis" v-model="data.quoteDetail.wantedQuantity"></d-input>
+                                <d-input label="Quantité de tapis" v-model="data.quoteDetail.wantedQuantity"
+                                         @changeValue="handleDetailAutoSave"></d-input>
                                 <d-input label="RN" v-model="data.quoteDetail.rn"></d-input>
                             </div>
                         </div>
@@ -227,7 +228,8 @@
                                         <div class="input-group mt-2">
                                             <input type="text" class="form-control"
                                                    v-model="data.quoteDetail.proposedDiscountRate"
-                                                   :disabled="false" />
+                                                   :disabled="false"
+                                                   @blur="handleDetailAutoSave" />
                                             <span class="input-group-text">%</span>
                                         </div>
                                     </div>
@@ -253,7 +255,8 @@
                                             <div class="col-md-3 col-sm-12">
                                                 <d-input label="Total HT"
                                                          :disabled="!data.quoteDetail.calculateFromTotalExcludingTax"
-                                                         v-model="prices.tarif_avant_remise_complementaire.total_ht"></d-input>
+                                                         v-model="prices.tarif_avant_remise_complementaire.total_ht"
+                                                         @changeValue="handleDetailAutoSave"></d-input>
                                             </div>
                                             <div class="col-md-3 col-sm-12">
                                                 <d-input label="Total TTC" :disabled="true"
@@ -792,6 +795,10 @@
         }
     };
 
+    const handleDetailAutoSave = async () => {
+        await saveAndCalculate();
+    };
+
     watch(
         () => [
             data.value.quoteDetail.applyLargeProjectRate,
@@ -801,10 +808,7 @@
             data.value.carpetSpecification.modelId,
             data.value.carpetSpecification.specialShapeId,
             data.value.carpetSpecification.qualityId,
-            data.value.carpetSpecification.hasSpecialShape,
-            data.value.quoteDetail.proposedDiscountRate,
-            data.value.quoteDetail.wantedQuantity,
-            prices.value?.tarif_avant_remise_complementaire?.total_ht
+            data.value.carpetSpecification.hasSpecialShape
         ],
 
         async (newCarpert, oldCarpet) => {
