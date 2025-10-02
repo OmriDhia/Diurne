@@ -373,13 +373,13 @@
                                                  v-model="data.additionalDiscount"></d-input>
                                     </div>
                                     <div class="col-md-6 col-sm-12">
-                                        <d-input :disabled="true" label="Acompte réçu HT" v-model="data.tax"></d-input>
+                                        <d-input :disabled="true" label="Acompte réçu HT" :modelValue="depositAmountHt"></d-input>
                                     </div>
                                 </div>
                                 <div class="row align-items-center p-2">
                                     <div class="col-md-6 col-sm-12">
                                         <d-input :disabled="true" label="Date de l'acompte"
-                                                 v-model="data.totalDiscountAmount"></d-input>
+                                                 :modelValue="depositDate"></d-input>
                                     </div>
                                     <div class="col-md-6 col-sm-12">
                                         <d-input :disabled="true" label="Comp.prescr. acompte"
@@ -439,7 +439,7 @@
     import { useStore } from 'vuex';
     import VueFeather from 'vue-feather';
     import { useRoute, useRouter } from 'vue-router';
-    import { ref, onMounted, watch } from 'vue';
+    import { ref, onMounted, watch, computed } from 'vue';
     import { useMeta } from '/src/composables/use-meta';
     import { Helper, formatErrorViolations, formatErrorViolationsComposed } from '../../../composables/global-methods';
     import axiosInstance from '../../../config/http';
@@ -531,6 +531,27 @@
             materials: [],
             randomWeight: 0
         }
+    });
+    const orderPaymentDetails = computed(() => {
+        const details = quoteDetail.value?.orderPaymentDetails;
+        if (!details) {
+            return [];
+        }
+        return Array.isArray(details) ? details : Object.values(details);
+    });
+    const depositDetail = computed(() => (orderPaymentDetails.value.length ? orderPaymentDetails.value[0] : null));
+    const depositDate = computed(() => {
+        if (!depositDetail.value?.createdAt) {
+            return '';
+        }
+        const createdAt = depositDetail.value.createdAt?.date ?? depositDetail.value.createdAt;
+        return Helper.FormatDate(createdAt, 'YYYY-MM-DD');
+    });
+    const depositAmountHt = computed(() => {
+        if (depositDetail.value?.allocatedAmountHt === null || depositDetail.value?.allocatedAmountHt === undefined) {
+            return '';
+        }
+        return Helper.FormatNumber(depositDetail.value.allocatedAmountHt);
     });
     const currentCustomer = ref({});
     const prices = ref({
