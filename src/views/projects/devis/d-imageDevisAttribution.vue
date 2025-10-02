@@ -23,6 +23,9 @@
                     <label class="fw-bold">Collection :</label>
                     <span class="ms-2">{{ collection }}</span>
                 </div>
+                <router-link v-if="diLink" :to="diLink" class="mt-3 btn btn-link p-0 align-self-start">
+                    voir di
+                </router-link>
             </div>
 
             <!-- IMAGE (MIDDLE FAR RIGHT) -->
@@ -144,7 +147,7 @@
 </template>
 
 <script setup>
-    import { ref, onMounted, watch, defineProps } from 'vue';
+    import { ref, onMounted, watch, defineProps, computed } from 'vue';
     import axiosInstance from '../../../config/http'; // Adjust your axios import as needed
 
     const props = defineProps({
@@ -175,6 +178,16 @@
     // Watch for changes to the customerDate prop
     watch(() => props.customerDate, (newDate) => {
         validationDate.value = newDate || ''; // If it's null, set to empty
+    });
+    const diLink = computed(() => {
+        const diId = selectedRow.value?.di_id || selectedRow.value?.id_di;
+        const carpetDesignOrderId = selectedRow.value?.order_design_id;
+
+        if (!diId || !carpetDesignOrderId) {
+            return null;
+        }
+
+        return `/projet/dis/model/${diId}/update/${carpetDesignOrderId}`;
     });
     /**
      * Fetch the data from API
