@@ -30,16 +30,17 @@
       <button v-if="showViewButton" type="button" class="btn btn-dark mb-1 me-2" @click="alertCommercial(row)">
           Alerte commercial
       </button>
-      <div v-if="showViewButton"  class="t-dot bg-success reglement"></div>
+      <div v-if="showViewButton" class="t-dot reglement" :class="hasOrderPaymentDetails ? 'bg-success' : 'bg-danger'"></div>
     </td>
   </tr>
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import EditableCell from './d-editable-cell.vue';
 import VueFeather from 'vue-feather';
 
-defineProps({
+const props = defineProps({
   row: { type: Object, required: true },
   columns: { type: Array, required: true },
   isEditing: { type: Boolean, required: true },
@@ -48,6 +49,17 @@ defineProps({
 });
 
 const emit = defineEmits(['edit', 'save', 'cancel', 'delete','view','rattacher']);
+
+const hasOrderPaymentDetails = computed(() => {
+  const details = props.row?.orderPaymentDetails;
+  if (Array.isArray(details)) {
+    return details.length > 0;
+  }
+  if (details && typeof details === 'object') {
+    return Object.keys(details).length > 0;
+  }
+  return false;
+});
 
 const startEdit = (row) => {
   emit('edit', row);
