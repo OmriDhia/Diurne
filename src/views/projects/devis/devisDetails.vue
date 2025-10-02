@@ -788,10 +788,10 @@
     };
     const saveAndCalculate = async () => {
         if (quoteDetailId && !disableAutoSave) {
-
+            document.getElementById('clickConvertCalculation').click();
             await saveDevisDetails();
 
-            document.getElementById('clickConvertCalculation').click();
+
         }
     };
 
