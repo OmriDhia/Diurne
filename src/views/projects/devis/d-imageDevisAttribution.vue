@@ -23,15 +23,17 @@
                     <label class="fw-bold">Collection :</label>
                     <span class="ms-2">{{ collection }}</span>
                 </div>
-                <router-link v-if="diLink" :to="diLink" class="mt-3 btn btn-link p-0 align-self-start">
-                    voir di
-                </router-link>
+
             </div>
 
             <!-- IMAGE (MIDDLE FAR RIGHT) -->
             <div v-if="selectedRow" class="d-flex flex-column ms-auto">
                 <img :src="getImageUrl(selectedRow.image_name)" alt="Carpet Design" class="img-thumbnail"
                      style="width: 125px; height: auto" />
+                <router-link v-if="diLink" :to="diLink"
+                             class="mt-3 btn btn-link p-0 align-self-start px-2 py-1 btn-primary">
+                    voir di
+                </router-link>
             </div>
         </div>
 
