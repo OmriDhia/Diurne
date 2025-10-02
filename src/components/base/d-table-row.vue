@@ -50,7 +50,9 @@ const props = defineProps({
 
 const emit = defineEmits(['edit', 'save', 'cancel', 'delete','view','rattacher']);
 
+
 const hasOrderPaymentDetails = computed(() => Array.isArray(props.row?.orderPaymentDetails) && props.row.orderPaymentDetails.length > 0);
+
 
 const startEdit = (row) => {
   emit('edit', row);

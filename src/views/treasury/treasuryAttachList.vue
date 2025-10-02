@@ -288,6 +288,7 @@ async function transformPayment(payment) {
     if (typeof rawPayment.commercial === 'object') {
       const rawCommercial = toRaw(rawPayment.commercial);
       commercialData = {
+
         commercialId: rawCommercial.id || rawCommercial.commercialId,
         commercialName: rawCommercial.commercialName || rawCommercial.commercial ||
           `${rawCommercial.firstname || ''} ${rawCommercial.lastname || ''}`.trim()
@@ -330,6 +331,7 @@ async function transformPayment(payment) {
     id: rawPayment.id,
     dateOfReceipt,
     paymentMethod: paymentMethod,
+
     accountLabel: rawPayment.accountLabel,
     paymentAmountHt: parseFloat(rawPayment.paymentAmountHt),
     currency: currencyData,
@@ -338,6 +340,7 @@ async function transformPayment(payment) {
     orderPaymentDetails
   };
 }
+
 
 async function processCustomer(payment) {
   if (!payment.customer) return { customerId: null, customerName: 'N/A' };
