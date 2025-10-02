@@ -273,13 +273,16 @@ async function batchTransformPayments(payments, batchSize = 5) {
   return result;
 }
 
-
 async function transformPayment(payment) {
   const rawPayment = toRaw(payment);
 
   const customerData = await processCustomer(rawPayment);
 
   let commercialData = { commercialId: null, commercialName: 'N/A' };
+
+  const orderPaymentDetails = Array.isArray(rawPayment.orderPaymentDetails)
+    ? rawPayment.orderPaymentDetails
+    : [];
 
   if (rawPayment.commercial) {
     if (typeof rawPayment.commercial === 'object') {
@@ -318,15 +321,21 @@ async function transformPayment(payment) {
     }
   }
 
+  let dateOfReceipt = rawPayment.dateOfReceipt;
+  if (dateOfReceipt && typeof dateOfReceipt === 'object') {
+    dateOfReceipt = dateOfReceipt.date ?? dateOfReceipt.original ?? dateOfReceipt;
+  }
+
   return {
     id: rawPayment.id,
-    dateOfReceipt: rawPayment.dateOfReceipt?.date,
+    dateOfReceipt,
     paymentMethod: paymentMethod,
     accountLabel: rawPayment.accountLabel,
     paymentAmountHt: parseFloat(rawPayment.paymentAmountHt),
     currency: currencyData,
     customer: customerData,
-    commercial: commercialData
+    commercial: commercialData,
+    orderPaymentDetails
   };
 }
 
