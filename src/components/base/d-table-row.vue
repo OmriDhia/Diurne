@@ -53,6 +53,7 @@ const emit = defineEmits(['edit', 'save', 'cancel', 'delete','view','rattacher']
 const hasOrderPaymentDetails = computed(() => {
   const details = props.row?.orderPaymentDetails;
 
+
   if (Array.isArray(details)) {
     return details.length > 0;
   }
@@ -69,6 +70,7 @@ const hasOrderPaymentDetails = computed(() => {
   if (details && typeof details === 'object') {
     return Object.keys(details).length > 0;
   }
+
 
   return false;
 });

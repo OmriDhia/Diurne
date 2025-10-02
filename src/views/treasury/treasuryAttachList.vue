@@ -282,6 +282,7 @@ async function transformPayment(payment) {
   let commercialData = { commercialId: null, commercialName: 'N/A' };
 
   const detailsRaw = rawPayment.orderPaymentDetails;
+
   let orderPaymentDetails = [];
 
   if (Array.isArray(detailsRaw)) {
@@ -298,6 +299,7 @@ async function transformPayment(payment) {
   } else if (detailsRaw && typeof detailsRaw === 'object') {
     orderPaymentDetails = Object.values(detailsRaw);
   }
+
 
   if (rawPayment.commercial) {
     if (typeof rawPayment.commercial === 'object') {
