@@ -281,6 +281,24 @@ async function transformPayment(payment) {
 
   let commercialData = { commercialId: null, commercialName: 'N/A' };
 
+  const detailsRaw = rawPayment.orderPaymentDetails;
+  let orderPaymentDetails = [];
+
+  if (Array.isArray(detailsRaw)) {
+    orderPaymentDetails = detailsRaw;
+  } else if (typeof detailsRaw === 'string') {
+    try {
+      const parsedDetails = JSON.parse(detailsRaw);
+      if (Array.isArray(parsedDetails)) {
+        orderPaymentDetails = parsedDetails;
+      }
+    } catch (error) {
+      console.warn('Unable to parse order payment details string:', detailsRaw, error);
+    }
+  } else if (detailsRaw && typeof detailsRaw === 'object') {
+    orderPaymentDetails = Object.values(detailsRaw);
+  }
+
   if (rawPayment.commercial) {
     if (typeof rawPayment.commercial === 'object') {
       const rawCommercial = toRaw(rawPayment.commercial);
@@ -326,7 +344,8 @@ async function transformPayment(payment) {
     paymentAmountHt: parseFloat(rawPayment.paymentAmountHt),
     currency: currencyData,
     customer: customerData,
-    commercial: commercialData
+    commercial: commercialData,
+    orderPaymentDetails
   };
 }
 
