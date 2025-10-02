@@ -135,6 +135,7 @@
                                 v-model="data.shippingPrice"
                                 :error="error.shippingPrice"
                                 :required="data.transportConditionId === 9 || data.transportConditionId === 8"
+                                @changeValue="handlePricingFieldBlur"
                             ></d-input>
                             <d-input label="Poids global (kg)" v-model="data.weight" :error="error.weight"></d-input>
                             <d-input type="Date" label="Date commande"></d-input>
@@ -183,7 +184,7 @@
                                     </div>
                                     <div class="row align-items-center p-2">
                                         <div class="col-md-6 col-sm-12">
-                                            <d-input label="Remise complémentaire (HT)" v-model="data.additionalDiscount"></d-input>
+                                            <d-input label="Remise complémentaire (HT)" v-model="data.additionalDiscount" @changeValue="handlePricingFieldBlur"></d-input>
                                         </div>
                                         <div class="col-md-6 col-sm-12">
                                             <d-input :disabled="disbledPrices" label="TVA" v-model="data.tax"></d-input>
@@ -527,6 +528,16 @@
             window.showMessage(msg, 'error');
         }
     };
+    const persistQuoteTotals = async () => {
+        if (quote_id && !disableAutoSave) {
+            await saveDevis(false);
+            await calculateTotal(quote_id);
+            await getQuote(quote_id);
+        }
+    };
+    const handlePricingFieldBlur = async () => {
+        await persistQuoteTotals();
+    };
     const createCarpetOrder = async () => {
         try {
             if (!quote_id) {
@@ -576,13 +587,9 @@
         }
     };
     watch(
-        () => [data.value.weight, data.value.shippingPrice, data.value.additionalDiscount],
+        () => data.value.weight,
         async () => {
-            if (quote_id && !disableAutoSave) {
-                await saveDevis(false);
-                await calculateTotal(quote_id);
-                await getQuote(quote_id);
-            }
+            await persistQuoteTotals();
         }
     );
     watch(
