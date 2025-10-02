@@ -281,6 +281,13 @@ async function transformPayment(payment) {
 
   let commercialData = { commercialId: null, commercialName: 'N/A' };
 
+  const detailsRaw = rawPayment.orderPaymentDetails;
+  const orderPaymentDetails = Array.isArray(detailsRaw)
+    ? detailsRaw
+    : detailsRaw
+      ? Object.values(detailsRaw)
+      : [];
+
   if (rawPayment.commercial) {
     if (typeof rawPayment.commercial === 'object') {
       const rawCommercial = toRaw(rawPayment.commercial);
@@ -326,7 +333,8 @@ async function transformPayment(payment) {
     paymentAmountHt: parseFloat(rawPayment.paymentAmountHt),
     currency: currencyData,
     customer: customerData,
-    commercial: commercialData
+    commercial: commercialData,
+    orderPaymentDetails
   };
 }
 
