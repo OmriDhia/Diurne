@@ -273,7 +273,6 @@ async function batchTransformPayments(payments, batchSize = 5) {
   return result;
 }
 
-
 async function transformPayment(payment) {
   const rawPayment = toRaw(payment);
 
@@ -281,30 +280,15 @@ async function transformPayment(payment) {
 
   let commercialData = { commercialId: null, commercialName: 'N/A' };
 
-  const detailsRaw = rawPayment.orderPaymentDetails;
-
-  let orderPaymentDetails = [];
-
-  if (Array.isArray(detailsRaw)) {
-    orderPaymentDetails = detailsRaw;
-  } else if (typeof detailsRaw === 'string') {
-    try {
-      const parsedDetails = JSON.parse(detailsRaw);
-      if (Array.isArray(parsedDetails)) {
-        orderPaymentDetails = parsedDetails;
-      }
-    } catch (error) {
-      console.warn('Unable to parse order payment details string:', detailsRaw, error);
-    }
-  } else if (detailsRaw && typeof detailsRaw === 'object') {
-    orderPaymentDetails = Object.values(detailsRaw);
-  }
-
+  const orderPaymentDetails = Array.isArray(rawPayment.orderPaymentDetails)
+    ? rawPayment.orderPaymentDetails
+    : [];
 
   if (rawPayment.commercial) {
     if (typeof rawPayment.commercial === 'object') {
       const rawCommercial = toRaw(rawPayment.commercial);
       commercialData = {
+
         commercialId: rawCommercial.id || rawCommercial.commercialId,
         commercialName: rawCommercial.commercialName || rawCommercial.commercial ||
           `${rawCommercial.firstname || ''} ${rawCommercial.lastname || ''}`.trim()
@@ -338,10 +322,16 @@ async function transformPayment(payment) {
     }
   }
 
+  let dateOfReceipt = rawPayment.dateOfReceipt;
+  if (dateOfReceipt && typeof dateOfReceipt === 'object') {
+    dateOfReceipt = dateOfReceipt.date ?? dateOfReceipt.original ?? dateOfReceipt;
+  }
+
   return {
     id: rawPayment.id,
-    dateOfReceipt: rawPayment.dateOfReceipt?.date,
+    dateOfReceipt,
     paymentMethod: paymentMethod,
+
     accountLabel: rawPayment.accountLabel,
     paymentAmountHt: parseFloat(rawPayment.paymentAmountHt),
     currency: currencyData,
@@ -350,6 +340,7 @@ async function transformPayment(payment) {
     orderPaymentDetails
   };
 }
+
 
 async function processCustomer(payment) {
   if (!payment.customer) return { customerId: null, customerName: 'N/A' };
