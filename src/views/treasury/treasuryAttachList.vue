@@ -282,11 +282,24 @@ async function transformPayment(payment) {
   let commercialData = { commercialId: null, commercialName: 'N/A' };
 
   const detailsRaw = rawPayment.orderPaymentDetails;
-  const orderPaymentDetails = Array.isArray(detailsRaw)
-    ? detailsRaw
-    : detailsRaw
-      ? Object.values(detailsRaw)
-      : [];
+
+  let orderPaymentDetails = [];
+
+  if (Array.isArray(detailsRaw)) {
+    orderPaymentDetails = detailsRaw;
+  } else if (typeof detailsRaw === 'string') {
+    try {
+      const parsedDetails = JSON.parse(detailsRaw);
+      if (Array.isArray(parsedDetails)) {
+        orderPaymentDetails = parsedDetails;
+      }
+    } catch (error) {
+      console.warn('Unable to parse order payment details string:', detailsRaw, error);
+    }
+  } else if (detailsRaw && typeof detailsRaw === 'object') {
+    orderPaymentDetails = Object.values(detailsRaw);
+  }
+
 
   if (rawPayment.commercial) {
     if (typeof rawPayment.commercial === 'object') {

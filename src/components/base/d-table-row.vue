@@ -52,12 +52,26 @@ const emit = defineEmits(['edit', 'save', 'cancel', 'delete','view','rattacher']
 
 const hasOrderPaymentDetails = computed(() => {
   const details = props.row?.orderPaymentDetails;
+
+
   if (Array.isArray(details)) {
     return details.length > 0;
   }
+
+  if (typeof details === 'string') {
+    try {
+      const parsed = JSON.parse(details);
+      return Array.isArray(parsed) ? parsed.length > 0 : Boolean(parsed);
+    } catch (error) {
+      return details.trim().length > 0;
+    }
+  }
+
   if (details && typeof details === 'object') {
     return Object.keys(details).length > 0;
   }
+
+
   return false;
 });
 
