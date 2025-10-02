@@ -236,10 +236,10 @@
                 <div class="col-auto">
                     <div class="row">
                         <div class="col-auto" v-if="quote_id">
-                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevis(false)">Enregistrer & Rester</button>
+                            <button class="btn btn-custom pe-5 ps-5" @click="saveAndReload">Enregistrer & Rester</button>
                         </div>
                         <div class="col-auto">
-                            <button class="btn btn-custom pe-5 ps-5" @click="saveDevis(false)">Enregistrer</button>
+                            <button class="btn btn-custom pe-5 ps-5" @click="handleSaveClick">Enregistrer</button>
                         </div>
                     </div>
                 </div>
@@ -359,7 +359,7 @@
     const invoiceAddresses = computed(() => {
         return currentCustomer.value?.addressesData?.filter((addr) => [2, 3].includes(addr.addressType.addressTypeId)) || [];
     });
-    const saveDevis = async (leave) => {
+    const saveDevis = async (leave, reload = false) => {
         try {
             error.value = {};
             if (contremarque) {
@@ -390,6 +390,9 @@
                 if (quote_id) {
                     const res = await axiosInstance.put(`/api/contremarque/${contremarqueId.value}/quote/${quote_id}`, dataTosend);
                     window.showMessage('Mise a jour avec succées.');
+                    if (reload) {
+                        window.location.reload();
+                    }
                 } else {
                     const respn = await axiosInstance.post(`/api/contremarque/${contremarqueId.value}/createQuote`, dataTosend);
                     window.showMessage('Ajout avec succées.');
@@ -409,6 +412,14 @@
             }
             window.showMessage(e.message, 'error');
         }
+    };
+
+    const saveAndReload = async () => {
+        await saveDevis(false, true);
+    };
+
+    const handleSaveClick = async () => {
+        await saveDevis(false, Boolean(quote_id));
     };
 
     const getContremarque = async (contremarque_id) => {
