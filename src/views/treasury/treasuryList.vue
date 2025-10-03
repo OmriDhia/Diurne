@@ -221,7 +221,7 @@
 
     async function fetchCustomers() {
         try {
-            const res = await axiosInstance.get('/api/customers');
+            const res = await axiosInstance.get('/api/customers/all');
             const uniqueCustomers = [];
             const seenIds = new Set();
 
