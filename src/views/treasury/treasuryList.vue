@@ -85,6 +85,7 @@
     const currencies = ref([]);
     const customers = ref([]);
     const commercials = ref([]);
+    const defaultCommercials = ref([]);
     const dataGrid = ref(null);
     const router = useRouter();
     const paymentTypes = ref([]);
@@ -186,7 +187,7 @@
                 fetchCurrencies(),
                 fetchCustomers(),
                 fetchPaymentTypes(),
-                fetchCommercials(),
+                fetchDefaultCommercials(),
                 loadSavedFilters()
             ]);
         } finally {
@@ -199,6 +200,11 @@
         if (savedFilters && Helper.hasDefinedValue(savedFilters)) {
             filter.value = savedFilters;
             filterActive.value = true;
+
+            const savedCustomerId = extractCustomerId(savedFilters.customer);
+            if (savedCustomerId || savedFilters.customer === 0 || savedFilters.customer === '0') {
+                await loadCommercialsForCustomer(savedCustomerId);
+            }
         }
     }
 
@@ -263,83 +269,15 @@
 
     let lastFetchedCustomerId = null;
 
-    async function fetchCommercials(customerId = null) {
-        const requestCustomerId = customerId ?? null;
-
+    async function fetchDefaultCommercials() {
         try {
-            lastFetchedCustomerId = requestCustomerId;
-
-            if (customerId !== null && customerId !== undefined && customerId !== '') {
-                try {
-                    const customerData = await contactService.getCustomerById(customerId);
-                    const histories = customerData?.contactCommercialHistoriesData
-                        || customerData?.contactCommercialHistories
-                        || [];
-
-                    const relatedCommercialsMap = new Map();
-
-                    histories.forEach(history => {
-                        const commercial = history?.commercial || history?.commercialData || history;
-                        if (!commercial) {
-                            return;
-                        }
-
-                        const userId = commercial.user_id
-                            || commercial.id
-                            || commercial.commercial_id
-                            || commercial.commercialId;
-
-                        if (!userId || relatedCommercialsMap.has(userId)) {
-                            return;
-                        }
-
-                        const firstname = commercial.firstname || commercial.firstName || '';
-                        const lastname = commercial.lastname || commercial.lastName || '';
-                        const name = commercial.name || `${firstname} ${lastname}`.trim();
-
-                        relatedCommercialsMap.set(userId, {
-                            ...commercial,
-                            user_id: userId,
-                            id: commercial.id || userId,
-                            firstname,
-                            lastname,
-                            name
-                        });
-                    });
-
-                    const relatedCommercials = Array.from(relatedCommercialsMap.values());
-
-                    if (relatedCommercials.length > 0) {
-                        if (lastFetchedCustomerId !== requestCustomerId) {
-                            return;
-                        }
-
-                        commercials.value = relatedCommercials;
-
-                        relatedCommercials.forEach(commercial => {
-                            commercialsCache.value.set(commercial.user_id, {
-                                response: {
-                                    commercialData: commercial
-                                }
-                            });
-                        });
-
-                        return;
-                    }
-                } catch (error) {
-                    console.error('Failed to fetch customer specific commercials:', error);
-                }
-            }
-
             const res = await axiosInstance.get('/api/commercials');
+            const fetchedCommercials = res.data.response.commercials || [];
 
-            if (lastFetchedCustomerId !== requestCustomerId) {
-                return;
-            }
+            defaultCommercials.value = fetchedCommercials;
+            commercials.value = fetchedCommercials;
 
-            commercials.value = res.data.response.commercials || [];
-
-            commercials.value.forEach(commercial => {
+            fetchedCommercials.forEach(commercial => {
                 if (commercial.user_id) {
                     commercialsCache.value.set(commercial.user_id, {
                         response: {
@@ -348,16 +286,120 @@
                     });
                 }
             });
-
-            await new Promise(resolve => {
-                if (commercials.value.length > 0) {
-                    resolve();
-                } else {
-                    setTimeout(resolve, 100);
-                }
-            });
         } catch (error) {
             console.error('Failed to fetch commercials:', error);
+        }
+    }
+
+    async function loadCommercialsForCustomer(customerId = null) {
+        const normalizedId = customerId ?? null;
+
+        if (normalizedId === lastFetchedCustomerId) {
+            if (normalizedId === null) {
+                filter.value.commercial = '';
+                return;
+            }
+            return;
+        }
+
+        lastFetchedCustomerId = normalizedId;
+
+        if (normalizedId === null) {
+            filter.value.commercial = '';
+            commercials.value = defaultCommercials.value.length ? [...defaultCommercials.value] : [];
+            if (!commercials.value.length) {
+                await fetchDefaultCommercials();
+            }
+            return;
+        }
+
+        try {
+            const customerData = await contactService.getCustomerById(normalizedId);
+            const histories = customerData?.contactCommercialHistoriesData
+                || customerData?.contactCommercialHistories
+                || [];
+
+            const relatedCommercialsMap = new Map();
+
+            histories.forEach(history => {
+                const historyCommercial = history?.commercial || history?.commercialData || history;
+                if (!historyCommercial) {
+                    return;
+                }
+
+                const userId = historyCommercial.user_id
+                    || historyCommercial.id
+                    || historyCommercial.commercial_id
+                    || historyCommercial.commercialId
+                    || history?.commercial_id
+                    || history?.commercialId;
+
+                if (!userId || relatedCommercialsMap.has(userId)) {
+                    return;
+                }
+
+                const firstname = historyCommercial.firstname || historyCommercial.firstName || '';
+                const lastname = historyCommercial.lastname || historyCommercial.lastName || '';
+                const name = historyCommercial.name
+                    || historyCommercial.commercialName
+                    || `${firstname} ${lastname}`.trim();
+
+                relatedCommercialsMap.set(userId, {
+                    ...historyCommercial,
+                    user_id: userId,
+                    id: historyCommercial.id || userId,
+                    firstname,
+                    lastname,
+                    name
+                });
+            });
+
+            const relatedCommercials = Array.from(relatedCommercialsMap.values());
+
+            if (normalizedId !== lastFetchedCustomerId) {
+                return;
+            }
+
+            commercials.value = relatedCommercials.length
+                ? relatedCommercials
+                : (defaultCommercials.value.length ? [...defaultCommercials.value] : []);
+
+            if (relatedCommercials.length) {
+                relatedCommercials.forEach(commercial => {
+                    if (commercial.user_id) {
+                        commercialsCache.value.set(commercial.user_id, {
+                            response: {
+                                commercialData: commercial
+                            }
+                        });
+                    }
+                });
+            }
+
+            if (!commercials.value.length) {
+                await fetchDefaultCommercials();
+            }
+
+            if (customerData?.current_commercial) {
+                filter.value.commercial = customerData.current_commercial;
+            } else if (relatedCommercials.length) {
+                const firstCommercial = relatedCommercials[0];
+                filter.value.commercial = firstCommercial.name?.trim()
+                    || `${firstCommercial.firstname || ''} ${firstCommercial.lastname || ''}`.trim()
+                    || '';
+            } else {
+                filter.value.commercial = '';
+            }
+        } catch (error) {
+            console.error('Failed to load customer commercials:', error);
+            if (normalizedId !== lastFetchedCustomerId) {
+                return;
+            }
+            commercials.value = defaultCommercials.value.length ? [...defaultCommercials.value] : [];
+            if (!commercials.value.length) {
+                await fetchDefaultCommercials();
+            }
+
         }
     }
 
@@ -366,11 +408,8 @@
         async (newCustomer) => {
             const customerId = extractCustomerId(newCustomer);
 
-            if ((customerId ?? null) === lastFetchedCustomerId) {
-                return;
-            }
+            await loadCommercialsForCustomer(customerId);
 
-            await fetchCommercials(customerId);
         }
     );
 
