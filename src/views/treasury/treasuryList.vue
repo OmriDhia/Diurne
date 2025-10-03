@@ -67,11 +67,12 @@
 </template>
 
 <script setup>
-    import { ref, reactive, onMounted, computed, toRaw } from 'vue';
+    import { ref, reactive, onMounted, computed, toRaw, watch } from 'vue';
     import dDataGrid from '../../components/base/d-data-grid.vue';
     import dInput from '../../components/base/d-input.vue';
     import dPageTitle from '../../components/common/d-page-title.vue';
     import axiosInstance from '../../config/http';
+    import contactService from '../../Services/contact-service';
     import { useRouter } from 'vue-router';
     import {
         filterOrderPayment,
@@ -239,9 +240,103 @@
         }
     }
 
-    async function fetchCommercials() {
+    function extractCustomerId(customerValue) {
+        if (!customerValue) return null;
+
+        if (typeof customerValue === 'object') {
+            return customerValue.customer_id || customerValue.customerId || customerValue.id || null;
+        }
+
+        if (typeof customerValue === 'number') {
+            return customerValue;
+        }
+
+        const trimmedValue = String(customerValue).trim();
+        const parsed = parseInt(trimmedValue, 10);
+
+        if (!Number.isNaN(parsed) && String(parsed) === trimmedValue) {
+            return parsed;
+        }
+
+        return null;
+    }
+
+    let lastFetchedCustomerId = null;
+
+    async function fetchCommercials(customerId = null) {
+        const requestCustomerId = customerId ?? null;
+
         try {
+            lastFetchedCustomerId = requestCustomerId;
+
+            if (customerId !== null && customerId !== undefined && customerId !== '') {
+                try {
+                    const customerData = await contactService.getCustomerById(customerId);
+                    const histories = customerData?.contactCommercialHistoriesData
+                        || customerData?.contactCommercialHistories
+                        || [];
+
+                    const relatedCommercialsMap = new Map();
+
+                    histories.forEach(history => {
+                        const commercial = history?.commercial || history?.commercialData || history;
+                        if (!commercial) {
+                            return;
+                        }
+
+                        const userId = commercial.user_id
+                            || commercial.id
+                            || commercial.commercial_id
+                            || commercial.commercialId;
+
+                        if (!userId || relatedCommercialsMap.has(userId)) {
+                            return;
+                        }
+
+                        const firstname = commercial.firstname || commercial.firstName || '';
+                        const lastname = commercial.lastname || commercial.lastName || '';
+                        const name = commercial.name || `${firstname} ${lastname}`.trim();
+
+                        relatedCommercialsMap.set(userId, {
+                            ...commercial,
+                            user_id: userId,
+                            id: commercial.id || userId,
+                            firstname,
+                            lastname,
+                            name
+                        });
+                    });
+
+                    const relatedCommercials = Array.from(relatedCommercialsMap.values());
+
+                    if (relatedCommercials.length > 0) {
+                        if (lastFetchedCustomerId !== requestCustomerId) {
+                            return;
+                        }
+
+                        commercials.value = relatedCommercials;
+
+                        relatedCommercials.forEach(commercial => {
+                            commercialsCache.value.set(commercial.user_id, {
+                                response: {
+                                    commercialData: commercial
+                                }
+                            });
+                        });
+
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch customer specific commercials:', error);
+                }
+            }
+
             const res = await axiosInstance.get('/api/commercials');
+
+            if (lastFetchedCustomerId !== requestCustomerId) {
+                return;
+            }
+
             commercials.value = res.data.response.commercials || [];
 
             commercials.value.forEach(commercial => {
@@ -265,6 +360,19 @@
             console.error('Failed to fetch commercials:', error);
         }
     }
+
+    watch(
+        () => filter.value.customer,
+        async (newCustomer) => {
+            const customerId = extractCustomerId(newCustomer);
+
+            if ((customerId ?? null) === lastFetchedCustomerId) {
+                return;
+            }
+
+            await fetchCommercials(customerId);
+        }
+    );
 
     const fetchData = async ({ page, itemsPerPage, sort }) => {
         try {
