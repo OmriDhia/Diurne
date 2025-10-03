@@ -86,7 +86,8 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr v-for="(allocation, index) in allocations" :key="`allocation-${index}`">
+                                    <tr v-for="(allocation, index) in allocations"
+                                        :key="allocation.id ? `allocation-${allocation.id}` : `allocation-${allocation.tempId || index}`">
                                         <!-- Projet -->
                                         <td>
                                             <d-collections-dropdown
@@ -196,9 +197,20 @@
                                         <!-- Actions -->
                                         <td class="text-center">
                                             <div class="col-auto p-1 regleement">
-                                                <d-delete :api="`/api/order-payment-details/${allocation.id}`"
-                                                          class="btn-small"
-                                                          @deleted="removeAllocation(index)"></d-delete>
+                                                <d-delete
+                                                    v-if="allocation.id"
+                                                    :api="`/api/order-payment-details/${allocation.id}`"
+                                                    class="btn-small"
+                                                    @isDone="handleServerAllocationDeleted(allocation.id, index)"
+                                                ></d-delete>
+                                                <button
+                                                    v-else
+                                                    type="button"
+                                                    class="btn btn-dark mb-1 me-1 rounded-circle"
+                                                    @click.prevent="confirmRemoveUnsavedAllocation(index)"
+                                                >
+                                                    <vue-feather type="x" :size="14"></vue-feather>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -294,6 +306,8 @@
 
     const DEFAULT_RN_PREFIX = 'RN-';
     const DEFAULT_DISTRIBUTION = '100.00';
+    let tempAllocationCounter = 0;
+    const createTemporaryAllocationId = () => `temp-${Date.now()}-${tempAllocationCounter++}`;
 
     onMounted(async () => {
         if (isEditMode.value) {
@@ -330,7 +344,7 @@
                     ? data.orderPaymentDetails
                     : Object.values(data.orderPaymentDetails);
                 if (details.length > 0) {
-                    allocations.value = await Promise.all(
+                    const mappedAllocations = await Promise.all(
                         details.map(item =>
                             mapAllocationFromPaymentDetail(item, {
                                 contremarqueIdRef: contremarqueId,
@@ -340,6 +354,11 @@
                             })
                         )
                     );
+
+                    allocations.value = mappedAllocations.map(allocation => ({
+                        ...allocation,
+                        tempId: allocation.id || createTemporaryAllocationId()
+                    }));
                 }
             }
 
@@ -470,6 +489,7 @@
 
     const createAllocationObject = (quoteFullObject, quoteDetail) => {
         return {
+            tempId: createTemporaryAllocationId(),
             quoteId: quoteFullObject.quote_id,
             quoteDetailId: quoteDetail.id,
             orderId: null,
@@ -536,6 +556,7 @@
 
     const createOrderAllocationObject = (invoiceFullObject, invoiceDetail) => {
         return {
+            tempId: createTemporaryAllocationId(),
             quoteId: null,
             quoteDetailId: null,
             orderId: invoiceFullObject.id,
@@ -632,21 +653,46 @@
         }
     };
 
-    const removeAllocation = async (index) => {
-        const allocation = allocations.value[index];
-
-        if (allocation.id) {
-            try {
-                await axiosInstance.delete(`/api/order-payment-details/${allocation.id}`);
-                window.showMessage('Affectation supprimée avec succès', 'success');
-            } catch (error) {
-                console.error('Erreur lors de la suppression de l\'affectation:', error);
-                window.showMessage('Erreur lors de la suppression', 'error');
-                return;
-            }
+    const removeAllocation = (index) => {
+        if (index < 0 || index >= allocations.value.length) {
+            return;
         }
-
         allocations.value.splice(index, 1);
+    };
+
+    const removeAllocationById = (id) => {
+        if (!id) {
+            return;
+        }
+        const index = allocations.value.findIndex(allocation => allocation.id === id);
+        if (index !== -1) {
+            removeAllocation(index);
+        }
+    };
+
+    const handleServerAllocationDeleted = (id, fallbackIndex) => {
+        if (id) {
+            removeAllocationById(id);
+        } else if (typeof fallbackIndex === 'number') {
+            removeAllocation(fallbackIndex);
+        }
+    };
+
+    const confirmRemoveUnsavedAllocation = (index) => {
+        new window.Swal({
+            title: 'Êtes-vous sûr ?',
+            text: 'Vous voulez supprimer cet élément!',
+            type: 'warning',
+            showCancelButton: true,
+            cancelButtonText: 'Annuler',
+            confirmButtonText: 'Supprimer',
+            padding: '2em'
+        }).then(result => {
+            if (result.value) {
+                removeAllocation(index);
+                window.showMessage("L'élément a été supprimé avec succès.");
+            }
+        });
     };
 
     const formatNumber = (value) => {
