@@ -399,6 +399,7 @@
             if (!commercials.value.length) {
                 await fetchDefaultCommercials();
             }
+
         }
     }
 
@@ -408,6 +409,7 @@
             const customerId = extractCustomerId(newCustomer);
 
             await loadCommercialsForCustomer(customerId);
+
         }
     );
 
