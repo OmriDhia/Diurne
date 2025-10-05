@@ -24,7 +24,8 @@
                 </div>
             </div>
         </perfect-scrollbar>
-        <d-modal-add-image :carpetDesignOrderId="props.carpetDesignOrderId" @onClose="handleClose"></d-modal-add-image>
+        <d-modal-add-image :carpetDesignOrderId="props.carpetDesignOrderId" @onClose="handleClose"
+            @imageUploaded="handleImageUploaded"></d-modal-add-image>
         <div class="col-md-12">
             <div class="row justify-content-end pe-2">
                 <!--  -->
@@ -88,6 +89,12 @@ const getImages = async () => {
 };
 const handleClose = async () => {
     await getImages();
+};
+const handleImageUploaded = async () => {
+    await getImages();
+    if (typeof window !== 'undefined') {
+        window.location.reload();
+    }
 };
 const downloadImage = async (attachment) => {
     await attachmentService.downloadFile(attachment);
