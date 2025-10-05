@@ -106,6 +106,14 @@
     // Handle file selection
     const slectedFile = (event) => {
         file.value = event;
+
+        if (!event) {
+            return;
+        }
+
+        const lastDotIndex = event.name.lastIndexOf('.');
+        const baseName = lastDotIndex !== -1 ? event.name.substring(0, lastDotIndex) : event.name;
+        data.value.image_reference = sanitizeReference(baseName);
     };
 
     const displayFileName = computed(() => {
