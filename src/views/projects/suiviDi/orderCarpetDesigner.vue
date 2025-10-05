@@ -186,25 +186,25 @@
                                                         <div class="col-xl-6 col-md-12 mb-2">
                                                             <label class="form-label text-black">Nom du modèle</label>
                                                             <input type="text" class="form-control"
-                                                                   :disabled="disableForDesigner"
+                                                                   :disabled="false"
                                                                    v-model="dataCarpetOrder.modelName" />
                                                         </div>
                                                         <div class="col-xl-6 col-md-12 mb-2">
                                                             <label class="form-label text-black">Variation</label>
                                                             <input type="text" class="form-control"
-                                                                   :disabled="disableForDesigner"
+                                                                   :disabled="false"
                                                                    v-model="dataCarpetOrder.variation" />
                                                         </div>
                                                         <div class="col-12 d-flex flex-wrap">
                                                             <div class="form-check me-3">
                                                                 <input class="form-check-input" type="checkbox"
-                                                                       id="jpeg" :disabled="disableForDesigner"
+                                                                       id="jpeg" :disabled="false"
                                                                        v-model="dataCarpetOrder.jpeg" />
                                                                 <label class="form-check-label text-black" for="jpeg">JPEG</label>
                                                             </div>
                                                             <div class="form-check me-3">
                                                                 <input class="form-check-input" type="checkbox"
-                                                                       id="impression" :disabled="disableForDesigner"
+                                                                       id="impression" :disabled="false"
                                                                        v-model="dataCarpetOrder.impression" />
                                                                 <label class="form-check-label text-black"
                                                                        for="impression">Impression</label>
@@ -212,7 +212,7 @@
                                                             <div class="form-check me-3">
                                                                 <input class="form-check-input" type="checkbox"
                                                                        id="impressionBarreDeLaine"
-                                                                       :disabled="disableForDesigner"
+                                                                       :disabled="false"
                                                                        v-model="dataCarpetOrder.impressionBarreDeLaine" />
                                                                 <label class="form-check-label text-black"
                                                                        for="impressionBarreDeLaine">Impression Barre De
