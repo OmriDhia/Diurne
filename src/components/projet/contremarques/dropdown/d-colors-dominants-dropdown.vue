@@ -1,6 +1,7 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Couleur <span v-if="index > 0"> Fil N° {{index}}</span> <span class="required" v-if="required">*</span>:</label>
+        <div class="col-4"><label class="form-label">Couleur <span v-if="index > 0"> Fil N° {{ index }}</span> <span
+            class="required" v-if="required">*</span>:</label>
         </div>
         <div class="col-8">
             <multiselect
@@ -27,14 +28,14 @@
                     <div v-html="customLabel(option)"></div>
                 </template>
             </multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champs Couleur est obligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t('Le champs Couleur est obligatoire.') }}</div>
         </div>
     </div>
 </template>
 
 <script>
     import Multiselect from 'vue-multiselect';
-    import axiosInstance from "../../../../config/http";
+    import axiosInstance from '../../../../config/http';
 
     export default {
         components: { Multiselect },
@@ -52,12 +53,12 @@
                 default: false
             },
             index: {
-                type: Number,
+                type: Number
             },
             disabled: {
                 type: Boolean,
                 default: false
-            },
+            }
         },
         data() {
             return {
@@ -78,10 +79,10 @@
 
                 if (c === 'open') {
                     if (multiselectElement) {
-                        multiselectElement.style.minHeight = "90vh";
+                        multiselectElement.style.minHeight = '90vh';
                     }
                     if (multiselectElementNew) {
-                        multiselectElementNew.style.minHeight = "90vh";
+                        multiselectElementNew.style.minHeight = '90vh';
                     }
                 } else {
                     if (multiselectElement) {
@@ -99,10 +100,16 @@
                 try {
                     const res = await axiosInstance.get('/api/dominant-colors');
                     this.data = res.data.response;
+                    // Set default color with ID 10 after data is loaded
+                    const defaultColor = this.data.find(color => color.id === 10);
+                    if (defaultColor && !this.modelValue) {
+                        this.value = defaultColor;
+                        this.$emit('update:modelValue', defaultColor);
+                    }
                 } catch (error) {
                     console.error('Failed to fetch dominant colors:', error);
                 }
-            },
+            }
         },
         mounted() {
             this.getData();
@@ -116,8 +123,8 @@
 </script>
 
 <style>
-    .label-multiselect-color{
-        width: 40px; 
+    .label-multiselect-color {
+        width: 40px;
         height: 20px;
         margin-right: 5px;
         display: inline-block;

@@ -242,15 +242,6 @@ export const routes = [
                     requiresAuth: true,
                     permission: 'create contremarque'
                 }
-            },
-            {
-                path: 'projectdis/:id',
-                name: 'projectDIS',
-                component: () => import('../views/projects/contremarques/projectdis.vue'),
-                meta: {
-                    requiresAuth: true,
-                    permission: 'create contremarque'
-                }
             }
         ],
         meta: {
@@ -344,7 +335,7 @@ export const routes = [
         meta: {
             requiresAuth: true,
             class: 'projects'
-        },
+        }
     }, //order-image
     {
         path: '/tapis/images',
@@ -357,8 +348,8 @@ export const routes = [
                 meta: {
                     requiresAuth: true,
                     class: 'tapis',
-                    permission: "read image",
-                },
+                    permission: 'read image'
+                }
             },
             {
                 path: 'detail/:id',
@@ -367,9 +358,9 @@ export const routes = [
                 meta: {
                     requiresAuth: true,
                     class: 'tapis',
-                    permission: "read image",
-                },
-            },
+                    permission: 'read image'
+                }
+            }
         ],
         meta: {
             requiresAuth: true,
@@ -408,6 +399,15 @@ export const routes = [
                     requiresAuth: true,
                     class: 'projects',
                     permission: 'read contremarque'
+                }
+            },
+            {
+                path: 'projectdis/:id',
+                name: 'projectDIS',
+                component: () => import('../views/projects/contremarques/projectdis.vue'),
+                meta: {
+                    requiresAuth: true,
+                    permission: 'create contremarque'
                 }
             }
         ],
@@ -456,9 +456,9 @@ export const routes = [
                 component: () => import('../views/projects/factureClient/clientInvoiceList.vue'),
                 meta: {
                     requiresAuth: true,
-                   class: 'projects',
-                    permission: 'read invoice',
-                },
+                    class: 'projects',
+                    permission: 'read invoice'
+                }
             },
             {
                 path: 'create',
@@ -466,9 +466,9 @@ export const routes = [
                 component: () => import('../views/projects/factureClient/clientInvoiceCreate.vue'),
                 meta: {
                     requiresAuth: true,
-                   class: 'projects',
-                    permission: 'create invoice',
-                },
+                    class: 'projects',
+                    permission: 'create invoice'
+                }
             },
             {
                 path: 'edit/:id',
@@ -476,10 +476,10 @@ export const routes = [
                 component: () => import('../views/projects/factureClient/clientInvoiceCreate.vue'),
                 meta: {
                     requiresAuth: true,
-                   class: 'projects',
-                    permission: 'create invoice',
-                },
-            },
+                    class: 'projects',
+                    permission: 'create invoice'
+                }
+            }
         ],
         meta: {
             requiresAuth: true,
@@ -527,26 +527,26 @@ export const routes = [
         path: '/treasury',
         name: 'treasury',
         component: () => import('../views/treasury/treasuryList.vue'),
-         meta: {
-                    requiresAuth: true,
-                    class: 'treasury',
-                    permission: "read treasury",
-        },
+        meta: {
+            requiresAuth: true,
+            class: 'treasury',
+            permission: 'read treasury'
+        }
     },
 
     {
         path: '/reglement',
         name: 'reglement',
         children: [{
-                path: '',
-                name: 'reglement_list',
-                component: () => import('../views/treasury/treasuryList.vue'),
-                meta: {
-                    requiresAuth: true,
-                    class: 'treasury',
-                    permission: "read treasury",
-                },
-            },
+            path: '',
+            name: 'reglement_list',
+            component: () => import('../views/treasury/treasuryList.vue'),
+            meta: {
+                requiresAuth: true,
+                class: 'treasury',
+                permission: 'read treasury'
+            }
+        },
             {
                 path: 'attach/:quoteId',
                 name: 'reglement_attach_list',
@@ -554,8 +554,8 @@ export const routes = [
                 meta: {
                     requiresAuth: true,
                     class: 'treasury',
-                    permission: "read treasury",
-                },
+                    permission: 'read treasury'
+                }
             },
             {
                 path: 'create',
@@ -564,8 +564,8 @@ export const routes = [
                 meta: {
                     requiresAuth: true,
                     class: 'treasury',
-                    permission: "create treasury",
-                },
+                    permission: 'create treasury'
+                }
             },
             // {
             //     path: 'update/:id',
@@ -584,8 +584,8 @@ export const routes = [
                 meta: {
                     requiresAuth: true,
                     class: 'treasury',
-                    permission: "read treasury",
-                },
+                    permission: 'read treasury'
+                }
             },
             {
                 path: 'rattacher/:quoteId/:id',
@@ -594,14 +594,14 @@ export const routes = [
                 meta: {
                     requiresAuth: true,
                     class: 'treasury',
-                    permission: "update treasury",
-                },
-            },
+                    permission: 'update treasury'
+                }
+            }
         ],
         meta: {
             requiresAuth: true,
             class: 'treasury'
-        },
+        }
     },
     {
         path: '/tapis/invoices',
@@ -613,9 +613,9 @@ export const routes = [
                 component: () => import('../views/carpet/factureFournisseur/fournisseurInvoiceList.vue'),
                 meta: {
                     requiresAuth: true,
-                   class: 'tapis',
-                    permission: 'read invoice',
-                },
+                    class: 'tapis',
+                    permission: 'read invoice'
+                }
             },
             {
                 path: 'create',
@@ -623,9 +623,9 @@ export const routes = [
                 component: () => import('../views/carpet/factureFournisseur/fournisseurInvoiceCreate.vue'),
                 meta: {
                     requiresAuth: true,
-                   class: 'tapis',
-                    permission: 'create invoice',
-                },
+                    class: 'tapis',
+                    permission: 'create invoice'
+                }
             },
             {
                 path: 'edit/:id',
@@ -634,9 +634,9 @@ export const routes = [
                 meta: {
                     requiresAuth: true,
                     class: 'tapis',
-                    permission: 'create invoice',
-                },
-            },
+                    permission: 'create invoice'
+                }
+            }
         ],
         meta: {
             requiresAuth: true,
@@ -691,7 +691,7 @@ export const routes = [
         meta: {
             requiresAuth: true,
             class: 'tapis'
-        },
-    },
+        }
+    }
 
 ];

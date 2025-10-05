@@ -73,7 +73,7 @@
                                         <div class="row align-items-center justify-content-between mt-5"
                                              v-if="carpetDesignOrderId">
                                             <div class="col-md-auto col-sm-6">
-                                                <d-carpet-status-dropdown :disabled="true"
+                                                <d-carpet-status-dropdown :disabled="hideForTransStudio"
                                                                           v-model="dataCarpetOrder.status_id"></d-carpet-status-dropdown>
                                             </div>
                                             <div class="col-md-auto col-sm-6" v-if="!disableForDesigner">
@@ -301,12 +301,11 @@
             </div>
         </div>
         <div class="row p-2 justify-content-between">
-            <div class="col-auto">
+            <div class="col-auto w-auto row gap-2">
                 <button class="btn btn-custom pe-5 ps-5" @click="goToDis">Retour à la liste</button>
-            </div>
-            <div class="col-auto">
                 <button class="btn btn-custom pe-5 ps-5" @click="goToDi">Retour au DI</button>
             </div>
+
         </div>
     </div>
 </template>
