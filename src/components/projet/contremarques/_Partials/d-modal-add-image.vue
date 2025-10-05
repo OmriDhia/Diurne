@@ -5,7 +5,7 @@
                 <div class="col-12">
                     <div class="row p-1 align-items-center">
                         <div class="col-sm-12 col-md-8">
-                            <d-input label="Référence" v-model="data.image_reference"></d-input>
+                            <d-input label="Référence" v-model="data.image_reference" required></d-input>
                         </div>
                     </div>
                     <div class="row p-1 align-items-center">
@@ -20,7 +20,7 @@
                     </div>
                     <div class="row p-1 align-items-center">
                         <div class="col-sm-12 col-md-8">
-                            <d-image-type-dropdown v-model="data.imageTypeId"></d-image-type-dropdown>
+                            <d-image-type-dropdown v-model="data.imageTypeId" required></d-image-type-dropdown>
                         </div>
                     </div>
                     <div class="row p-1 align-items-center">
@@ -33,7 +33,8 @@
                             <div class="row">
                                 <div class="col-sm-12 col-md-4 text-black">Image:</div>
                                 <div class="col-sm-12 col-md-8">
-                                    <d-upload-file @file-selected="slectedFile($event)" :file-name="displayFileName"></d-upload-file>
+                                    <d-upload-file @file-selected="slectedFile($event)"
+                                                   :file-name="displayFileName"></d-upload-file>
                                     <div class="pt-3" v-if="uploadProgress">
                                         <div class="progress">
                                             <div
@@ -71,8 +72,8 @@
 
     const props = defineProps({
         carpetDesignOrderId: {
-            type: Number,
-        },
+            type: Number
+        }
     });
 
     const store = useStore();
@@ -100,7 +101,7 @@
         hasError: false,
         error: '',
         commentaire: '',
-        validatedAt: new Date(),
+        validatedAt: new Date()
     });
 
     // Handle file selection
@@ -174,7 +175,7 @@
                 try {
                     const res = await axiosInstance.post('/api/createImageAttachment', {
                         imageId: createdImage,
-                        attachmentId: uplodedImage,
+                        attachmentId: uplodedImage
                     });
                     window.showMessage('Objet image créer avec succées');
                     emit('imageUploaded');
@@ -200,7 +201,7 @@
             hasError: false,
             error: '',
             commentaire: '',
-            validatedAt: '',
+            validatedAt: ''
         };
         file.value = null;
         uploadProgress.value = 0;
