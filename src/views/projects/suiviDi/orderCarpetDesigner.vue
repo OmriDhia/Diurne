@@ -728,8 +728,10 @@
     };
     watch(
         () => dataSpecification.value.collectionId,
-        () => {
-            dataSpecification.value.modelId = 0;
+        (newCollectionId, previousCollectionId) => {
+            if (previousCollectionId && newCollectionId !== previousCollectionId) {
+                dataSpecification.value.modelId = 0;
+            }
         }
     );
     //dataCarpetOrder.location_id
