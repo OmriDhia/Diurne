@@ -187,7 +187,8 @@
                                                             <label class="form-label text-black">Nom du modèle</label>
                                                             <input type="text" class="form-control"
                                                                    :disabled="false"
-                                                                   v-model="dataCarpetOrder.modelName" />
+                                                                   v-model="dataCarpetOrder.modelName"
+                                                                   @input="handleModelNameInput" />
                                                         </div>
                                                         <div class="col-xl-6 col-md-12 mb-2">
                                                             <label class="form-label text-black">Variation</label>
@@ -414,6 +415,10 @@
         impression: false,
         impressionBarreDeLaine: false
     });
+    const collections = ref([]);
+    const models = ref([]);
+    const lastAutoModelName = ref('');
+    const userEditedModelName = ref(false);
     const handleDesignerAdded = (status) => {
         // You can perform other actions here, like updating the list of designers, etc.
         dataCarpetOrder.value.status_id = status;
@@ -505,6 +510,8 @@
                 dataCarpetOrder.value.location_id = currentCarpetObject.value.location && currentCarpetObject.value.location.location_id ? currentCarpetObject.value.location.location_id : 0;
                 dataCarpetOrder.value.status_id = currentCarpetObject.value.status && currentCarpetObject.value.status.id ? currentCarpetObject.value.status.id : 1;
                 dataCarpetOrder.value.modelName = currentCarpetObject.value.modelName ?? currentCarpetObject.value.modelName ?? '';
+                lastAutoModelName.value = dataCarpetOrder.value.modelName;
+                userEditedModelName.value = false;
                 dataCarpetOrder.value.variation = currentCarpetObject.value.variation ?? '';
                 dataCarpetOrder.value.jpeg = currentCarpetObject.value.jpeg ?? false;
                 dataCarpetOrder.value.impression = currentCarpetObject.value.impression ?? false;
@@ -531,15 +538,145 @@
                         specialShapeId: dSP.specialShape ? dSP.specialShape.id : 0
                     };
                 }
+                updateModelNameIfNeeded();
             }
         } catch (e) {
             console.log(e);
         }
     };
 
+    const getCollectionReference = () => {
+        if (!dataSpecification.value.collectionId) {
+            return '';
+        }
+        const collection = collections.value.find(
+            (item) => item.id === parseInt(dataSpecification.value.collectionId)
+        );
+        return collection?.reference?.trim() ?? '';
+    };
+
+    const getModelCode = () => {
+        if (!dataSpecification.value.modelId) {
+            return '';
+        }
+        const model = models.value.find((item) => item.id === parseInt(dataSpecification.value.modelId));
+        return model?.code?.trim() ?? '';
+    };
+
+    const shouldHideCollection = (modelCode) => {
+        if (!modelCode) {
+            return false;
+        }
+        const withoutSpaces = modelCode.replace(/\s+/g, '');
+        if (!withoutSpaces) {
+            return false;
+        }
+        const lettersOnly = withoutSpaces.replace(/[^A-Za-z]/g, '');
+        return lettersOnly.length === withoutSpaces.length;
+    };
+
+    const shouldShowVariation = (variation) => {
+        if (!variation) {
+            return false;
+        }
+        const trimmed = variation.trim();
+        if (!trimmed) {
+            return false;
+        }
+        const withoutLeadingZeros = trimmed.replace(/^0+/, '') || '0';
+        return withoutLeadingZeros !== '1';
+    };
+
+    const computeAutomaticModelName = () => {
+        const modelCode = getModelCode();
+        const collectionReference = getCollectionReference();
+        const variation = dataCarpetOrder.value.variation?.trim() ?? '';
+
+        if (!modelCode && !collectionReference) {
+            return variation && shouldShowVariation(variation) ? variation : '';
+        }
+
+        const parts = [];
+        if (collectionReference && !shouldHideCollection(modelCode)) {
+            parts.push(collectionReference);
+        }
+        if (modelCode) {
+            parts.push(modelCode);
+        }
+        if (variation && shouldShowVariation(variation)) {
+            parts.push(variation);
+        }
+
+        return parts.join(' ').trim();
+    };
+
+    const updateModelNameIfNeeded = () => {
+        const autoName = computeAutomaticModelName();
+        if (!autoName) {
+            if (!dataCarpetOrder.value.modelName) {
+                lastAutoModelName.value = '';
+                userEditedModelName.value = false;
+            }
+            return;
+        }
+        if (!userEditedModelName.value || dataCarpetOrder.value.modelName === lastAutoModelName.value) {
+            dataCarpetOrder.value.modelName = autoName;
+            lastAutoModelName.value = autoName;
+            userEditedModelName.value = false;
+        }
+    };
+
+    const fetchCollections = async () => {
+        try {
+            const res = await axiosInstance.get('/api/collections');
+            collections.value = res.data.response?.data ?? [];
+            updateModelNameIfNeeded();
+        } catch (error) {
+            console.error('Failed to fetch collections:', error);
+        }
+    };
+
+    const fetchModels = async () => {
+        try {
+            const res = await axiosInstance.get('/api/models');
+            models.value = res.data.response?.data ?? [];
+            updateModelNameIfNeeded();
+        } catch (error) {
+            console.error('Failed to fetch models:', error);
+        }
+    };
+
+    watch(
+        [
+            () => dataSpecification.value.collectionId,
+            () => dataSpecification.value.modelId,
+            () => dataCarpetOrder.value.variation
+        ],
+        () => {
+            updateModelNameIfNeeded();
+        }
+    );
+
+    watch(
+        () => dataCarpetOrder.value.modelName,
+        (newValue) => {
+            if (newValue === lastAutoModelName.value) {
+                userEditedModelName.value = false;
+            } else if (newValue !== undefined) {
+                userEditedModelName.value = true;
+            }
+        }
+    );
+
+    const handleModelNameInput = () => {
+        userEditedModelName.value = true;
+    };
+
     onMounted(() => {
         getOrderCarpet(carpetDesignOrderId);
         getProjectDI();
+        fetchCollections();
+        fetchModels();
         // console.log(store.getters.isFinStatus, CommercialAccessADV.value, 'yassssssssssssssssssssssine');
 
         // setTimeout(() => {
