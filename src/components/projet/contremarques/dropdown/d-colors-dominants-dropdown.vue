@@ -41,7 +41,7 @@
         components: { Multiselect },
         props: {
             modelValue: {
-                type: [Number, String, null],
+                type: [Object, Number, String, null],
                 required: true
             },
             error: {
@@ -94,18 +94,40 @@
                 }
             },
             handleChange(value) {
+                this.value = value;
                 this.$emit('update:modelValue', value);
+            },
+            setValueFromModel(modelValue) {
+                if (Array.isArray(this.data) && this.data.length) {
+                    if (modelValue && typeof modelValue === 'object') {
+                        this.value = modelValue;
+                        return;
+                    }
+
+                    if (modelValue !== null && modelValue !== undefined && modelValue !== '') {
+                        const matchedColor = this.data.find(color => color.id === Number(modelValue));
+                        if (matchedColor) {
+                            this.value = matchedColor;
+                            this.$emit('update:modelValue', matchedColor);
+                            return;
+                        }
+                    }
+
+                    this.setDefaultColor();
+                }
+            },
+            setDefaultColor() {
+                const defaultColor = this.data.find(color => color.id === 10);
+                if (defaultColor) {
+                    this.value = defaultColor;
+                    this.$emit('update:modelValue', defaultColor);
+                }
             },
             async getData() {
                 try {
                     const res = await axiosInstance.get('/api/dominant-colors');
                     this.data = res.data.response;
-                    // Set default color with ID 10 after data is loaded
-                    const defaultColor = this.data.find(color => color.id === 10);
-                    if (defaultColor && !this.modelValue) {
-                        this.value = defaultColor;
-                        this.$emit('update:modelValue', defaultColor);
-                    }
+                    this.setValueFromModel(this.modelValue);
                 } catch (error) {
                     console.error('Failed to fetch dominant colors:', error);
                 }
@@ -115,8 +137,11 @@
             this.getData();
         },
         watch: {
-            modelValue(newValue) {
-                this.value = newValue;
+            modelValue: {
+                handler(newValue) {
+                    this.setValueFromModel(newValue);
+                },
+                immediate: true
             }
         }
     };
