@@ -44,7 +44,12 @@
                     <td class="border-start">
                         <div class="row ps-4 align-items-center">
                             <div class="col-auto p-1">
-                                <d-delete :api="''" class="btn-small"></d-delete>
+                                <d-delete
+                                    :api="getDeleteQuoteDetailApi(row.id)"
+                                    :disabled="isDeleteDisabled(row.id)"
+                                    class="btn-small"
+                                    @isDone="handleQuoteDetailDeleted"
+                                ></d-delete>
                             </div>
                             <div class="col-auto p-1 btn-small">
                                 <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"  @click="goToQuoteDetails(row.id)">
@@ -132,6 +137,22 @@
     const goToQuoteDetails = (id) => {
         router.push({name: 'devisDetails', params: { qouteId: props.quoteId, id: id }});
     };
+    const getDeleteQuoteDetailApi = (quoteDetailId) => {
+        if (!props.quoteId || !quoteDetailId) {
+            return '';
+        }
+
+        return `/api/Quote/${props.quoteId}/deleteQuoteDetail/${quoteDetailId}`;
+    };
+
+    const isDeleteDisabled = (quoteDetailId) => {
+        return !props.quoteId || !quoteDetailId;
+    };
+
+    const handleQuoteDetailDeleted = () => {
+        emit('changeStatus');
+    };
+
     const cloneQuoteDetail = async (quoteDetailId) => {
         try {
             await axiosInstance.post(`/api/cloneQuoteDetail/${quoteDetailId}`);
