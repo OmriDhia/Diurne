@@ -177,6 +177,7 @@
                         attachmentId: uplodedImage,
                     });
                     window.showMessage('Objet image créer avec succées');
+                    emit('imageUploaded');
                     document.querySelector('#modalAddImage .btn-close').click();
                 } catch (error) {
                     window.showMessage('Erreur creation objet image', 'error');
@@ -189,7 +190,7 @@
         }
     };
 
-    const emit = defineEmits(['onClose']);
+    const emit = defineEmits(['onClose', 'imageUploaded']);
 
     const handleClose = () => {
         data.value = {
