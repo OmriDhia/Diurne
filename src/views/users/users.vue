@@ -40,6 +40,23 @@
                                     <d-profile v-model="search.profile"></d-profile>
                                 </div>
                             </div>
+                            <div class="row m-2 mt-4">
+                                <div class="col-12">
+                                    <label class="form-label d-block">Salarié actif :</label>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="filterActive"
+                                               :checked="search.is_active === '1'"
+                                               @change="toggleIsActiveFilter('1')">
+                                        <label class="form-check-label" for="filterActive">Actifs</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="filterInactive"
+                                               :checked="search.is_active === '0'"
+                                               @change="toggleIsActiveFilter('0')">
+                                        <label class="form-check-label" for="filterInactive">Inactifs</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-5">
                             <div class="row m-2">
@@ -78,6 +95,11 @@
                                 <template #profile="data">
                                     <strong>{{ (data.value.profile && data.value.profile.name) ? data.value.profile.name : '--'
                                         }}</strong>
+                                </template>
+                                <template #is_active="data">
+                                    <span class="status-dot"
+                                          :class="isActiveStatus(data.value.is_active) ? 'status-dot--active' : 'status-dot--inactive'"></span>
+                                    <span class="ms-2">{{ isActiveStatus(data.value.is_active) ? 'Actif' : 'Inactif' }}</span>
                                 </template>
                                 <template #delete="data">
                                     <d-delete
@@ -123,7 +145,8 @@
         firstname: null,
         lastname: null,
         email: null,
-        profile: null
+        profile: null,
+        is_active: null
     });
     const rows = ref(null);
     const filterActive = ref(false);
@@ -132,7 +155,7 @@
         { field: 'firstname', title: 'Nom & Prénom' },
         { field: 'login', title: 'Login' },
         { field: 'manager', title: 'Manager', sort: false },
-        { field: 'salary', title: 'salarié actif', sort: false },
+        { field: 'is_active', title: 'Salarié actif', sort: false },
         { field: 'profile', title: 'Droit' },
         { field: 'delete', title: '', sort: false }
     ]) || [];
@@ -178,6 +201,9 @@
         if (search.email) {
             param += '&filter[email]=' + search.email;
         }
+        if (search.is_active !== null) {
+            param += '&filter[is_active]=' + search.is_active;
+        }
         return param;
     };
     const doReset = () => {
@@ -186,11 +212,20 @@
         search.firstname = null;
         search.lastname = null;
         search.profile = null;
+        search.is_active = null;
         getUsers();
     };
     const goToNewUser = () => {
         router.push({ name: 'account-setting' });
     };
+    const toggleIsActiveFilter = (value) => {
+        if (search.is_active === value) {
+            search.is_active = null;
+        } else {
+            search.is_active = value;
+        }
+    };
+    const isActiveStatus = (value) => value === true || value === 1 || value === '1';
 </script>
 <style>
     .advanced-table .progress-bar {
@@ -218,5 +253,20 @@
         box-shadow: none !important;
         width: 150px;
         margin-left: 10px;
+    }
+
+    .status-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .status-dot--active {
+        background-color: #28a745;
+    }
+
+    .status-dot--inactive {
+        background-color: #dc3545;
     }
 </style>
