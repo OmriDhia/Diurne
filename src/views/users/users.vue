@@ -94,7 +94,7 @@
                                 <template #is_active="data">
                                     <span class="status-dot"
                                           :class="isActiveStatus(data.value.is_active) ? 'status-dot--active' : 'status-dot--inactive'"></span>
-                                    <span class="ms-2">{{ isActiveStatus(data.value.is_active) ? 'Actif' : 'Inactif' }}</span>
+
 
                                 </template>
                                 <template #delete="data">
@@ -202,7 +202,7 @@
 
         if (search.is_active !== '') {
 
-            param += '&filter[is_active]=' + search.is_active;
+            param += '&filter[isActive]=' + search.is_active;
         }
         return param;
     };
@@ -245,9 +245,9 @@
     }, { deep: true });
 
     const activeOnly = computed({
-        get: () => search.is_active === '1',
+        get: () => search.is_active === true,
         set: (value) => {
-            search.is_active = value ? '1' : '';
+            search.is_active = value ? true : '';
         }
 
     });
