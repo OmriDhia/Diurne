@@ -35,10 +35,18 @@
                                         </div>
                                         <div class="row m-2 mt-4">
                                             <div class="col-12">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="userIsActive"
-                                                           v-model="userObj.is_active">
-                                                    <label class="form-check-label" for="userIsActive">Salarié actif</label>
+
+                                                <label class="form-label d-block">Salarié actif :</label>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" id="userIsActiveYes"
+                                                           :value="true" v-model="userObj.is_active">
+                                                    <label class="form-check-label" for="userIsActiveYes">Oui</label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" id="userIsActiveNo"
+                                                           :value="false" v-model="userObj.is_active">
+                                                    <label class="form-check-label" for="userIsActiveNo">Non</label>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -110,7 +118,9 @@ const save = async () => {
                 lastname: userObj.lastname,
                 email: userObj.email,
                 password: userObj.password,
-                is_active: userObj.is_active
+
+                is_active: userObj.is_active ? 1 : 0
+
             })
         } else {
             const res_user = await axiosInstance.post('/api/createUser', {
@@ -118,15 +128,19 @@ const save = async () => {
                 lastname: userObj.lastname,
                 email: userObj.email,
                 password: userObj.password,
-                is_active: userObj.is_active
+
+                is_active: userObj.is_active ? 1 : 0
+
             })
         }
 
 
-        const res_profile = await axiosInstance.post('/api/AssignProfileToUser', {
-            email: userObj.email,
-            profileId: parseInt(userObj.profile)
-        })
+        if (userObj.profile) {
+            const res_profile = await axiosInstance.post('/api/AssignProfileToUser', {
+                email: userObj.email,
+                profileId: parseInt(userObj.profile, 10)
+            })
+        }
 
         window.showMessage("L'utilisateur a été enregistré avec succès.");
         router.push({name: "users"}); 
@@ -155,7 +169,10 @@ const getcurrentUser = async () => {
         userObj.firstname = res.firstname;
         userObj.lastname = res.lastname;
         userObj.email = res.email;
-        userObj.is_active = res.is_active;
+
+        userObj.profile = res.profileId ? String(res.profileId) : null;
+        userObj.is_active = res.is_active === true || res.is_active === 1 || res.is_active === '1';
+
     } catch { }
 }
 </script>
