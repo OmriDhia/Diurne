@@ -42,14 +42,12 @@
                             </div>
                             <div class="row m-2 mt-4">
                                 <div class="col-12">
-                                    <label class="form-label d-block">Salarié actif :</label>
-                                    <div class="form-check form-check-inline">
 
-                                        <input class="form-check-input" type="radio" id="filterActiveToggle"
-                                               :checked="search.is_active !== ''"
-                                               @click.prevent="cycleActiveFilter">
-                                        <label class="form-check-label" for="filterActiveToggle">
-                                            {{ activeFilterLabel }}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="filterActiveCheckbox"
+                                               v-model="activeOnly">
+                                        <label class="form-check-label" for="filterActiveCheckbox">
+                                            Salarié actif uniquement
                                         </label>
 
                                     </div>
@@ -97,11 +95,7 @@
                                     <span class="status-dot"
                                           :class="isActiveStatus(data.value.is_active) ? 'status-dot--active' : 'status-dot--inactive'"></span>
                                     <span class="ms-2">{{ isActiveStatus(data.value.is_active) ? 'Actif' : 'Inactif' }}</span>
-                                </template>
-                                <template #is_active="data">
-                                    <span class="status-dot"
-                                          :class="isActiveStatus(data.value.is_active) ? 'status-dot--active' : 'status-dot--inactive'"></span>
-                                    <span class="ms-2">{{ isActiveStatus(data.value.is_active) ? 'Actif' : 'Inactif' }}</span>
+
                                 </template>
                                 <template #delete="data">
                                     <d-delete
@@ -236,6 +230,7 @@
         router.push({ name: 'account-setting' });
     };
 
+
     const hasFilters = () => {
         return Boolean(
             search.firstname ||
@@ -248,14 +243,13 @@
     watch(search, () => {
         filterActive.value = hasFilters();
     }, { deep: true });
-    const activeFilterLabel = computed(() => {
-        if (search.is_active === '1') {
-            return 'Actifs';
+
+    const activeOnly = computed({
+        get: () => search.is_active === '1',
+        set: (value) => {
+            search.is_active = value ? '1' : '';
         }
-        if (search.is_active === '0') {
-            return 'Inactifs';
-        }
-        return 'Tous';
+
     });
     const resolveProfileName = (profile) => {
         if (!profile) {

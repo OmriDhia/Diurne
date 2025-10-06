@@ -36,16 +36,10 @@
                                         <div class="row m-2 mt-4">
                                             <div class="col-12">
 
-                                                <label class="form-label d-block">Salarié actif :</label>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" id="userIsActiveYes"
-                                                           :value="true" v-model="userObj.is_active">
-                                                    <label class="form-check-label" for="userIsActiveYes">Oui</label>
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" id="userIsActiveNo"
-                                                           :value="false" v-model="userObj.is_active">
-                                                    <label class="form-check-label" for="userIsActiveNo">Non</label>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="userIsActive"
+                                                           v-model="userObj.is_active">
+                                                    <label class="form-check-label" for="userIsActive">Salarié actif</label>
 
                                                 </div>
                                             </div>
