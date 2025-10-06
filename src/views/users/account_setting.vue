@@ -35,10 +35,12 @@
                                         </div>
                                         <div class="row m-2 mt-4">
                                             <div class="col-12">
+
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="userIsActive"
                                                            v-model="userObj.is_active">
                                                     <label class="form-check-label" for="userIsActive">Salarié actif</label>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -110,7 +112,9 @@ const save = async () => {
                 lastname: userObj.lastname,
                 email: userObj.email,
                 password: userObj.password,
+
                 is_active: userObj.is_active ? 1 : 0
+
             })
         } else {
             const res_user = await axiosInstance.post('/api/createUser', {
@@ -118,7 +122,9 @@ const save = async () => {
                 lastname: userObj.lastname,
                 email: userObj.email,
                 password: userObj.password,
+
                 is_active: userObj.is_active ? 1 : 0
+
             })
         }
 
@@ -157,8 +163,10 @@ const getcurrentUser = async () => {
         userObj.firstname = res.firstname;
         userObj.lastname = res.lastname;
         userObj.email = res.email;
+
         userObj.profile = res.profileId ? String(res.profileId) : null;
         userObj.is_active = res.is_active === true || res.is_active === 1 || res.is_active === '1';
+
     } catch { }
 }
 </script>
