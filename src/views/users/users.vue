@@ -40,6 +40,19 @@
                                     <d-profile v-model="search.profile"></d-profile>
                                 </div>
                             </div>
+                            <div class="row m-2 mt-4">
+                                <div class="col-12">
+                                    <label class="form-label d-block">Salarié actif :</label>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" id="filterActiveToggle"
+                                               :checked="search.is_active !== ''"
+                                               @click.prevent="cycleActiveFilter">
+                                        <label class="form-check-label" for="filterActiveToggle">
+                                            {{ activeFilterLabel }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-5">
                             <div class="row m-2">
@@ -76,8 +89,12 @@
                                     <strong>{{ data.value.email }}</strong>
                                 </template>
                                 <template #profile="data">
-                                    <strong>{{ (data.value.profile && data.value.profile.name) ? data.value.profile.name : '--'
-                                        }}</strong>
+                                    <strong>{{ resolveProfileName(data.value.profile) }}</strong>
+                                </template>
+                                <template #is_active="data">
+                                    <span class="status-dot"
+                                          :class="isActiveStatus(data.value.is_active) ? 'status-dot--active' : 'status-dot--inactive'"></span>
+                                    <span class="ms-2">{{ isActiveStatus(data.value.is_active) ? 'Actif' : 'Inactif' }}</span>
                                 </template>
                                 <template #delete="data">
                                     <d-delete
@@ -96,7 +113,7 @@
 </template>
 
 <script setup>
-    import { onMounted, ref, reactive } from 'vue';
+    import { onMounted, ref, reactive, watch, computed } from 'vue';
     import Vue3Datatable from '@bhplugin/vue3-datatable';
     import axiosInstance from '../../config/http';
     import dProfile from '../../components/common/d-profile.vue';
@@ -123,7 +140,8 @@
         firstname: null,
         lastname: null,
         email: null,
-        profile: null
+        profile: null,
+        is_active: ''
     });
     const rows = ref(null);
     const filterActive = ref(false);
@@ -132,7 +150,7 @@
         { field: 'firstname', title: 'Nom & Prénom' },
         { field: 'login', title: 'Login' },
         { field: 'manager', title: 'Manager', sort: false },
-        { field: 'salary', title: 'salarié actif', sort: false },
+        { field: 'is_active', title: 'Salarié actif', sort: false },
         { field: 'profile', title: 'Droit' },
         { field: 'delete', title: '', sort: false }
     ]) || [];
@@ -161,7 +179,7 @@
         getUsers();
     };
     const doSearch = () => {
-        filterActive.value = true;
+        filterActive.value = hasFilters();
         getUsers();
     };
     const getFilterParams = () => {
@@ -178,7 +196,19 @@
         if (search.email) {
             param += '&filter[email]=' + search.email;
         }
+        if (search.is_active !== '') {
+            param += '&filter[is_active]=' + search.is_active;
+        }
         return param;
+    };
+    const cycleActiveFilter = () => {
+        if (search.is_active === '') {
+            search.is_active = '1';
+        } else if (search.is_active === '1') {
+            search.is_active = '0';
+        } else {
+            search.is_active = '';
+        }
     };
     const doReset = () => {
         filterActive.value = false;
@@ -186,11 +216,43 @@
         search.firstname = null;
         search.lastname = null;
         search.profile = null;
+        search.is_active = '';
         getUsers();
     };
     const goToNewUser = () => {
         router.push({ name: 'account-setting' });
     };
+    const hasFilters = () => {
+        return Boolean(
+            search.firstname ||
+            search.lastname ||
+            search.email ||
+            search.profile ||
+            search.is_active !== ''
+        );
+    };
+    watch(search, () => {
+        filterActive.value = hasFilters();
+    }, { deep: true });
+    const activeFilterLabel = computed(() => {
+        if (search.is_active === '1') {
+            return 'Actifs';
+        }
+        if (search.is_active === '0') {
+            return 'Inactifs';
+        }
+        return 'Tous';
+    });
+    const resolveProfileName = (profile) => {
+        if (!profile) {
+            return '--';
+        }
+        if (typeof profile === 'object' && profile.name) {
+            return profile.name;
+        }
+        return profile;
+    };
+    const isActiveStatus = (value) => value === true || value === 1 || value === '1' || value === 'true';
 </script>
 <style>
     .advanced-table .progress-bar {
@@ -218,5 +280,20 @@
         box-shadow: none !important;
         width: 150px;
         margin-left: 10px;
+    }
+
+    .status-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .status-dot--active {
+        background-color: #28a745;
+    }
+
+    .status-dot--inactive {
+        background-color: #dc3545;
     }
 </style>

@@ -33,6 +33,21 @@
                                                 <d-profile v-model="userObj.profile" :error="error.profileId"></d-profile>
                                             </div>
                                         </div>
+                                        <div class="row m-2 mt-4">
+                                            <div class="col-12">
+                                                <label class="form-label d-block">Salarié actif :</label>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" id="userIsActiveYes"
+                                                           :value="true" v-model="userObj.is_active">
+                                                    <label class="form-check-label" for="userIsActiveYes">Oui</label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" id="userIsActiveNo"
+                                                           :value="false" v-model="userObj.is_active">
+                                                    <label class="form-check-label" for="userIsActiveNo">Non</label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-5">
                                         <div class="row m-2">
@@ -88,7 +103,8 @@ const userObj = reactive({
     lastname: null,
     email: null,
     profile: null,
-    password: null
+    password: null,
+    is_active: true
 });
 
 const save = async () => {
@@ -99,22 +115,26 @@ const save = async () => {
                 firstname: userObj.firstname,
                 lastname: userObj.lastname,
                 email: userObj.email,
-                password: userObj.password
+                password: userObj.password,
+                is_active: userObj.is_active ? 1 : 0
             })
         } else {
             const res_user = await axiosInstance.post('/api/createUser', {
                 firstname: userObj.firstname,
                 lastname: userObj.lastname,
                 email: userObj.email,
-                password: userObj.password
+                password: userObj.password,
+                is_active: userObj.is_active ? 1 : 0
             })
         }
 
 
-        const res_profile = await axiosInstance.post('/api/AssignProfileToUser', {
-            email: userObj.email,
-            profileId: parseInt(userObj.profile)
-        })
+        if (userObj.profile) {
+            const res_profile = await axiosInstance.post('/api/AssignProfileToUser', {
+                email: userObj.email,
+                profileId: parseInt(userObj.profile, 10)
+            })
+        }
 
         window.showMessage("L'utilisateur a été enregistré avec succès.");
         router.push({name: "users"}); 
@@ -143,6 +163,8 @@ const getcurrentUser = async () => {
         userObj.firstname = res.firstname;
         userObj.lastname = res.lastname;
         userObj.email = res.email;
+        userObj.profile = res.profileId ? String(res.profileId) : null;
+        userObj.is_active = res.is_active === true || res.is_active === 1 || res.is_active === '1';
     } catch { }
 }
 </script>
