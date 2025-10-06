@@ -44,12 +44,14 @@
                                 <div class="col-12">
                                     <label class="form-label d-block">Salarié actif :</label>
                                     <div class="form-check form-check-inline">
+
                                         <input class="form-check-input" type="radio" id="filterActiveToggle"
                                                :checked="search.is_active !== ''"
                                                @click.prevent="cycleActiveFilter">
                                         <label class="form-check-label" for="filterActiveToggle">
                                             {{ activeFilterLabel }}
                                         </label>
+
                                     </div>
                                 </div>
                             </div>
@@ -90,6 +92,11 @@
                                 </template>
                                 <template #profile="data">
                                     <strong>{{ resolveProfileName(data.value.profile) }}</strong>
+                                </template>
+                                <template #is_active="data">
+                                    <span class="status-dot"
+                                          :class="isActiveStatus(data.value.is_active) ? 'status-dot--active' : 'status-dot--inactive'"></span>
+                                    <span class="ms-2">{{ isActiveStatus(data.value.is_active) ? 'Actif' : 'Inactif' }}</span>
                                 </template>
                                 <template #is_active="data">
                                     <span class="status-dot"
@@ -141,7 +148,9 @@
         lastname: null,
         email: null,
         profile: null,
+
         is_active: ''
+
     });
     const rows = ref(null);
     const filterActive = ref(false);
@@ -196,7 +205,9 @@
         if (search.email) {
             param += '&filter[email]=' + search.email;
         }
+
         if (search.is_active !== '') {
+
             param += '&filter[is_active]=' + search.is_active;
         }
         return param;
@@ -216,12 +227,15 @@
         search.firstname = null;
         search.lastname = null;
         search.profile = null;
+
         search.is_active = '';
+
         getUsers();
     };
     const goToNewUser = () => {
         router.push({ name: 'account-setting' });
     };
+
     const hasFilters = () => {
         return Boolean(
             search.firstname ||
@@ -253,6 +267,7 @@
         return profile;
     };
     const isActiveStatus = (value) => value === true || value === 1 || value === '1' || value === 'true';
+
 </script>
 <style>
     .advanced-table .progress-bar {
