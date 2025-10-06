@@ -44,8 +44,7 @@
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="userIsActive"
                                                            v-model="userObj.isActive">
-                                                    <label class="form-check-label" for="userIsActive">Salarié
-                                                        actif</label>
+                                                    <label class="form-check-label" for="userIsActive">Actif</label>
 
                                                 </div>
                                             </div>

@@ -47,7 +47,7 @@
                                         <input class="form-check-input" type="checkbox" id="filterActiveCheckbox"
                                                v-model="activeOnly">
                                         <label class="form-check-label" for="filterActiveCheckbox">
-                                            Salarié actif uniquement
+                                            Actif
                                         </label>
 
                                     </div>
