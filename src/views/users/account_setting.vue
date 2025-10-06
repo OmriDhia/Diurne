@@ -33,6 +33,15 @@
                                                 <d-profile v-model="userObj.profile" :error="error.profileId"></d-profile>
                                             </div>
                                         </div>
+                                        <div class="row m-2 mt-4">
+                                            <div class="col-12">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="userIsActive"
+                                                           v-model="userObj.is_active">
+                                                    <label class="form-check-label" for="userIsActive">Salarié actif</label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-5">
                                         <div class="row m-2">
@@ -88,7 +97,8 @@ const userObj = reactive({
     lastname: null,
     email: null,
     profile: null,
-    password: null
+    password: null,
+    is_active: true
 });
 
 const save = async () => {
@@ -99,14 +109,16 @@ const save = async () => {
                 firstname: userObj.firstname,
                 lastname: userObj.lastname,
                 email: userObj.email,
-                password: userObj.password
+                password: userObj.password,
+                is_active: userObj.is_active
             })
         } else {
             const res_user = await axiosInstance.post('/api/createUser', {
                 firstname: userObj.firstname,
                 lastname: userObj.lastname,
                 email: userObj.email,
-                password: userObj.password
+                password: userObj.password,
+                is_active: userObj.is_active
             })
         }
 
@@ -143,6 +155,7 @@ const getcurrentUser = async () => {
         userObj.firstname = res.firstname;
         userObj.lastname = res.lastname;
         userObj.email = res.email;
+        userObj.is_active = res.is_active;
     } catch { }
 }
 </script>
