@@ -133,7 +133,8 @@
                                                     @changeWeight="changeWeight"></d-mesurement-quote>
                             </div>
                             <div class="col-md-4 col-sm-12 p-4">
-                                <d-input label="Quantité de tapis" v-model="data.quoteDetail.wantedQuantity"></d-input>
+                                <d-input label="Quantité de tapis" v-model="data.quoteDetail.wantedQuantity"
+                                         @changeValue="handleDetailAutoSave"></d-input>
                                 <d-input label="RN" v-model="data.quoteDetail.rn"></d-input>
                             </div>
                         </div>
@@ -227,7 +228,8 @@
                                         <div class="input-group mt-2">
                                             <input type="text" class="form-control"
                                                    v-model="data.quoteDetail.proposedDiscountRate"
-                                                   :disabled="false" />
+                                                   :disabled="false"
+                                                   @blur="handleDetailAutoSave" />
                                             <span class="input-group-text">%</span>
                                         </div>
                                     </div>
@@ -253,7 +255,8 @@
                                             <div class="col-md-3 col-sm-12">
                                                 <d-input label="Total HT"
                                                          :disabled="!data.quoteDetail.calculateFromTotalExcludingTax"
-                                                         v-model="prices.tarif_avant_remise_complementaire.total_ht"></d-input>
+                                                         v-model="prices.tarif_avant_remise_complementaire.total_ht"
+                                                         @changeValue="handleDetailAutoSave"></d-input>
                                             </div>
                                             <div class="col-md-3 col-sm-12">
                                                 <d-input label="Total TTC" :disabled="true"
@@ -370,13 +373,13 @@
                                                  v-model="data.additionalDiscount"></d-input>
                                     </div>
                                     <div class="col-md-6 col-sm-12">
-                                        <d-input :disabled="true" label="Acompte réçu HT" v-model="data.tax"></d-input>
+                                        <d-input :disabled="true" label="Acompte réçu HT" :modelValue="depositAmountHt"></d-input>
                                     </div>
                                 </div>
                                 <div class="row align-items-center p-2">
                                     <div class="col-md-6 col-sm-12">
                                         <d-input :disabled="true" label="Date de l'acompte"
-                                                 v-model="data.totalDiscountAmount"></d-input>
+                                                 :modelValue="depositDate"></d-input>
                                     </div>
                                     <div class="col-md-6 col-sm-12">
                                         <d-input :disabled="true" label="Comp.prescr. acompte"
@@ -436,7 +439,7 @@
     import { useStore } from 'vuex';
     import VueFeather from 'vue-feather';
     import { useRoute, useRouter } from 'vue-router';
-    import { ref, onMounted, watch } from 'vue';
+    import { ref, onMounted, watch, computed } from 'vue';
     import { useMeta } from '/src/composables/use-meta';
     import { Helper, formatErrorViolations, formatErrorViolationsComposed } from '../../../composables/global-methods';
     import axiosInstance from '../../../config/http';
@@ -528,6 +531,27 @@
             materials: [],
             randomWeight: 0
         }
+    });
+    const orderPaymentDetails = computed(() => {
+        const details = quoteDetail.value?.orderPaymentDetails;
+        if (!details) {
+            return [];
+        }
+        return Array.isArray(details) ? details : Object.values(details);
+    });
+    const depositDetail = computed(() => (orderPaymentDetails.value.length ? orderPaymentDetails.value[0] : null));
+    const depositDate = computed(() => {
+        if (!depositDetail.value?.createdAt) {
+            return '';
+        }
+        const createdAt = depositDetail.value.createdAt?.date ?? depositDetail.value.createdAt;
+        return Helper.FormatDate(createdAt, 'YYYY-MM-DD');
+    });
+    const depositAmountHt = computed(() => {
+        if (depositDetail.value?.allocatedAmountHt === null || depositDetail.value?.allocatedAmountHt === undefined) {
+            return '';
+        }
+        return Helper.FormatNumber(depositDetail.value.allocatedAmountHt);
     });
     const currentCustomer = ref({});
     const prices = ref({
@@ -785,11 +809,15 @@
     };
     const saveAndCalculate = async () => {
         if (quoteDetailId && !disableAutoSave) {
-
+            document.getElementById('clickConvertCalculation').click();
             await saveDevisDetails();
 
-            document.getElementById('clickConvertCalculation').click();
+
         }
+    };
+
+    const handleDetailAutoSave = async () => {
+        await saveAndCalculate();
     };
 
     watch(
@@ -801,10 +829,7 @@
             data.value.carpetSpecification.modelId,
             data.value.carpetSpecification.specialShapeId,
             data.value.carpetSpecification.qualityId,
-            data.value.carpetSpecification.hasSpecialShape,
-            data.value.quoteDetail.proposedDiscountRate,
-            data.value.quoteDetail.wantedQuantity,
-            prices.value?.tarif_avant_remise_complementaire?.total_ht
+            data.value.carpetSpecification.hasSpecialShape
         ],
 
         async (newCarpert, oldCarpet) => {

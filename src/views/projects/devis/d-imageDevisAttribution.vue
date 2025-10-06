@@ -23,12 +23,17 @@
                     <label class="fw-bold">Collection :</label>
                     <span class="ms-2">{{ collection }}</span>
                 </div>
+
             </div>
 
             <!-- IMAGE (MIDDLE FAR RIGHT) -->
             <div v-if="selectedRow" class="d-flex flex-column ms-auto">
                 <img :src="getImageUrl(selectedRow.image_name)" alt="Carpet Design" class="img-thumbnail"
                      style="width: 125px; height: auto" />
+                <router-link v-if="diLink" :to="diLink"
+                             class="mt-3 btn btn-link p-0 align-self-start px-2 py-1 btn-primary">
+                    voir di
+                </router-link>
             </div>
         </div>
 
@@ -144,7 +149,7 @@
 </template>
 
 <script setup>
-    import { ref, onMounted, watch, defineProps } from 'vue';
+    import { ref, onMounted, watch, defineProps, computed } from 'vue';
     import axiosInstance from '../../../config/http'; // Adjust your axios import as needed
 
     const props = defineProps({
@@ -175,6 +180,16 @@
     // Watch for changes to the customerDate prop
     watch(() => props.customerDate, (newDate) => {
         validationDate.value = newDate || ''; // If it's null, set to empty
+    });
+    const diLink = computed(() => {
+        const diId = selectedRow.value?.di_id || selectedRow.value?.id_di;
+        const carpetDesignOrderId = selectedRow.value?.order_design_id;
+
+        if (!diId || !carpetDesignOrderId) {
+            return null;
+        }
+
+        return `/projet/dis/model/${diId}/update/${carpetDesignOrderId}`;
     });
     /**
      * Fetch the data from API

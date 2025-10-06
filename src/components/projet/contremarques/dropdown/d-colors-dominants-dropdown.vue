@@ -1,6 +1,7 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Couleur <span v-if="index > 0"> Fil N° {{index}}</span> <span class="required" v-if="required">*</span>:</label>
+        <div class="col-4"><label class="form-label">Couleur <span v-if="index > 0"> Fil N° {{ index }}</span> <span
+            class="required" v-if="required">*</span>:</label>
         </div>
         <div class="col-8">
             <multiselect
@@ -27,20 +28,20 @@
                     <div v-html="customLabel(option)"></div>
                 </template>
             </multiselect>
-            <div v-if="error" class="invalid-feedback">{{ $t("Le champs Couleur est obligatoire.") }}</div>
+            <div v-if="error" class="invalid-feedback">{{ $t('Le champs Couleur est obligatoire.') }}</div>
         </div>
     </div>
 </template>
 
 <script>
     import Multiselect from 'vue-multiselect';
-    import axiosInstance from "../../../../config/http";
+    import axiosInstance from '../../../../config/http';
 
     export default {
         components: { Multiselect },
         props: {
             modelValue: {
-                type: [Number, String, null],
+                type: [Object, Number, String, null],
                 required: true
             },
             error: {
@@ -52,12 +53,12 @@
                 default: false
             },
             index: {
-                type: Number,
+                type: Number
             },
             disabled: {
                 type: Boolean,
                 default: false
-            },
+            }
         },
         data() {
             return {
@@ -78,10 +79,10 @@
 
                 if (c === 'open') {
                     if (multiselectElement) {
-                        multiselectElement.style.minHeight = "90vh";
+                        multiselectElement.style.minHeight = '90vh';
                     }
                     if (multiselectElementNew) {
-                        multiselectElementNew.style.minHeight = "90vh";
+                        multiselectElementNew.style.minHeight = '90vh';
                     }
                 } else {
                     if (multiselectElement) {
@@ -93,31 +94,62 @@
                 }
             },
             handleChange(value) {
+                this.value = value;
                 this.$emit('update:modelValue', value);
+            },
+            setValueFromModel(modelValue) {
+                if (Array.isArray(this.data) && this.data.length) {
+                    if (modelValue && typeof modelValue === 'object') {
+                        this.value = modelValue;
+                        return;
+                    }
+
+                    if (modelValue !== null && modelValue !== undefined && modelValue !== '') {
+                        const matchedColor = this.data.find(color => color.id === Number(modelValue));
+                        if (matchedColor) {
+                            this.value = matchedColor;
+                            this.$emit('update:modelValue', matchedColor);
+                            return;
+                        }
+                    }
+
+                    this.setDefaultColor();
+                }
+            },
+            setDefaultColor() {
+                const defaultColor = this.data.find(color => color.id === 10);
+                if (defaultColor) {
+                    this.value = defaultColor;
+                    this.$emit('update:modelValue', defaultColor);
+                }
             },
             async getData() {
                 try {
                     const res = await axiosInstance.get('/api/dominant-colors');
                     this.data = res.data.response;
+                    this.setValueFromModel(this.modelValue);
                 } catch (error) {
                     console.error('Failed to fetch dominant colors:', error);
                 }
-            },
+            }
         },
         mounted() {
             this.getData();
         },
         watch: {
-            modelValue(newValue) {
-                this.value = newValue;
+            modelValue: {
+                handler(newValue) {
+                    this.setValueFromModel(newValue);
+                },
+                immediate: true
             }
         }
     };
 </script>
 
 <style>
-    .label-multiselect-color{
-        width: 40px; 
+    .label-multiselect-color {
+        width: 40px;
         height: 20px;
         margin-right: 5px;
         display: inline-block;
