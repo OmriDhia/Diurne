@@ -4,7 +4,8 @@
             <d-customer-type :required="true" :error="error.customerGroupId" v-model="customerGroup" />
         </div>
         <div class="row p-2" v-if="!isParticular">
-            <d-input :required="true" label="Raison social" :error="error.social_reason" v-model="data.social_reason"></d-input>
+            <d-input :required="true" label="Raison social" :error="error.social_reason"
+                     v-model="data.social_reason"></d-input>
         </div>
         <div class="row p-2" v-if="isParticular">
             <d-input required="true" label="Nom" :error="error.lastname" v-model="data.lastname"></d-input>
@@ -35,7 +36,8 @@
             <d-customer-origin :required="true" :error="errorContactOrigin" v-model="data" />
         </div>
         <div class="row p-2" v-if="isAutreSelectedOriginType">
-            <d-textarea label="Commentaire" v-model="data.commentaire" :error="errorCommentaire" :required="true" :rows="5" type="textarea" class="custom-textarea" />
+            <d-textarea label="Commentaire" v-model="data.commentaire" :error="errorCommentaire" :required="true"
+                        :rows="5" type="textarea" class="custom-textarea" />
         </div>
 
         <div class="row p-2">
@@ -48,8 +50,12 @@
         </div>
         <div class="row align-content-end justify-content-end p-2 pe-3 mt-auto" v-if="data.customerGroupId !== 1">
             <div class="col-auto p-1">
-                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer" v-if="!props.customerData.customer_id">Ajouter Client</button>
-                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer" v-if="props.customerData.customer_id">Modifier Client</button>
+                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer" v-if="!props.customerData.customer_id">
+                    Ajouter Client
+                </button>
+                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer" v-if="props.customerData.customer_id">
+                    Modifier Client
+                </button>
             </div>
             <div class="col-auto p-1 pe-4" v-if="data.customer_id">
                 <d-delete :api="`/api/customer/${data.customer_id}/delete`"></d-delete>
@@ -95,8 +101,12 @@
     <div class="col-sm-12 col-md-12 d-flex flex-column" v-if="data.customerGroupId === 1">
         <div class="row align-content-end justify-content-end p-2 pe-3 mt-auto">
             <div class="col-auto p-1">
-                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer" v-if="!props.customerData.customer_id">Ajouter Client</button>
-                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer" v-if="props.customerData.customer_id">Modifier Client</button>
+                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer" v-if="!props.customerData.customer_id">
+                    Ajouter Client
+                </button>
+                <button class="btn btn-custom pe-5 ps-5" @click="createCustomer" v-if="props.customerData.customer_id">
+                    Modifier Client
+                </button>
             </div>
             <div class="col-auto p-1 pe-4" v-if="data.customer_id">
                 <d-delete :api="`/api/customer/${data.customer_id}/delete`"></d-delete>
@@ -120,17 +130,18 @@
     import dContactClientParticulier from './d-contact-client-particulier.vue';
 
     import { useRouter } from 'vue-router';
+
     const props = defineProps({
         customerData: {
             type: Object,
-            default: {},
-        },
+            default: {}
+        }
     });
     const localContactData = ref({
         gender_id: 0,
         email: '',
         phone: null,
-        mobile_phone: null,
+        mobile_phone: null
     });
     // Updates `localContactData` when child component emits changes
     const updateLocalContactData = (newData) => {
@@ -166,16 +177,16 @@
         email: '',
         gender_id: 0,
         phone: null,
-        mobile_phone: null,
+        mobile_phone: null
     });
     const customerGroup = ref({
         customerGroupId: 0,
-        customerType: '',
+        customerType: ''
     });
     watch(
         () => customerGroup.value,
         (newValue) => {
-            console.log("Updated customerGroup:", newValue);
+            console.log('Updated customerGroup:', newValue);
             data.value.customerGroupId = newValue.customerGroupId;
         },
         { deep: true }
@@ -191,7 +202,7 @@
     const isAutreSelectedOriginType = ref(false);
     let codeSuffix = ref(1);
     const validationContactErrors = ref({
-        gender_id: '',
+        gender_id: ''
     });
     // Validation function
     const validateContactData = () => {
@@ -199,7 +210,7 @@
     };
     const createCustomer = async () => {
         if (data.value.contact_origin_label === '') {
-            errorContactOrigin.value = "Le type d'origine est obligatoire.";
+            errorContactOrigin.value = 'Le type d\'origine est obligatoire.';
             return;
         }
         if (data.value.contact_origin_label === 'Autre' && data.value.commentaire === '') {
@@ -209,7 +220,7 @@
             errorCommentaire.value = '';
         }
         validateContactData(); // Validate before proceeding
-        if (customerGroup.value.customerType === "Particulier (Client)") {
+        if (customerGroup.value.customerType === 'Particulier (Client)') {
             // Check if there are any errors
             if (Object.values(validationContactErrors.value).some((error) => error !== '')) {
                 console.log('There are validation errors.', validationContactErrors.value);
@@ -238,17 +249,31 @@
                 router.push({ name: 'addContact', params: { id: res.data.response.customer_id } });
             }
         } catch (e) {
-            // Improved error handling with checks for the response structure
-            if (e.response && e.response.data) {
-                if (e.response.data.violations) {
-                    error.value = formatErrorViolations(e.response.data.violations);
-                } else if (e.response.data.message) {
-                    window.showMessage(e.response.data.message, 'error');
+            // Prefer a specific branch for duplicate
+            if (e.response) {
+                const { status, data } = e.response;
+                const backendMessage = e?.response?.data?.message ?? e?.response?.data?.detail;
+                // Option 1: HTTP status based
+                if (status === 409) {
+                    window.showMessage('Il existe déjà un contact avec le même utilisateur.', 'error');
+                    return;
+                }
+
+                // Option 2: message text based (fallback if status isn't 409)
+                if (backendMessage === 'There is a contact with same user') {
+                    window.showMessage('Cette adresse e-mail est déjà utilisée. Merci d\'en choisir une autre.', 'error');
+                    return;
+                }
+
+                // Your existing handlers
+                if (data?.violations) {
+                    error.value = formatErrorViolations(data.violations);
+                } else if (data?.message) {
+                    window.showMessage(data.message, 'error');
                 } else {
                     window.showMessage('Erreur inconnue', 'error');
                 }
             } else {
-                // If the error does not have a response object (network errors, etc.)
                 window.showMessage('Erreur de réseau ou serveur', 'error');
                 console.log(e);
             }
@@ -269,7 +294,7 @@
         data.value.contact_origin_id = newVal.contact_origin_id ?? null;
         data.value.commentaire = newVal.commentaire;
         data.value.contact_origin_label = newVal.contact_origin_label;
-        if( newVal?.contactsData[0]){
+        if (newVal?.contactsData[0]) {
             data.value.email = newVal?.contactsData[0]?.email;
         }
         customerGroup.value.customerGroupId = newVal.customerGroup.customer_group_id;
@@ -305,7 +330,7 @@
     watch(
         () => data.value.customerGroupId,
         (groupId) => {
-            console.log("Updated customerGroupId:", groupId);
+            console.log('Updated customerGroupId:', groupId);
             if (groupId === publicDiscountTypeId) {
                 isParticular.value = true;
                 data.value.discountTypeId = particularCustomerGroupId;
