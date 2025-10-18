@@ -147,7 +147,6 @@
     const updateLocalContactData = (newData) => {
         localContactData.value = { ...newData };
         console.log('Updated localContactData:', localContactData.value);
-        // validateContactData();
     };
     // Watch for changes in props.customerData and update localContactData
     watchEffect(() => {
