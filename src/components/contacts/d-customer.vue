@@ -115,7 +115,7 @@
     </div>
 </template>
 <script setup>
-    import { ref, defineProps, onMounted, watch, watchEffect, computed } from 'vue';
+    import { ref, defineProps, watch, watchEffect } from 'vue';
     import axiosInstance from '../../config/http';
     import VueFeather from 'vue-feather';
     import dCustomerType from '../../components/common/d-customer-type.vue';
@@ -137,22 +137,38 @@
             default: {}
         }
     });
-    const localContactData = ref({
+    const DEFAULT_CONTACT = Object.freeze({
         gender_id: 0,
         email: '',
         phone: null,
         mobile_phone: null
     });
-    const updateLocalContactData = (newData) => {
-        localContactData.value = { ...newData };
-        console.log('Updated localContactData:', localContactData.value);
-    };
-    // Watch for changes in props.customerData and update localContactData
-    watchEffect(() => {
-        if (props.customerData.value) {
-            console.log('Updated customer data:', customerData.value);
+
+    const localContactData = ref({ ...DEFAULT_CONTACT });
+
+    const syncLocalContactData = (customerPayload) => {
+        if (
+            !customerPayload ||
+            !Array.isArray(customerPayload.contactsData) ||
+            customerPayload.contactsData.length === 0
+        ) {
+            localContactData.value = { ...DEFAULT_CONTACT };
+            return;
         }
-    });
+
+        const primaryContact = customerPayload.contactsData[0];
+
+        localContactData.value = {
+            gender_id: primaryContact?.gender_id ?? DEFAULT_CONTACT.gender_id,
+            email: primaryContact?.email ?? DEFAULT_CONTACT.email,
+            phone: primaryContact?.phone ?? DEFAULT_CONTACT.phone,
+            mobile_phone: primaryContact?.mobile_phone ?? DEFAULT_CONTACT.mobile_phone
+        };
+    };
+
+    const updateLocalContactData = (newData) => {
+        localContactData.value = { ...DEFAULT_CONTACT, ...newData };
+    };
 
     const router = useRouter();
     const data = ref({
@@ -199,12 +215,35 @@
     });
     const isAutreSelectedOriginType = ref(false);
     let codeSuffix = ref(1);
-    const validationContactErrors = ref({
-        gender_id: ''
+    const DEFAULT_CONTACT_ERRORS = Object.freeze({
+        gender_id: '',
+        email: ''
     });
+    const DUPLICATE_EMAIL_MESSAGE = "Cette adresse e-mail est déjà utilisée. Merci d'en choisir une autre.";
+
+    const validationContactErrors = ref({ ...DEFAULT_CONTACT_ERRORS });
+
+    watch(
+        () => localContactData.value.email,
+        () => {
+            if (validationContactErrors.value.email) {
+                validationContactErrors.value = {
+                    ...validationContactErrors.value,
+                    email: ''
+                };
+            }
+        }
+    );
     // Validation function
+    const clearContactErrors = () => {
+        validationContactErrors.value = { ...DEFAULT_CONTACT_ERRORS };
+    };
+
     const validateContactData = () => {
-        validationContactErrors.value.gender_id = localContactData.value.gender_id !== 0 ? '' : 'Le genre est requis';
+        validationContactErrors.value = {
+            ...validationContactErrors.value,
+            gender_id: localContactData.value.gender_id !== 0 ? '' : 'Le genre est requis'
+        };
     };
     const createCustomer = async () => {
         if (data.value.contact_origin_label === '') {
@@ -227,6 +266,7 @@
         }
 
         try {
+            clearContactErrors();
             if (props.customerData.customer_id) {
                 error.value = {};
                 console.log('data for updating customer:', data.value);
@@ -254,12 +294,20 @@
                 // Option 1: HTTP status based
                 if (status === 409) {
                     window.showMessage('Il existe déjà un contact avec le même utilisateur.', 'error');
+                    validationContactErrors.value = {
+                        ...validationContactErrors.value,
+                        email: DUPLICATE_EMAIL_MESSAGE
+                    };
                     return;
                 }
 
                 // Option 2: message text based (fallback if status isn't 409)
                 if (backendMessage === 'There is a contact with same user') {
                     window.showMessage('Cette adresse e-mail est déjà utilisée. Merci d\'en choisir une autre.', 'error');
+                    validationContactErrors.value = {
+                        ...validationContactErrors.value,
+                        email: DUPLICATE_EMAIL_MESSAGE
+                    };
                     return;
                 }
 
@@ -278,24 +326,28 @@
         }
     };
     const affectData = (newVal) => {
-        data.value.customer_id = newVal.customer_id;
-        data.value.customerGroupId = newVal.customerGroup.customer_group_id;
-        data.value.discountTypeId = newVal?.discountRule?.discount_rule_id || 0;
-        data.value.social_reason = newVal.socialReason;
-        data.value.website = newVal.website;
-        data.value.code = newVal.code;
-        data.value.tva_ce = newVal.tva_ce;
-        data.value.mailingLanguageId = newVal.mailingLanguage;
-        data.value.is_agent = newVal.is_agent;
-        data.value.firstname = newVal.firstname;
-        data.value.lastname = newVal.lastname;
-        data.value.contact_origin_id = newVal.contact_origin_id ?? null;
-        data.value.commentaire = newVal.commentaire;
-        data.value.contact_origin_label = newVal.contact_origin_label;
-        if (newVal?.contactsData[0]) {
-            data.value.email = newVal?.contactsData[0]?.email;
+        if (!newVal) {
+            return;
         }
-        customerGroup.value.customerGroupId = newVal.customerGroup.customer_group_id;
+
+        data.value.customer_id = newVal.customer_id ?? 0;
+        data.value.customerGroupId = newVal?.customerGroup?.customer_group_id ?? 0;
+        data.value.discountTypeId = newVal?.discountRule?.discount_rule_id ?? 0;
+        data.value.social_reason = newVal?.socialReason ?? '';
+        data.value.website = newVal?.website ?? '';
+        data.value.code = newVal?.code ?? '';
+        data.value.tva_ce = newVal?.tva_ce ?? '';
+        data.value.mailingLanguageId = newVal?.mailingLanguage ?? 0;
+        data.value.is_agent = newVal?.is_agent ?? false;
+        data.value.firstname = newVal?.firstname ?? '';
+        data.value.lastname = newVal?.lastname ?? '';
+        data.value.contact_origin_id = newVal?.contact_origin_id ?? null;
+        data.value.commentaire = newVal?.commentaire ?? '';
+        data.value.contact_origin_label = newVal?.contact_origin_label ?? '';
+        if (newVal?.contactsData?.[0]) {
+            data.value.email = newVal.contactsData[0]?.email ?? '';
+        }
+        customerGroup.value.customerGroupId = newVal?.customerGroup?.customer_group_id ?? 0;
     };
 
     const changeCode = (Rs) => {
@@ -314,8 +366,10 @@
         (newVal) => {
             if (newVal) {
                 affectData(newVal); // Update all customer fields
+                syncLocalContactData(newVal);
             }
-        }
+        },
+        { immediate: true, deep: true }
     );
     watch(
         () => data.value.social_reason,

@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-    import { defineProps, ref, watch, watchEffect, onMounted, computed } from 'vue';
+    import { defineProps, ref, watch } from 'vue';
     import axiosInstance from '../../config/http';
     import VueFeather from 'vue-feather';
     import dContactFormParticulier from './_partial/d-contact-form-particulier.vue';
@@ -43,8 +43,6 @@
     import { formatErrorViolations } from '../../composables/global-methods';
     import '../../assets/sass/components/tabs-accordian/custom-accordions.scss';
     import dBtnOutlined from '../base/d-btn-outlined.vue';
-    import { useRouter } from 'vue-router';
-    const router = useRouter();
     const props = defineProps({
         contactData: {
             type: Array,
@@ -70,22 +68,71 @@
     const emit = defineEmits(['updateFormData']);
     // const error = ref({});
 
-    // Initialize `data` with `contactData` if available, else use `formData`
-    const data = ref({
-        gender_id: props.formData.gender_id || 0,
-        email: props.formData.email || '',
-        phone: props.formData.phone || null,
-        mobile_phone: props.formData.mobile_phone || null,
+    const DEFAULT_CONTACT = Object.freeze({
+        gender_id: 0,
+        email: '',
+        phone: null,
+        mobile_phone: null,
     });
-    // If `contactData` is provided, update `data`
+    const CONTACT_FIELDS = Object.keys(DEFAULT_CONTACT);
+
+    const data = ref({ ...DEFAULT_CONTACT, ...props.formData });
+
+    const assignFromSource = (source, { replace = false } = {}) => {
+        if (!source) {
+            return;
+        }
+
+        const target = replace ? { ...DEFAULT_CONTACT } : { ...data.value };
+
+        CONTACT_FIELDS.forEach((field) => {
+            if (Object.prototype.hasOwnProperty.call(source, field)) {
+                target[field] = source[field];
+            } else if (replace && !Object.prototype.hasOwnProperty.call(target, field)) {
+                target[field] = DEFAULT_CONTACT[field];
+            }
+        });
+
+        data.value = target;
+    };
+
+    // Prefer the contact payload coming from the API when it is available.
     watch(
         () => props.contactData,
         (newData) => {
-            if (newData.length > 0) {
-                data.value = { ...newData[0] };
+            const hasContacts = Array.isArray(newData) && newData.length > 0;
+
+            if (!hasContacts) {
+                data.value = { ...DEFAULT_CONTACT };
+                return;
             }
+
+            assignFromSource(newData[0], { replace: true });
         },
         { deep: true, immediate: true }
+    );
+
+    // React to parent form updates (for example when the parent resets the form
+    // or when a user edit is reflected back down) without clearing fields that
+    // are not part of the payload.
+    watch(
+        () => props.formData,
+        (newFormData) => {
+            if (!newFormData) {
+                return;
+            }
+
+            const containsRelevantField = CONTACT_FIELDS.some((field) =>
+                Object.prototype.hasOwnProperty.call(newFormData, field)
+            );
+
+            if (!containsRelevantField) {
+                return;
+            }
+
+            assignFromSource(newFormData);
+        },
+        { deep: true }
     );
 
     // Watch for changes in data and emit updates to parent
@@ -97,8 +144,6 @@
         { deep: true }
     );
 
-    onMounted(() => {
-        console.log('particulier : ', props.isParticular);
-    });
+    
 </script>
 <style></style>
