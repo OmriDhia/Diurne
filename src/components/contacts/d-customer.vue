@@ -143,7 +143,6 @@
         phone: null,
         mobile_phone: null
     });
-    // Updates `localContactData` when child component emits changes
     const updateLocalContactData = (newData) => {
         localContactData.value = { ...newData };
         console.log('Updated localContactData:', localContactData.value);
