@@ -70,7 +70,9 @@
     const emit = defineEmits(['updateFormData']);
     // const error = ref({});
 
-    // Initialize `data` with `contactData` if available, else use `formData`
+    // Initialize `data` with `formData` values. These will be kept in sync with
+    // incoming props so the select keeps the correct gender even after an API
+    // call populates the parent form.
     const data = ref({
         gender_id: props.formData.gender_id || 0,
         email: props.formData.email || '',
@@ -81,8 +83,21 @@
     watch(
         () => props.contactData,
         (newData) => {
-            if (newData.length > 0) {
-                data.value = { ...newData[0] };
+            if (Array.isArray(newData) && newData.length > 0) {
+                data.value = { ...data.value, ...newData[0] };
+            }
+        },
+        { deep: true, immediate: true }
+    );
+
+    // Keep the local form state in sync with updates pushed from the parent
+    // component (for example, after fetching an existing contact). Without
+    // this watcher the gender select would stay at the default value (0).
+    watch(
+        () => props.formData,
+        (newFormData) => {
+            if (newFormData) {
+                data.value = { ...data.value, ...newFormData };
             }
         },
         { deep: true, immediate: true }
