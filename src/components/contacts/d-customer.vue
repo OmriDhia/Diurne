@@ -215,12 +215,35 @@
     });
     const isAutreSelectedOriginType = ref(false);
     let codeSuffix = ref(1);
-    const validationContactErrors = ref({
-        gender_id: ''
+    const DEFAULT_CONTACT_ERRORS = Object.freeze({
+        gender_id: '',
+        email: ''
     });
+    const DUPLICATE_EMAIL_MESSAGE = "Cette adresse e-mail est déjà utilisée. Merci d'en choisir une autre.";
+
+    const validationContactErrors = ref({ ...DEFAULT_CONTACT_ERRORS });
+
+    watch(
+        () => localContactData.value.email,
+        () => {
+            if (validationContactErrors.value.email) {
+                validationContactErrors.value = {
+                    ...validationContactErrors.value,
+                    email: ''
+                };
+            }
+        }
+    );
     // Validation function
+    const clearContactErrors = () => {
+        validationContactErrors.value = { ...DEFAULT_CONTACT_ERRORS };
+    };
+
     const validateContactData = () => {
-        validationContactErrors.value.gender_id = localContactData.value.gender_id !== 0 ? '' : 'Le genre est requis';
+        validationContactErrors.value = {
+            ...validationContactErrors.value,
+            gender_id: localContactData.value.gender_id !== 0 ? '' : 'Le genre est requis'
+        };
     };
     const createCustomer = async () => {
         if (data.value.contact_origin_label === '') {
@@ -243,6 +266,7 @@
         }
 
         try {
+            clearContactErrors();
             if (props.customerData.customer_id) {
                 error.value = {};
                 console.log('data for updating customer:', data.value);
@@ -270,12 +294,20 @@
                 // Option 1: HTTP status based
                 if (status === 409) {
                     window.showMessage('Il existe déjà un contact avec le même utilisateur.', 'error');
+                    validationContactErrors.value = {
+                        ...validationContactErrors.value,
+                        email: DUPLICATE_EMAIL_MESSAGE
+                    };
                     return;
                 }
 
                 // Option 2: message text based (fallback if status isn't 409)
                 if (backendMessage === 'There is a contact with same user') {
                     window.showMessage('Cette adresse e-mail est déjà utilisée. Merci d\'en choisir une autre.', 'error');
+                    validationContactErrors.value = {
+                        ...validationContactErrors.value,
+                        email: DUPLICATE_EMAIL_MESSAGE
+                    };
                     return;
                 }
 
