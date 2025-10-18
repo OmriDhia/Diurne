@@ -11,7 +11,8 @@
                                 </div>
                                 <div class="col-md-auto">
                                     <div class="checkbox-default custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="libTransmittedPlan" v-model="data.transmittedPlan"/>
+                                        <input type="checkbox" class="custom-control-input" id="libTransmittedPlan"
+                                               v-model="data.transmittedPlan" />
                                         <label class="custom-control-label" for="libTransmittedPlan"></label>
                                     </div>
                                 </div>
@@ -29,7 +30,8 @@
                                 </div>
                                 <div class="col-md-auto">
                                     <div class="checkbox-default custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="pit" v-model="data.pit"/>
+                                        <input type="checkbox" class="custom-control-input" id="pit"
+                                               v-model="data.pit" />
                                         <label class="custom-control-label" for="pit"></label>
                                     </div>
                                 </div>
@@ -47,7 +49,8 @@
                                 </div>
                                 <div class="col-md-auto">
                                     <div class="checkbox-default custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="lineHeight" v-model="data.lineHeight"/>
+                                        <input type="checkbox" class="custom-control-input" id="lineHeight"
+                                               v-model="data.lineHeight" />
                                         <label class="custom-control-label" for="lineHeight"></label>
                                     </div>
                                 </div>
@@ -65,7 +68,8 @@
                                 </div>
                                 <div class="col-md-auto">
                                     <div class="checkbox-default custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="otherCarpetInTheRoom" v-model="data.otherCarpetInTheRoom"/>
+                                        <input type="checkbox" class="custom-control-input" id="otherCarpetInTheRoom"
+                                               v-model="data.otherCarpetInTheRoom" />
                                         <label class="custom-control-label" for="otherCarpetInTheRoom"></label>
                                     </div>
                                 </div>
@@ -85,13 +89,15 @@
                                         </div>
                                         <div class="col-md-auto">
                                             <div class="checkbox-default custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="miniLength" v-model="data.miniLength"/>
+                                                <input type="checkbox" class="custom-control-input" id="miniLength"
+                                                       v-model="data.miniLength" />
                                                 <label class="custom-control-label" for="miniLength">Min</label>
                                             </div>
                                         </div>
                                         <div class="col-md-auto">
                                             <div class="checkbox-default custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="maxiLength" v-model="data.maxiLength"/>
+                                                <input type="checkbox" class="custom-control-input" id="maxiLength"
+                                                       v-model="data.maxiLength" />
                                                 <label class="custom-control-label" for="maxiLength">Max</label>
                                             </div>
                                         </div>
@@ -100,17 +106,19 @@
                                 <div class="col-sm-6">
                                     <div class="row align-items-center">
                                         <div class="col-md-auto">
-                                           largeur
+                                            largeur
                                         </div>
                                         <div class="col-md-auto">
                                             <div class="checkbox-default custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="miniWidth" v-model="data.miniWidth"/>
+                                                <input type="checkbox" class="custom-control-input" id="miniWidth"
+                                                       v-model="data.miniWidth" />
                                                 <label class="custom-control-label" for="miniWidth">Min</label>
                                             </div>
                                         </div>
                                         <div class="col-md-auto">
                                             <div class="checkbox-default custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="maxiWidth" v-model="data.maxiWidth"/>
+                                                <input type="checkbox" class="custom-control-input" id="maxiWidth"
+                                                       v-model="data.maxiWidth" />
                                                 <label class="custom-control-label" for="maxiWidth">Max</label>
                                             </div>
                                         </div>
@@ -150,42 +158,42 @@
     </div>
 </template>
 <script setup>
-    import { ref, watch, onMounted } from "vue";
+    import { ref, watch, onMounted } from 'vue';
     import VueFeather from 'vue-feather';
-    import axiosInstance from "../../../../config/http";
-    import dInput from "../../../../components/base/d-input.vue";
-    import dBaseModal from "../../../../components/base/d-base-modal.vue";
-    import dPanelTitle from "../../../../components/common/d-panel-title.vue";
-    import { formatErrorViolations } from "../../../../composables/global-methods";
-    import { customerInstructionObject } from "../../../../composables/constants";
-    import contremarqueService from "../../../../Services/contremarque-service";
+    import axiosInstance from '../../../../config/http';
+    import dInput from '../../../../components/base/d-input.vue';
+    import dBaseModal from '../../../../components/base/d-base-modal.vue';
+    import dPanelTitle from '../../../../components/common/d-panel-title.vue';
+    import { formatErrorViolations } from '../../../../composables/global-methods';
+    import { customerInstructionObject } from '../../../../composables/constants';
+    import contremarqueService from '../../../../Services/contremarque-service';
 
     const props = defineProps({
-        carpetDesignOrderId:{
+        carpetDesignOrderId: {
             type: Number
         },
-        customerInstructionId:{
+        customerInstructionId: {
             type: Number
         },
-        constraintData:{
+        constraintData: {
             type: Object
-        },
+        }
     });
 
-    const emit = defineEmits(['onClose','updateCustomerInstruction','updateCustomerInstructionId']);
+    const emit = defineEmits(['onClose', 'updateCustomerInstruction', 'updateCustomerInstructionId']);
     const constraintId = ref(null);
     const data = ref({
         id: null,
         transmittedPlan: true,
-        libTransmittedPlan: "",
+        libTransmittedPlan: '',
         pit: false,
-        libPit: "",
+        libPit: '',
         lineHeight: false,
-        libLineHeight: "",
+        libLineHeight: '',
         specialThickness: false,
-        libSpecialThickness: "",
+        libSpecialThickness: '',
         otherCarpetInTheRoom: false,
-        libOtherCarpetInTheRoom: "",
+        libOtherCarpetInTheRoom: '',
         miniLength: false,
         maxiLength: false,
         miniWidth: false,
@@ -196,38 +204,39 @@
         dstWallRight: '0.0'
     });
     const error = ref({});
-    
-    const saveConstraints = async () =>{
-        try{
+
+    const saveConstraints = async () => {
+        try {
             let customerInstructionId = props.customerInstructionId;
             let customerInstruction = Object.assign({}, customerInstructionObject);
-            if(!customerInstructionId && props.carpetDesignOrderId){
+            if (!customerInstructionId && props.carpetDesignOrderId) {
                 const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, customerInstruction);
                 customerInstructionId = parseInt(res.id);
-                emit('updateCustomerInstructionId',customerInstructionId)
+                emit('updateCustomerInstructionId', customerInstructionId);
             }
-            
-            if(customerInstructionId){
-                if(data.value.id){
-                    const res = await axiosInstance.put(`/api/customerInstruction/${customerInstructionId}/constraints/${data.value.id}/update`,data.value);
-                    window.showMessage("Mise a jour avec succées.");
-                }else{
-                    const res = await axiosInstance.post(`/api/customerInstruction/${customerInstructionId}/constraints/create`,data.value);
+
+            if (customerInstructionId) {
+                if (data.value.id) {
+                    const res = await axiosInstance.put(`/api/customerInstruction/${customerInstructionId}/constraints/${data.value.id}/update`, data.value);
+                    window.showMessage('Mise a jour avec succées.');
+                } else {
+                    const res = await axiosInstance.post(`/api/customerInstruction/${customerInstructionId}/constraints/create`, data.value);
                     data.value.id = parseInt(res.data.response.id);
-                    window.showMessage("Ajout avec succées.");
+                    window.showMessage('Ajout avec succées.');
+                    window.location.reload();
                 }
             }
-            emit('updateCustomerInstruction',{
+            emit('updateCustomerInstruction', {
                 instruction: 'constraint',
-                id: data.value.id,
+                id: data.value.id
             });
-            document.querySelector("#modalManageConstraint .btn-close").click();
-        }catch (e){
+            document.querySelector('#modalManageConstraint .btn-close').click();
+        } catch (e) {
             console.log(e);
-            if(e.response?.data?.violations){
+            if (e.response?.data?.violations) {
                 error.value = formatErrorViolations(e.response.data.violations);
             }
-            window.showMessage(e.message,'error')
+            window.showMessage(e.message, 'error');
         }
     };
 
@@ -244,6 +253,6 @@
 
     const handleClose = () => {
         error.value = {};
-        emit('onClose')
-    }
+        emit('onClose');
+    };
 </script>

@@ -13,25 +13,30 @@
                             <div class="row align-items-center">
                                 <div class="col-md-6">
                                     <div class="checkbox-default custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="fringe" v-model="data.fringe"/>
+                                        <input type="checkbox" class="custom-control-input" id="fringe"
+                                               v-model="data.fringe" />
                                         <label class="custom-control-label" for="fringe">Frange</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="checkbox-default custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="withoutBanking" v-model="data.withoutBanking"/>
-                                        <label class="custom-control-label" for="withoutBanking">Sans backing(tufté)</label>
+                                        <input type="checkbox" class="custom-control-input" id="withoutBanking"
+                                               v-model="data.withoutBanking" />
+                                        <label class="custom-control-label" for="withoutBanking">Sans
+                                            backing(tufté)</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="checkbox-default custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="noBinding" v-model="data.noBinding"/>
+                                        <input type="checkbox" class="custom-control-input" id="noBinding"
+                                               v-model="data.noBinding" />
                                         <label class="custom-control-label" for="noBinding">No Binding</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="checkbox-default custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="mzCarved" v-model="data.mzCarved"/>
+                                        <input type="checkbox" class="custom-control-input" id="mzCarved"
+                                               v-model="data.mzCarved" />
                                         <label class="custom-control-label" for="mzCarved">MZ Carved</label>
                                     </div>
                                 </div>
@@ -77,77 +82,79 @@
     </div>
 </template>
 <script setup>
-    import { ref, onMounted, watch } from "vue";
+    import { ref, onMounted, watch } from 'vue';
     import VueFeather from 'vue-feather';
-    import axiosInstance from "../../../../config/http";
-    import dInput from "../../../../components/base/d-input.vue";
-    import dBaseModal from "../../../../components/base/d-base-modal.vue";
-    import dPanelTitle from "../../../../components/common/d-panel-title.vue";
-    import {formatErrorViolations} from "../../../../composables/global-methods";
-    import { customerInstructionObject } from "../../../../composables/constants";
-    import contremarqueService from "../../../../Services/contremarque-service";
+    import axiosInstance from '../../../../config/http';
+    import dInput from '../../../../components/base/d-input.vue';
+    import dBaseModal from '../../../../components/base/d-base-modal.vue';
+    import dPanelTitle from '../../../../components/common/d-panel-title.vue';
+    import { formatErrorViolations } from '../../../../composables/global-methods';
+    import { customerInstructionObject } from '../../../../composables/constants';
+    import contremarqueService from '../../../../Services/contremarque-service';
 
     const props = defineProps({
-        carpetDesignOrderId:{
+        carpetDesignOrderId: {
             type: Number
         },
-        customerInstructionId:{
+        customerInstructionId: {
             type: Number
         },
-        finishingData:{
+        finishingData: {
             type: Object
-        },
+        }
     });
-    
-    const emit = defineEmits(['onClose','updateCustomerInstruction','updateCustomerInstructionId']);
+
+    const emit = defineEmits(['onClose', 'updateCustomerInstruction', 'updateCustomerInstructionId']);
     const finishingId = ref(null);
     const data = ref({
         id: null,
-        fabricColor: "",
+        fabricColor: '',
         fringe: true,
         withoutBanking: true,
         noBinding: true,
         mzCarved: true,
-        otherCarvedSignature: "",
-        standardVelvetHeight: "",
-        specialVelvetHeight: ""
+        otherCarvedSignature: '',
+        standardVelvetHeight: '0',
+        specialVelvetHeight: '0'
     });
     const error = ref({});
-    
-    const saveFinishing = async () =>{
-        try{
+
+    const saveFinishing = async () => {
+        try {
             let customerInstructionId = props.customerInstructionId;
             let customerInstruction = Object.assign({}, customerInstructionObject);
-            if(!customerInstructionId && props.carpetDesignOrderId){
+            if (!customerInstructionId && props.carpetDesignOrderId) {
                 const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, customerInstruction);
                 customerInstructionId = parseInt(res.id);
-                emit('updateCustomerInstructionId',customerInstructionId)
+                emit('updateCustomerInstructionId', customerInstructionId);
             }
 
-            if(customerInstructionId){
-                if(data.value.id){
-                    const res = await axiosInstance.put(`/api/customerInstruction/${customerInstructionId}/finishing/${data.value.id}/update`,data.value);
-                    window.showMessage("Mise a jour avec succées.");
-                }else{
-                    const res = await axiosInstance.post(`/api/customerInstruction/${customerInstructionId}/finishing/create`,data.value);
+            if (customerInstructionId) {
+                if (data.value.id) {
+                    const res = await axiosInstance.put(`/api/customerInstruction/${customerInstructionId}/finishing/${data.value.id}/update`, data.value);
+                    window.showMessage('Mise a jour avec succées.');
+                } else {
+                    const res = await axiosInstance.post(`/api/customerInstruction/${customerInstructionId}/finishing/create`, data.value);
                     data.value.id = parseInt(res.data.response.id);
-                    window.showMessage("Ajout avec succées.");
+                    window.showMessage('Ajout avec succées.');
+                    window.location.reload();
+
                 }
             }
-            emit('updateCustomerInstruction',{
+            emit('updateCustomerInstruction', {
                 instruction: 'finishing',
-                id: data.value.id,
+                id: data.value.id
             });
-            document.querySelector("#modalManageValidatedSimple .btn-close").click();
-        }catch (e){
+            document.querySelector('#modalManageValidatedSimple .btn-close').click();
+        } catch (e) {
             console.log(e);
-            if(e.response?.data?.violations){
+            if (e.response?.data?.violations) {
                 error.value = formatErrorViolations(e.response.data.violations);
             }
-            window.showMessage(e.message,'error')
+            window.showMessage(e.message, 'error');
         }
     };
-    
+
     const setData = () => {
         if (props.finishingData) {
             const { customerInstruction, ...constraint } = props.finishingData;
@@ -158,9 +165,9 @@
     watch(() => props.finishingData, setData, { deep: true });
 
     onMounted(setData);
-    
+
     const handleClose = () => {
         error.value = {};
-        emit('onClose')
-    }
+        emit('onClose');
+    };
 </script>
