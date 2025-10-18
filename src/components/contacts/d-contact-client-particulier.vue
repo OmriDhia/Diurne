@@ -73,6 +73,7 @@
         email: '',
         phone: null,
         mobile_phone: null,
+
     });
     const CONTACT_FIELDS = Object.keys(DEFAULT_CONTACT);
 
@@ -100,11 +101,13 @@
     watch(
         () => props.contactData,
         (newData) => {
+
             const hasContacts = Array.isArray(newData) && newData.length > 0;
 
             if (!hasContacts) {
                 data.value = { ...DEFAULT_CONTACT };
                 return;
+
             }
 
             assignFromSource(newData[0], { replace: true });
