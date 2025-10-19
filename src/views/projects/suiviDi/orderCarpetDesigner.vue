@@ -451,6 +451,7 @@
         hideForTrans.value = (dataCarpetOrder.value.status_id === carpetStatus.transmisId || dataCarpetOrder.value.status_id === carpetStatus.nonTransmisId);
         hideForTransStudio.value = (dataCarpetOrder.value.status_id === carpetStatus.transmisId);
         hideForAttributePause.value = (dataCarpetOrder.value.status_id === carpetStatus.attribuId || dataCarpetOrder.value.status_id === carpetStatus.enPauseId || dataCarpetOrder.value.status_id === carpetStatus.enCoursId);
+        hideForTransADV.value = (dataCarpetOrder.value.status_id !== carpetStatus.transmisAdvId);
     };
     // const disableForCommercial = computed(() => {
     //     return ((store.getters.isCommertial || store.getters.isCommercialManager) && !store.getters.isNonTrasmisStatus) || store.getters.isFinStatus;
