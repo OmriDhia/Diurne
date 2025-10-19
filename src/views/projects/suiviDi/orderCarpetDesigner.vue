@@ -283,7 +283,8 @@
                                         ></d-designer-composition-list>
                                         <div class="row align-items-end mt-auto" v-if="displayFin  && !hideForTrans">
                                             <div class="col-md-12">
-                                                <button class="disbaled btn btn-custom text-center w-100 mb-3"
+                                                <button v-if="hideForTransADV"
+                                                        class="disbaled btn btn-custom text-center w-100 mb-3"
                                                         @click="FinDIStatus(6)">FIN
                                                 </button>
                                             </div>
@@ -349,6 +350,7 @@
     const selectedImageTypes = ref([]);
     const hideForTrans = ref(false);
     const hideForTransStudio = ref(false);
+    const hideForTransADV = ref(false);
     const hideForAttributePause = ref(false);
     // Handle designer addition from the child component
 
@@ -883,9 +885,10 @@
     watch(
         () => dataCarpetOrder.value.status_id,
 
-        (newID, oldID) => {
+        async (newID, oldID) => {
             if (newID !== oldID) {
                 console.log('newID', newID);
+                await saveCarpetOrder();
                 setHideForTrans();
             }
         }
