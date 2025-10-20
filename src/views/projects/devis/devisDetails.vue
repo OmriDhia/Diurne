@@ -99,7 +99,8 @@
                             <d-panel-title title="Matières" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-2 align-items-center align-items-center">
                                 <d-materials-list :showTitle="false"
-                                                  :materialsProps="quoteDetail.carpetSpecification?.carpetMaterials"></d-materials-list>
+                                                  :materialsProps="quoteDetail.carpetSpecification?.carpetMaterials"
+                                                  @add-materials-click="handleAddMaterialsClick"></d-materials-list>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 col-sm-12 pe-sm-0 mt-sm-4" v-if="quoteDetailId">
@@ -668,6 +669,10 @@
             }
             window.showMessage(e.message, 'error');
         }
+    };
+
+    const handleAddMaterialsClick = async () => {
+        await saveDevisDetails();
     };
 
     const getQuote = async (quote_id) => {

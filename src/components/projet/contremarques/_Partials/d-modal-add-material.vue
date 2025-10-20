@@ -32,8 +32,9 @@
         material_id: 0,
         rate: 0,
     });
-    const emit = defineEmits(['onClose','addMaterial']);
+    const emit = defineEmits(['onClose','addMaterial','add-materials-click']);
     const addMaterials = () => {
+        emit('add-materials-click');
         emit('addMaterial', data.value);
         document.querySelector("#modalAddMaterials .btn-close").click();
     }
