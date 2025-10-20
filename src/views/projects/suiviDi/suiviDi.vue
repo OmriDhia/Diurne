@@ -338,7 +338,7 @@
         location.href = `/projet/dis/model/${id_di}/update/${carperOrderId}`;
     };
     const goToContreMarqueDetails = (id_contremarque) => {
-        location.href = `/projet/contremarques/projectdis/${id_contremarque}`;
+        location.href = `/projet/dis/projectdis/${id_contremarque}`;
     };
     const handleClose = () => {
         //selectedDiId.value = null;
