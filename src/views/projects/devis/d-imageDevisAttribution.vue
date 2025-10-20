@@ -150,7 +150,9 @@
 
 <script setup>
     import { ref, onMounted, watch, defineProps, computed } from 'vue';
+
     import axiosInstance from '../../../config/http';
+
     import { formatErrorViolationsComposed } from '../../../composables/global-methods';
 
     const props = defineProps({
@@ -158,6 +160,7 @@
         quoteDetailId: { type: Number, default: 0 },
         image: { type: String, default: '' },
         collection: { type: String, default: '' }
+
     });
 
     const coherenceCheck = ref({
@@ -174,6 +177,7 @@
     const selectedId = ref(null);
     const selectedRow = ref(null);
     const validationDate = ref('');
+
     const initialCarpetDesignOrderId = ref(null);
 
     const normalizeId = (value) => {
@@ -246,6 +250,7 @@
         }
     };
 
+
     const diLink = computed(() => {
         const diId = selectedRow.value?.di_id || selectedRow.value?.id_di;
         const carpetDesignOrderId = selectedRow.value?.order_design_id;
@@ -281,7 +286,9 @@
             }
 
             if (!selectedRow.value && initialCarpetDesignOrderId.value) {
+
                 syncSelectionById();
+
             }
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -308,6 +315,7 @@
             (row) => normalizeId(row?.order_design_id) === normalizedSelectedId
         ) ?? null;
 
+
         if (!selectedRow.value) {
             window.showMessage('La maquette sélectionnée est introuvable.', 'error');
             return;
@@ -317,6 +325,7 @@
         carpetDesignOrderAttachment.value.quoteDetailId = Number.parseInt(props.quoteDetailId, 10) || 0;
         carpetDesignOrderAttachment.value.carpetDesignOrderId = normalizedSelectedId;
         initialCarpetDesignOrderId.value = normalizedSelectedId;
+
         AttachCarpetDesignOrder();
     };
 
@@ -324,7 +333,9 @@
         try {
             await axiosInstance.put(`/api/quote-details/attach-carpet-design-order`, carpetDesignOrderAttachment.value);
             window.showMessage('Mise a jour avec succées.');
+
             await fetchQuoteDetail();
+
         } catch (e) {
             if (e?.response?.data?.violations) {
                 error.value = formatErrorViolationsComposed(e.response.data.violations);
@@ -409,8 +420,45 @@
         return `https://diurne-api.webntricks.com/uploads/attachments/${imageName}`;
     };
 
+    const fetchCarpetDesignOrderById = async (orderId) => {
+        const normalizedId = normalizeId(orderId);
+        if (!normalizedId) {
+            applyValidationDateFromOrder(null);
+            return;
+        }
+
+        const cachedId = normalizeId(
+            carpetDesignOrder.value?.id
+            ?? carpetDesignOrder.value?.order_design_id
+            ?? carpetDesignOrder.value?.carpetDesignOrderId
+            ?? carpetDesignOrder.value?.carpet_design_order_id
+        );
+        if (cachedId === normalizedId && carpetDesignOrder.value?.customerInstruction?.customerValidationDate) {
+            applyValidationDateFromOrder(carpetDesignOrder.value);
+            return;
+        }
+
+        latestCarpetDesignOrderRequest += 1;
+        const requestId = latestCarpetDesignOrderRequest;
+
+        try {
+            const response = await axiosInstance.get(`/api/carpet-design-orders/${normalizedId}`);
+            if (requestId === latestCarpetDesignOrderRequest) {
+                const order = response.data?.response ?? response.data;
+                applyValidationDateFromOrder(order);
+            }
+        } catch (error) {
+            if (requestId === latestCarpetDesignOrderRequest) {
+                applyValidationDateFromOrder(null);
+            }
+            console.error('Failed to fetch carpet design order', error);
+        }
+    };
+
     onMounted(() => {
+
         fetchQuoteDetail();
+
         getDI();
     });
 
@@ -424,9 +472,11 @@
     watch(
         () => props.quoteDetailId,
         () => {
+
             fetchQuoteDetail();
         }
     );
+
 </script>
 
 <style scoped>

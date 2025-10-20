@@ -44,7 +44,8 @@
                             <d-imageDevisAttribution v-if="quoteDetailId"
                                                      :collection="quoteDetail?.carpetSpecification?.collection?.reference"
                                                      :image="quoteDetail.vignettePath" :quoteDetailId="quoteDetailId"
-                                                     :contremarqueId="contremarqueId" />
+                                                     :contremarqueId="contremarqueId"
+                                                     :customerDate="customerValidationDate" />
 
                             <!-- <div class="row pe-2 ps-0"></div> 
                             <div class="row pe-2 ps-0 align-items-center"></div> -->
@@ -490,6 +491,50 @@
     const createdDate = ref(moment().format('YYYY-MM-DD'));
     const quote = ref({});
     const quoteDetail = ref([]);
+
+    const carpetDesignOrder = ref(null);
+    const normalizeId = (value) => {
+        if (value === null || value === undefined) {
+            return null;
+        }
+
+        const parsed = Number(value);
+        return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+    };
+    const resolvedCarpetDesignOrderId = computed(() => {
+        const detail = quoteDetail.value ?? {};
+        const attachment = detail.carpetDesignOrderAttachment ?? detail.carpetDesignOrderAttachments;
+        const candidates = [
+            detail.carpetDesignOrderId,
+            detail.carpet_design_order_id,
+            detail.carpetDesignOrder?.id,
+            detail.carpetDesignOrder?.carpetDesignOrderId,
+            detail.carpetDesignOrder?.order_design_id,
+            attachment?.carpetDesignOrderId,
+            attachment?.carpet_design_order_id,
+            attachment?.carpetDesignOrder?.id,
+            attachment?.carpetDesignOrder?.order_design_id,
+            detail.carpetOrderDetails?.carpetDesignOrderId,
+            detail.carpetOrderDetails?.carpet_design_order_id
+        ];
+
+        for (const candidate of candidates) {
+            const normalized = normalizeId(candidate);
+            if (normalized) {
+                return normalized;
+            }
+        }
+
+        return null;
+    });
+    const customerValidationDate = computed(() => {
+        return carpetDesignOrder.value?.customerInstruction?.customerValidationDate
+            ?? quoteDetail.value?.customerInstruction?.customerValidationDate
+
+            ?? quoteDetail.value?.customerValidationDate
+            ?? quoteDetail.value?.validatedAt
+            ?? null;
+    });
     const useSpecialShape = ref(false);
     const error = ref({});
     const specialTreatment = ref({
@@ -553,6 +598,46 @@
             return '';
         }
         return Helper.FormatNumber(depositDetail.value.allocatedAmountHt);
+    });
+    let latestCarpetDesignOrderRequest = 0;
+    watch(resolvedCarpetDesignOrderId, async (newId) => {
+        latestCarpetDesignOrderRequest += 1;
+        const requestId = latestCarpetDesignOrderRequest;
+
+        if (!newId) {
+            carpetDesignOrder.value = null;
+            return;
+        }
+
+        let existing = quoteDetail.value?.carpetDesignOrder ?? quoteDetail.value?.carpetDesignOrders;
+        if (Array.isArray(existing)) {
+            existing = existing.find((item) => {
+                const candidateId = normalizeId(item?.id ?? item?.order_design_id ?? item?.carpetDesignOrderId);
+                return candidateId === newId;
+            }) ?? null;
+        }
+        const existingId = normalizeId(existing?.id ?? existing?.order_design_id ?? existing?.carpetDesignOrderId);
+        if (existing && existingId === newId) {
+            carpetDesignOrder.value = existing;
+            return;
+        }
+
+        try {
+            const response = await axiosInstance.get(`/api/carpet-design-orders/${newId}`);
+            if (requestId === latestCarpetDesignOrderRequest) {
+                carpetDesignOrder.value = response.data.response;
+            }
+        } catch (error) {
+            console.error('Failed to fetch carpet design order', error);
+            if (requestId === latestCarpetDesignOrderRequest) {
+                carpetDesignOrder.value = null;
+            }
+        }
+    }, { immediate: true });
+    watch(customerValidationDate, (newDate) => {
+        if (data.value?.quoteDetail) {
+            data.value.quoteDetail.validatedAt = newDate ?? null;
+        }
     });
     const currentCustomer = ref({});
     const prices = ref({
@@ -717,7 +802,7 @@
                         currencyId: quoteDetail.value.currency ? quoteDetail.value.currency.id : quote.value?.currency.id,
                         totalPriceRate: quoteDetail.value.totalPriceRate,
                         isValidated: quoteDetail.value.isValidated,
-                        validatedAt: null,
+                        validatedAt: customerValidationDate.value,
                         wantedQuantity: quoteDetail.value.wantedQuantity,
                         estimatedDeliveryTime: parseInt(quoteDetail.value.estimatedDeliveryTime),
                         applyLargeProjectRate: quoteDetail.value.applyLargeProjectRate,
