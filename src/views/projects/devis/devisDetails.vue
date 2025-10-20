@@ -491,6 +491,7 @@
     const createdDate = ref(moment().format('YYYY-MM-DD'));
     const quote = ref({});
     const quoteDetail = ref([]);
+
     const carpetDesignOrder = ref(null);
     const normalizeId = (value) => {
         if (value === null || value === undefined) {
@@ -529,6 +530,7 @@
     const customerValidationDate = computed(() => {
         return carpetDesignOrder.value?.customerInstruction?.customerValidationDate
             ?? quoteDetail.value?.customerInstruction?.customerValidationDate
+
             ?? quoteDetail.value?.customerValidationDate
             ?? quoteDetail.value?.validatedAt
             ?? null;
