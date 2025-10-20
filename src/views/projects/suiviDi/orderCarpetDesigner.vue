@@ -183,14 +183,16 @@
                                                     </div>
                                                     <div class="row ps-2 mt-4 mb-2 justify-content-between"
                                                          v-if="carpetDesignOrderId">
-                                                        <div class="col-xl-6 col-md-12 mb-2">
+                                                        <div class="col-xl-6 col-md-12 mb-2"
+                                                             v-if="dataCarpetOrder.status_id === carpetStatus.enCoursId">
                                                             <label class="form-label text-black">Nom du modèle</label>
                                                             <input type="text" class="form-control"
                                                                    :disabled="false"
                                                                    v-model="dataCarpetOrder.modelName"
                                                                    @input="handleModelNameInput" />
                                                         </div>
-                                                        <div class="col-xl-6 col-md-12 mb-2">
+                                                        <div class="col-xl-6 col-md-12 mb-2"
+                                                             v-if="dataCarpetOrder.status_id === carpetStatus.enCoursId">
                                                             <label class="form-label text-black">Variation</label>
                                                             <input type="text" class="form-control"
                                                                    :disabled="false"
@@ -283,9 +285,10 @@
                                         ></d-designer-composition-list>
                                         <div class="row align-items-end mt-auto" v-if="displayFin  && !hideForTrans">
                                             <div class="col-md-12">
-                                                <button v-if="hideForTransADV"
-                                                        class="disbaled btn btn-custom text-center w-100 mb-3"
-                                                        @click="FinDIStatus(6)">FIN
+                                                <button
+                                                    v-if="hideForTransADV || dataCarpetOrder.status_id === carpetStatus.finiId "
+                                                    class="disbaled btn btn-custom text-center w-100 mb-3"
+                                                    @click="FinDIStatus(6)">FIN
                                                 </button>
                                             </div>
                                             <div class="col-md-12" v-if="DesignerAccess">
