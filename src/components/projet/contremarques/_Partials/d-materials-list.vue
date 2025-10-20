@@ -48,6 +48,7 @@
                     class="btn ms-0 btn-outline-custom"
                     data-bs-toggle="modal"
                     data-bs-target="#modalAddMaterials"
+
                 >
                     Ajouter
                     <vue-feather type="plus" size="14"></vue-feather>
