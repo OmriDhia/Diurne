@@ -181,6 +181,18 @@
     watch(() => props.customerDate, (newDate) => {
         validationDate.value = newDate || ''; // If it's null, set to empty
     });
+
+    watch(selectedRow, (newRow) => {
+        if (!newRow) {
+            validationDate.value = props.customerDate || '';
+            return;
+        }
+
+        validationDate.value = newRow?.carpetDesignOrders?.customerInstruction?.customerValidationDate
+            ?? newRow?.customerInstruction?.customerValidationDate
+            ?? props.customerDate
+            ?? '';
+    });
     const diLink = computed(() => {
         const diId = selectedRow.value?.di_id || selectedRow.value?.id_di;
         const carpetDesignOrderId = selectedRow.value?.order_design_id;
