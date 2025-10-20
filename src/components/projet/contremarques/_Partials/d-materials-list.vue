@@ -37,7 +37,10 @@
             </div> -->
             <!-- Error Message -->
         </div>
-        <d-modal-add-material @addMaterial="addMaterial($event)"></d-modal-add-material>
+        <d-modal-add-material
+            @addMaterial="addMaterial($event)"
+            @add-materials-click="handleAddMaterialClick"
+        ></d-modal-add-material>
         <div class="col-12 ps-0 mt-2 d-flex align-items-center">
             <div class="col-auto ps-0">
                 <button
@@ -45,7 +48,7 @@
                     class="btn ms-0 btn-outline-custom"
                     data-bs-toggle="modal"
                     data-bs-target="#modalAddMaterials"
-                    @click="handleAddMaterialClick"
+
                 >
                     Ajouter
                     <vue-feather type="plus" size="14"></vue-feather>
