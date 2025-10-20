@@ -44,7 +44,8 @@
                             <d-imageDevisAttribution v-if="quoteDetailId"
                                                      :collection="quoteDetail?.carpetSpecification?.collection?.reference"
                                                      :image="quoteDetail.vignettePath" :quoteDetailId="quoteDetailId"
-                                                     :contremarqueId="contremarqueId" />
+                                                     :contremarqueId="contremarqueId"
+                                                     :customerDate="customerValidationDate" />
 
                             <!-- <div class="row pe-2 ps-0"></div> 
                             <div class="row pe-2 ps-0 align-items-center"></div> -->
@@ -490,6 +491,12 @@
     const createdDate = ref(moment().format('YYYY-MM-DD'));
     const quote = ref({});
     const quoteDetail = ref([]);
+    const customerValidationDate = computed(() => {
+        return quoteDetail.value?.customerInstruction?.customerValidationDate
+            ?? quoteDetail.value?.customerValidationDate
+            ?? quoteDetail.value?.validatedAt
+            ?? null;
+    });
     const useSpecialShape = ref(false);
     const error = ref({});
     const specialTreatment = ref({
@@ -717,7 +724,7 @@
                         currencyId: quoteDetail.value.currency ? quoteDetail.value.currency.id : quote.value?.currency.id,
                         totalPriceRate: quoteDetail.value.totalPriceRate,
                         isValidated: quoteDetail.value.isValidated,
-                        validatedAt: null,
+                        validatedAt: customerValidationDate.value,
                         wantedQuantity: quoteDetail.value.wantedQuantity,
                         estimatedDeliveryTime: parseInt(quoteDetail.value.estimatedDeliveryTime),
                         applyLargeProjectRate: quoteDetail.value.applyLargeProjectRate,
