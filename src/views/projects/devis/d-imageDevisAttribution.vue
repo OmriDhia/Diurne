@@ -151,13 +151,13 @@
 <script setup>
     import { ref, onMounted, watch, defineProps, computed } from 'vue';
     import axiosInstance from '../../../config/http'; // Adjust your axios import as needed
+    import { formatErrorViolationsComposed } from '../../../composables/global-methods';
 
     const props = defineProps({
         contremarqueId: { type: Number, default: 0 },
         quoteDetailId: { type: Number, default: 0 },
         image: { type: String, default: '' },
-        collection: { type: String, default: '' },
-        customerDate: { type: String, default: null } // New prop to receive customer date
+        collection: { type: String, default: '' }
 
     });
     const coherenceCheck = ref({
@@ -167,6 +167,7 @@
     // Reactive References
     const showPopup = ref(false);
     const loading = ref(false);
+    const error = ref({});
     const rows = ref([]);
     const total_rows = ref(0);
     const showCoherenceModal = ref(false);
@@ -176,22 +177,204 @@
 
     // The entire row object of the selected item
     const selectedRow = ref(null);
-    const validationDate = ref(props.customerDate || ''); // Initialize with customerDate if not null
-    // Watch for changes to the customerDate prop
-    watch(() => props.customerDate, (newDate) => {
-        validationDate.value = newDate || ''; // If it's null, set to empty
+    const validationDate = ref('');
+    const carpetDesignOrder = ref(null);
+    const initialCarpetDesignOrderId = ref(null);
+    let latestCarpetDesignOrderRequest = 0;
+
+    const toArray = (value) => {
+        if (!value) {
+            return [];
+        }
+
+        return Array.isArray(value) ? value : [value];
+    };
+
+    const normalizeId = (value) => {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+    };
+
+    const resolvedSelectedCarpetDesignOrderId = computed(() => {
+        return normalizeId(
+            selectedRow.value?.order_design_id
+            ?? selectedRow.value?.carpetDesignOrderId
+            ?? selectedRow.value?.carpet_design_order_id
+            ?? selectedRow.value?.id
+        ) || initialCarpetDesignOrderId.value;
     });
 
-    watch(selectedRow, (newRow) => {
-        if (!newRow) {
-            validationDate.value = props.customerDate || '';
+    const syncSelectedRowWithInitialId = () => {
+        const targetId = initialCarpetDesignOrderId.value;
+        if (!targetId || !Array.isArray(rows.value)) {
             return;
         }
 
-        validationDate.value = newRow?.carpetDesignOrders?.customerInstruction?.customerValidationDate
-            ?? newRow?.customerInstruction?.customerValidationDate
-            ?? props.customerDate
+        const alreadySelectedId = normalizeId(
+            selectedRow.value?.order_design_id
+            ?? selectedRow.value?.carpetDesignOrderId
+            ?? selectedRow.value?.carpet_design_order_id
+            ?? selectedRow.value?.id
+        );
+        if (alreadySelectedId === targetId) {
+            return;
+        }
+
+        const preselectedById = rows.value.find((row) => {
+            const rowId = normalizeId(
+                row?.order_design_id
+                ?? row?.carpetDesignOrderId
+                ?? row?.carpet_design_order_id
+                ?? row?.id
+            );
+            return rowId === targetId;
+        });
+
+        if (preselectedById) {
+            selectedId.value = preselectedById?.order_design_id
+                ?? preselectedById?.carpetDesignOrderId
+                ?? preselectedById?.carpet_design_order_id
+                ?? preselectedById?.id
+                ?? null;
+            selectedRow.value = preselectedById;
+        }
+    };
+
+    const applyValidationDateFromOrder = (order) => {
+        carpetDesignOrder.value = order ?? null;
+        validationDate.value = order?.customerInstruction?.customerValidationDate
+            ?? order?.customerInstruction?.validatedAt
+            ?? order?.customerValidationDate
             ?? '';
+    };
+
+    const resolveCarpetDesignOrderIdFromDetail = (detail) => {
+        if (!detail || typeof detail !== 'object') {
+            return null;
+        }
+
+        const attachments = toArray(detail.carpetDesignOrderAttachments ?? detail.carpetDesignOrderAttachment);
+        const orders = toArray(detail.carpetDesignOrders ?? detail.carpetDesignOrder);
+        const orderDetails = toArray(detail.carpetOrderDetails ?? detail.carpetOrderDetail);
+
+        const candidates = [
+            detail.carpetDesignOrderId,
+            detail.carpet_design_order_id,
+            detail.order_design_id,
+            detail.id,
+            ...orders.flatMap((order) => [
+                order?.carpetDesignOrderId,
+                order?.carpet_design_order_id,
+                order?.order_design_id,
+                order?.id
+            ]),
+            ...attachments.flatMap((attachment) => [
+                attachment?.carpetDesignOrderId,
+                attachment?.carpet_design_order_id,
+                attachment?.order_design_id,
+                attachment?.id,
+                attachment?.carpetDesignOrder?.carpetDesignOrderId,
+                attachment?.carpetDesignOrder?.carpet_design_order_id,
+                attachment?.carpetDesignOrder?.order_design_id,
+                attachment?.carpetDesignOrder?.id
+            ]),
+            ...orderDetails.flatMap((detailItem) => [
+                detailItem?.carpetDesignOrderId,
+                detailItem?.carpet_design_order_id,
+                detailItem?.order_design_id,
+                detailItem?.id
+            ])
+        ];
+
+        for (const candidate of candidates) {
+            const normalized = normalizeId(candidate);
+            if (normalized) {
+                return normalized;
+            }
+        }
+
+        return null;
+    };
+
+    const findInlineOrder = (detail, targetId) => {
+        if (!targetId) {
+            return null;
+        }
+
+        const searchPools = [
+            detail?.carpetDesignOrder,
+            detail?.carpetDesignOrders,
+            detail?.carpetDesignOrderAttachment,
+            detail?.carpetDesignOrderAttachments
+        ];
+
+        for (const pool of searchPools) {
+            for (const rawItem of toArray(pool)) {
+                for (const item of toArray(rawItem?.carpetDesignOrder ?? rawItem)) {
+                    const candidateId = normalizeId(
+                        item?.id
+                        ?? item?.order_design_id
+                        ?? item?.carpetDesignOrderId
+                        ?? item?.carpet_design_order_id
+                    );
+                    if (candidateId === targetId) {
+                        return item;
+                    }
+                }
+            }
+        }
+
+        return null;
+    };
+
+    const fetchQuoteDetailCarpetDesignOrder = async () => {
+        if (!props.quoteDetailId) {
+            initialCarpetDesignOrderId.value = null;
+            applyValidationDateFromOrder(null);
+            return;
+        }
+
+        try {
+            const response = await axiosInstance.get(`/api/quote-details/${props.quoteDetailId}`);
+            const detail = response.data?.response?.quoteDetail
+                ?? response.data?.response
+                ?? response.data?.quoteDetail
+                ?? response.data;
+
+            const resolvedId = resolveCarpetDesignOrderIdFromDetail(detail);
+            initialCarpetDesignOrderId.value = resolvedId;
+            syncSelectedRowWithInitialId();
+
+            const inlineOrder = findInlineOrder(detail, resolvedId);
+            if (inlineOrder) {
+                applyValidationDateFromOrder(inlineOrder);
+            } else {
+                carpetDesignOrder.value = null;
+                validationDate.value = detail?.customerInstruction?.customerValidationDate
+                    ?? detail?.customerValidationDate
+                    ?? '';
+            }
+        } catch (error) {
+            console.error('Failed to fetch quote detail', error);
+        }
+    };
+
+    watch(selectedRow, (newRow) => {
+        if (!newRow) {
+            applyValidationDateFromOrder(null);
+            return;
+        }
+
+        const inlineOrder = newRow?.customerInstruction
+            ? newRow
+            : toArray(newRow?.carpetDesignOrders ?? newRow?.carpetDesignOrder).find(
+                (order) => order?.customerInstruction?.customerValidationDate
+            )
+            ?? null;
+
+        if (inlineOrder?.customerInstruction?.customerValidationDate) {
+            applyValidationDateFromOrder(inlineOrder);
+        }
     });
     const diLink = computed(() => {
         const diId = selectedRow.value?.di_id || selectedRow.value?.id_di;
@@ -228,6 +411,10 @@
                     selectedRow.value = preselectedRow;
                 }
             }
+
+            if (!selectedRow.value && initialCarpetDesignOrderId.value) {
+                syncSelectedRowWithInitialId();
+            }
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
@@ -243,10 +430,28 @@
      * Called when user clicks "Confirmer"
      */
     const confirmSelection = () => {
-        selectedRow.value = rows.value.find((r) => r.order_design_id === selectedId.value);
+        const normalizedSelectedId = normalizeId(selectedId.value);
+        if (!normalizedSelectedId) {
+            window.showMessage('Veuillez sélectionner une maquette.', 'error');
+            return;
+        }
+
+        selectedRow.value = rows.value.find((row) => normalizeId(
+            row?.order_design_id
+            ?? row?.carpetDesignOrderId
+            ?? row?.carpet_design_order_id
+            ?? row?.id
+        ) === normalizedSelectedId) ?? null;
+
+        if (!selectedRow.value) {
+            window.showMessage('La maquette sélectionnée est introuvable.', 'error');
+            return;
+        }
+
         showPopup.value = false;
-        carpetDesignOrderAttachment.value.quoteDetailId = parseInt(props.quoteDetailId);
-        carpetDesignOrderAttachment.value.carpetDesignOrderId = selectedRow.value.order_design_id;
+        carpetDesignOrderAttachment.value.quoteDetailId = Number.parseInt(props.quoteDetailId, 10) || 0;
+        carpetDesignOrderAttachment.value.carpetDesignOrderId = normalizedSelectedId;
+        initialCarpetDesignOrderId.value = normalizedSelectedId;
         console.log(carpetDesignOrderAttachment.value);
         AttachCarpetDesignOrder();
     };
@@ -255,11 +460,15 @@
         try {
             const res = await axiosInstance.put(`/api/quote-details/attach-carpet-design-order`, carpetDesignOrderAttachment.value);
             window.showMessage('Mise a jour avec succées.');
+            if (selectedRow.value?.order_design_id) {
+                await fetchCarpetDesignOrderById(selectedRow.value.order_design_id);
+            }
         } catch (e) {
-            if (e.response.data.violations) {
+            if (e?.response?.data?.violations) {
                 error.value = formatErrorViolationsComposed(e.response.data.violations);
                 console.log(error.value);
             }
+            console.error('Failed to attach carpet design order', e);
             window.showMessage(e.message, 'error');
         }
     };
@@ -339,7 +548,43 @@
         return `https://diurne-api.webntricks.com/uploads/attachments/${imageName}`;
     };
 
+    const fetchCarpetDesignOrderById = async (orderId) => {
+        const normalizedId = normalizeId(orderId);
+        if (!normalizedId) {
+            applyValidationDateFromOrder(null);
+            return;
+        }
+
+        const cachedId = normalizeId(
+            carpetDesignOrder.value?.id
+            ?? carpetDesignOrder.value?.order_design_id
+            ?? carpetDesignOrder.value?.carpetDesignOrderId
+            ?? carpetDesignOrder.value?.carpet_design_order_id
+        );
+        if (cachedId === normalizedId && carpetDesignOrder.value?.customerInstruction?.customerValidationDate) {
+            applyValidationDateFromOrder(carpetDesignOrder.value);
+            return;
+        }
+
+        latestCarpetDesignOrderRequest += 1;
+        const requestId = latestCarpetDesignOrderRequest;
+
+        try {
+            const response = await axiosInstance.get(`/api/carpet-design-orders/${normalizedId}`);
+            if (requestId === latestCarpetDesignOrderRequest) {
+                const order = response.data?.response ?? response.data;
+                applyValidationDateFromOrder(order);
+            }
+        } catch (error) {
+            if (requestId === latestCarpetDesignOrderRequest) {
+                applyValidationDateFromOrder(null);
+            }
+            console.error('Failed to fetch carpet design order', error);
+        }
+    };
+
     onMounted(() => {
+        fetchQuoteDetailCarpetDesignOrder();
         getDI();
     });
 
@@ -348,6 +593,21 @@
         () => {
             getDI();
         }
+    );
+
+    watch(
+        () => props.quoteDetailId,
+        () => {
+            fetchQuoteDetailCarpetDesignOrder();
+        }
+    );
+
+    watch(
+        resolvedSelectedCarpetDesignOrderId,
+        (newId) => {
+            fetchCarpetDesignOrderById(newId);
+        },
+        { immediate: true }
     );
 </script>
 
