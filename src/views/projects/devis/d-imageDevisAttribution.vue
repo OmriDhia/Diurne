@@ -150,7 +150,9 @@
 
 <script setup>
     import { ref, onMounted, watch, defineProps, computed } from 'vue';
-    import axiosInstance from '../../../config/http'; // Adjust your axios import as needed
+
+    import axiosInstance from '../../../config/http';
+
     import { formatErrorViolationsComposed } from '../../../composables/global-methods';
 
     const props = defineProps({
@@ -160,222 +162,117 @@
         collection: { type: String, default: '' }
 
     });
+
     const coherenceCheck = ref({
         isCoherent: true,
         differences: null
     });
-    // Reactive References
+
     const showPopup = ref(false);
     const loading = ref(false);
     const error = ref({});
     const rows = ref([]);
-    const total_rows = ref(0);
     const showCoherenceModal = ref(false);
     const coherenceDifferences = ref(null);
-    // ID of the selected row (using order_design_id for selection)
     const selectedId = ref(null);
-
-    // The entire row object of the selected item
     const selectedRow = ref(null);
     const validationDate = ref('');
-    const carpetDesignOrder = ref(null);
+
     const initialCarpetDesignOrderId = ref(null);
-    let latestCarpetDesignOrderRequest = 0;
 
-    const toArray = (value) => {
-        if (!value) {
-            return [];
-        }
-
-        return Array.isArray(value) ? value : [value];
-    };
 
     const normalizeId = (value) => {
         const parsed = Number(value);
         return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
     };
 
-    const resolvedSelectedCarpetDesignOrderId = computed(() => {
-        return normalizeId(
-            selectedRow.value?.order_design_id
-            ?? selectedRow.value?.carpetDesignOrderId
-            ?? selectedRow.value?.carpet_design_order_id
-            ?? selectedRow.value?.id
-        ) || initialCarpetDesignOrderId.value;
-    });
 
-    const syncSelectedRowWithInitialId = () => {
-        const targetId = initialCarpetDesignOrderId.value;
+    const formatDateForInput = (rawDate) => {
+        if (!rawDate) {
+            return '';
+        }
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
+            return rawDate;
+        }
+
+        const parts = rawDate.split(/[\sT:-]/).filter(Boolean);
+        if (parts.length >= 3) {
+            const [first, second, third] = parts;
+            if (first.length === 2 && second.length === 2 && third.length === 4) {
+                return `${third}-${second}-${first}`;
+            }
+            if (first.length === 4 && second.length === 2 && third.length === 2) {
+                return `${first}-${second}-${third}`;
+            }
+        }
+
+        return rawDate;
+    };
+
+    const applyValidationDate = (rawDate) => {
+        validationDate.value = formatDateForInput(rawDate);
+    };
+
+    const syncSelectionById = () => {
+        const targetId = normalizeId(initialCarpetDesignOrderId.value);
         if (!targetId || !Array.isArray(rows.value)) {
             return;
         }
 
-        const alreadySelectedId = normalizeId(
-            selectedRow.value?.order_design_id
-            ?? selectedRow.value?.carpetDesignOrderId
-            ?? selectedRow.value?.carpet_design_order_id
-            ?? selectedRow.value?.id
-        );
-        if (alreadySelectedId === targetId) {
-            return;
-        }
-
-        const preselectedById = rows.value.find((row) => {
-            const rowId = normalizeId(
-                row?.order_design_id
-                ?? row?.carpetDesignOrderId
-                ?? row?.carpet_design_order_id
-                ?? row?.id
-            );
-            return rowId === targetId;
-        });
-
-        if (preselectedById) {
-            selectedId.value = preselectedById?.order_design_id
-                ?? preselectedById?.carpetDesignOrderId
-                ?? preselectedById?.carpet_design_order_id
-                ?? preselectedById?.id
-                ?? null;
-            selectedRow.value = preselectedById;
+        const match = rows.value.find((row) => normalizeId(row?.order_design_id) === targetId);
+        if (match) {
+            selectedId.value = match.order_design_id;
+            selectedRow.value = match;
         }
     };
 
-    const applyValidationDateFromOrder = (order) => {
-        carpetDesignOrder.value = order ?? null;
-        validationDate.value = order?.customerInstruction?.customerValidationDate
-            ?? order?.customerInstruction?.validatedAt
-            ?? order?.customerValidationDate
-            ?? '';
-    };
-
-    const resolveCarpetDesignOrderIdFromDetail = (detail) => {
-        if (!detail || typeof detail !== 'object') {
-            return null;
-        }
-
-        const attachments = toArray(detail.carpetDesignOrderAttachments ?? detail.carpetDesignOrderAttachment);
-        const orders = toArray(detail.carpetDesignOrders ?? detail.carpetDesignOrder);
-        const orderDetails = toArray(detail.carpetOrderDetails ?? detail.carpetOrderDetail);
-
-        const candidates = [
-            detail.carpetDesignOrderId,
-            detail.carpet_design_order_id,
-            detail.order_design_id,
-            detail.id,
-            ...orders.flatMap((order) => [
-                order?.carpetDesignOrderId,
-                order?.carpet_design_order_id,
-                order?.order_design_id,
-                order?.id
-            ]),
-            ...attachments.flatMap((attachment) => [
-                attachment?.carpetDesignOrderId,
-                attachment?.carpet_design_order_id,
-                attachment?.order_design_id,
-                attachment?.id,
-                attachment?.carpetDesignOrder?.carpetDesignOrderId,
-                attachment?.carpetDesignOrder?.carpet_design_order_id,
-                attachment?.carpetDesignOrder?.order_design_id,
-                attachment?.carpetDesignOrder?.id
-            ]),
-            ...orderDetails.flatMap((detailItem) => [
-                detailItem?.carpetDesignOrderId,
-                detailItem?.carpet_design_order_id,
-                detailItem?.order_design_id,
-                detailItem?.id
-            ])
-        ];
-
-        for (const candidate of candidates) {
-            const normalized = normalizeId(candidate);
-            if (normalized) {
-                return normalized;
-            }
-        }
-
-        return null;
-    };
-
-    const findInlineOrder = (detail, targetId) => {
-        if (!targetId) {
-            return null;
-        }
-
-        const searchPools = [
-            detail?.carpetDesignOrder,
-            detail?.carpetDesignOrders,
-            detail?.carpetDesignOrderAttachment,
-            detail?.carpetDesignOrderAttachments
-        ];
-
-        for (const pool of searchPools) {
-            for (const rawItem of toArray(pool)) {
-                for (const item of toArray(rawItem?.carpetDesignOrder ?? rawItem)) {
-                    const candidateId = normalizeId(
-                        item?.id
-                        ?? item?.order_design_id
-                        ?? item?.carpetDesignOrderId
-                        ?? item?.carpet_design_order_id
-                    );
-                    if (candidateId === targetId) {
-                        return item;
-                    }
-                }
-            }
-        }
-
-        return null;
-    };
-
-    const fetchQuoteDetailCarpetDesignOrder = async () => {
+    const fetchQuoteDetail = async () => {
         if (!props.quoteDetailId) {
             initialCarpetDesignOrderId.value = null;
-            applyValidationDateFromOrder(null);
+            applyValidationDate('');
             return;
         }
 
         try {
-            const response = await axiosInstance.get(`/api/quote-details/${props.quoteDetailId}`);
-            const detail = response.data?.response?.quoteDetail
-                ?? response.data?.response
+            const response = await axiosInstance.get(`/api/quoteDetail/${props.quoteDetailId}`);
+            const detail = response.data?.quoteDetailData
+                ?? response.data?.response?.quoteDetailData
                 ?? response.data?.quoteDetail
                 ?? response.data;
 
-            const resolvedId = resolveCarpetDesignOrderIdFromDetail(detail);
-            initialCarpetDesignOrderId.value = resolvedId;
-            syncSelectedRowWithInitialId();
+            initialCarpetDesignOrderId.value = normalizeId(
+                detail?.carpetDesignOrderId ?? detail?.order_design_id ?? detail?.carpet_design_order_id
+            );
+            applyValidationDate(detail?.customer_validation_date);
 
-            const inlineOrder = findInlineOrder(detail, resolvedId);
-            if (inlineOrder) {
-                applyValidationDateFromOrder(inlineOrder);
-            } else {
-                carpetDesignOrder.value = null;
-                validationDate.value = detail?.customerInstruction?.customerValidationDate
-                    ?? detail?.customerValidationDate
-                    ?? '';
+            if (!validationDate.value && initialCarpetDesignOrderId.value) {
+                await fetchCarpetDesignOrderById(initialCarpetDesignOrderId.value);
             }
-        } catch (error) {
-            console.error('Failed to fetch quote detail', error);
+
+            syncSelectionById();
+        } catch (err) {
+            console.error('Failed to fetch quote detail', err);
         }
     };
 
-    watch(selectedRow, (newRow) => {
-        if (!newRow) {
-            applyValidationDateFromOrder(null);
+    const fetchCarpetDesignOrderById = async (orderId) => {
+        const normalizedId = normalizeId(orderId);
+        if (!normalizedId) {
+            applyValidationDate('');
             return;
         }
 
-        const inlineOrder = newRow?.customerInstruction
-            ? newRow
-            : toArray(newRow?.carpetDesignOrders ?? newRow?.carpetDesignOrder).find(
-                (order) => order?.customerInstruction?.customerValidationDate
-            )
-            ?? null;
-
-        if (inlineOrder?.customerInstruction?.customerValidationDate) {
-            applyValidationDateFromOrder(inlineOrder);
+        try {
+            const response = await axiosInstance.get(`/api/carpet-design-orders/${normalizedId}`);
+            const order = response.data?.response ?? response.data;
+            applyValidationDate(order?.customerInstruction?.customerValidationDate);
+        } catch (err) {
+            console.error('Failed to fetch carpet design order', err);
         }
-    });
+    };
+
+
     const diLink = computed(() => {
         const diId = selectedRow.value?.di_id || selectedRow.value?.id_di;
         const carpetDesignOrderId = selectedRow.value?.order_design_id;
@@ -399,11 +296,9 @@
             const response = await axiosInstance.get(url);
             const data = response.data.response;
             rows.value = data.carpetDesignOrders;
-            total_rows.value = data.count;
             // If an image is passed, set the selected row based on it
             if (props.image) {
                 const image = props.image.split('/').pop();
-                console.log('props.image', props.image, image);
 
                 const preselectedRow = rows.value.find((row) => row.image_name === image);
                 if (preselectedRow) {
@@ -413,7 +308,7 @@
             }
 
             if (!selectedRow.value && initialCarpetDesignOrderId.value) {
-                syncSelectedRowWithInitialId();
+
             }
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -436,12 +331,11 @@
             return;
         }
 
-        selectedRow.value = rows.value.find((row) => normalizeId(
-            row?.order_design_id
-            ?? row?.carpetDesignOrderId
-            ?? row?.carpet_design_order_id
-            ?? row?.id
-        ) === normalizedSelectedId) ?? null;
+
+        selectedRow.value = rows.value.find(
+            (row) => normalizeId(row?.order_design_id) === normalizedSelectedId
+        ) ?? null;
+
 
         if (!selectedRow.value) {
             window.showMessage('La maquette sélectionnée est introuvable.', 'error');
@@ -452,13 +346,13 @@
         carpetDesignOrderAttachment.value.quoteDetailId = Number.parseInt(props.quoteDetailId, 10) || 0;
         carpetDesignOrderAttachment.value.carpetDesignOrderId = normalizedSelectedId;
         initialCarpetDesignOrderId.value = normalizedSelectedId;
-        console.log(carpetDesignOrderAttachment.value);
+
         AttachCarpetDesignOrder();
     };
 
     const AttachCarpetDesignOrder = async () => {
         try {
-            const res = await axiosInstance.put(`/api/quote-details/attach-carpet-design-order`, carpetDesignOrderAttachment.value);
+            await axiosInstance.put(`/api/quote-details/attach-carpet-design-order`, carpetDesignOrderAttachment.value);
             window.showMessage('Mise a jour avec succées.');
             if (selectedRow.value?.order_design_id) {
                 await fetchCarpetDesignOrderById(selectedRow.value.order_design_id);
@@ -466,7 +360,6 @@
         } catch (e) {
             if (e?.response?.data?.violations) {
                 error.value = formatErrorViolationsComposed(e.response.data.violations);
-                console.log(error.value);
             }
             console.error('Failed to attach carpet design order', e);
             window.showMessage(e.message, 'error');
@@ -584,7 +477,7 @@
     };
 
     onMounted(() => {
-        fetchQuoteDetailCarpetDesignOrder();
+
         getDI();
     });
 
@@ -598,17 +491,11 @@
     watch(
         () => props.quoteDetailId,
         () => {
-            fetchQuoteDetailCarpetDesignOrder();
+
+            fetchQuoteDetail();
         }
     );
 
-    watch(
-        resolvedSelectedCarpetDesignOrderId,
-        (newId) => {
-            fetchCarpetDesignOrderById(newId);
-        },
-        { immediate: true }
-    );
 </script>
 
 <style scoped>
