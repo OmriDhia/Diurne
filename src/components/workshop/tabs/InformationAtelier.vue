@@ -153,7 +153,7 @@
         console.log('formData', props.formData);
         const payload = {
             launchDate: props.formData.infoCommande.dateCmdAtelier || '',
-            expectedEndDate: props.formData.infoCommande.dateFinTheo || '',
+            expectedEndDate: props.formData.infoCommande.dateFinTheo || null,
             dateEndAtelierPrev: props.formData.infoCommande.dateFinAtelierPrev || '',
             productionTime: Number(props.formData.infoCommande.delaisProd) || 0,
             orderSilkPercentage: props.formData.infoCommande.pourcentCommande,
@@ -165,7 +165,7 @@
             realSurface: props.formData.infoCommande.srfReelle || '0',
             idTarifGroup: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
             idTarifTexture: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
-            reductionRate: props.formData.reductionTapis,
+            reductionRate: props.formData.reductionTapis || null,
             hasComplixityWorkshop: props.formData.complexiteAtelier,
             hasMultilevelWorkshop: props.formData.multiLevelAtelier,
             hasSpecialShape: props.formData.formeSpeciale,
@@ -242,7 +242,7 @@
     const setDataForUpdate = () => {
         if (Object.keys(props.workshopInfo).length > 0) {
             props.formData.infoCommande.dateCmdAtelier = props.workshopInfo.launchDate;
-            props.formData.infoCommande.dateFinTheo = props.workshopInfo.expectedEndDate;
+            props.formData.infoCommande.dateFinTheo = props.workshopInfo.expectedEndDate || '';
             props.formData.infoCommande.dateFinAtelierPrev = props.workshopInfo.dateEndAtelierPrev;
             props.formData.infoCommande.delaisProd = props.workshopInfo.productionTime?.toString() || '';
             props.formData.infoCommande.pourcentCommande = Helper.FormatNumber(props.workshopInfo.orderSilkPercentage);
@@ -390,6 +390,7 @@
                         <div class="form-row">
                             <d-input label="Date fin atelier Prev" type="date"
                                      v-model="props.formData.infoCommande.dateFinAtelierPrev"
+                                     :error="error.dateEndAtelierPrev"
                                      rootClass="pink-bg" />
                         </div>
 
