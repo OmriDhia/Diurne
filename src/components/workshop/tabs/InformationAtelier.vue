@@ -5,6 +5,7 @@
     import RadioButton from '../ui/RadioButton.vue';
     import dInput from '../../../components/base/d-input.vue';
     import DCurrency from '@/components/common/d-currency.vue';
+    import dCarpetDropdown from '@/components/common/d-carpet-dropdown.vue';
     import { Helper, formatErrorViolations } from '@/composables/global-methods';
     import DPanelTitle from '@/components/common/d-panel-title.vue';
     import checkingListService from '../../../Services/checkingList-service';
@@ -623,12 +624,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-row row py-2">
-                    <div class="col-4"><label>Type commandé :</label></div>
-                    <div class="col-8">
-                        <SelectInput v-model="props.formData.tapisDuProjet.fabricant" rootClass="pink-bg" />
-                    </div>
-                </div>
+                <d-carpet-dropdown
+                    class="form-row py-2"
+                    label="Type commandé"
+                    v-model="props.formData.tapisDuProjet.typeCommande"
+                    root-class="pink-bg"
+                />
 
                 <div class="form-row">
                     <d-input label="RN" v-model="props.formData.tapisDuProjet.rn" rootClass="pink-bg" disabled
