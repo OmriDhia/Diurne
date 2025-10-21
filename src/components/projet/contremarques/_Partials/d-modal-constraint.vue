@@ -209,6 +209,7 @@
         try {
             let customerInstructionId = props.customerInstructionId;
             let customerInstruction = Object.assign({}, customerInstructionObject);
+            customerInstruction.hasConstraints = true;
             if (!customerInstructionId && props.carpetDesignOrderId) {
                 const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, customerInstruction);
                 customerInstructionId = parseInt(res.id);

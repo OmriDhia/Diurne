@@ -724,7 +724,7 @@
                 customerComment: data.customerComment,
                 objectId: parseInt(carpetDesignOrderId),
                 objectType: 'CarpetDesignOrder',
-                customerValidationDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+                customerValidationDate: moment().format('YYYY-MM-DD'),
                 status_id: carpetStatus.finiId
             };
             const res = await axiosInstance.post(`/api/transmettre-object/to-adv`, d);
