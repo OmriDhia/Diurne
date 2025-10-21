@@ -484,7 +484,7 @@
     });
 
     const goToDevisList = () => {
-        router.push({ name: 'carpetOrderList' });
+        router.push({ name: 'orders' });
     };
 
     const goToAttachReglement = () => {

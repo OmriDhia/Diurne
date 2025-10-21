@@ -811,7 +811,7 @@
         }
     };
     const goToDevis = () => {
-        router.push({ name: 'carpetOrderManage', params: { id: quote_id } });
+        router.push({ name: 'ordersDetail', params: { id: quote_id } });
     };
     const changeWeight = async (weight) => {
         data.value.carpetSpecification.randomWeight = parseFloat(weight);

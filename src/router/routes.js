@@ -320,16 +320,6 @@ export const routes = [
                     class: 'tapis',
                     permission: 'read carpet'
                 }
-            },
-            {
-                path: ':carpetOrder/details/:id?',
-                name: 'carpetOrderDetails',
-                component: () => import('../views/carpet/order/devisDetails.vue'),
-                meta: {
-                    requiresAuth: true,
-                    class: 'tapis',
-                    permission: 'create quote'
-                }
             }
         ],
         meta: {
@@ -438,6 +428,16 @@ export const routes = [
                     requiresAuth: true,
                     class: 'projects',
                     permission: 'read order'
+                }
+            },
+            {
+                path: ':carpetOrder/details/:id?',
+                name: 'carpetOrderDetails',
+                component: () => import('../views/carpet/order/devisDetails.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'projects',
+                    permission: 'create quote'
                 }
             }
         ],
