@@ -48,7 +48,7 @@
 
     const fetchManufacturers = async () => {
         try {
-            const data = await workshopService.getManufacturers({ page: 1, itemsPerPage: 50 });
+            const data = await workshopService.getManufacturers({ page: 1, itemsPerPage: 300 });
             const list = data.response?.data || data.data || [];
             manufacturers.value = list.map((m: any) => ({ value: m.id, label: m.name }));
         } catch (e) {
@@ -302,6 +302,13 @@
         }
     };
     const setDataFromImageCommande = () => {
+        const customerValidationDate = props.imageCommande?.carpetDesignOrder?.customerInstruction?.customerValidationDate || '';
+        if (customerValidationDate) {
+            props.formData.dateValidationClient = Helper.FormatDate(customerValidationDate, 'YYYY-MM-DD');
+        } else if (!props.formData.dateValidationClient) {
+            props.formData.dateValidationClient = '';
+        }
+
         if (!props.orderId) {
             const long = props.imageCommande?.carpetSpecification?.carpetDimensions?.[2]?.[0]?.value ?? 0;
             const larg = props.imageCommande?.carpetSpecification?.carpetDimensions?.[1]?.[0]?.value ?? 0;
