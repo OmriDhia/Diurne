@@ -1,9 +1,9 @@
 <template>
     <div class="row align-items-center pt-2">
-        <div class="col-4"><label class="form-label">Client<span class="required" v-if="required">*</span> :</label></div>
+        <div class="col-4"><label class="form-label">{{ label }}<span class="required" v-if="required">*</span> :</label></div>
         <div class="col-8">
             <multiselect
-                :class="{ 'is-invalid': error}"
+                :class="[{ 'is-invalid': error }, rootClass]"
                 :model-value="carpertTypeId"
                 :options="carpetTypes"
                 placeholder="Type de tapis"
@@ -42,9 +42,17 @@
                 type: String,
                 default: ''
             },
+            label: {
+                type: String,
+                default: 'Client'
+            },
             required:{
                 type: Boolean,
                 default: false
+            },
+            rootClass: {
+                type: [String, Array, Object],
+                default: ''
             }
         },
         data() {
@@ -58,24 +66,39 @@
         },
         methods: {
             handleChange(value) {
-                this.$emit('update:modelValue', parseInt(value.id));
+                const id = value && value.id !== undefined ? parseInt(value.id, 10) : null;
+                this.$emit('update:modelValue', Number.isNaN(id) ? null : id);
+                this.setSelectedCarpetType(id);
             },
             async getCarpetTypes (){
                 try{
                     let url = '/api/carpet-types';
                     const res = await axiosInstance.get(url);
                     this.carpetTypes = res.data.response.carpet_types;
+                    this.setSelectedCarpetType(this.modelValue);
                 }catch{
                     console.log('Erreur get carpet type list.')
                 }
             },
+            setSelectedCarpetType(value) {
+                const parsedValue = typeof value === 'string' ? parseInt(value, 10) : value;
+                if (Number.isNaN(parsedValue) || parsedValue === null || parsedValue === undefined) {
+                    this.carpertTypeId = null;
+                    return;
+                }
+                this.carpertTypeId = this.carpetTypes.find(ad => ad.id === parsedValue) || null;
+            }
         },
         mounted() {
             this.getCarpetTypes();
+            this.setSelectedCarpetType(this.modelValue);
         },
         watch: {
             modelValue(newValue) {
-                this.carpertTypeId = this.carpetTypes.filter(ad => ad.id === newValue)[0];
+                this.setSelectedCarpetType(newValue);
+            },
+            carpetTypes() {
+                this.setSelectedCarpetType(this.modelValue);
             }
         }
     };
