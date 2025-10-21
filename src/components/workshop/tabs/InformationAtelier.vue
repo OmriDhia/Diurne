@@ -160,9 +160,9 @@
             orderedWidth: props.formData.infoCommande.largeurCmd,
             orderedHeigh: props.formData.infoCommande.longueurCmd,
             orderedSurface: props.formData.infoCommande.srfCmd,
-            realWidth: props.formData.infoCommande.largeurReelle,
-            realHeight: props.formData.infoCommande.longueurReelle,
-            realSurface: props.formData.infoCommande.srfReelle,
+            realWidth: props.formData.infoCommande.largeurReelle || '0',
+            realHeight: props.formData.infoCommande.longueurReelle || '0',
+            realSurface: props.formData.infoCommande.srfReelle || '0',
             idTarifGroup: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
             idTarifTexture: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
             reductionRate: props.formData.reductionTapis,
@@ -304,12 +304,15 @@
     };
     const setDataFromImageCommande = () => {
         const customerValidationDate = props.imageCommande?.carpetDesignOrder?.customerInstruction?.customerValidationDate || '';
+        const typeCommande = props.imageCommande?.carpetDesignOrder?.location?.carpetType_id || '';
         if (customerValidationDate) {
             props.formData.dateValidationClient = Helper.FormatDate(customerValidationDate, 'YYYY-MM-DD');
         } else if (!props.formData.dateValidationClient) {
             props.formData.dateValidationClient = '';
         }
-
+        if (typeCommande && !props.formData.tapisDuProjet.typeCommande) {
+            props.formData.tapisDuProjet.typeCommande = typeCommande.toString();
+        }
         if (!props.orderId) {
             const long = props.imageCommande?.carpetSpecification?.carpetDimensions?.[2]?.[0]?.value ?? 0;
             const larg = props.imageCommande?.carpetSpecification?.carpetDimensions?.[1]?.[0]?.value ?? 0;
