@@ -1,24 +1,24 @@
-export const FILE_URL = "https://diurne-api.webntricks.com";
-export const CRYPTO_KEY = "QdSr3pKrmW";
-export const TOKEN_STORAGE_NAME = "auth_token";
-export const USER_INFO_STORAGE_NAME = "user_info";
-export const CONTACT_SELECTION_STORAGE_NAME = "Selected_contact_menu";
-export const FILTER_CONTACT_STORAGE_NAME = "filterContact";
-export const FILTER_ORDER_PAYMENT_STORAGE_NAME = "filterOrderPayment";
-export const FILTER_EVENT_STORAGE_NAME = "filterEvent";
-export const FILTER_CONTREMARQUE_STORAGE_NAME = "filterContremarque";
-export const FILTER_DEVIS_STORAGE_NAME = "filterDevis";
-export const FILTER_FACTURE_CLIENT_STORAGE_NAME = "filterFactureClient";
-export const FILTER_SUIVI_DI_STORAGE_NAME = "filterSuiviDi";
-export const FILTER_IMAGE_COMMAND_STORAGE_NAME = "filterImageCommand";
-export const FILTER_WORKSHOP_STORAGE_NAME = "filterWorkshop";
-export const FILTER_FOURNISSEUR_INVOICE_STORAGE_NAME = "filterFactureFournisseur";
-export const FILTER_CLIENT_INVOICE_STORAGE_NAME = "filterClientInvoice";
-export const DESIGNER_MANAGER_ROLE_NAME = "Designer manager";
-export const DESIGNER_ROLE_NAME = "Designer";
-export const COMMERCIAL_ROLE_NAME = "Commercial";
-export const COMMERCIAL_MANAGER_ROLE_NAME = "Commercial manager";
-export const SUPER_ADMIN_ROLE_NAME = "Super admin";
+export const FILE_URL = 'https://diurne-api.webntricks.com';
+export const CRYPTO_KEY = 'QdSr3pKrmW';
+export const TOKEN_STORAGE_NAME = 'auth_token';
+export const USER_INFO_STORAGE_NAME = 'user_info';
+export const CONTACT_SELECTION_STORAGE_NAME = 'Selected_contact_menu';
+export const FILTER_CONTACT_STORAGE_NAME = 'filterContact';
+export const FILTER_ORDER_PAYMENT_STORAGE_NAME = 'filterOrderPayment';
+export const FILTER_EVENT_STORAGE_NAME = 'filterEvent';
+export const FILTER_CONTREMARQUE_STORAGE_NAME = 'filterContremarque';
+export const FILTER_DEVIS_STORAGE_NAME = 'filterDevis';
+export const FILTER_FACTURE_CLIENT_STORAGE_NAME = 'filterFactureClient';
+export const FILTER_SUIVI_DI_STORAGE_NAME = 'filterSuiviDi';
+export const FILTER_IMAGE_COMMAND_STORAGE_NAME = 'filterImageCommand';
+export const FILTER_WORKSHOP_STORAGE_NAME = 'filterWorkshop';
+export const FILTER_FOURNISSEUR_INVOICE_STORAGE_NAME = 'filterFactureFournisseur';
+export const FILTER_CLIENT_INVOICE_STORAGE_NAME = 'filterClientInvoice';
+export const DESIGNER_MANAGER_ROLE_NAME = 'Designer manager';
+export const DESIGNER_ROLE_NAME = 'Designer';
+export const COMMERCIAL_ROLE_NAME = 'Commercial';
+export const COMMERCIAL_MANAGER_ROLE_NAME = 'Commercial manager';
+export const SUPER_ADMIN_ROLE_NAME = 'Super admin';
 
 export const menuHomeColor = {
     contact: '#E3599E',
@@ -30,11 +30,11 @@ export const menuHomeColor = {
     tapis: '#48A878',
     di: '#EBC31A',
     treasure: '#EBC31A'
-}
-export const intermediaryType ={
-    agent: "Agent",
-    perscripteur: "Prescripteur",
-}
+};
+export const intermediaryType = {
+    agent: 'Agent',
+    perscripteur: 'Prescripteur'
+};
 export const filterOrderPayment = {
     customer: null,
     commercial: null,
@@ -42,7 +42,7 @@ export const filterOrderPayment = {
     prescriptor: null,
     devis: null,
     commande: null,
-    amount: null,
+    amount: null
 };
 export const filterEvent = {
     firstname: null,
@@ -66,7 +66,7 @@ export const filterEvent = {
     subject: null,
     onlyLastEvent: null,
     pres: null,
-    contact: null,
+    contact: null
 };
 export const filterContact = {
     lastname: null,
@@ -88,7 +88,7 @@ export const filterContact = {
     mailingLanguageId: null,
     contactMailing: null,
     is_agent: null,
-    is_prescripteur: null,
+    is_prescripteur: null
 };
 export const filterContremarque = {
     customer: null,
@@ -100,7 +100,7 @@ export const filterContremarque = {
     projectRelance: null,
     projectRelanceX: null,
     projectWithoutRelance: null,
-    allProjects: null,
+    allProjects: null
 };
 export const filterWorkshop = {
     customer: null,
@@ -112,13 +112,13 @@ export const filterWorkshop = {
     projectRelance: null,
     projectRelanceX: null,
     projectWithoutRelance: null,
-    allProjects: null,
+    allProjects: null
 };
 export const filterDevis = {
     customer: null,
     contremarque: null,
     commercial: null,
-    devis: null,
+    devis: null
 };
 
 export const filterFactureFournisseur = {
@@ -127,15 +127,16 @@ export const filterFactureFournisseur = {
     startDate: null,
     endDate: null,
     invoiceNumber: null,
-    atelier: null,
+    atelier: null
 };
 
 export const filterSuiviDi = {
     customer: null,
     contremarque: null,
+    designer: null,
     diNumber: null,
     carpetStatus: null,
-    contremarqueId: null,
+    contremarqueId: null
 };
 
 export const filterImageCommand = {
@@ -154,7 +155,7 @@ export const filterImageCommand = {
     maxDimensionValue1: null,
     measurementName2: null,
     minDimensionValue2: null,
-    maxDimensionValue2: null,
+    maxDimensionValue2: null
 };
 
 export const filterClientInvoice = {
@@ -163,10 +164,10 @@ export const filterClientInvoice = {
     rn: null,
     date_from: null,
     date_to: null,
-    contremarque: null,
+    contremarque: null
 };
 
-export const FILTER_CARPET_ORDER_STORAGE_NAME = "filterCarpetOrder";
+export const FILTER_CARPET_ORDER_STORAGE_NAME = 'filterCarpetOrder';
 export const filterCarpetOrder = {
     client: null,
     rn: null,
@@ -183,14 +184,14 @@ export const filterCarpetOrder = {
     orderDate_to: null,
     invoiceDate_from: null,
     invoiceDate_to: null,
-    type: null,
+    type: null
 };
 
 export const customerInstructionObject = {
-    orderNumber: "",
-    transmi_adv: "",
-    customerComment: "",
-    customerValidationDate: "",
+    orderNumber: '',
+    transmi_adv: '',
+    customerComment: '',
+    customerValidationDate: '',
     hasConstraints: false,
     hasValidateSample: false,
     hasFinitionInstruction: false,
@@ -203,9 +204,9 @@ export const particularCustomerGroupId = 1;
 export const publicDiscountTypeId = 1;
 
 export const designerStatusConst = [
-    {id: 1, label: "Demarrage"},
-    {id: 2, label: "Pause"},
-    {id: 3, label: "Fin"}
+    { id: 1, label: 'Demarrage' },
+    { id: 2, label: 'Pause' },
+    { id: 3, label: 'Fin' }
 ];
 
 export const carpetStatus = {
@@ -221,15 +222,15 @@ export const carpetStatus = {
 };
 
 export const statusNames = {
-    1 : "Non transmis",
-    2 : "Transmis",
-    3 : "Attribué",
-    4 : "En cours",
-    5 : "En pause",
-    6 : "Fini",
-    7 : "Annulé studio",
-    8 : "Annulé commercial",
-    9 : "Transmis Adv",
+    1: 'Non transmis',
+    2: 'Transmis',
+    3: 'Attribué',
+    4: 'En cours',
+    5: 'En pause',
+    6: 'Fini',
+    7: 'Annulé studio',
+    8: 'Annulé commercial',
+    9: 'Transmis Adv'
 };
 
 export const devisDocxStyle = '@media print {' +
@@ -450,16 +451,16 @@ export const proformaStyle = '@font-face {' +
     '            font-size: 14pt;' +
     '            font-weight: bold;' +
     '            margin-bottom: 20pt;' +
-    '        }'+
+    '        }' +
     '.table-compact {' +
     '        color: #585858;' +
-    '    }'+
+    '    }' +
     ' body * {' +
     '        font-family: Garamond, serif;' +
     '       table, th, td {' +
     '            border: 1px solid black;' +
     '            color: #585858;' +
     '        }' +
-    '    }'
+    '    }';
 
-export const bonCommandeStyle = ''
+export const bonCommandeStyle = '';

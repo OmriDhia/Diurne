@@ -22,7 +22,7 @@
     </div>
 </template>
 <script setup>
-    import { ref} from "vue";
+    import { nextTick, ref } from "vue";
     import dInput from "../../../../components/base/d-input.vue";
     import dBaseModal from "../../../../components/base/d-base-modal.vue";
     import dCarpetDropdown from "../../../../components/common/d-carpet-dropdown.vue";
@@ -32,9 +32,11 @@
         material_id: 0,
         rate: 0,
     });
-    const emit = defineEmits(['onClose','addMaterial']);
-    const addMaterials = () => {
-        emit('addMaterial', data.value);
+    const emit = defineEmits(['onClose','addMaterial','add-materials-click']);
+    const addMaterials = async () => {
+        emit('addMaterial', { ...data.value });
+        await nextTick();
+        emit('add-materials-click');
         document.querySelector("#modalAddMaterials .btn-close").click();
     }
     const handleClose = () => {

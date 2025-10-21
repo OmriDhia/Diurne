@@ -686,7 +686,7 @@
             const width = parseFloat(realWidth);
             const length = parseFloat(realLength);
             if (!isNaN(width) && !isNaN(length)) {
-                form.value.surface = width * length;
+                form.value.surface = (width * length).toString();
             } else {
                 form.value.surface = '';
             }

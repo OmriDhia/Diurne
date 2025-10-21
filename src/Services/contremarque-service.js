@@ -130,13 +130,29 @@ export default {
             // return error.response.data.violations;
         }
     },
-    async addUpdatecustomerInstruction(carpetDesignOrderId,data,customerInstructionId = null){
+    async addUpdatecustomerInstruction(carpetDesignOrderId, data, customerInstructionId = null){
         try {
+            const payload = { ...data };
+            const normalizedId = Number.parseInt(carpetDesignOrderId ?? payload.carpetDesignOrderId ?? '', 10);
+
+            if (!Number.isNaN(normalizedId)) {
+                if (payload.carpetDesignOrderId == null) {
+                    payload.carpetDesignOrderId = normalizedId;
+                }
+                if (payload.objectId == null) {
+                    payload.objectId = normalizedId;
+                }
+            }
+
+            if (!payload.objectType) {
+                payload.objectType = 'CarpetDesignOrder';
+            }
+
             let res = null;
             if(customerInstructionId){
-                res = await axiosInstance.put(`/api/update-customer-instruction/${customerInstructionId}`, data);
+                res = await axiosInstance.put(`/api/update-customer-instruction/${customerInstructionId}`, payload);
             }else{
-                res = await axiosInstance.post(`/api/create-customer-instruction`, data);
+                res = await axiosInstance.post(`/api/create-customer-instruction`, payload);
             }
             return res.data.response
         } catch (error) {

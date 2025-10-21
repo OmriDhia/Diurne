@@ -18,6 +18,9 @@
                             <d-input label="Contremarque" v-model="filter.contremarque"></d-input>
                         </div>
                         <div class="row">
+                            <d-designer-dropdown label="Designer" v-model="filter.designer"></d-designer-dropdown>
+                        </div>
+                        <div class="row">
                             <d-input label="N° de DI" v-model="filter.diNumber"></d-input>
                         </div>
                         <div class="row">
@@ -101,21 +104,24 @@
                             </template>
                             <template #diDate="data">
                                 <div class="d-flex justify-content-between">
-                                    <span class="text-truncate" :title="$Helper.FormatDate(data.value.diDate, 'DD/MM/YYYY')">
+                                    <span class="text-truncate"
+                                          :title="$Helper.FormatDate(data.value.diDate, 'DD/MM/YYYY')">
                                         {{ $Helper.FormatDate(data.value.diDate, 'DD/MM/YYYY') }}
                                     </span>
                                 </div>
                             </template>
                             <template #lastAssignmentDate="data">
                                 <div class="d-flex justify-content-between">
-                                    <span class="text-truncate" :title="$Helper.FormatDate(data.value.lastAssignmentDate, 'DD/MM/YYYY')">
+                                    <span class="text-truncate"
+                                          :title="$Helper.FormatDate(data.value.lastAssignmentDate, 'DD/MM/YYYY')">
                                         {{ $Helper.FormatDate(data.value.lastAssignmentDate, 'DD/MM/YYYY') }}
                                     </span>
                                 </div>
                             </template>
                             <template #deadline="data">
                                 <div class="d-flex justify-content-between">
-                                    <span class="text-truncate" :title="$Helper.FormatDate(data.value.deadline, 'DD/MM/YYYY')">
+                                    <span class="text-truncate"
+                                          :title="$Helper.FormatDate(data.value.deadline, 'DD/MM/YYYY')">
                                         {{ $Helper.FormatDate(data.value.deadline, 'DD/MM/YYYY') }}
                                     </span>
                                 </div>
@@ -141,8 +147,10 @@
                             </template>
                             <template #contremarque="data">
                                 <div class="d-flex align-items-center">
-                                    <span class="text-truncate" :title="data.value.contremarqueName || data.value.contremarque || ''">
-                                        {{ truncateText(data.value.contremarqueName || data.value.contremarque || '', 14) }}
+                                    <span class="text-truncate"
+                                          :title="data.value.contremarqueName || data.value.contremarque || ''">
+                                        {{ truncateText(data.value.contremarqueName || data.value.contremarque || '', 14)
+                                        }}
                                     </span>
                                     <router-link v-if="data.value.contremarque_id"
                                                  :to="'/projet/contremarques/manage/' + data.value.contremarque_id"
@@ -191,6 +199,7 @@
     import { useMeta } from '/src/composables/use-meta';
     import { Helper } from '../../../composables/global-methods';
     import { useRoute } from 'vue-router';
+    import DDesignerDropdown from '@/components/common/d-designer-dropdown.vue';
 
     useMeta({ title: 'Contremarque' });
     const route = useRoute();
@@ -304,6 +313,9 @@
         if (filter.value.contremarque) {
             param += '&filter[contremarque]=' + filter.value.contremarque;
         }
+        if (filter.value.designer) {
+            param += '&filter[designerid]=' + filter.value.designer;
+        }
         if (filter.value.diNumber) {
             param += '&filter[diNumber]=' + filter.value.diNumber;
         }
@@ -326,7 +338,7 @@
         location.href = `/projet/dis/model/${id_di}/update/${carperOrderId}`;
     };
     const goToContreMarqueDetails = (id_contremarque) => {
-        location.href = `/projet/contremarques/projectdis/${id_contremarque}`;
+        location.href = `/projet/dis/projectdis/${id_contremarque}`;
     };
     const handleClose = () => {
         //selectedDiId.value = null;
@@ -342,9 +354,11 @@
     .text-size-16 {
         font-size: 16px !important;
     }
+
     .vue3-datatable table {
         table-layout: fixed;
     }
+
     .vue3-datatable table th,
     .vue3-datatable table td {
         width: 150px;
@@ -354,6 +368,7 @@
         text-overflow: ellipsis;
         font-size: 14px;
     }
+
     .vue3-datatable table th:hover,
     .vue3-datatable table td:hover {
         overflow: visible;

@@ -16,7 +16,8 @@
                                 </div>
                                 <div class="col-md-auto">
                                     <div class="checkbox-default custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="libColor" v-model="data.color"/>
+                                        <input type="checkbox" class="custom-control-input" id="libColor"
+                                               v-model="data.color" />
                                         <label class="custom-control-label" for="libColor"></label>
                                     </div>
                                 </div>
@@ -34,7 +35,8 @@
                                 </div>
                                 <div class="col-md-auto">
                                     <div class="checkbox-default custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="libVelvet" v-model="data.velvet"/>
+                                        <input type="checkbox" class="custom-control-input" id="libVelvet"
+                                               v-model="data.velvet" />
                                         <label class="custom-control-label" for="libVelvet"></label>
                                     </div>
                                 </div>
@@ -52,7 +54,8 @@
                                 </div>
                                 <div class="col-md-auto">
                                     <div class="checkbox-default custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="libMaterial" v-model="data.material"/>
+                                        <input type="checkbox" class="custom-control-input" id="libMaterial"
+                                               v-model="data.material" />
                                         <label class="custom-control-label" for="libMaterial"></label>
                                     </div>
                                 </div>
@@ -83,74 +86,76 @@
     </div>
 </template>
 <script setup>
-    import { ref,onMounted,watch } from "vue";
+    import { ref, onMounted, watch } from 'vue';
     import VueFeather from 'vue-feather';
-    import axiosInstance from "../../../../config/http";
-    import dInput from "../../../../components/base/d-input.vue";
-    import dBaseModal from "../../../../components/base/d-base-modal.vue";
-    import dPanelTitle from "../../../../components/common/d-panel-title.vue";
-    import {formatErrorViolations} from "../../../../composables/global-methods";
-    import { customerInstructionObject } from "../../../../composables/constants";
-    import contremarqueService from "../../../../Services/contremarque-service";
+    import axiosInstance from '../../../../config/http';
+    import dInput from '../../../../components/base/d-input.vue';
+    import dBaseModal from '../../../../components/base/d-base-modal.vue';
+    import dPanelTitle from '../../../../components/common/d-panel-title.vue';
+    import { formatErrorViolations } from '../../../../composables/global-methods';
+    import { customerInstructionObject } from '../../../../composables/constants';
+    import contremarqueService from '../../../../Services/contremarque-service';
 
     const props = defineProps({
-        carpetDesignOrderId:{
+        carpetDesignOrderId: {
             type: Number
         },
-        customerInstructionId:{
+        customerInstructionId: {
             type: Number
         },
-        validateSimpleData:{
+        validateSimpleData: {
             type: Object
-        },
+        }
     });
 
-    const emit = defineEmits(['onClose','updateCustomerInstruction','updateCustomerInstructionId']);
+    const emit = defineEmits(['onClose', 'updateCustomerInstruction', 'updateCustomerInstructionId']);
     const validateSimpleId = ref(null);
     const data = ref({
         id: null,
-        rnValidatedSample: "",
+        rnValidatedSample: '',
         color: false,
-        libColor: "",
+        libColor: '',
         velvet: false,
-        libVelvet: "",
+        libVelvet: '',
         material: false,
-        libMaterial: "",
-        customerNoteOnSample: ""
+        libMaterial: '',
+        customerNoteOnSample: ''
     });
     const error = ref({});
-    
-    const saveFinishing = async () =>{
-        try{
+
+    const saveFinishing = async () => {
+        try {
             let customerInstructionId = props.customerInstructionId;
             let customerInstruction = Object.assign({}, customerInstructionObject);
-            if(!customerInstructionId && props.carpetDesignOrderId){
+            customerInstruction.hasValidateSample = true;
+            if (!customerInstructionId && props.carpetDesignOrderId) {
                 const res = await contremarqueService.addUpdatecustomerInstruction(props.carpetDesignOrderId, customerInstruction);
                 customerInstructionId = parseInt(res.id);
-                emit('updateCustomerInstructionId',customerInstructionId)
+                emit('updateCustomerInstructionId', customerInstructionId);
             }
 
-            if(customerInstructionId){
-                if(data.value.id){
-                    const res = await axiosInstance.put(`/api/customerInstruction/${customerInstructionId}/validatedSamples/${data.value.id}/update`,data.value);
-                    window.showMessage("Mise a jour avec succées.");
-                }else{
-                    const res = await axiosInstance.post(`/api/customerInstruction/${customerInstructionId}/validated-sample/create`,data.value);
+            if (customerInstructionId) {
+                if (data.value.id) {
+                    const res = await axiosInstance.put(`/api/customerInstruction/${customerInstructionId}/validatedSamples/${data.value.id}/update`, data.value);
+                    window.showMessage('Mise a jour avec succées.');
+                } else {
+                    const res = await axiosInstance.post(`/api/customerInstruction/${customerInstructionId}/validated-sample/create`, data.value);
                     data.value.id = parseInt(res.data.response.id);
-                    window.showMessage("Ajout avec succées.");
+                    window.showMessage('Ajout avec succées.');
+                    window.location.reload();
                 }
             }
-            emit('updateCustomerInstruction',{
+            emit('updateCustomerInstruction', {
                 instruction: 'validateSimple',
-                id: data.value.id,
+                id: data.value.id
             });
-            document.querySelector("#modalManageValidatedSimple .btn-close").click();
-        }catch (e){
+            document.querySelector('#modalManageValidatedSimple .btn-close').click();
+        } catch (e) {
             console.log(e);
-            if(e.response?.data?.violations){
+            if (e.response?.data?.violations) {
                 error.value = formatErrorViolations(e.response.data.violations);
             }
-            window.showMessage(e.message,'error')
+            window.showMessage(e.message, 'error');
         }
     };
 
@@ -160,13 +165,13 @@
             data.value = validateSimple;
         }
     };
-    
+
     watch(() => props.validateSimpleData, setData, { deep: true });
-    
+
     onMounted(setData);
-    
+
     const handleClose = () => {
         error.value = {};
-        emit('onClose')
-    }
+        emit('onClose');
+    };
 </script>
