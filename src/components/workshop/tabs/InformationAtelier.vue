@@ -50,13 +50,44 @@
     const manufacturers = ref<Array<{ value: number | string, label: string }>>([]);
     const specialTarifDisabled = computed(() => !props.formData.tarifSpecial);
 
-    const imageSpecification = computed(() => {
-        return (
-            props.imageCommande?.carpetSpecification
-            || props.imageCommande?.carpetDesignOrder?.carpetSpecification
-            || null
-        );
-    });
+    const imageSpecification = ref<Record<string, any> | null>(null);
+
+    const resolveCarpetSpecification = (source: any): Record<string, any> | null => {
+        if (!source || typeof source !== 'object') {
+            return null;
+        }
+
+        const directSpecification = source.carpetSpecification ?? source.carpet_specification ?? null;
+        if (directSpecification) {
+            return directSpecification;
+        }
+
+        const nestedCandidates = [
+            source.carpetDesignOrder,
+            source.carpet_design_order,
+            source.referencedEntity,
+            source.referenced_entity,
+            source.imageCommand,
+            source.image_command,
+            source.imageCommande,
+            source.image_commande,
+            source.response,
+        ];
+
+        for (const candidate of nestedCandidates) {
+            const specification = resolveCarpetSpecification(candidate);
+            if (specification) {
+                return specification;
+            }
+        }
+
+        return null;
+    };
+
+    const updateImageSpecification = (source: any) => {
+        imageSpecification.value = resolveCarpetSpecification(source);
+    };
+
     const carpetMaterials = computed((): Array<{ material_id: number | string, rate: number }> => {
         const specification = imageSpecification.value;
         if (!specification) {
@@ -188,6 +219,8 @@
     const saveWorkshopInformation = async () => {
         error.value = {};
         console.log('formData', props.formData);
+        updateImageSpecification(props.imageCommande);
+
         const payload = {
             launchDate: props.formData.infoCommande.dateCmdAtelier || '',
             expectedEndDate: props.formData.infoCommande.dateFinTheo || null,
@@ -350,6 +383,7 @@
         }
     };
     const setDataFromImageCommande = () => {
+        updateImageSpecification(props.imageCommande);
         const customerValidationDate = props.imageCommande?.carpetDesignOrder?.customerInstruction?.customerValidationDate || '';
         const typeCommande = props.imageCommande?.carpetDesignOrder?.location?.carpetType_id || '';
         if (customerValidationDate) {
