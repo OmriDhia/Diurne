@@ -13,6 +13,7 @@
     import workshopService from '@/Services/workshop-service.js';
     import DTarifTextureDropdown from '@/components/workshop/dropdown/d-tarif-texture-dropdown.vue';
     import DMaterialsDropdown from '@/components/projet/contremarques/dropdown/d-materials-dropdown.vue';
+    import dMaterialsList from '@/components/projet/contremarques/_Partials/d-materials-list.vue';
     import DCoherenceCheck from '@/components/workshop/_partial/d-coherence-check.vue';
 
     const props = defineProps({
@@ -508,6 +509,15 @@
                                        @change="updatePurchasePrice(index, $event)" />
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="row my-4">
+                    <div class="col-md-12">
+                        <d-materials-list
+                            :materialsProps="props.imageCommande?.carpetSpecification?.carpetMaterials || []"
+                            :disabled="true"
+                        ></d-materials-list>
                     </div>
                 </div>
 
