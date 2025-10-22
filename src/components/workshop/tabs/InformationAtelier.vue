@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { ref, onMounted, watch } from 'vue';
+    import { ref, onMounted, watch, computed } from 'vue';
     import { useRouter } from 'vue-router';
     import SelectInput from '../ui/SelectInput.vue';
     import RadioButton from '../ui/RadioButton.vue';
@@ -48,6 +48,14 @@
     });
 
     const manufacturers = ref<Array<{ value: number | string, label: string }>>([]);
+    const specialTarifDisabled = computed(() => !props.formData.tarifSpecial);
+    const carpetMaterials = computed((): Array<Record<string, any>> => {
+        const materials = props.imageCommande?.carpetSpecification?.carpetMaterials;
+        if (!materials) {
+            return [];
+        }
+        return Array.isArray(materials) ? materials : Object.values(materials);
+    });
 
     const fetchManufacturers = async () => {
         try {
@@ -497,7 +505,7 @@
                             </div>
                             <div class="col-md-5">
                                 <d-materials-dropdown :hide-label="true" class="pt-2" v-model="material.material_id"
-                                                      :disabled="true" />
+                                                      :disabled="specialTarifDisabled" />
                             </div>
                             <div class="col-md-4">
                                 <input class="form-control"
@@ -505,7 +513,7 @@
                                        :name="`price_${index}`"
                                        :id="`price_${index}`"
                                        :value="material.price"
-                                       :disabled="!props.formData.tarifSpecial"
+                                       :disabled="specialTarifDisabled"
                                        @change="updatePurchasePrice(index, $event)" />
                             </div>
                         </div>
@@ -515,8 +523,8 @@
                 <div class="row my-4">
                     <div class="col-md-12">
                         <d-materials-list
-                            :materialsProps="props.imageCommande?.carpetSpecification?.carpetMaterials || []"
-                            :disabled="true"
+                            :materialsProps="carpetMaterials"
+                            :disabled="specialTarifDisabled"
                         ></d-materials-list>
                     </div>
                 </div>
