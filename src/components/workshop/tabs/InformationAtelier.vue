@@ -49,6 +49,7 @@
 
     const manufacturers = ref<Array<{ value: number | string, label: string }>>([]);
     const specialTarifDisabled = computed(() => !props.formData.tarifSpecial);
+
     const imageSpecification = computed(() => {
         return (
             props.imageCommande?.carpetSpecification
@@ -80,6 +81,7 @@
                 };
             })
             .filter((material): material is { material_id: number | string, rate: number } => Boolean(material));
+
     });
 
     const fetchManufacturers = async () => {
