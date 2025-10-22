@@ -98,6 +98,19 @@
 
 
     const error = ref({});
+    const DUPLICATE_EMAIL_MESSAGE = "Cette adresse e-mail est déjà utilisée. Merci d'en choisir une autre.";
+
+    watch(
+        () => data.value.email,
+        () => {
+            if (error.value.email) {
+                error.value = {
+                    ...error.value,
+                    email: ''
+                };
+            }
+        }
+    );
 
     const updateContact = async () => {
         try{
@@ -107,10 +120,42 @@
                 window.showMessage("Mise a jour avec succées.")
             }
         }catch(e){
-            if(e.response.data.violations){
-                error.value = formatErrorViolations(e.response.data.violations)
+            if (e.response) {
+                const { status, data } = e.response;
+                const backendMessage = data?.message ?? data?.detail;
+
+                if (status === 409) {
+                    window.showMessage('Il existe déjà un contact avec le même utilisateur.', 'error');
+                    error.value = {
+                        ...error.value,
+                        email: DUPLICATE_EMAIL_MESSAGE
+                    };
+                    return;
+                }
+
+                if (backendMessage === 'There is a contact with same user') {
+                    window.showMessage(DUPLICATE_EMAIL_MESSAGE, 'error');
+                    error.value = {
+                        ...error.value,
+                        email: DUPLICATE_EMAIL_MESSAGE
+                    };
+                    return;
+                }
+
+                if (data?.violations) {
+                    error.value = formatErrorViolations(data.violations)
+                    return;
+                }
+
+                if (data?.message) {
+                    window.showMessage(data.message, 'error');
+                } else {
+                    window.showMessage('Erreur inconnue', 'error');
+                }
+            } else {
+                window.showMessage('Erreur de réseau ou serveur', 'error');
+                console.error(e);
             }
-            window.showMessage(e.message,'error')
         }
     };
     onMounted(() => {
