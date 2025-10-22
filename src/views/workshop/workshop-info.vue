@@ -175,8 +175,19 @@
         activeTab.value = tabId;
     };
 
-    const enregistrer = () => {
-        infoTab.value?.saveWorkshopInformation();
+    const enregistrer = async () => {
+        if (!infoTab.value?.saveWorkshopInformation) {
+            return;
+        }
+
+        try {
+            const result = await infoTab.value.saveWorkshopInformation();
+            if (result?.success && workshopOrderId) {
+                await getWorkshopOrder();
+            }
+        } catch (error) {
+            console.error('Failed to save workshop information', error);
+        }
     };
 
     const changeLastProgressReporting = (event) => {

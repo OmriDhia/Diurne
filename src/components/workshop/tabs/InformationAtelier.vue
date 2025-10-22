@@ -190,9 +190,10 @@
             specialRate: props.formData.tarifSpecial
         };
         try {
+            let resultPayload: Record<string, any> = {};
             if (props.workshopInfoId) {
-                const res = await workshopService.updateWorkshopInformation(props.workshopInfoId, payload);
-                // Removed updateWorkshopOrder call for these fields
+                await workshopService.updateWorkshopInformation(props.workshopInfoId, payload);
+                resultPayload = { workshopInfoId: props.workshopInfoId };
             } else {
                 const res = await workshopService.createWorkshopInformation(payload);
 
@@ -217,15 +218,24 @@
                         name: 'updateCarpetWorkshop',
                         params: { workshopOrderId: resWorkshopOrder?.response?.id }
                     });
+                    resultPayload = {
+                        workshopInfoId: res?.response?.id,
+                        workshopOrderId: resWorkshopOrder?.response?.id
+                    };
                 }
             }
             window.showMessage('Commande atelier enregistrer avec succées');
+            return {
+                success: true,
+                ...resultPayload
+            };
         } catch (e) {
             if (e.status === 500 && e.response?.data?.detail?.includes('Duplicate entry')) {
                 window.showMessage('Une commande atelier existe déja pour cette commande image', 'error');
-                return;
+                return { success: false };
             }
             handleApiError(e, 'Erreur lors de l\'enregistrement de la commande atelier');
+            return { success: false };
         }
     };
 
