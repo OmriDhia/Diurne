@@ -4,6 +4,7 @@
     import SelectInput from '../ui/SelectInput.vue';
     import RadioButton from '../ui/RadioButton.vue';
     import dInput from '../../../components/base/d-input.vue';
+    import dTextarea from '../../../components/base/d-textarea.vue';
     import DCurrency from '@/components/common/d-currency.vue';
     import dCarpetDropdown from '@/components/common/d-carpet-dropdown.vue';
     import { Helper, formatErrorViolations } from '@/composables/global-methods';
@@ -166,9 +167,8 @@
             idTarifGroup: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
             idTarifTexture: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
             reductionRate: props.formData.reductionTapis || null,
-            hasComplixityWorkshop: props.formData.complexiteAtelier,
-            hasMultilevelWorkshop: props.formData.multiLevelAtelier,
-            hasSpecialShape: props.formData.formeSpeciale,
+            upcharge: props.formData.upcharge,
+            comment_upcharge: props.formData.comment_upcharge,
             carpetPurchasePricePerM2: props.formData.prixAchatTapis.auM2,
             carpetPurchasePriceCmd: props.formData.prixAchatTapis.cmd,
             carpetPurchasePriceTheoretical: props.formData.prixAchatTapis.theorique,
@@ -267,9 +267,10 @@
             props.formData.prixAchat = [];
 
             props.formData.reductionTapis = Helper.FormatNumber(props.workshopInfo.reductionRate);
-            props.formData.complexiteAtelier = props.workshopInfo.hasComplixityWorkshop;
-            props.formData.multiLevelAtelier = props.workshopInfo.hasMultilevelWorkshop;
-            props.formData.formeSpeciale = props.workshopInfo.hasSpecialShape;
+            const upchargeValue = props.workshopInfo.upcharge ?? props.workshopInfo.upcharge_per_m2 ?? null;
+            props.formData.upcharge = upchargeValue !== null ? Helper.FormatNumber(upchargeValue) : '';
+            const commentUpcharge = props.workshopInfo.comment_upcharge ?? props.workshopInfo.commentUpcharge ?? '';
+            props.formData.comment_upcharge = commentUpcharge || '';
 
             props.formData.prixAchatTapis.auM2 = Helper.FormatNumber(props.workshopInfo.carpetPurchasePricePerM2);
             props.formData.prixAchatTapis.cmd = Helper.FormatNumber(props.workshopInfo.carpetPurchasePriceCmd);
@@ -510,10 +511,14 @@
                     </div>
                 </div>
 
-                <div class="radio-options my-4">
-                    <RadioButton v-model="props.formData.complexiteAtelier" :value="true" label="Complexité atelier" />
-                    <RadioButton v-model="props.formData.multiLevelAtelier" :value="true" label="Multi-level atelier" />
-                    <RadioButton v-model="props.formData.formeSpeciale" :value="true" label="Forme spéciale" />
+                <div class="row my-4">
+                    <div class="col-md-6">
+                        <d-input label="Upcharge/m²" v-model="props.formData.upcharge" :error="error.upcharge" />
+                    </div>
+                    <div class="col-md-6">
+                        <d-textarea label="Commentaire" v-model="props.formData.comment_upcharge"
+                                    :error="error.comment_upcharge || error.commentUpcharge" :rows="3" />
+                    </div>
                 </div>
 
 
