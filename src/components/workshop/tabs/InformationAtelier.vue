@@ -49,12 +49,39 @@
 
     const manufacturers = ref<Array<{ value: number | string, label: string }>>([]);
     const specialTarifDisabled = computed(() => !props.formData.tarifSpecial);
-    const carpetMaterials = computed((): Array<Record<string, any>> => {
-        const materials = props.imageCommande?.carpetSpecification?.carpetMaterials;
-        if (!materials) {
+
+    const imageSpecification = computed(() => {
+        return (
+            props.imageCommande?.carpetSpecification
+            || props.imageCommande?.carpetDesignOrder?.carpetSpecification
+            || null
+        );
+    });
+    const carpetMaterials = computed((): Array<{ material_id: number | string, rate: number }> => {
+        const specification = imageSpecification.value;
+        if (!specification) {
             return [];
         }
-        return Array.isArray(materials) ? materials : Object.values(materials);
+
+        const rawMaterials = specification.carpetMaterials || specification.designMaterials || [];
+        const materialEntries = Array.isArray(rawMaterials) ? rawMaterials : Object.values(rawMaterials);
+
+        return materialEntries
+            .map((material: Record<string, any>) => {
+                const materialId = material.material_id ?? material.materialId ?? material.id ?? null;
+                if (materialId === null || materialId === undefined) {
+                    return null;
+                }
+
+                const rate = material.rate ?? material.percentage ?? 0;
+
+                return {
+                    material_id: materialId,
+                    rate: Number(rate),
+                };
+            })
+            .filter((material): material is { material_id: number | string, rate: number } => Boolean(material));
+
     });
 
     const fetchManufacturers = async () => {
@@ -190,7 +217,7 @@
             invoiceNumber: props.formData.others.numeroDuFacture,
             manufacturerId: parseInt(props.formData.tapisDuProjet.fabricant),
             Rn: props.formData.tapisDuProjet.rn,
-            idQuality: props.imageCommande?.carpetSpecification?.quality?.id,
+            idQuality: imageSpecification.value?.quality?.id,
             currencyId: props.formData.currencyId,
             availableForSale: props.formData.disponibleVente,
             sent: props.formData.envoye,
@@ -334,8 +361,10 @@
             props.formData.tapisDuProjet.typeCommande = typeCommande.toString();
         }
         if (!props.orderId) {
-            const long = props.imageCommande?.carpetSpecification?.carpetDimensions?.[2]?.[0]?.value ?? 0;
-            const larg = props.imageCommande?.carpetSpecification?.carpetDimensions?.[1]?.[0]?.value ?? 0;
+            const specification = imageSpecification.value;
+            const dimensions = specification?.carpetDimensions ?? {};
+            const long = dimensions?.[2]?.[0]?.value ?? dimensions?.['2']?.[0]?.value ?? 0;
+            const larg = dimensions?.[1]?.[0]?.value ?? dimensions?.['1']?.[0]?.value ?? 0;
             props.formData.infoCommande.largeurCmd = Helper.FormatNumber(larg);
             props.formData.infoCommande.longueurCmd = Helper.FormatNumber(long);
             props.formData.infoCommande.srfCmd = Helper.FormatNumber(long * larg);
