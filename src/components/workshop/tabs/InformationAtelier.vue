@@ -168,7 +168,7 @@
             idTarifTexture: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
             reductionRate: props.formData.reductionTapis || null,
             upcharge: props.formData.upcharge,
-            comment_upcharge: props.formData.comment_upcharge,
+            commentUpcharge: props.formData.comment_upcharge,
             carpetPurchasePricePerM2: props.formData.prixAchatTapis.auM2,
             carpetPurchasePriceCmd: props.formData.prixAchatTapis.cmd,
             carpetPurchasePriceTheoretical: props.formData.prixAchatTapis.theorique,
