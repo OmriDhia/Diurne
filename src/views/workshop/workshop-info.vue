@@ -143,9 +143,8 @@
         tarifSpecial: false, // visualisé
         prixAchat: [],
         reductionTapis: '', // visualisé
-        complexiteAtelier: false, // visualisé
-        multiLevelAtelier: false, // visualisé
-        formeSpeciale: false, // visualisé
+        upcharge: '', // visualisé
+        comment_upcharge: '', // visualisé
         tapisDuProjet: {
             fabricant: '', // visualisé
             typeCommande: '',
