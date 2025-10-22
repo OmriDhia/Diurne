@@ -242,7 +242,7 @@
     const setDataForUpdate = () => {
         if (Object.keys(props.workshopInfo).length > 0) {
             props.formData.infoCommande.dateCmdAtelier = props.workshopInfo.launchDate;
-            props.formData.infoCommande.dateFinTheo = props.workshopInfo.expectedEndDate || '';
+            props.formData.infoCommande.dateFinTheo = props.workshopInfo.expectedEndDate || null;
             props.formData.infoCommande.dateFinAtelierPrev = props.workshopInfo.dateEndAtelierPrev;
             props.formData.infoCommande.delaisProd = props.workshopInfo.productionTime?.toString() || '';
             props.formData.infoCommande.pourcentCommande = Helper.FormatNumber(props.workshopInfo.orderSilkPercentage);
