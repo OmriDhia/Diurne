@@ -221,6 +221,12 @@
         console.log('formData', props.formData);
         updateImageSpecification(props.imageCommande);
 
+        const copyRaw = props.formData.tapisDuProjet.exemplaire;
+        const parsedCopy = copyRaw !== null && copyRaw !== undefined && copyRaw !== ''
+            ? parseInt(copyRaw, 10)
+            : 1;
+        const copyValue = Number.isNaN(parsedCopy) ? 1 : parsedCopy;
+
         const payload = {
             launchDate: props.formData.infoCommande.dateCmdAtelier || '',
             expectedEndDate: props.formData.infoCommande.dateFinTheo || null,
@@ -250,6 +256,7 @@
             invoiceNumber: props.formData.others.numeroDuFacture,
             manufacturerId: parseInt(props.formData.tapisDuProjet.fabricant),
             Rn: props.formData.tapisDuProjet.rn,
+            copy: copyValue,
             idQuality: imageSpecification.value?.quality?.id,
             currencyId: props.formData.currencyId,
             availableForSale: props.formData.disponibleVente,
@@ -355,6 +362,10 @@
 
             props.formData.tapisDuProjet.fabricant = props.workshopInfo.manufacturerId?.toString() || '';
             props.formData.tapisDuProjet.rn = props.workshopInfo.rn;
+            const copyFromWorkshop = props.workshopInfo.copy ?? 1;
+            props.formData.tapisDuProjet.exemplaire = copyFromWorkshop !== null && copyFromWorkshop !== undefined
+                ? copyFromWorkshop.toString()
+                : '1';
 
             if (props.workshopInfo?.materialPurchasePrices.length > 0) {
                 props.formData.prixAchat = props.workshopInfo?.materialPurchasePrices.map(item => {
@@ -737,7 +748,9 @@
                 </div>
 
                 <div class="form-row">
-                    <d-input label="N° d'exemplaire" v-model="props.formData.tapisDuProjet.exemplaire" />
+                    <d-input label="N° d'exemplaire" type="number"
+                             v-model="props.formData.tapisDuProjet.exemplaire"
+                             :error="error.copy" />
                 </div>
 
                 <button class="generate-btn btn btn-outline-dark   text-uppercase w-100" @click="generateRN">
