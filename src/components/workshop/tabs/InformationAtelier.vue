@@ -1,9 +1,10 @@
 <script setup lang="ts">
-    import { ref, onMounted, watch } from 'vue';
+    import { ref, onMounted, watch, computed } from 'vue';
     import { useRouter } from 'vue-router';
     import SelectInput from '../ui/SelectInput.vue';
     import RadioButton from '../ui/RadioButton.vue';
     import dInput from '../../../components/base/d-input.vue';
+    import dTextarea from '../../../components/base/d-textarea.vue';
     import DCurrency from '@/components/common/d-currency.vue';
     import dCarpetDropdown from '@/components/common/d-carpet-dropdown.vue';
     import { Helper, formatErrorViolations } from '@/composables/global-methods';
@@ -12,6 +13,7 @@
     import workshopService from '@/Services/workshop-service.js';
     import DTarifTextureDropdown from '@/components/workshop/dropdown/d-tarif-texture-dropdown.vue';
     import DMaterialsDropdown from '@/components/projet/contremarques/dropdown/d-materials-dropdown.vue';
+    import dMaterialsList from '@/components/projet/contremarques/_Partials/d-materials-list.vue';
     import DCoherenceCheck from '@/components/workshop/_partial/d-coherence-check.vue';
 
     const props = defineProps({
@@ -46,6 +48,72 @@
     });
 
     const manufacturers = ref<Array<{ value: number | string, label: string }>>([]);
+    const specialTarifDisabled = computed(() => !props.formData.tarifSpecial);
+
+    const imageSpecification = ref<Record<string, any> | null>(null);
+
+    const resolveCarpetSpecification = (source: any): Record<string, any> | null => {
+        if (!source || typeof source !== 'object') {
+            return null;
+        }
+
+        const directSpecification = source.carpetSpecification ?? source.carpet_specification ?? null;
+        if (directSpecification) {
+            return directSpecification;
+        }
+
+        const nestedCandidates = [
+            source.carpetDesignOrder,
+            source.carpet_design_order,
+            source.referencedEntity,
+            source.referenced_entity,
+            source.imageCommand,
+            source.image_command,
+            source.imageCommande,
+            source.image_commande,
+            source.response
+        ];
+
+        for (const candidate of nestedCandidates) {
+            const specification = resolveCarpetSpecification(candidate);
+            if (specification) {
+                return specification;
+            }
+        }
+
+        return null;
+    };
+
+    const updateImageSpecification = (source: any) => {
+        imageSpecification.value = resolveCarpetSpecification(source);
+    };
+
+    const carpetMaterials = computed((): Array<{ material_id: number | string, rate: number }> => {
+        const specification = imageSpecification.value;
+        if (!specification) {
+            return [];
+        }
+
+        const rawMaterials = specification.carpetMaterials || specification.designMaterials || [];
+        const materialEntries = Array.isArray(rawMaterials) ? rawMaterials : Object.values(rawMaterials);
+
+        return materialEntries
+            .map((material: Record<string, any>) => {
+                const materialId = material.material_id ?? material.materialId ?? material.id ?? null;
+                if (materialId === null || materialId === undefined) {
+                    return null;
+                }
+
+                const rate = material.rate ?? material.percentage ?? 0;
+
+                return {
+                    material_id: materialId,
+                    rate: Number(rate)
+                };
+            })
+            .filter((material): material is { material_id: number | string, rate: number } => Boolean(material));
+
+    });
 
     const fetchManufacturers = async () => {
         try {
@@ -65,6 +133,27 @@
     const router = useRouter();
     const error = ref({});
 
+    const fieldLabelMap: Record<string, string> = {
+        expectedEndDate: 'Date fin Théo'
+    };
+
+    const detailErrorMappings: Array<{ match: RegExp; field?: string; message: string }> = [
+        {
+            match: /Missing required date value/i,
+            field: 'expectedEndDate',
+            message: 'La date de fin théorique est requise. Veuillez renseigner ce champ au format AAAA-MM-JJ HH:mm:ss.'
+        }
+    ];
+
+    const getFieldLabel = (field: string) => fieldLabelMap[field] || field;
+
+    const showFieldError = (field: string, message: string) => {
+        const normalizedField = field.trim();
+        const label = getFieldLabel(normalizedField);
+        error.value = { ...error.value, [normalizedField]: message };
+        window.showMessage(`${label} : ${message}`, 'error');
+    };
+
     const handleApiError = (e: any, defaultMessage: string) => {
         console.error(e);
         const data = e?.response?.data || {};
@@ -72,16 +161,27 @@
             error.value = formatErrorViolations(data.violations);
 
             const message = Object.entries(error.value)
-                .map(([field, msg]) => `${field}: ${msg}`)
+                .map(([field, msg]) => `${getFieldLabel(field)}: ${msg}`)
                 .join(', ');
             window.showMessage(message || defaultMessage, 'error');
             return;
         }
-        if (typeof data.detail === 'string' && data.detail.includes(':')) {
-            const [field, ...rest] = data.detail.split(':');
+        const detail = data.detail;
+        if (typeof detail === 'string') {
+            const detailMapping = detailErrorMappings.find(mapping => mapping.match.test(detail));
+            if (detailMapping) {
+                if (detailMapping.field) {
+                    showFieldError(detailMapping.field, detailMapping.message);
+                    return;
+                }
+                window.showMessage(detailMapping.message, 'error');
+                return;
+            }
+        }
+        if (typeof detail === 'string' && detail.includes(':')) {
+            const [field, ...rest] = detail.split(':');
             const msg = rest.join(':').trim();
-            error.value = { [field.trim()]: msg };
-            window.showMessage(`${field.trim()}: ${msg}`, 'error');
+            showFieldError(field, msg);
             return;
         }
 
@@ -151,11 +251,19 @@
     const saveWorkshopInformation = async () => {
         error.value = {};
         console.log('formData', props.formData);
+        updateImageSpecification(props.imageCommande);
+
+        const copyRaw = props.formData.tapisDuProjet.exemplaire;
+        const parsedCopy = copyRaw !== null && copyRaw !== undefined && copyRaw !== ''
+            ? parseInt(copyRaw, 10)
+            : 1;
+        const copyValue = Number.isNaN(parsedCopy) ? 1 : parsedCopy;
+
         const payload = {
             launchDate: props.formData.infoCommande.dateCmdAtelier || '',
             expectedEndDate: props.formData.infoCommande.dateFinTheo || null,
             dateEndAtelierPrev: props.formData.infoCommande.dateFinAtelierPrev || '',
-            productionTime: Number(props.formData.infoCommande.delaisProd) || 0,
+            productionTime: Number(props.formData.infoCommande.delaisProd) || null,
             orderSilkPercentage: props.formData.infoCommande.pourcentCommande,
             orderedWidth: props.formData.infoCommande.largeurCmd,
             orderedHeigh: props.formData.infoCommande.longueurCmd,
@@ -166,9 +274,8 @@
             idTarifGroup: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
             idTarifTexture: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
             reductionRate: props.formData.reductionTapis || null,
-            hasComplixityWorkshop: props.formData.complexiteAtelier,
-            hasMultilevelWorkshop: props.formData.multiLevelAtelier,
-            hasSpecialShape: props.formData.formeSpeciale,
+            upcharge: props.formData.upcharge || null,
+            commentUpcharge: props.formData.comment_upcharge,
             carpetPurchasePricePerM2: props.formData.prixAchatTapis.auM2,
             carpetPurchasePriceCmd: props.formData.prixAchatTapis.cmd,
             carpetPurchasePriceTheoretical: props.formData.prixAchatTapis.theorique,
@@ -181,7 +288,8 @@
             invoiceNumber: props.formData.others.numeroDuFacture,
             manufacturerId: parseInt(props.formData.tapisDuProjet.fabricant),
             Rn: props.formData.tapisDuProjet.rn,
-            idQuality: props.imageCommande?.carpetSpecification?.quality?.id,
+            copy: copyValue,
+            idQuality: imageSpecification.value?.quality?.id,
             currencyId: props.formData.currencyId,
             availableForSale: props.formData.disponibleVente,
             sent: props.formData.envoye,
@@ -190,9 +298,10 @@
             specialRate: props.formData.tarifSpecial
         };
         try {
+            let resultPayload: Record<string, any> = {};
             if (props.workshopInfoId) {
-                const res = await workshopService.updateWorkshopInformation(props.workshopInfoId, payload);
-                // Removed updateWorkshopOrder call for these fields
+                await workshopService.updateWorkshopInformation(props.workshopInfoId, payload);
+                resultPayload = { workshopInfoId: props.workshopInfoId };
             } else {
                 const res = await workshopService.createWorkshopInformation(payload);
 
@@ -215,17 +324,26 @@
                     }
                     router.push({
                         name: 'updateCarpetWorkshop',
-                        params: { workshopOrderId: resWorkshopOrder?.response?.id }
+                        params: { workshopOrderId: resWorkshopOrder?.response?.[0]?.id }
                     });
+                    resultPayload = {
+                        workshopInfoId: res?.response?.id,
+                        workshopOrderId: resWorkshopOrder?.response?.id
+                    };
                 }
             }
             window.showMessage('Commande atelier enregistrer avec succées');
+            return {
+                success: true,
+                ...resultPayload
+            };
         } catch (e) {
             if (e.status === 500 && e.response?.data?.detail?.includes('Duplicate entry')) {
                 window.showMessage('Une commande atelier existe déja pour cette commande image', 'error');
-                return;
+                return { success: false };
             }
             handleApiError(e, 'Erreur lors de l\'enregistrement de la commande atelier');
+            return { success: false };
         }
     };
 
@@ -242,7 +360,7 @@
     const setDataForUpdate = () => {
         if (Object.keys(props.workshopInfo).length > 0) {
             props.formData.infoCommande.dateCmdAtelier = props.workshopInfo.launchDate;
-            props.formData.infoCommande.dateFinTheo = props.workshopInfo.expectedEndDate || '';
+            props.formData.infoCommande.dateFinTheo = props.workshopInfo.expectedEndDate || null;
             props.formData.infoCommande.dateFinAtelierPrev = props.workshopInfo.dateEndAtelierPrev;
             props.formData.infoCommande.delaisProd = props.workshopInfo.productionTime?.toString() || '';
             props.formData.infoCommande.pourcentCommande = Helper.FormatNumber(props.workshopInfo.orderSilkPercentage);
@@ -257,9 +375,10 @@
             props.formData.prixAchat = [];
 
             props.formData.reductionTapis = Helper.FormatNumber(props.workshopInfo.reductionRate);
-            props.formData.complexiteAtelier = props.workshopInfo.hasComplixityWorkshop;
-            props.formData.multiLevelAtelier = props.workshopInfo.hasMultilevelWorkshop;
-            props.formData.formeSpeciale = props.workshopInfo.hasSpecialShape;
+            const upchargeValue = props.workshopInfo.upcharge ?? props.workshopInfo.upcharge_per_m2 ?? null;
+            props.formData.upcharge = upchargeValue !== null ? Helper.FormatNumber(upchargeValue) : '';
+            const commentUpcharge = props.workshopInfo.comment_upcharge ?? props.workshopInfo.commentUpcharge ?? '';
+            props.formData.comment_upcharge = commentUpcharge || '';
 
             props.formData.prixAchatTapis.auM2 = Helper.FormatNumber(props.workshopInfo.carpetPurchasePricePerM2);
             props.formData.prixAchatTapis.cmd = Helper.FormatNumber(props.workshopInfo.carpetPurchasePriceCmd);
@@ -275,6 +394,10 @@
 
             props.formData.tapisDuProjet.fabricant = props.workshopInfo.manufacturerId?.toString() || '';
             props.formData.tapisDuProjet.rn = props.workshopInfo.rn;
+            const copyFromWorkshop = props.workshopInfo.copy ?? 1;
+            props.formData.tapisDuProjet.exemplaire = copyFromWorkshop !== null && copyFromWorkshop !== undefined
+                ? copyFromWorkshop.toString()
+                : '1';
 
             if (props.workshopInfo?.materialPurchasePrices.length > 0) {
                 props.formData.prixAchat = props.workshopInfo?.materialPurchasePrices.map(item => {
@@ -303,6 +426,7 @@
         }
     };
     const setDataFromImageCommande = () => {
+        updateImageSpecification(props.imageCommande);
         const customerValidationDate = props.imageCommande?.carpetDesignOrder?.customerInstruction?.customerValidationDate || '';
         const typeCommande = props.imageCommande?.carpetDesignOrder?.location?.carpetType_id || '';
         if (customerValidationDate) {
@@ -314,8 +438,10 @@
             props.formData.tapisDuProjet.typeCommande = typeCommande.toString();
         }
         if (!props.orderId) {
-            const long = props.imageCommande?.carpetSpecification?.carpetDimensions?.[2]?.[0]?.value ?? 0;
-            const larg = props.imageCommande?.carpetSpecification?.carpetDimensions?.[1]?.[0]?.value ?? 0;
+            const specification = imageSpecification.value;
+            const dimensions = specification?.carpetDimensions ?? {};
+            const long = dimensions?.[2]?.[0]?.value ?? dimensions?.['2']?.[0]?.value ?? 0;
+            const larg = dimensions?.[1]?.[0]?.value ?? dimensions?.['1']?.[0]?.value ?? 0;
             props.formData.infoCommande.largeurCmd = Helper.FormatNumber(larg);
             props.formData.infoCommande.longueurCmd = Helper.FormatNumber(long);
             props.formData.infoCommande.srfCmd = Helper.FormatNumber(long * larg);
@@ -485,7 +611,7 @@
                             </div>
                             <div class="col-md-5">
                                 <d-materials-dropdown :hide-label="true" class="pt-2" v-model="material.material_id"
-                                                      :disabled="true" />
+                                                      :disabled="specialTarifDisabled" />
                             </div>
                             <div class="col-md-4">
                                 <input class="form-control"
@@ -493,17 +619,30 @@
                                        :name="`price_${index}`"
                                        :id="`price_${index}`"
                                        :value="material.price"
-                                       :disabled="!props.formData.tarifSpecial"
+                                       :disabled="specialTarifDisabled"
                                        @change="updatePurchasePrice(index, $event)" />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="radio-options my-4">
-                    <RadioButton v-model="props.formData.complexiteAtelier" :value="true" label="Complexité atelier" />
-                    <RadioButton v-model="props.formData.multiLevelAtelier" :value="true" label="Multi-level atelier" />
-                    <RadioButton v-model="props.formData.formeSpeciale" :value="true" label="Forme spéciale" />
+                <div class="row my-4">
+                    <div class="col-md-12">
+                        <d-materials-list
+                            :materialsProps="carpetMaterials"
+                            :disabled="specialTarifDisabled"
+                        ></d-materials-list>
+                    </div>
+                </div>
+
+                <div class="row my-4">
+                    <div class="col-md-6">
+                        <d-input label="Upcharge/m²" v-model="props.formData.upcharge" :error="error.upcharge" />
+                    </div>
+                    <div class="col-md-6">
+                        <d-textarea label="Commentaire" v-model="props.formData.comment_upcharge"
+                                    :error="error.comment_upcharge || error.commentUpcharge" :rows="3" />
+                    </div>
                 </div>
 
 
@@ -641,7 +780,9 @@
                 </div>
 
                 <div class="form-row">
-                    <d-input label="N° d'exemplaire" v-model="props.formData.tapisDuProjet.exemplaire" />
+                    <d-input label="N° d'exemplaire" type="number"
+                             v-model="props.formData.tapisDuProjet.exemplaire"
+                             :error="error.copy" />
                 </div>
 
                 <button class="generate-btn btn btn-outline-dark   text-uppercase w-100" @click="generateRN">
