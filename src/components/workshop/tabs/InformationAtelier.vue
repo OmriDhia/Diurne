@@ -133,6 +133,27 @@
     const router = useRouter();
     const error = ref({});
 
+    const fieldLabelMap: Record<string, string> = {
+        expectedEndDate: 'Date fin Théo'
+    };
+
+    const detailErrorMappings: Array<{ match: RegExp; field?: string; message: string }> = [
+        {
+            match: /Missing required date value/i,
+            field: 'expectedEndDate',
+            message: 'La date de fin théorique est requise. Veuillez renseigner ce champ au format AAAA-MM-JJ HH:mm:ss.'
+        }
+    ];
+
+    const getFieldLabel = (field: string) => fieldLabelMap[field] || field;
+
+    const showFieldError = (field: string, message: string) => {
+        const normalizedField = field.trim();
+        const label = getFieldLabel(normalizedField);
+        error.value = { ...error.value, [normalizedField]: message };
+        window.showMessage(`${label} : ${message}`, 'error');
+    };
+
     const handleApiError = (e: any, defaultMessage: string) => {
         console.error(e);
         const data = e?.response?.data || {};
@@ -140,16 +161,27 @@
             error.value = formatErrorViolations(data.violations);
 
             const message = Object.entries(error.value)
-                .map(([field, msg]) => `${field}: ${msg}`)
+                .map(([field, msg]) => `${getFieldLabel(field)}: ${msg}`)
                 .join(', ');
             window.showMessage(message || defaultMessage, 'error');
             return;
         }
-        if (typeof data.detail === 'string' && data.detail.includes(':')) {
-            const [field, ...rest] = data.detail.split(':');
+        const detail = data.detail;
+        if (typeof detail === 'string') {
+            const detailMapping = detailErrorMappings.find(mapping => mapping.match.test(detail));
+            if (detailMapping) {
+                if (detailMapping.field) {
+                    showFieldError(detailMapping.field, detailMapping.message);
+                    return;
+                }
+                window.showMessage(detailMapping.message, 'error');
+                return;
+            }
+        }
+        if (typeof detail === 'string' && detail.includes(':')) {
+            const [field, ...rest] = detail.split(':');
             const msg = rest.join(':').trim();
-            error.value = { [field.trim()]: msg };
-            window.showMessage(`${field.trim()}: ${msg}`, 'error');
+            showFieldError(field, msg);
             return;
         }
 
