@@ -292,7 +292,7 @@
                     }
                     router.push({
                         name: 'updateCarpetWorkshop',
-                        params: { workshopOrderId: resWorkshopOrder?.response?.id }
+                        params: { workshopOrderId: resWorkshopOrder?.response?.[0]?.id }
                     });
                     resultPayload = {
                         workshopInfoId: res?.response?.id,
