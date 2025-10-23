@@ -149,7 +149,7 @@
             fabricant: '', // visualisé
             typeCommande: '',
             rn: '', // visualisé
-            exemplaire: '' // visualisé
+            exemplaire: '1' // visualisé
         },
         prixAchatTapis: {
             auM2: '32', // non visualisé à la création
