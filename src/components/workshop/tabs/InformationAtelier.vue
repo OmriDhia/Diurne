@@ -71,7 +71,7 @@
             source.image_command,
             source.imageCommande,
             source.image_commande,
-            source.response,
+            source.response
         ];
 
         for (const candidate of nestedCandidates) {
@@ -108,7 +108,7 @@
 
                 return {
                     material_id: materialId,
-                    rate: Number(rate),
+                    rate: Number(rate)
                 };
             })
             .filter((material): material is { material_id: number | string, rate: number } => Boolean(material));
@@ -225,7 +225,7 @@
             launchDate: props.formData.infoCommande.dateCmdAtelier || '',
             expectedEndDate: props.formData.infoCommande.dateFinTheo || null,
             dateEndAtelierPrev: props.formData.infoCommande.dateFinAtelierPrev || '',
-            productionTime: Number(props.formData.infoCommande.delaisProd) || 0,
+            productionTime: Number(props.formData.infoCommande.delaisProd) || null,
             orderSilkPercentage: props.formData.infoCommande.pourcentCommande,
             orderedWidth: props.formData.infoCommande.largeurCmd,
             orderedHeigh: props.formData.infoCommande.longueurCmd,
@@ -236,7 +236,7 @@
             idTarifGroup: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
             idTarifTexture: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
             reductionRate: props.formData.reductionTapis || null,
-            upcharge: props.formData.upcharge,
+            upcharge: props.formData.upcharge || null,
             commentUpcharge: props.formData.comment_upcharge,
             carpetPurchasePricePerM2: props.formData.prixAchatTapis.auM2,
             carpetPurchasePriceCmd: props.formData.prixAchatTapis.cmd,
