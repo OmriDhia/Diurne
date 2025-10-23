@@ -44,8 +44,17 @@
                         <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleData">
                             <vue-feather type="search" size="14"></vue-feather>
                         </button>
-                        <d-modal-manage-event ref="modalEnvent" :eventData="selectedEvent" :customerId="props.customerId"></d-modal-manage-event>
-                        <d-modal-manage-event ref="modalAddEvent" action="Add"></d-modal-manage-event>
+                        <d-modal-manage-event
+                            ref="modalEnvent"
+                            :eventData="selectedEvent"
+                            :customerId="props.customerId"
+                            @onClose="handleModalClose"
+                        ></d-modal-manage-event>
+                        <d-modal-manage-event
+                            ref="modalAddEvent"
+                            action="Add"
+                            @onClose="handleModalClose"
+                        ></d-modal-manage-event>
                     </div>
                 </div>
             </perfect-scrollbar>
@@ -86,7 +95,7 @@
     const selected = ref(null);
     const selectedEvent = ref(null);
     const comment = ref("");
-    const getEventHistories = async (customerId, contremarqueId = null) => {
+    const getEventHistories = async (customerId, contremarqueId = null, eventIdToSelect = null) => {
       try{
           if(customerId && !contremarqueId){
               let url = `/api/customer/${customerId}/events`;
@@ -97,10 +106,22 @@
               const res = await axiosInstance.get(url);
               datas.value = res.data.response.eventData;
           }
-          
+
           if(datas.value.length > 0){
-              selected.value = 0;
-              handleComment(0); 
+              let indexToSelect = 0;
+              if(eventIdToSelect){
+                  const foundIndex = datas.value.findIndex((item) => item.event_id === eventIdToSelect);
+                  if(foundIndex !== -1){
+                      indexToSelect = foundIndex;
+                  }
+              }
+
+              selected.value = indexToSelect;
+              handleComment(indexToSelect);
+          } else {
+              selected.value = null;
+              comment.value = "";
+              selectedEvent.value = null;
           }
       }catch{
           console.log("Erreur get events customer")
@@ -108,12 +129,19 @@
     };
 
     const handleComment = (index) => {
-        selected.value = index;
-        comment.value = datas.value[index].commentaire;
+        if(datas.value[index]){
+            selected.value = index;
+        }
+        comment.value = datas.value[index]?.commentaire ?? "";
     };
 
     const setSelectedEvent = (index) => {
-        selectedEvent.value = datas.value[index];
+        const event = datas.value[index];
+        if(!event){
+            selectedEvent.value = null;
+            return;
+        }
+        selectedEvent.value = event;
         selectedEvent.value.contramarqueId = props.contremarqueId ? props.contremarqueId : 0;
     };
     const modalEnvent = ref(null);
@@ -130,13 +158,18 @@
     const addNewEvent = async () => {
         if (modalAddEvent.value) {
             if(props.customerId){
-                modalAddEvent.value.setCustomerId(props.customerId); 
+                modalAddEvent.value.setCustomerId(props.customerId);
             }
             if(props.contremarqueId){
                 modalAddEvent.value.setContremarqueId(props.contremarqueId);
             }
             modalAddEvent.value.show();
         }
+    };
+
+    const handleModalClose = async () => {
+        const eventId = selectedEvent.value?.event_id ?? null;
+        await getEventHistories(props.customerId, props.contremarqueId, eventId);
     };
 
     onMounted(()=>{
