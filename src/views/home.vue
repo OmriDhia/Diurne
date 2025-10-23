@@ -61,21 +61,21 @@
                         title: 'Recherche Commande',
                         image: 'commande.png',
                         color: menuHomeColor.commande,
-                        href: '/commande',
+                        href: '/tapis/images',
                         permission: 'read order'
                     },
                     {
                         title: 'Recherche Facture',
                         image: 'facture.png',
                         color: menuHomeColor.facture,
-                        href: '/facture',
+                        href: '/tapis/invoices',
                         permission: 'read invoice'
                     },
                     {
                         title: 'Recherche Tapis',
                         image: 'tapis.png',
                         color: menuHomeColor.tapis,
-                        href: '/tapis',
+                        href: '/workshop',
                         permission: 'read carpet'
                     },
                     {
@@ -89,7 +89,7 @@
                         title: 'Suivi trésorerie',
                         image: 'treasure.png',
                         color: menuHomeColor.treasure,
-                        href: '/treasury',
+                        href: '/reglement',
                         permission: 'read treasury'
                     }
                 ]
