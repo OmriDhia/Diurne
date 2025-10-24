@@ -258,14 +258,29 @@
     );
 
     watch(
-        () => [data.value.next_reminder_deadline, data.value.reminder_disabled],
-        ([nextReminder, reminderDisabled]) => {
-            if (nextReminder || reminderDisabled) {
+        () => data.value.next_reminder_deadline,
+        (nextReminder) => {
+            if (nextReminder) {
+                if (data.value.reminder_disabled) {
+                    data.value.reminder_disabled = false;
+                }
                 const { next_reminder_deadline, ...rest } = error.value;
                 error.value = rest;
             }
-        },
-        { deep: true }
+        }
+    );
+
+    watch(
+        () => data.value.reminder_disabled,
+        (reminderDisabled) => {
+            if (reminderDisabled) {
+                if (data.value.next_reminder_deadline) {
+                    data.value.next_reminder_deadline = "";
+                }
+                const { next_reminder_deadline, ...rest } = error.value;
+                error.value = rest;
+            }
+        }
     );
 
     const show = () => {
