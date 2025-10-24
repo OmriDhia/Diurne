@@ -20,8 +20,13 @@
                                 </div>
                                 <div class="col-lg-4 col-md-12">
                                     <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
-                                        <input type="checkbox" class="custom-control-input" id="reminderDisabled" v-model="data.reminder_disabled" />
-                                        <label class="custom-control-label text-dark" for="reminderDisabled"> {{ $t('Plus de relance') }} </label>
+                                        <input
+                                            type="checkbox"
+                                            class="custom-control-input"
+                                            :id="reminderCheckboxId"
+                                            v-model="data.reminder_disabled"
+                                        />
+                                        <label class="custom-control-label text-dark" :for="reminderCheckboxId"> {{ $t('Plus de relance') }} </label>
                                     </div>
                                 </div>
                             </div>
@@ -52,7 +57,7 @@
 </template>
 
 <script setup>
-    import { ref, watch, onMounted, nextTick, defineExpose } from "vue";
+    import { ref, watch, onMounted, nextTick, defineExpose, getCurrentInstance } from "vue";
     import VueFeather from 'vue-feather';
     import dNomenclatures from "../common/d-nomenclatures.vue";
     import dCustomerDropdown from "../common/d-customer-dropdown.vue";
@@ -88,6 +93,9 @@
             default: ""
         }
     });
+
+    const { uid } = getCurrentInstance();
+    const reminderCheckboxId = `reminderDisabled-${props.action || 'default'}-${uid}`;
 
     const data = ref({
         nomenclatureId: null,
