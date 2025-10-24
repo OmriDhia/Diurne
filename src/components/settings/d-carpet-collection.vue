@@ -30,67 +30,115 @@ const columns = [
         nameKey: "name"
     },
     {
-        key: "special_shape",
-        label: "Formes spéciales",
+        key: "author",
+        label: "Auteur",
         type: "custom",
-        component: "d-special-shapes-settings",
-        idKey: "id",
-        nameKey: "name"
-    },
-    {
-        key: "police",
-        label: "Police",
-        type: "custom",
-        component: "d-police-settings",
-        idKey: "id",
-        nameKey: "name"
-    },
-    { key: "image_name", label: "Nom d'image", type: "text" },
+        component: "d-author-settings"
+    }
 ];
 
 const rows = ref([]);
 const collectionGroups = ref([]);
-const specialShapes = ref([]);
-const polices = ref([]);
-const isCollectionGroupsLoaded = ref(false); 
+const authors = ref([]);
+const isCollectionGroupsLoaded = ref(false);
 
 async function fetchCollectionGroup() {
     try {
         const res = await axiosInstance.get('/api/collection-groups');
         collectionGroups.value = res.data.response;
-        isCollectionGroupsLoaded.value = true; 
     } catch (error) {
         console.error('Failed to fetch collection-groups:', error);
     }
 }
 
-async function fetchSpecialShapes() {
+async function fetchAuthors() {
     try {
-        const res = await axiosInstance.get('/api/specialShapes');
-        specialShapes.value = res.data.response;
+        const res = await axiosInstance.get('api/users?page=1&itemPerPage=100');
+        const data = res.data.response?.users || res.data.response || res.data.users || res.data;
+        authors.value = Array.isArray(data)
+            ? data.map(user => ({
+                id: user.id,
+                name: [user.firstname, user.lastname].filter(Boolean).join(' ').trim() || user.name || `Auteur #${user.id}`
+            }))
+            : [];
     } catch (error) {
-        console.error('Failed to fetch special shapes:', error);
-    }
-}
-
-async function fetchPolices() {
-    try {
-        const res = await axiosInstance.get('/api/polices');
-        polices.value = res.data.response;
-    } catch (error) {
-        console.error('Failed to fetch polices:', error);
+        console.error('Failed to fetch authors:', error);
+        authors.value = [];
     }
 }
 
 onMounted(async () => {
-    await Promise.all([fetchCollectionGroup(), fetchSpecialShapes(), fetchPolices()]);
+    try {
+        await Promise.all([fetchCollectionGroup(), fetchAuthors()]);
+    } finally {
+        isCollectionGroupsLoaded.value = true;
+    }
 });
+
+const getAuthorLabel = (id) => {
+    if (!id && id !== 0) return '';
+    const author = authors.value.find(authorItem => Number(authorItem.id) === Number(id));
+    return author?.name || '';
+};
+
+const normalizeAuthor = (item) => {
+    if (!item) return null;
+
+    const possibleAuthor = item.author ?? item.auteur ?? item.user ?? null;
+    const authorId = item.author_id ?? item.authorId ?? item.user_id ?? null;
+
+    if (possibleAuthor && typeof possibleAuthor === 'object') {
+        const rawAuthor = possibleAuthor.__v_raw || possibleAuthor;
+        const id = rawAuthor.id ?? rawAuthor.author_id ?? rawAuthor.authorId ?? rawAuthor.user_id ?? authorId;
+        if (!id) return null;
+        const name = rawAuthor.name
+            || [rawAuthor.firstname ?? rawAuthor.first_name, rawAuthor.lastname ?? rawAuthor.last_name]
+                .filter(Boolean)
+                .join(' ')
+                .trim();
+
+        return {
+            id,
+            name: name || getAuthorLabel(id) || `Auteur #${id}`
+        };
+    }
+
+    if (typeof possibleAuthor === 'string' && possibleAuthor.trim() && Number.isNaN(Number(possibleAuthor))) {
+        return {
+            id: authorId ?? null,
+            name: possibleAuthor.trim()
+        };
+    }
+
+    const id = authorId ?? (typeof possibleAuthor === 'number' ? possibleAuthor : null);
+    if (!id) return null;
+
+    const name = item.author_name
+        ?? item.authorName
+        ?? getAuthorLabel(id);
+
+    return {
+        id,
+        name: (typeof name === 'string' && name.trim()) ? name.trim() : `Auteur #${id}`
+    };
+};
+
+const ensureAuthorCached = (author) => {
+    if (!author || !author.id) return;
+    const exists = authors.value.some(existing => Number(existing.id) === Number(author.id));
+    if (!exists) {
+        authors.value.push({
+            id: author.id,
+            name: author.name || `Auteur #${author.id}`
+        });
+    }
+};
 
 const processedColumns = computed(() => {
     if (!isCollectionGroupsLoaded.value) return []; 
     
     return columns.map(col => {
-        if (col.component === 'd-collection-group-settings') { 
+        if (col.component === 'd-collection-group-settings') {
             return {
                 ...col,
                 props: {
@@ -98,19 +146,11 @@ const processedColumns = computed(() => {
                 }
             };
         }
-        if (col.component === 'd-special-shapes-settings') { 
+        if (col.component === 'd-author-settings') {
             return {
                 ...col,
                 props: {
-                    specialShapes: specialShapes.value
-                }
-            };
-        }
-        if (col.component === 'd-police-settings') { 
-            return {
-                ...col,
-                props: {
-                    polices: polices.value
+                    authors: authors.value
                 }
             };
         }
@@ -126,14 +166,13 @@ const fetchData = async ({ page, itemsPerPage }) => {
 
         const transformedData = data.response.data.map(item => {
             const collectionGroup = collectionGroups.value.find(group => group.id === item.collection_group_id);
-            const police = polices.value.find(police => police.id === item.police);
-            const specialShape = specialShapes.value.find(shape => shape.id === item.special_shape);
-            
+            const author = normalizeAuthor(item);
+            ensureAuthorCached(author);
+
             return {
                 ...item,
                 collection_group_id: collectionGroup || null,
-                police: police || null,
-                special_shape: specialShape || null,
+                author,
                 show_grid: item.show_grid || false
             };
         });
@@ -159,21 +198,17 @@ const addData = async (row) => {
             reference: row.reference,
             code: row.code,
             show_grid: row.show_grid || false,
-            collection_group_id: typeof row.collection_group_id === 'object' 
-                ? row.collection_group_id.id 
+            collection_group_id: typeof row.collection_group_id === 'object'
+                ? row.collection_group_id.id
                 : row.collection_group_id,
-            police_id: typeof row.police === 'object' 
-                ? row.police.id 
-                : row.police,   
-            special_shape: row.special_shape 
-                ? (typeof row.special_shape === 'object' 
-                    ? row.special_shape.id 
-                    : row.special_shape)
+            author_id: row.author
+                ? (typeof row.author === 'object'
+                    ? row.author.id
+                    : row.author)
                 : null,
-            image_name: row.image_name,
-            languages: row.languages && row.languages.length > 0 
-                ? row.languages 
-                : [{ description: "Default Description", languageId: 1 }] 
+            languages: row.languages && row.languages.length > 0
+                ? row.languages
+                : [{ description: "Default Description", languageId: 1 }]
         };
 
         const { data } = await axiosInstance.post("/api/carpet-collections", payload);
@@ -181,11 +216,9 @@ const addData = async (row) => {
         const newRow = {
             ...data.response,
             collection_group_id: collectionGroups.value.find(g => g.id === data.response.collection_group_id),
-            police: polices.value.find(g => g.id === data.response.police),
-            special_shape: data.response.special_shape 
-                ? specialShapes.value.find(g => g.id === data.response.special_shape)
-                : null
+            author: normalizeAuthor(data.response)
         };
+        ensureAuthorCached(newRow.author);
         rows.value.push(newRow);
         return newRow;
     } catch (error) {
@@ -200,36 +233,30 @@ const saveData = async (row) => {
             reference: row.reference,
             code: row.code,
             show_grid: row.show_grid || false,
-            collection_group_id: typeof row.collection_group_id === 'object' 
-                ? row.collection_group_id.id 
+            collection_group_id: typeof row.collection_group_id === 'object'
+                ? row.collection_group_id.id
                 : row.collection_group_id,
-            police_id: typeof row.police === 'object' 
-                ? row.police.id 
-                : row.police,    
-            special_shape: row.special_shape 
-                ? (typeof row.special_shape === 'object' 
-                    ? row.special_shape.id 
-                    : row.special_shape)
+            author_id: row.author
+                ? (typeof row.author === 'object'
+                    ? row.author.id
+                    : row.author)
                 : null,
-            image_name: row.image_name,
-            languages: row.languages && row.languages.length > 0 
-                ? row.languages 
+            languages: row.languages && row.languages.length > 0
+                ? row.languages
                 : [{ description: "Default Description", languageId: 1 }]
         };
 
         const { data } = await axiosInstance.put(`/api/collections/${row.id}`, payload);
-        
+
         const updatedRow = {
             ...data.response,
             collection_group_id: collectionGroups.value.find(g => g.id === data.response.collection_group_id),
-            police_id: polices.value.find(g => g.id === data.response.police),
-            special_shape: data.response.special_shape 
-                ? specialShapes.value.find(g => g.id === data.response.special_shape)
-                : null,
-            languages: row.languages && row.languages.length > 0 
-                ? row.languages 
+            author: normalizeAuthor(data.response),
+            languages: row.languages && row.languages.length > 0
+                ? row.languages
                 : [{ description: "Default Description", languageId: 1 }]
         };
+        ensureAuthorCached(updatedRow.author);
         
         const index = rows.value.findIndex(item => item.id === row.id);
         if (index !== -1) {
