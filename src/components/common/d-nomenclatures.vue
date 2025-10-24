@@ -9,7 +9,7 @@
             <multiselect
                 :class="{ 'is-invalid': error }"
                 v-model="nomenclature"
-                :options="nomenclatures"
+                :options="filteredNomenclatures"
                 placeholder="Evenement"
                 track-by="nomenclature_id"
                 label="subject"
@@ -46,6 +46,10 @@
             required: {
                 type: Boolean,
                 default: false
+            },
+            excludeAutomatic: {
+                type: Boolean,
+                default: true
             }
         },
         data() {
@@ -56,11 +60,16 @@
         computed: {
             nomenclatures: {
                 get() {
-                    return store.getters.nomenclatures;
+                    return store.getters.nomenclatures || [];
                 },
                 set(value) {
                     store.commit('setNomenclatures', value);
                 }
+            },
+            filteredNomenclatures() {
+                return this.excludeAutomatic
+                    ? this.nomenclatures.filter((nomenclature) => !nomenclature.is_automatic)
+                    : this.nomenclatures;
             }
         },
         methods: {
@@ -76,9 +85,7 @@
                 if (this.nomenclatures.length === 0) {
                     try {
                         const res = await axiosInstance.get('/api/nomenclatures');
-                        // Keep only non-automatic ones
-                        const filtered = res.data.response.nomenclatures.filter(n => !n.is_automatic);
-                        this.nomenclatures = filtered;
+                        this.nomenclatures = res.data.response.nomenclatures;
                         this.affectModalValue();
                     } catch (error) {
                         console.error('Failed to fetch nomenclatures:', error);
@@ -90,7 +97,7 @@
             affectModalValue() {
                 // Find and set the selected nomenclature based on modelValue
                 if (this.modelValue) {
-                    this.nomenclature = this.nomenclatures.find(
+                    this.nomenclature = this.filteredNomenclatures.find(
                         (nomenclature) => nomenclature.nomenclature_id === this.modelValue
                     );
                 } else {
