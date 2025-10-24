@@ -33,7 +33,7 @@
             <div class="col-md-8 col-sm-12">
                 <div class="row align-items-center">
                     <div class="col-md-6 col-sm-12">
-                        <d-nomenclatures v-model="filter.subject"></d-nomenclatures>
+                        <d-nomenclatures v-model="filter.subject" :exclude-automatic="false"></d-nomenclatures>
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <div class="custom-control custom-radio">
