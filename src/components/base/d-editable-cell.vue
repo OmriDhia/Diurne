@@ -37,7 +37,12 @@
         <vue-feather v-else type="x-circle"  class="text-danger"  size="20"></vue-feather>
       </template>
       <template v-else-if="column.type === 'custom'">
-        <component :is="getComponent(column.component)" :modelValue="row[column.key]" :isEditing="false" />
+        <component
+          :is="getComponent(column.component)"
+          :modelValue="row[column.key]"
+          :isEditing="false"
+          v-bind="column.props || {}"
+        />
       </template>
       <template v-else-if="column.type === 'date'">
         {{ formatDateDisplay(row[column.key]) }}
