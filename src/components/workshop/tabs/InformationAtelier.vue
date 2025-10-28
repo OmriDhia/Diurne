@@ -589,7 +589,7 @@
                             </div>
 
                             <div class="form-row py-2">
-                                <router-link :to="{ name: 'tarification-taxes' }"
+                                <router-link :to="{ name: 'tarification-taxes', query: { tab: 'manufacturer-price-grid' } }"
                                              class="btn btn-custom text-uppercase w-100">
                                     GESTION GRILLE TARIFAIRE
                                 </router-link>
