@@ -16,10 +16,15 @@
                             <a class="nav-link" data-bs-toggle="tab" href="#currency" role="tab" aria-controls="border-profile" aria-selected="false">
                                 Devises
                             </a>
-                        </li> 
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#conversions" role="tab" aria-controls="border-profile" aria-selected="false">
                                 Conversions
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#manufacturer-price-grid" role="tab" aria-controls="border-profile" aria-selected="false">
+                                Grille tarifaire fournisseur
                             </a>
                         </li>
                     </ul>
@@ -33,7 +38,10 @@
                         <div class="tab-pane fade" id="conversions" role="tabpanel" aria-labelledby="border-home-tab">
                             <d-conversion></d-conversion>
                         </div>
-                        
+                        <div class="tab-pane fade" id="manufacturer-price-grid" role="tabpanel" aria-labelledby="border-home-tab">
+                            <d-manufacturer-price-grid></d-manufacturer-price-grid>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -56,6 +64,7 @@
     import dConversion from "@/components/settings/d-conversion.vue";
     import DTarifGroup from "@/components/settings/d-tarif-group.vue";
     import DDevise from "@/components/settings/d-devise.vue";
+    import DManufacturerPriceGrid from "@/components/settings/d-manufacturer-price-grid.vue";
 
     useMeta({ title: "Settings" });
 </script>
