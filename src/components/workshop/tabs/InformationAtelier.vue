@@ -589,8 +589,9 @@
                             </div>
 
                             <div class="form-row py-2">
-                                <router-link :to="{ name: 'tarification-taxes', query: { tab: 'manufacturer-price-grid' } }"
-                                             class="btn btn-custom text-uppercase w-100">
+                                <router-link
+                                    :to="{ name: 'tarification-taxes', query: { tab: 'manufacturer-price-grid' } }"
+                                    class="btn btn-custom text-uppercase w-100">
                                     GESTION GRILLE TARIFAIRE
                                 </router-link>
                             </div>
@@ -602,7 +603,7 @@
                     </div>
                 </div>
 
-                <div class="row mb-4 my-4 align-items-center">
+                <div class="row mb-4 my-4 align-items-center d-none">
                     <div class="col-md-12">
                         <div class="row align-items-center" v-for="(material, index) in props.formData.prixAchat"
                              :key="index">
