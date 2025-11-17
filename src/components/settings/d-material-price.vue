@@ -17,6 +17,8 @@
     import dDataGrid from '../base/d-data-grid.vue';
 
     const materials = ref([]);
+    const qualities = ref([]);
+    const tarifTextures = ref([]);
     const rows = ref([]);
 
     const materialOptions = computed(() => materials.value.map(material => ({
@@ -24,7 +26,27 @@
         label: material.reference || `Matériau ${material.id}`
     })));
 
+    const qualityOptions = computed(() => qualities.value.map(quality => ({
+        value: quality.id,
+        label: quality.name || `Qualité ${quality.id}`
+    })));
+
+    const tarifTextureOptions = computed(() => tarifTextures.value.map(tarif => ({
+        value: tarif.id,
+        label: tarif.year?.toString() || `Année ${tarif.id}`
+    })));
+
     const materialLabelMap = computed(() => materialOptions.value.reduce((map, option) => {
+        map[option.value] = option.label;
+        return map;
+    }, {}));
+
+    const qualityLabelMap = computed(() => qualityOptions.value.reduce((map, option) => {
+        map[option.value] = option.label;
+        return map;
+    }, {}));
+
+    const tarifTextureLabelMap = computed(() => tarifTextureOptions.value.reduce((map, option) => {
         map[option.value] = option.label;
         return map;
     }, {}));
@@ -36,6 +58,20 @@
             type: 'dropdown',
             options: [],
             formatter: (value) => materialLabelMap.value[value] || ''
+        },
+        {
+            key: 'qualityId',
+            label: 'Qualité',
+            type: 'dropdown',
+            options: [],
+            formatter: (value) => qualityLabelMap.value[value] || ''
+        },
+        {
+            key: 'tarifTextureId',
+            label: 'Année Grille Tarif',
+            type: 'dropdown',
+            options: [],
+            formatter: (value) => tarifTextureLabelMap.value[value] || ''
         },
         { key: 'publicPrice', label: 'Prix public', type: 'number' },
         { key: 'bigProjectPrice', label: 'Prix grand projet', type: 'number' }
@@ -49,6 +85,18 @@
                     options: materialOptions.value
                 };
             }
+            if (col.key === 'qualityId') {
+                return {
+                    ...col,
+                    options: qualityOptions.value
+                };
+            }
+            if (col.key === 'tarifTextureId') {
+                return {
+                    ...col,
+                    options: tarifTextureOptions.value
+                };
+            }
             return col;
         });
     });
@@ -60,15 +108,39 @@
         }));
     };
 
+    const normalizeQualities = (data = []) => {
+        return data.map(item => ({
+            id: item.id,
+            name: item.name ?? item.label ?? ''
+        }));
+    };
+
+    const normalizeTarifTextures = (data = []) => {
+        return data.map(item => ({
+            id: item.id,
+            year: item.year ?? ''
+        }));
+    };
+
     const normalizePrices = (data = []) => {
         return data.map(item => {
             const materialId = item.material?.id ?? item.materialId ?? item.material_id ?? null;
+            const quality = item.qualityTarifTexture?.quality ?? item.quality ?? null;
+            const qualityId = quality?.id ?? item.qualityTarifTexture?.quality_id ?? item.qualityId ?? item.quality_id ?? null;
+            const tarifTexture = item.qualityTarifTexture?.tarifTexture ?? item.tarifTexture ?? null;
+            const tarifTextureId = tarifTexture?.id ?? item.tarifTextureId ?? item.tarif_texture_id ?? null;
+            const qualityTarifTextureId = item.qualityTarifTexture?.id ?? item.qualityTarifTextureId ?? item.quality_tarif_texture_id ?? null;
             return {
                 id: item.id,
                 publicPrice: Number(item.publicPrice ?? item.public_price ?? 0),
                 bigProjectPrice: Number(item.bigProjectPrice ?? item.big_project_price ?? 0),
                 materialId,
-                material: item.material ?? materials.value.find(mat => mat.id === materialId) ?? null
+                material: item.material ?? materials.value.find(mat => mat.id === materialId) ?? null,
+                qualityId,
+                quality: quality ?? qualities.value.find(q => q.id === qualityId) ?? null,
+                tarifTextureId,
+                tarifTexture: tarifTexture ?? tarifTextures.value.find(t => t.id === tarifTextureId) ?? null,
+                qualityTarifTextureId
             };
         });
     };
@@ -82,6 +154,30 @@
         } catch (error) {
             console.error('Erreur lors de la récupération des matériaux:', error);
             materials.value = [];
+        }
+    };
+
+    const fetchQualities = async () => {
+        try {
+            const { data } = await axiosInstance.get('/api/qualities', {
+                params: { page: 1, itemsPerPage: 1000 }
+            });
+            qualities.value = normalizeQualities(data.data ?? data.response?.data ?? []);
+        } catch (error) {
+            console.error('Erreur lors de la récupération des qualités:', error);
+            qualities.value = [];
+        }
+    };
+
+    const fetchTarifTextures = async () => {
+        try {
+            const { data } = await axiosInstance.get('/api/tarifTextures', {
+                params: { page: 1, itemsPerPage: 1000 }
+            });
+            tarifTextures.value = normalizeTarifTextures(data.data ?? data.response?.data ?? []);
+        } catch (error) {
+            console.error('Erreur lors de la récupération des grilles tarifaires:', error);
+            tarifTextures.value = [];
         }
     };
 
@@ -112,6 +208,9 @@
 
     const buildPayload = (row) => ({
         materialId: typeof row.materialId === 'object' ? row.materialId.id : row.materialId,
+        qualityId: typeof row.qualityId === 'object' ? row.qualityId.id : row.qualityId,
+        tarifTextureId: typeof row.tarifTextureId === 'object' ? row.tarifTextureId.id : row.tarifTextureId,
+        qualityTarifTextureId: typeof row.qualityTarifTextureId === 'object' ? row.qualityTarifTextureId.id : row.qualityTarifTextureId,
         publicPrice: Number(row.publicPrice ?? 0),
         bigProjectPrice: Number(row.bigProjectPrice ?? 0)
     });
@@ -156,6 +255,10 @@
     };
 
     onMounted(async () => {
-        await fetchMaterials();
+        await Promise.all([
+            fetchMaterials(),
+            fetchQualities(),
+            fetchTarifTextures()
+        ]);
     });
 </script>
