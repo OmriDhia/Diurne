@@ -35,7 +35,14 @@
         { key: 'year', label: 'Année', type: 'number' },
         { key: 'isActive', label: 'Afficher', type: 'boolean' },
         { key: 'silkPrice', label: 'Prix Soie', type: 'number' },
-        { key: 'woolPrice', label: 'Prix Laine', type: 'number' }
+        { key: 'woolPrice', label: 'Prix Laine', type: 'number' },
+        { key: 'woolSilkPrice', label: 'Prix Laine & Soie', type: 'number' },
+        { key: 'linPrice', label: 'Prix Lin', type: 'number' },
+        { key: 'cottonHemp', label: 'Prix Chanvre', type: 'number' },
+        { key: 'cottonViscose', label: 'Prix Viscose', type: 'number' },
+        { key: 'cottonMohair', label: 'Prix Mohair', type: 'number' }
+
+
     ];
 
     const rows = ref([]);
@@ -79,7 +86,7 @@
 
     const normalizePrice = (value) => {
         if (value === undefined || value === null) {
-            return '';
+            return '0.00';
         }
         return typeof value === 'number' ? value.toString() : value;
     };
@@ -118,7 +125,12 @@
             year: item.year ?? '',
             isActive: Boolean(item.isActive ?? item.show_grid ?? item.showGrid ?? false),
             silkPrice: normalizePrice(item.silkPrice ?? item.silk_price),
-            woolPrice: normalizePrice(item.woolPrice ?? item.wool_price)
+            woolPrice: normalizePrice(item.woolPrice ?? item.wool_price),
+            woolSilkPrice: normalizePrice(item.woolSilkPrice ?? item.wool_silk_price),
+            linPrice: normalizePrice(item.linPrice ?? item.lin_price),
+            cottonHemp: normalizePrice(item.cottonHemp ?? item.cotton_hemp),
+            cottonViscose: normalizePrice(item.cottonViscose ?? item.cotton_viscose),
+            cottonMohair: normalizePrice(item.cottonMohair ?? item.cotton_mohair)
         };
     };
 
@@ -128,7 +140,12 @@
         year: row.year ? Number(row.year) : null,
         isActive: !!row.isActive,
         silkPrice: formatPricePayload(row.silkPrice),
-        woolPrice: formatPricePayload(row.woolPrice)
+        woolPrice: formatPricePayload(row.woolPrice),
+        woolSilkPrice: formatPricePayload(row.woolSilkPrice),
+        linPrice: formatPricePayload(row.linPrice),
+        cottonHemp: formatPricePayload(row.cottonHemp),
+        cottonViscose: formatPricePayload(row.cottonViscose),
+        cottonMohair: formatPricePayload(row.cottonMohair)
     });
 
     const fetchManufacturers = async () => {
