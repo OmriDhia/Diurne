@@ -16,7 +16,7 @@
                             <a class="nav-link" data-bs-toggle="tab" href="#dominant-colors" role="tab" aria-controls="border-profile" aria-selected="false">
                                 Couleurs dominantes
                             </a>
-                        </li> 
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#materials" role="tab" aria-controls="border-profile" aria-selected="false">
                                 Matériaux
@@ -36,10 +36,12 @@
                             <d-dominant-color></d-dominant-color>
                         </div>
                         <div class="tab-pane fade" id="materials" role="tabpanel" aria-labelledby="border-home-tab">
+                            <d-material></d-material>
                         </div>
                         <div class="tab-pane fade" id="material-prices" role="tabpanel" aria-labelledby="border-home-tab">
+                            <d-material-price></d-material-price>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
@@ -61,6 +63,8 @@
     import dPageTitle from "@/components/common/d-page-title.vue";
     import DColor from "@/components/settings/d-color.vue";
     import DDominantColor from "@/components/settings/d-dominant-color.vue";
+    import DMaterial from "@/components/settings/d-material.vue";
+    import DMaterialPrice from "@/components/settings/d-material-price.vue";
 
     useMeta({ title: "Settings" });
 </script>
