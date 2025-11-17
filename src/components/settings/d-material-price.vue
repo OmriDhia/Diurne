@@ -162,7 +162,8 @@
             const { data } = await axiosInstance.get('/api/qualities', {
                 params: { page: 1, itemsPerPage: 1000 }
             });
-            qualities.value = normalizeQualities(data.data ?? data.response?.data ?? []);
+            const list = data.response?.data ?? data.response ?? data.data ?? [];
+            qualities.value = Array.isArray(list) ? list : [];
         } catch (error) {
             console.error('Erreur lors de la récupération des qualités:', error);
             qualities.value = [];
@@ -206,7 +207,8 @@
         }
     };
 
-    const buildPayload = (row) => ({
+    // Payload used when creating a new material price (full set of fields)
+    const buildCreatePayload = (row) => ({
         materialId: typeof row.materialId === 'object' ? row.materialId.id : row.materialId,
         qualityId: typeof row.qualityId === 'object' ? row.qualityId.id : row.qualityId,
         tarifTextureId: typeof row.tarifTextureId === 'object' ? row.tarifTextureId.id : row.tarifTextureId,
@@ -215,9 +217,20 @@
         bigProjectPrice: Number(row.bigProjectPrice ?? 0)
     });
 
+    // Payload used when updating an existing material price (matches UpdateMaterialPriceRequestDto)
+    const buildUpdatePayload = (row) => ({
+        materialId: typeof row.materialId === 'object' ? row.materialId.id : row.materialId,
+        publicPrice: row.publicPrice !== undefined && row.publicPrice !== null
+            ? Number(row.publicPrice)
+            : null,
+        bigProjectPrice: row.bigProjectPrice !== undefined && row.bigProjectPrice !== null
+            ? Number(row.bigProjectPrice)
+            : null
+    });
+
     const addData = async (row) => {
         try {
-            const payload = buildPayload(row);
+            const payload = buildCreatePayload(row);
             const { data } = await axiosInstance.post('/api/createMaterialPrice', payload);
             const created = normalizePrices([data.response?.data ?? data.response ?? data.data ?? data])[0];
             rows.value.push(created);
@@ -230,7 +243,7 @@
 
     const saveData = async (row) => {
         try {
-            const payload = buildPayload(row);
+            const payload = buildUpdatePayload(row);
             const { data } = await axiosInstance.put(`/api/updateMaterialPrice/${row.id}`, payload);
             const updated = normalizePrices([data.response?.data ?? data.response ?? data.data ?? data])[0];
             const index = rows.value.findIndex(item => item.id === row.id);

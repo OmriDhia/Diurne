@@ -18,34 +18,61 @@
 
     const columns = [
         { key: 'reference', label: 'Référence', type: 'text' },
-        { key: 'label', label: 'Description', type: 'text' }
+        { key: 'labelFr', label: 'Description FR', type: 'text' },
+        { key: 'labelEn', label: 'Description EN', type: 'text' }
     ];
 
     const rows = ref([]);
 
-    const transformMaterials = (data = []) => {
-        return data.map(item => ({
-            id: item.id,
-            reference: item.reference ?? '',
-            label: item.descriptions?.[0]?.label ?? '',
-            descriptions: item.descriptions ?? []
-        }));
+    // Helper: get label for a given language_id from descriptions array
+    const getLabelForLang = (descriptions = [], languageId) => {
+        const found = descriptions.find(d => d.language_id === languageId || d.id_lang === languageId || d.lang_id === languageId);
+        return found?.label ?? '';
     };
 
+    const transformMaterials = (data = []) => {
+        return data.map(item => {
+            const descriptions = Array.isArray(item.descriptions) ? item.descriptions : [];
+            return {
+                id: item.id,
+                reference: item.reference ?? '',
+                // assuming 1 = FR, 2 = EN
+                labelFr: getLabelForLang(descriptions, 1),
+                labelEn: getLabelForLang(descriptions, 2),
+                // keep raw descriptions from API so we can preserve language_id on edit
+                descriptions
+            };
+        });
+    };
+
+    // Build descriptions array exactly as expected by the backend DTO:
+    // - field name: language_id (required)
+    // - field name: label (required)
+    // - no id_lang / iso_code sent
     const normalizeDescriptions = (row) => {
-        if (Array.isArray(row.descriptions) && row.descriptions.length) {
-            return row.descriptions.map(desc => ({
-                id_lang: desc.id_lang ?? desc.language_id ?? desc.lang_id ?? 1,
-                iso_code: desc.iso_code ?? desc.is_code ?? desc.iso ?? '',
-                label: desc.label ?? row.label ?? ''
-            })).filter(desc => desc.label !== '');
-        }
+        const result = [];
 
-        if (row.label) {
-            return [{ id_lang: 1, iso_code: 'fr', label: row.label }];
-        }
+        // Try to preserve existing language_id when present
+        const existing = Array.isArray(row.descriptions) ? row.descriptions : [];
 
-        return [];
+        const upsert = (languageId, labelValue) => {
+            if (!labelValue) return;
+            const existingDesc = existing.find(d =>
+                d.language_id === languageId ||
+                d.id_lang === languageId ||
+                d.lang_id === languageId
+            );
+            result.push({
+                language_id: existingDesc?.language_id ?? existingDesc?.id_lang ?? existingDesc?.lang_id ?? languageId,
+                label: labelValue
+            });
+        };
+
+        // Assuming language_id 1 = FR, 2 = EN
+        upsert(1, row.labelFr);
+        upsert(2, row.labelEn);
+
+        return result;
     };
 
     const fetchData = async ({ page, itemsPerPage }) => {
