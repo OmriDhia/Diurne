@@ -135,6 +135,7 @@
     const checkingLists = ref([]);
     const router = useRouter();
     const error = ref({});
+    const changeRn = ref(false);
 
     const fieldLabelMap: Record<string, string> = {
         expectedEndDate: 'Date fin Théo'
@@ -151,6 +152,12 @@
             match: /Manufacturer price grid not found for provided workshop information\./i,
             field: 'idTarifGroup',
             message: 'Grille tarifaire du fabricant introuvable pour les informations d\'atelier fournies.'
+        },
+        // Map RN uniqueness error to RN field
+        {
+            match: /RN existe déjà\./i,
+            field: 'Rn',
+            message: 'RN existe déjà.'
         }
     ];
 
@@ -811,11 +818,16 @@
                     v-model="props.formData.tapisDuProjet.typeCommande"
                     root-class="pink-bg"
                 />
-
                 <div class="form-row">
-                    <d-input label="RN" v-model="props.formData.tapisDuProjet.rn" rootClass="pink-bg" disabled
+                    <input class="form-check-input" type="checkbox" id="changeRnCheckbox" v-model="changeRn">
+                    <label class="form-check-label ms-2" for="changeRnCheckbox">
+                        changer RN
+                    </label>
+                    <d-input label="RN" v-model="props.formData.tapisDuProjet.rn" rootClass="pink-bg"
+                             :disabled="!changeRn"
                              :required="true" :error="error.Rn" />
                 </div>
+
 
                 <div class="form-row">
                     <d-input label="N° d'exemplaire" type="number"
