@@ -7,11 +7,12 @@
             <perfect-scrollbar tag="div" class="h-130-forced p-0"
                                :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 130, suppressScrollX: true }">
                 <div class="card-body p-0 ps-2 mt-2">
-                    <template v-for="(material, index) in materials">
+                    <template v-for="(material, index) in materials" :key="material.id || index">
                         <div class="row align-items-center justify-content-between ps-0">
                             <div class="col-6">
                                 <d-materials-dropdown :disabled="disabled" :hideLabel="true"
-                                                      v-model="material.material_id"></d-materials-dropdown>
+                                                      v-model="material.material_id"
+                                                      @update:modelValue="() => { updateMaterialsInStore(); scheduleAutoUpdate(index); }"></d-materials-dropdown>
                             </div>
                             <div class="col-4 text-center font-size-0-7">
                                 <input
@@ -21,14 +22,14 @@
                                     max="100"
                                     style="padding: 3px"
                                     class="form-control form-control-sm"
-                                    @input="updateMaterialsInStore()"
+                                    @input="() => { updateMaterialsInStore(); scheduleAutoUpdate(index); }"
                                     :disabled="disabled"
                                 />
                             </div>
                             <div class="col-2">
                                 <!-- Use shared delete modal for server-backed items (provides confirmation + API delete) -->
-                                <d-delete v-if="material.id"
-                                          :api="`/api/workshop-information-materials/${material.id}`"
+                                <d-delete v-if="material.id && getDeleteApi(material)"
+                                          :api="getDeleteApi(material)"
                                           :disabled="disabled"
                                           @isDone="() => handleServerDelete(index)"
                                 />
@@ -75,11 +76,12 @@
 </template>
 
 <script>
-    import dModalAddMaterial from '../_Partials/d-modal-add-material.vue';
+    import dModalAddMaterial from '@/components/projet/contremarques/_Partials/d-modal-add-material.vue';
     import dDelete from '../../../common/d-delete.vue';
     import VueFeather from 'vue-feather';
     import DPanelTitle from '../../../common/d-panel-title.vue';
     import DMaterialsDropdown from '../dropdown/d-materials-dropdown.vue';
+    import axiosInstance from '@/config/http';
 
     export default {
         components: {
@@ -92,6 +94,10 @@
         props: {
             materialsProps: {
                 type: Array
+            },
+            quoteDetailId: {
+                type: [Number, String],
+                default: null
             },
             firstLoad: {
                 type: Boolean
@@ -112,7 +118,9 @@
         data() {
             return {
                 materials: [],
-                selectedLocation: null
+                selectedLocation: null,
+                // timers for debounced auto-update per row index
+                updateTimers: {}
             };
         },
         mounted() {
@@ -122,12 +130,14 @@
             formatDataProps() {
                 if (Array.isArray(this.materialsProps)) {
                     this.materials = this.materialsProps.map((m) => ({
+                        id: m.id ?? m.carpetMaterialId ?? m.carpet_material_id ?? null,
                         material_id: m.material_id,
                         rate: parseFloat(m.rate)
                     }));
                 } else if (typeof this.materialsProps === 'object' && this.materialsProps !== null) {
                     // Convert object to an array with the object values
                     this.materials = Object.values(this.materialsProps).map((m) => ({
+                        id: m.id ?? m.carpetMaterialId ?? m.carpet_material_id ?? null,
                         material_id: m.material_id,
                         rate: parseFloat(m.rate)
                     }));
@@ -151,6 +161,61 @@
                 this.materials.push(newMaterial);
                 this.updateMaterialsInStore();
                 this.$emit('changeMaterials', this.materials);
+            },
+            scheduleAutoUpdate(index) {
+                // debounce per index
+                if (this.updateTimers[index]) clearTimeout(this.updateTimers[index]);
+                this.updateTimers[index] = setTimeout(() => {
+                    this.autoUpdateMaterial(index);
+                    delete this.updateTimers[index];
+                }, 600);
+            },
+            async autoUpdateMaterial(index) {
+                const item = this.materials[index];
+                if (!item) return;
+                // build payload: include rate and/or materialId if available
+                const payload = {};
+                if (item.rate !== '' && item.rate !== null && item.rate !== undefined) {
+                    // ensure string with two decimals
+                    const n = Number(String(item.rate).replace(',', '.'));
+                    payload.rate = Number.isNaN(n) ? null : n.toFixed(2);
+                }
+                if (item.material_id !== undefined && item.material_id !== null) {
+                    payload.materialId = Number(item.material_id);
+                }
+
+
+                // if we have an id and quoteDetailId, call PATCH endpoint
+                if (item.id && this.quoteDetailId) {
+                    const prev = { rate: item.rate, material_id: item.material_id };
+                    try {
+                        const url = `/api/QuoteDetail/${this.quoteDetailId}/CarpetMaterial/${item.id}`;
+                        await axiosInstance.patch(url, payload);
+                        // success -> update store/emit
+                        this.updateMaterialsInStore();
+                        this.$emit('changeMaterials', this.materials);
+                    } catch (e) {
+                        console.error('Failed to auto-update material', e);
+                        // revert to previous value
+                        item.rate = prev.rate;
+                        item.material_id = prev.material_id;
+                        this.updateMaterialsInStore();
+                        handleApiErrorLocal(e, 'Erreur lors de la mise à jour de la matière');
+                    }
+                } else {
+                    // no server id: just update store/local
+                    this.updateMaterialsInStore();
+                    this.$emit('changeMaterials', this.materials);
+                }
+            },
+            getDeleteApi(item) {
+                if (item && item.id && this.quoteDetailId) {
+                    return `/api/QuoteDetail/${this.quoteDetailId}/CarpetMaterial/${item.id}`;
+                }
+                if (item && item.id) {
+                    return `/api/workshop-information-materials/${item.id}`;
+                }
+                return '';
             },
             handleDelete(index) {
                 // local-only removal for unsaved materials
