@@ -11,9 +11,11 @@
     import DPanelTitle from '@/components/common/d-panel-title.vue';
     import checkingListService from '../../../Services/checkingList-service';
     import workshopService from '@/Services/workshop-service.js';
-    import DTarifTextureDropdown from '@/components/workshop/dropdown/d-tarif-texture-dropdown.vue';
+    import DTarifGroupDropdown from '@/components/workshop/dropdown/d-tarif-texture-dropdown.vue';
     import DMaterialsDropdown from '@/components/projet/contremarques/dropdown/d-materials-dropdown.vue';
     import dMaterialsList from '@/components/projet/contremarques/_Partials/d-materials-list.vue';
+    import DWorkshopInformationMaterialsList
+        from '@/components/workshop/_partial/d-workshop-information-materials-list.vue';
     import DCoherenceCheck from '@/components/workshop/_partial/d-coherence-check.vue';
 
     const props = defineProps({
@@ -142,6 +144,12 @@
             match: /Missing required date value/i,
             field: 'expectedEndDate',
             message: 'La date de fin théorique est requise. Veuillez renseigner ce champ au format AAAA-MM-JJ HH:mm:ss.'
+        },
+        // Map server RuntimeException for missing manufacturer price grid to a friendly French message and attach to tarif group field
+        {
+            match: /Manufacturer price grid not found for provided workshop information\./i,
+            field: 'idTarifGroup',
+            message: 'Grille tarifaire du fabricant introuvable pour les informations d\'atelier fournies.'
         }
     ];
 
@@ -151,7 +159,12 @@
         const normalizedField = field.trim();
         const label = getFieldLabel(normalizedField);
         error.value = { ...error.value, [normalizedField]: message };
-        window.showMessage(`${label} : ${message}`, 'error');
+        // For tarif-group specific message, display the translated message alone to match UX expectation
+        if (normalizedField === 'idTarifGroup') {
+            window.showMessage(message, 'error');
+        } else {
+            window.showMessage(`${label} : ${message}`, 'error');
+        }
     };
 
     const handleApiError = (e: any, defaultMessage: string) => {
@@ -167,8 +180,11 @@
             return;
         }
         const detail = data.detail;
-        if (typeof detail === 'string') {
-            const detailMapping = detailErrorMappings.find(mapping => mapping.match.test(detail));
+        const messageStr = data.message;
+        // Search for mapping in detail, message, or thrown error message
+        const searchTargets = [detail, messageStr, e?.message].filter(v => typeof v === 'string');
+        for (const target of searchTargets) {
+            const detailMapping = detailErrorMappings.find(mapping => mapping.match.test(target as string));
             if (detailMapping) {
                 if (detailMapping.field) {
                     showFieldError(detailMapping.field, detailMapping.message);
@@ -272,7 +288,6 @@
             realHeight: props.formData.infoCommande.longueurReelle || '0',
             realSurface: props.formData.infoCommande.srfReelle || '0',
             idTarifGroup: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
-            idTarifTexture: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
             reductionRate: props.formData.reductionTapis || null,
             upcharge: props.formData.upcharge || null,
             commentUpcharge: props.formData.comment_upcharge,
@@ -294,7 +309,6 @@
             availableForSale: props.formData.disponibleVente,
             sent: props.formData.envoye,
             receivedInParis: props.formData.receptionParis,
-            specialRateInParis: props.formData.tarifSpecial,
             specialRate: props.formData.tarifSpecial
         };
         try {
@@ -370,8 +384,9 @@
             props.formData.infoCommande.largeurReelle = Helper.FormatNumber(props.workshopInfo.realWidth);
             props.formData.infoCommande.longueurReelle = Helper.FormatNumber(props.workshopInfo.realHeight);
             props.formData.infoCommande.srfReelle = Helper.FormatNumber(props.workshopInfo.realSurface);
-            props.formData.infoCommande.anneeGrilleTarif = props.workshopInfo.idTarifTexture || '';
-            props.formData.currencyId = props.workshopInfo.idCurrency || 1;
+            // prefer new API keys (idTarifGroup, currencyId) with fallbacks to older keys
+            props.formData.infoCommande.anneeGrilleTarif = props.workshopInfo.idTarifGroup ?? props.workshopInfo.idTarifTexture ?? '';
+            props.formData.currencyId = props.workshopInfo.currencyId ?? props.workshopInfo.idCurrency ?? 1;
             props.formData.prixAchat = [];
 
             props.formData.reductionTapis = Helper.FormatNumber(props.workshopInfo.reductionRate);
@@ -409,7 +424,7 @@
             props.formData.disponibleVente = props.workshopInfo.availableForSale ?? false;
             props.formData.envoye = props.workshopInfo.sent ?? false;
             props.formData.receptionParis = props.workshopInfo.receivedInParis ?? false;
-            props.formData.tarifSpecial = (props.workshopInfo.specialRateInParis ?? props.workshopInfo.specialRate) ?? false;
+            props.formData.tarifSpecial = props.workshopInfo.specialRate ?? props.workshopInfo.specialRateInParis ?? false;
         }
     };
     const createNewCheckingList = async () => {
@@ -540,9 +555,9 @@
                                      :required="true" :error="error.orderedSurface" />
                         </div>
 
-                        <d-tarif-texture-dropdown v-model="props.formData.infoCommande.anneeGrilleTarif"
-                                                  rootClass="pink-bg" :required="true"
-                                                  :error="error.idTarifGroup || error.idTarifTexture" />
+                        <d-tarif-group-dropdown v-model="props.formData.infoCommande.anneeGrilleTarif"
+                                                rootClass="pink-bg" :required="true"
+                                                :error="error.idTarifGroup" />
 
                         <div class="form-row special-tarif row py-3">
                             <div class="col-12 p-0">
@@ -629,10 +644,13 @@
 
                 <div class="row my-4">
                     <div class="col-md-12">
-                        <d-materials-list
-                            :materialsProps="carpetMaterials"
+                        <!-- Use workshop-specific materials list when available so we can include price and CRUD operations -->
+                        <d-workshop-information-materials-list
+                            :materialsProps="(props.workshopInfo && (props.workshopInfo.workshopInformationMaterials || props.workshopInfo.workshopInformationMaterials)) || carpetMaterials || props.formData.prixAchat"
+                            :workshopInfoId="props.workshopInfo?.id || props.workshopInfoId"
                             :disabled="specialTarifDisabled"
-                        ></d-materials-list>
+                            @change-materials="(m) => { props.formData.prixAchat = m }"
+                        ></d-workshop-information-materials-list>
                     </div>
                 </div>
 

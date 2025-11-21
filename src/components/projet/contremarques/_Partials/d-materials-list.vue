@@ -4,12 +4,14 @@
             <h6 class="w-100 p-0">Matière demandés <span class="required">*</span></h6>
         </div>
         <div class="card p-0" :class="{ 'border border-danger shadow-sm': error }">
-            <perfect-scrollbar tag="div" class="h-130-forced p-0" :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 130, suppressScrollX: true }">
+            <perfect-scrollbar tag="div" class="h-130-forced p-0"
+                               :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 130, suppressScrollX: true }">
                 <div class="card-body p-0 ps-2 mt-2">
                     <template v-for="(material, index) in materials">
                         <div class="row align-items-center justify-content-between ps-0">
                             <div class="col-6">
-                                <d-materials-dropdown :disabled="disabled" :hideLabel="true" v-model="material.material_id"></d-materials-dropdown>
+                                <d-materials-dropdown :disabled="disabled" :hideLabel="true"
+                                                      v-model="material.material_id"></d-materials-dropdown>
                             </div>
                             <div class="col-4 text-center font-size-0-7">
                                 <input
@@ -24,7 +26,16 @@
                                 />
                             </div>
                             <div class="col-2">
-                                <button :disabled="disabled" type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDelete(index)">
+                                <!-- Use shared delete modal for server-backed items (provides confirmation + API delete) -->
+                                <d-delete v-if="material.id"
+                                          :api="`/api/workshop-information-materials/${material.id}`"
+                                          :disabled="disabled"
+                                          @isDone="() => handleServerDelete(index)"
+                                />
+                                <!-- Local deletion for unsaved items -->
+                                <button v-else :disabled="disabled" type="button"
+                                        class="btn btn-dark mb-1 me-1 rounded-circle"
+                                        @click.prevent="handleDelete(index)">
                                     <vue-feather type="x" :size="14"></vue-feather>
                                 </button>
                             </div>
@@ -56,14 +67,14 @@
             </div>
             <!-- Error Message (Appears Next to Button) -->
             <transition name="fade">
-                <span v-if="error" class="ms-3 text-danger fw-bold"> Le taux total des matières doit être égale à 100. </span>
+                <span v-if="error"
+                      class="ms-3 text-danger fw-bold"> Le taux total des matières doit être égale à 100. </span>
             </transition>
         </div>
     </div>
 </template>
 
 <script>
-    import axiosInstance from '../../../../config/http';
     import dModalAddMaterial from '../_Partials/d-modal-add-material.vue';
     import dDelete from '../../../common/d-delete.vue';
     import VueFeather from 'vue-feather';
@@ -76,32 +87,32 @@
             DPanelTitle,
             dModalAddMaterial,
             VueFeather,
-            dDelete,
+            dDelete
         },
         props: {
             materialsProps: {
-                type: Array,
+                type: Array
             },
             firstLoad: {
-                type: Boolean,
+                type: Boolean
             },
             disabled: {
                 type: Boolean,
-                default: false,
+                default: false
             },
             showTitle: {
                 type: Boolean,
-                default: true,
+                default: true
             },
             error: {
                 type: Boolean,
-                default: false,
-            },
+                default: false
+            }
         },
         data() {
             return {
                 materials: [],
-                selectedLocation: null,
+                selectedLocation: null
             };
         },
         mounted() {
@@ -112,20 +123,20 @@
                 if (Array.isArray(this.materialsProps)) {
                     this.materials = this.materialsProps.map((m) => ({
                         material_id: m.material_id,
-                        rate: parseFloat(m.rate),
+                        rate: parseFloat(m.rate)
                     }));
                 } else if (typeof this.materialsProps === 'object' && this.materialsProps !== null) {
                     // Convert object to an array with the object values
                     this.materials = Object.values(this.materialsProps).map((m) => ({
                         material_id: m.material_id,
-                        rate: parseFloat(m.rate),
+                        rate: parseFloat(m.rate)
                     }));
                 } else {
                     console.error('Unexpected materialsProps format:', this.materialsProps);
                     this.materials = [];
                     // this.materials = this.materialsProps.map((m) => ({
-                        // material_id: m.material_id,
-                        // rate: parseFloat(m.rate),
+                    // material_id: m.material_id,
+                    // rate: parseFloat(m.rate),
                     // }));
                 }
                 this.updateMaterialsInStore();
@@ -142,6 +153,13 @@
                 this.$emit('changeMaterials', this.materials);
             },
             handleDelete(index) {
+                // local-only removal for unsaved materials
+                this.materials.splice(index, 1);
+                this.updateMaterialsInStore();
+                this.$emit('changeMaterials', this.materials);
+            },
+            handleServerDelete(index) {
+                // Called after d-delete performed the API deletion successfully
                 this.materials.splice(index, 1);
                 this.updateMaterialsInStore();
                 this.$emit('changeMaterials', this.materials);
@@ -151,7 +169,7 @@
             },
             handleAddMaterialClick() {
                 this.$emit('add-materials-click');
-            },
+            }
         },
         watch: {
             materialsProps() {
@@ -159,19 +177,21 @@
                 if (!this.firstLoad) {
                     this.$emit('changeMaterials', this.materials);
                 }
-            },
-        },
+            }
+        }
     };
 </script>
 <style scoped>
     ul {
         list-style-type: none;
     }
+
     /* Fade effect for error message */
     .fade-enter-active,
     .fade-leave-active {
         transition: opacity 0.3s ease-in-out;
     }
+
     .fade-enter,
     .fade-leave-to {
         opacity: 0;
