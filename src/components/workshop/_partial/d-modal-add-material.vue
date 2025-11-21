@@ -49,7 +49,14 @@
         const rateVal = data.value.rate === '' || data.value.rate === null ? null : (Number.isNaN(Number(data.value.rate)) ? null : Number(data.value.rate).toFixed(2));
         const priceVal = data.value.price === '' || data.value.price === null ? '' : (Number.isNaN(Number(data.value.price)) ? '' : Number(data.value.price).toFixed(2));
         // emit materialId (int) to satisfy server validation
-        emit('addMaterial', { materialId: materialId, rate: rateVal, price: priceVal });
+        // emit multiple shapes to be compatible with different consumers
+        emit('addMaterial', {
+            materialId: materialId,
+            material_id: materialId,
+            material: { id: materialId },
+            rate: rateVal,
+            price: priceVal
+        });
         await nextTick();
         emit('add-materials-click');
         // close modal

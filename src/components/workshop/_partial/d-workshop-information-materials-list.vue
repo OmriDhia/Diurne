@@ -5,8 +5,8 @@
         </div>
 
         <div class="card p-0" :class="{ 'border border-danger shadow-sm': error }">
-            <perfect-scrollbar tag="div" class="h-130-forced p-0"
-                               :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 130, suppressScrollX: true }">
+            <!-- Removed perfect-scrollbar to display the full list without fixed height -->
+            <div class="p-0">
                 <div class="card-body p-0 ps-2 mt-2">
                     <template v-for="(material, index) in materials" :key="material.__localKey || material.id">
                         <div class="row align-items-center justify-content-between ps-0">
@@ -64,7 +64,7 @@
                         </div>
                     </template>
                 </div>
-            </perfect-scrollbar>
+            </div>
         </div>
 
         <d-modal-add-material
@@ -135,6 +135,33 @@
             };
         },
         methods: {
+            // Try to locate the actual created entity object inside different API response shapes
+            extractCreatedEntity(res) {
+                if (!res) return null;
+                // common axios shape: res.data
+                const root = res.data ?? res;
+                // prefer root.response if present
+                if (root && typeof root === 'object') {
+                    if (root.response) {
+                        // sometimes response is { data: {...} } or an object directly
+                        if (typeof root.response === 'object') return root.response;
+                        return root.response;
+                    }
+                    if (root.data) {
+                        if (root.data.response) return root.data.response;
+                        return root.data;
+                    }
+                }
+                return root;
+            },
+            // helper to extract material id, rate and price from server responses with varying keys
+            normalizeResponseFields(obj) {
+                if (!obj) return { materialId: null, rate: null, price: null };
+                const materialId = obj.materialId ?? obj.material_id ?? (obj.material && (obj.material.id ?? obj.material.material_id)) ?? null;
+                const rate = obj.rate ?? obj.orderSilkPercentage ?? obj.percentage ?? obj.taux ?? null;
+                const price = obj.price ?? obj.price_value ?? obj.materialPrice ?? obj.prix ?? obj.carpetPurchasePriceCmd ?? obj.carpet_purchase_price_cmd ?? null;
+                return { materialId, rate, price };
+            },
             formatDataProps() {
                 // materialsProps may be array or object keyed
                 const src = this.materialsProps || [];
@@ -177,6 +204,7 @@
                 this.emitMaterialsChange();
             },
             async addMaterial(newMaterial) {
+                console.debug('[DWorkshop] addMaterial called with', newMaterial);
                 // newMaterial: { material_id, rate, price } (rate may be null or string 2 decimals)
                 // Accept materialId (from modal) or material_id (legacy) or nested material object
                 const incomingMat = newMaterial.materialId ?? newMaterial.material_id ?? (newMaterial.material && newMaterial.material.id) ?? null;
@@ -190,22 +218,52 @@
                     workshopInformationId: this.workshopInfoId || null
                 };
                 if (this.workshopInfoId) {
+                    // Optimistic UI: add a temporary local row so the user sees the material immediately
+                    const tempKey = `pending-${Math.random().toString(36).substr(2, 9)}`;
+                    const tempRow = {
+                        id: null,
+                        material_id: payload.materialId ? Number(payload.materialId) : null,
+                        rate: this.formatToTwo(payload.rate),
+                        price: this.formatToTwo(payload.price),
+                        workshopInformationId: payload.workshopInformationId,
+                        __localKey: tempKey
+                    };
+                    this.materials.push(tempRow);
+                    console.debug('[DWorkshop] pushed tempRow', tempRow, 'materials now', this.materials);
+                    this.emitMaterialsChange();
                     try {
                         const res = await axiosInstance.post('/api/workshop-information-materials', payload);
-                        const created = res.data.response || res.data;
-                        // normalize returned material id (could be materialId or material_id or nested material.id)
-                        const returnedMaterialId = (created.materialId ?? created.material_id ?? (created.material && created.material.id)) || null;
-                        this.materials.push({
+                        console.debug('[DWorkshop] addMaterial response:', res);
+                        const createdRaw = this.extractCreatedEntity(res) || res.data || res;
+                        console.debug('[DWorkshop] createdRaw:', createdRaw);
+                        const created = createdRaw || res.data || res;
+                        const norm = this.normalizeResponseFields(created);
+                        console.debug('[DWorkshop] norm:', norm, 'payload:', payload);
+                        const returnedMaterialId = norm.materialId ?? payload.materialId ?? null;
+                        // fallback values: prefer normalized fields, then created.* then payload
+                        const finalRate = this.formatToTwo(norm.rate ?? created.rate ?? payload.rate ?? null);
+                        const finalPrice = this.formatToTwo(norm.price ?? created.price ?? payload.price ?? '');
+                        console.debug('[DWorkshop] finalRate, finalPrice:', finalRate, finalPrice);
+                        // replace temp row with created data
+                        const idx = this.materials.findIndex(m => m.__localKey === tempKey);
+                        const newRow = {
                             id: created.id ?? null,
-                            material_id: returnedMaterialId ? Number(returnedMaterialId) : null,
-                            rate: this.formatToTwo(created.rate),
-                            price: this.formatToTwo(created.price),
+                            material_id: returnedMaterialId ? Number(returnedMaterialId) : (payload.materialId ? Number(payload.materialId) : null),
+                            rate: finalRate,
+                            price: finalPrice,
                             workshopInformationId: created.workshopInformationId ?? created.workshop_information ?? this.workshopInfoId,
                             __localKey: created.id ? `id-${created.id}` : `local-${Math.random().toString(36).substr(2, 9)}`
-                        });
+                        };
+                        if (idx !== -1) this.$set ? this.$set(this.materials, idx, newRow) : (this.materials.splice(idx, 1, newRow));
+                        // notify parent/store about the updated list
+                        this.emitMaterialsChange();
                         window.showMessage('Matière ajoutée', 'success');
                     } catch (e) {
                         console.error('Failed to add workshop material', e);
+                        // remove temp row
+                        const idx = this.materials.findIndex(m => m.__localKey === tempKey);
+                        if (idx !== -1) this.materials.splice(idx, 1);
+                        this.emitMaterialsChange();
                         handleApiErrorLocal(e, 'Erreur lors de l\'ajout de la matière');
                     }
                 } else {
@@ -256,17 +314,26 @@
                     // create then replace local entry id
                     try {
                         const res = await axiosInstance.post('/api/workshop-information-materials', payload);
-                        const created = res.data.response || res.data;
-                        const returnedMaterialId = (created.materialId ?? created.material_id ?? (created.material && created.material.id)) || null;
+                        console.debug('[DWorkshop] onFieldChange create response:', res);
+                        const createdRaw = this.extractCreatedEntity(res) || res.data || res;
+                        console.debug('[DWorkshop] onFieldChange createdRaw:', createdRaw);
+                        const created = createdRaw || res.data || res;
+                        const norm2 = this.normalizeResponseFields(created);
+                        console.debug('[DWorkshop] onFieldChange norm2:', norm2, 'payload:', payload);
+                        const returnedMaterialId2 = norm2.materialId ?? payload.materialId ?? null;
+                        const finalRate2 = this.formatToTwo(norm2.rate ?? created.rate ?? payload.rate ?? null);
+                        const finalPrice2 = this.formatToTwo(norm2.price ?? created.price ?? payload.price ?? '');
+                        console.debug('[DWorkshop] onFieldChange finalRate2, finalPrice2:', finalRate2, finalPrice2);
                         // replace local entry
                         this.materials[index] = {
                             id: created.id ?? null,
-                            material_id: returnedMaterialId ? Number(returnedMaterialId) : null,
-                            rate: this.formatToTwo(created.rate),
-                            price: this.formatToTwo(created.price),
+                            material_id: returnedMaterialId2 ? Number(returnedMaterialId2) : (payload.materialId ? Number(payload.materialId) : null),
+                            rate: finalRate2,
+                            price: finalPrice2,
                             workshopInformationId: created.workshopInformationId ?? created.workshop_information ?? this.workshopInfoId,
                             __localKey: created.id ? `id-${created.id}` : `local-${Math.random().toString(36).substr(2, 9)}`
                         };
+                        this.emitMaterialsChange();
                         window.showMessage('Matière enregistrée', 'success');
                     } catch (e) {
                         console.error('Failed to create on field change', e);

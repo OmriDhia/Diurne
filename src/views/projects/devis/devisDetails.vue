@@ -375,7 +375,8 @@
                                                  v-model="data.additionalDiscount"></d-input>
                                     </div>
                                     <div class="col-md-6 col-sm-12">
-                                        <d-input :disabled="true" label="Acompte réçu HT" :modelValue="depositAmountHt"></d-input>
+                                        <d-input :disabled="true" label="Acompte réçu HT"
+                                                 :modelValue="depositAmountHt"></d-input>
                                     </div>
                                 </div>
                                 <div class="row align-items-center p-2">
@@ -898,11 +899,32 @@
         await saveAndCalculate();
     };
     const saveAndCalculate = async () => {
+        // Avoid autosave if a deletion just occurred to prevent loop (d-delete triggers server changes)
+        if (typeof window !== 'undefined') {
+            const now = Date.now();
+            const recentlyDeleted = window.__recentlyDeleted || 0;
+            // if deletion happened in the last 2 seconds, skip autosave
+            if (recentlyDeleted && (now - recentlyDeleted) < 2000) {
+                try {
+                    window.__recentlyDeleted = 0;
+                } catch (e) {
+                }
+                console.debug('Skipped autosave: recent deletion detected');
+                return;
+            }
+            if (window.__isDeleting) {
+                console.debug('Skipped autosave: deletion in progress');
+                return;
+            }
+            const suppressUntil = window.__suppressAutoSaveUntil || 0;
+            if (suppressUntil && now < suppressUntil) {
+                console.debug('Skipped autosave: suppression until', suppressUntil);
+                return;
+            }
+        }
         if (quoteDetailId && !disableAutoSave) {
             document.getElementById('clickConvertCalculation').click();
             await saveDevisDetails();
-
-
         }
     };
 
