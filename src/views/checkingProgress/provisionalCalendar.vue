@@ -77,14 +77,14 @@
     import dPanelTitle from '@/components/common/d-panel-title.vue';
     import dPageTitle from '@/components/common/d-page-title.vue';
     import provisionalCalendarService from '@/Services/provisional-calendar-service';
-    import workshopService from "@/Services/workshop-service.js";
+    import workshopService from '@/Services/workshop-service.js';
 
     const loading = ref(false);
     const route = useRoute();
     const router = useRouter();
     const calendar = ref(null);
-    
-    const workshopOrderId = route.params.workshopOrderId
+
+    const workshopOrderId = route.params.workshopOrderId;
 
     const form = ref({
         rn: '',
@@ -111,7 +111,9 @@
     const getworkshopOrder = async () => {
         if (workshopOrderId) {
             const res = await workshopService.getWorkshopOrder(workshopOrderId);
-            form.value.rn = res.workshopInformation.rn
+            // Prefer RN from nested workshopOrder.workshopInformation if available, fallback to top-level
+            const rnFromResponse = res?.workshopOrder?.workshopInformation?.rn || res?.workshopInformation?.rn || '';
+            form.value.rn = rnFromResponse;
         }
     };
 
@@ -122,7 +124,8 @@
             calendar.value = data;
 
             form.value = {
-                rn: data.rn,
+                // Prefer RN from calendar data; if not present, keep existing RN (from workshop order)
+                rn: data.rn || form.value.rn,
                 workshopOrderId: data.workshopOrderId,
                 deadlinPreparation: data.deadlinPreparation,
                 dateFinPreparation: formatDateForInput(data.dateEndPreparation),
@@ -182,7 +185,7 @@
     };
 
     onMounted(() => {
-        getworkshopOrder()
+        getworkshopOrder();
         if (route.params.id) {
             loadCalendar(route.params.id);
         }
@@ -190,4 +193,3 @@
 </script>
 
 <style scoped></style>
-

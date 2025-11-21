@@ -35,7 +35,8 @@
             confirmButtonText: 'Supprimer',
             padding: '2em'
         }).then(async result => {
-            if (result.value) {
+            // SweetAlert2 newer versions use isConfirmed
+            if (result.isConfirmed || result.value) {
                 try {
                     // mark deletion in progress and timestamp it so other components can avoid autosave loops
                     try {
@@ -54,7 +55,14 @@
                     emit('isDone');
                     window.showMessage('L\'élément a été supprimé avec succès.');
                 } catch (e) {
-                    console.error(e.toString());
+                    console.error(e);
+                    // try to show server error message if available
+                    try {
+                        const msg = e?.response?.data?.message || e?.response?.data?.detail || e.message || 'Erreur lors de la suppression';
+                        window.showMessage(msg, 'error');
+                    } catch (er) {
+                        console.error(er);
+                    }
                 } finally {
                     try {
                         window.__isDeleting = false;

@@ -12,7 +12,7 @@
                             <div class="col-6">
                                 <d-materials-dropdown :disabled="disabled" :hideLabel="true"
                                                       v-model="material.material_id"
-                                                      @update:modelValue="() => { updateMaterialsInStore(); scheduleAutoUpdate(index); }"></d-materials-dropdown>
+                                                      @update:model-value="() => { updateMaterialsInStore(); scheduleAutoUpdate(index); }"></d-materials-dropdown>
                             </div>
                             <div class="col-4 text-center font-size-0-7">
                                 <input
@@ -28,7 +28,7 @@
                             </div>
                             <div class="col-2">
                                 <!-- Use shared delete modal for server-backed items (provides confirmation + API delete) -->
-                                <d-delete v-if="material.id && getDeleteApi(material)"
+                                <d-delete v-if="getDeleteApi(material)"
                                           :api="getDeleteApi(material)"
                                           :disabled="disabled"
                                           @isDone="() => handleServerDelete(index)"
@@ -124,23 +124,37 @@
             };
         },
         mounted() {
-            // console.log("yassine : ", materialsProps);
+            console.debug('[DMaterialsList] mounted, quoteDetailId=', this.quoteDetailId);
         },
         methods: {
             formatDataProps() {
                 if (Array.isArray(this.materialsProps)) {
-                    this.materials = this.materialsProps.map((m) => ({
-                        id: m.id ?? m.carpetMaterialId ?? m.carpet_material_id ?? null,
-                        material_id: m.material_id,
-                        rate: parseFloat(m.rate)
-                    }));
+                    this.materials = this.materialsProps.map((m) => {
+                        const detectedId = this.getItemId(m) || null;
+                        const detectedMaterialId = m.material_id ?? (m.material && (m.material.id ?? null)) ?? (m.material && m.material.id) ?? null;
+                        const row = {
+                            id: detectedId,
+                            material_id: detectedMaterialId,
+                            rate: parseFloat(m.rate),
+                            __raw: m
+                        };
+                        if (!detectedId) console.debug('[DMaterialsList] formatDataProps: no id found for raw material', m);
+                        return row;
+                    });
                 } else if (typeof this.materialsProps === 'object' && this.materialsProps !== null) {
                     // Convert object to an array with the object values
-                    this.materials = Object.values(this.materialsProps).map((m) => ({
-                        id: m.id ?? m.carpetMaterialId ?? m.carpet_material_id ?? null,
-                        material_id: m.material_id,
-                        rate: parseFloat(m.rate)
-                    }));
+                    this.materials = Object.values(this.materialsProps).map((m) => {
+                        const detectedId = this.getItemId(m) || null;
+                        const detectedMaterialId = m.material_id ?? (m.material && (m.material.id ?? null)) ?? null;
+                        const row = {
+                            id: detectedId,
+                            material_id: detectedMaterialId,
+                            rate: parseFloat(m.rate),
+                            __raw: m
+                        };
+                        if (!detectedId) console.debug('[DMaterialsList] formatDataProps (object): no id found for raw material', m);
+                        return row;
+                    });
                 } else {
                     console.error('Unexpected materialsProps format:', this.materialsProps);
                     this.materials = [];
@@ -150,29 +164,32 @@
                     // }));
                 }
                 this.updateMaterialsInStore();
-                // this.materials = this.materialsProps.map((m) => ({
-                //     material_id: m.material_id,
-                //     rate: parseFloat(m.rate),
-                // }));
-                // this.updateMaterialsInStore();
+                console.debug('[DMaterialsList] mapped materials:', this.materials);
             },
             addMaterial(newMaterial) {
+                console.debug('[DMaterialsList] addMaterial', newMaterial);
                 newMaterial.rate = parseFloat(newMaterial.rate);
                 this.materials.push(newMaterial);
                 this.updateMaterialsInStore();
                 this.$emit('changeMaterials', this.materials);
             },
             scheduleAutoUpdate(index) {
+                console.debug('[DMaterialsList] scheduleAutoUpdate for index', index);
                 // debounce per index
                 if (this.updateTimers[index]) clearTimeout(this.updateTimers[index]);
                 this.updateTimers[index] = setTimeout(() => {
+                    console.debug('[DMaterialsList] debounce fired for index', index);
                     this.autoUpdateMaterial(index);
                     delete this.updateTimers[index];
                 }, 600);
             },
             async autoUpdateMaterial(index) {
+                console.debug('[DMaterialsList] autoUpdateMaterial start for index', index);
                 const item = this.materials[index];
-                if (!item) return;
+                if (!item) {
+                    console.debug('[DMaterialsList] autoUpdateMaterial: no item at index', index);
+                    return;
+                }
                 // build payload: include rate and/or materialId if available
                 const payload = {};
                 if (item.rate !== '' && item.rate !== null && item.rate !== undefined) {
@@ -185,17 +202,23 @@
                 }
 
 
-                // if we have an id and quoteDetailId, call PATCH endpoint
-                if (item.id && this.quoteDetailId) {
+                // if we have a server id and quoteDetailId, call PATCH endpoint
+                const serverId = this.getItemId(item);
+                console.debug('[DMaterialsList] autoUpdate: serverId=', serverId, 'quoteDetailId=', this.quoteDetailId, 'item raw=', item.__raw ?? item);
+                if (serverId && this.quoteDetailId) {
                     const prev = { rate: item.rate, material_id: item.material_id };
                     try {
-                        const url = `/api/QuoteDetail/${this.quoteDetailId}/CarpetMaterial/${item.id}`;
-                        await axiosInstance.patch(url, payload);
+                        const url = `/api/QuoteDetail/${this.quoteDetailId}/CarpetMaterial/${serverId}`;
+                        // server controller expects a PUT with the rate only
+                        const putPayload = { rate: payload.rate };
+                        console.debug('[DMaterialsList] PUT', url, putPayload);
+                        const res = await axiosInstance.put(url, putPayload);
+                        console.debug('[DMaterialsList] PUT response', res && res.data ? res.data : res);
                         // success -> update store/emit
                         this.updateMaterialsInStore();
                         this.$emit('changeMaterials', this.materials);
                     } catch (e) {
-                        console.error('Failed to auto-update material', e);
+                        console.error('[DMaterialsList] Failed to auto-update material', e);
                         // revert to previous value
                         item.rate = prev.rate;
                         item.material_id = prev.material_id;
@@ -203,27 +226,103 @@
                         handleApiErrorLocal(e, 'Erreur lors de la mise à jour de la matière');
                     }
                 } else {
-                    // no server id: just update store/local
-                    this.updateMaterialsInStore();
-                    this.$emit('changeMaterials', this.materials);
+                    // no server id: if we have quoteDetailId, try to create it on server (POST), otherwise just update local
+                    if (this.quoteDetailId) {
+                        try {
+                            const createUrl = `/api/QuoteDetail/${this.quoteDetailId}/CarpetMaterial`;
+                            console.debug('[DMaterialsList] POST create', createUrl, payload);
+                            const createRes = await axiosInstance.post(createUrl, payload);
+                            console.debug('[DMaterialsList] POST response', createRes && createRes.data ? createRes.data : createRes);
+                            // attempt to extract returned id
+                            const returned = (createRes?.data?.response) ?? createRes?.data ?? createRes;
+                            const newId = returned?.id ?? returned?.carpetMaterialId ?? returned?.carpet_material_id ?? (returned && returned.carpetMaterial && returned.carpetMaterial.id) ?? null;
+                            if (newId) {
+                                // set the item id so future edits PATCH
+                                this.$set ? this.$set(item, 'id', newId) : (item.id = newId);
+                                console.debug('[DMaterialsList] created material id=', newId);
+                            }
+                            // reconcile other returned fields (rate might be in response)
+                            const newRate = returned?.rate ?? returned?.taux ?? returned?.orderSilkPercentage ?? null;
+                            if (newRate !== undefined && newRate !== null) {
+                                item.rate = Number(newRate);
+                            }
+                            this.updateMaterialsInStore();
+                            this.$emit('changeMaterials', this.materials);
+                        } catch (e) {
+                            console.error('[DMaterialsList] Failed to create material on server', e);
+                            handleApiErrorLocal(e, 'Erreur lors de la création de la matière');
+                            // fallback to local update
+                            this.updateMaterialsInStore();
+                            this.$emit('changeMaterials', this.materials);
+                        }
+                    } else {
+                        // no server id and no quote context: just update store/local
+                        this.updateMaterialsInStore();
+                        this.$emit('changeMaterials', this.materials);
+                    }
                 }
+                console.debug('[DMaterialsList] autoUpdateMaterial done for index', index);
+            },
+            getItemId(item) {
+                if (!item) return null;
+                // prefer normalized top-level ids
+                const top = item.id ?? item.carpetMaterialId ?? item.carpet_material_id ?? null;
+                if (top) return top;
+                // try to inspect raw object if present
+                const raw = item.__raw ?? item;
+                // helper: shallow recursive search for numeric id-like props
+                const seen = new Set();
+
+                function findId(obj, depth = 0) {
+                    if (!obj || typeof obj !== 'object' || depth > 4) return null;
+                    if (seen.has(obj)) return null;
+                    seen.add(obj);
+                    for (const k of Object.keys(obj)) {
+                        try {
+                            const v = obj[k];
+                            if (v == null) continue;
+                            const key = String(k).toLowerCase();
+                            if ((key === 'id' || key.endsWith('id') || key.includes('carpet') && key.includes('id')) && (typeof v === 'number' || (typeof v === 'string' && !Number.isNaN(Number(v))))) {
+                                const n = Number(v);
+                                if (Number.isFinite(n) && n > 0) return n;
+                            }
+                            if (typeof v === 'object') {
+                                const nested = findId(v, depth + 1);
+                                if (nested) return nested;
+                            }
+                        } catch (e) {
+                            // continue
+                        }
+                    }
+                    return null;
+                }
+
+                const found = findId(raw, 0);
+                if (found) {
+                    console.debug('[DMaterialsList] getItemId found id in raw:', found, 'raw=', raw);
+                    return found;
+                }
+                return null;
             },
             getDeleteApi(item) {
-                if (item && item.id && this.quoteDetailId) {
-                    return `/api/QuoteDetail/${this.quoteDetailId}/CarpetMaterial/${item.id}`;
+                const serverId = this.getItemId(item);
+                if (serverId && this.quoteDetailId) {
+                    return `/api/QuoteDetail/${this.quoteDetailId}/CarpetMaterial/${serverId}`;
                 }
-                if (item && item.id) {
-                    return `/api/workshop-information-materials/${item.id}`;
+                if (serverId) {
+                    return `/api/workshop-information-materials/${serverId}`;
                 }
                 return '';
             },
             handleDelete(index) {
+                console.debug('[DMaterialsList] local delete index', index);
                 // local-only removal for unsaved materials
                 this.materials.splice(index, 1);
                 this.updateMaterialsInStore();
                 this.$emit('changeMaterials', this.materials);
             },
             handleServerDelete(index) {
+                console.debug('[DMaterialsList] server delete confirmed index', index);
                 // Called after d-delete performed the API deletion successfully
                 this.materials.splice(index, 1);
                 this.updateMaterialsInStore();
@@ -237,11 +336,16 @@
             }
         },
         watch: {
-            materialsProps() {
-                this.formatDataProps();
-                if (!this.firstLoad) {
-                    this.$emit('changeMaterials', this.materials);
-                }
+            materialsProps: {
+                handler() {
+                    console.debug('[DMaterialsList] materialsProps changed or initial', this.materialsProps);
+                    this.formatDataProps();
+                    if (!this.firstLoad) {
+                        this.$emit('changeMaterials', this.materials);
+                    }
+                },
+                immediate: true,
+                deep: true
             }
         }
     };

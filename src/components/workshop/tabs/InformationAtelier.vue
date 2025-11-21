@@ -13,6 +13,7 @@
     import workshopService from '@/Services/workshop-service.js';
     import DTarifGroupDropdown from '@/components/workshop/dropdown/d-tarif-texture-dropdown.vue';
     import DMaterialsDropdown from '@/components/projet/contremarques/dropdown/d-materials-dropdown.vue';
+    import DQualitiesDropdown from '@/components/projet/contremarques/dropdown/d-qualities-dropdown.vue';
     import dMaterialsList from '@/components/projet/contremarques/_Partials/d-materials-list.vue';
     import DWorkshopInformationMaterialsList
         from '@/components/workshop/_partial/d-workshop-information-materials-list.vue';
@@ -280,7 +281,8 @@
             expectedEndDate: props.formData.infoCommande.dateFinTheo || null,
             dateEndAtelierPrev: props.formData.infoCommande.dateFinAtelierPrev || '',
             productionTime: Number(props.formData.infoCommande.delaisProd) || null,
-            orderSilkPercentage: props.formData.infoCommande.pourcentCommande,
+            // orderSilkPercentage intentionally passed as null (field removed from UI)
+            orderSilkPercentage: null,
             orderedWidth: props.formData.infoCommande.largeurCmd,
             orderedHeigh: props.formData.infoCommande.longueurCmd,
             orderedSurface: props.formData.infoCommande.srfCmd,
@@ -304,7 +306,7 @@
             manufacturerId: parseInt(props.formData.tapisDuProjet.fabricant),
             Rn: props.formData.tapisDuProjet.rn,
             copy: copyValue,
-            idQuality: imageSpecification.value?.quality?.id,
+            idQuality: props.formData.infoCommande.idQuality ?? imageSpecification.value?.quality?.id,
             currencyId: props.formData.currencyId,
             availableForSale: props.formData.disponibleVente,
             sent: props.formData.envoye,
@@ -444,6 +446,13 @@
         updateImageSpecification(props.imageCommande);
         const customerValidationDate = props.imageCommande?.carpetDesignOrder?.customerInstruction?.customerValidationDate || '';
         const typeCommande = props.imageCommande?.carpetDesignOrder?.location?.carpetType_id || '';
+        // ensure quality selection follows the image specification when available
+        if (!props.formData.infoCommande.idQuality) {
+            const qualityIdFromImage = imageSpecification.value?.quality?.id ?? props.imageCommande?.carpetDesignOrder?.quality?.id ?? null;
+            if (qualityIdFromImage) {
+                props.formData.infoCommande.idQuality = qualityIdFromImage;
+            }
+        }
         if (customerValidationDate) {
             props.formData.dateValidationClient = Helper.FormatDate(customerValidationDate, 'YYYY-MM-DD');
         } else if (!props.formData.dateValidationClient) {
@@ -462,6 +471,15 @@
             props.formData.infoCommande.srfCmd = Helper.FormatNumber(long * larg);
         }
     };
+
+    // keep image-based quality in sync: if imageSpecification updates and there's no explicit form selection, set it
+    watch(imageSpecification, (newSpec) => {
+        if (newSpec && !props.formData.infoCommande.idQuality) {
+            const q = newSpec?.quality?.id ?? null;
+            if (q) props.formData.infoCommande.idQuality = q;
+        }
+    });
+
     const updatePurchasePrice = async (index, price) => {
         const pa = props.formData.prixAchat[index];
         if (pa) {
@@ -535,9 +553,10 @@
                                      rootClass="pink-bg" />
                         </div>
 
-                        <div class="form-row">
-                            <d-input label="% commande soie" v-model="props.formData.infoCommande.pourcentCommande"
-                                     rootClass="pink-bg" :required="true" :error="error.orderSilkPercentage" />
+                        <div class="form-row qualities-field">
+                            <d-qualities-dropdown v-model="props.formData.infoCommande.idQuality"
+                                                  rootClass="pink-bg" :required="false"
+                                                  disabled />
                         </div>
 
                         <div class="form-row">
@@ -817,5 +836,7 @@
 </template>
 
 <style scoped lang="scss">
-
+    .qualities-field .row {
+        width: 100%;
+    }
 </style>
