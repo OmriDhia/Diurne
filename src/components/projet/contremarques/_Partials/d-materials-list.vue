@@ -4,12 +4,15 @@
             <h6 class="w-100 p-0">Matière demandés <span class="required">*</span></h6>
         </div>
         <div class="card p-0" :class="{ 'border border-danger shadow-sm': error }">
-            <perfect-scrollbar tag="div" class="h-130-forced p-0" :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 130, suppressScrollX: true }">
+            <perfect-scrollbar tag="div" class="h-130-forced p-0"
+                               :options="{ wheelSpeed: 0.5, swipeEasing: !0, minScrollbarLength: 40, maxScrollbarLength: 130, suppressScrollX: true }">
                 <div class="card-body p-0 ps-2 mt-2">
-                    <template v-for="(material, index) in materials">
+                    <template v-for="(material, index) in materials" :key="material.id || index">
                         <div class="row align-items-center justify-content-between ps-0">
                             <div class="col-6">
-                                <d-materials-dropdown :disabled="disabled" :hideLabel="true" v-model="material.material_id"></d-materials-dropdown>
+                                <d-materials-dropdown :disabled="disabled" :hideLabel="true"
+                                                      v-model="material.material_id"
+                                                      @update:model-value="() => { updateMaterialsInStore(); scheduleAutoUpdate(index); }"></d-materials-dropdown>
                             </div>
                             <div class="col-4 text-center font-size-0-7">
                                 <input
@@ -19,12 +22,21 @@
                                     max="100"
                                     style="padding: 3px"
                                     class="form-control form-control-sm"
-                                    @input="updateMaterialsInStore()"
+                                    @input="() => { updateMaterialsInStore(); scheduleAutoUpdate(index); }"
                                     :disabled="disabled"
                                 />
                             </div>
                             <div class="col-2">
-                                <button :disabled="disabled" type="button" class="btn btn-dark mb-1 me-1 rounded-circle" @click.prevent="handleDelete(index)">
+                                <!-- Use shared delete modal for server-backed items (provides confirmation + API delete) -->
+                                <d-delete v-if="getDeleteApi(material)"
+                                          :api="getDeleteApi(material)"
+                                          :disabled="disabled"
+                                          @isDone="() => handleServerDelete(index)"
+                                />
+                                <!-- Local deletion for unsaved items -->
+                                <button v-else :disabled="disabled" type="button"
+                                        class="btn btn-dark mb-1 me-1 rounded-circle"
+                                        @click.prevent="handleDelete(index)">
                                     <vue-feather type="x" :size="14"></vue-feather>
                                 </button>
                             </div>
@@ -56,19 +68,20 @@
             </div>
             <!-- Error Message (Appears Next to Button) -->
             <transition name="fade">
-                <span v-if="error" class="ms-3 text-danger fw-bold"> Le taux total des matières doit être égale à 100. </span>
+                <span v-if="error"
+                      class="ms-3 text-danger fw-bold"> Le taux total des matières doit être égale à 100. </span>
             </transition>
         </div>
     </div>
 </template>
 
 <script>
-    import axiosInstance from '../../../../config/http';
-    import dModalAddMaterial from '../_Partials/d-modal-add-material.vue';
+    import dModalAddMaterial from '@/components/projet/contremarques/_Partials/d-modal-add-material.vue';
     import dDelete from '../../../common/d-delete.vue';
     import VueFeather from 'vue-feather';
     import DPanelTitle from '../../../common/d-panel-title.vue';
     import DMaterialsDropdown from '../dropdown/d-materials-dropdown.vue';
+    import axiosInstance from '@/config/http';
 
     export default {
         components: {
@@ -76,72 +89,241 @@
             DPanelTitle,
             dModalAddMaterial,
             VueFeather,
-            dDelete,
+            dDelete
         },
         props: {
             materialsProps: {
-                type: Array,
+                type: Array
+            },
+            quoteDetailId: {
+                type: [Number, String],
+                default: null
             },
             firstLoad: {
-                type: Boolean,
+                type: Boolean
             },
             disabled: {
                 type: Boolean,
-                default: false,
+                default: false
             },
             showTitle: {
                 type: Boolean,
-                default: true,
+                default: true
             },
             error: {
                 type: Boolean,
-                default: false,
-            },
+                default: false
+            }
         },
         data() {
             return {
                 materials: [],
                 selectedLocation: null,
+                // timers for debounced auto-update per row index
+                updateTimers: {}
             };
         },
         mounted() {
-            // console.log("yassine : ", materialsProps);
+            console.debug('[DMaterialsList] mounted, quoteDetailId=', this.quoteDetailId);
         },
         methods: {
             formatDataProps() {
                 if (Array.isArray(this.materialsProps)) {
-                    this.materials = this.materialsProps.map((m) => ({
-                        material_id: m.material_id,
-                        rate: parseFloat(m.rate),
-                    }));
+                    this.materials = this.materialsProps.map((m) => {
+                        const detectedId = this.getItemId(m) || null;
+                        const detectedMaterialId = m.material_id ?? (m.material && (m.material.id ?? null)) ?? (m.material && m.material.id) ?? null;
+                        const row = {
+                            id: detectedId,
+                            material_id: detectedMaterialId,
+                            rate: parseFloat(m.rate),
+                            __raw: m
+                        };
+                        if (!detectedId) console.debug('[DMaterialsList] formatDataProps: no id found for raw material', m);
+                        return row;
+                    });
                 } else if (typeof this.materialsProps === 'object' && this.materialsProps !== null) {
                     // Convert object to an array with the object values
-                    this.materials = Object.values(this.materialsProps).map((m) => ({
-                        material_id: m.material_id,
-                        rate: parseFloat(m.rate),
-                    }));
+                    this.materials = Object.values(this.materialsProps).map((m) => {
+                        const detectedId = this.getItemId(m) || null;
+                        const detectedMaterialId = m.material_id ?? (m.material && (m.material.id ?? null)) ?? null;
+                        const row = {
+                            id: detectedId,
+                            material_id: detectedMaterialId,
+                            rate: parseFloat(m.rate),
+                            __raw: m
+                        };
+                        if (!detectedId) console.debug('[DMaterialsList] formatDataProps (object): no id found for raw material', m);
+                        return row;
+                    });
                 } else {
                     console.error('Unexpected materialsProps format:', this.materialsProps);
                     this.materials = [];
                     // this.materials = this.materialsProps.map((m) => ({
-                        // material_id: m.material_id,
-                        // rate: parseFloat(m.rate),
+                    // material_id: m.material_id,
+                    // rate: parseFloat(m.rate),
                     // }));
                 }
                 this.updateMaterialsInStore();
-                // this.materials = this.materialsProps.map((m) => ({
-                //     material_id: m.material_id,
-                //     rate: parseFloat(m.rate),
-                // }));
-                // this.updateMaterialsInStore();
+                console.debug('[DMaterialsList] mapped materials:', this.materials);
             },
             addMaterial(newMaterial) {
+                console.debug('[DMaterialsList] addMaterial', newMaterial);
                 newMaterial.rate = parseFloat(newMaterial.rate);
                 this.materials.push(newMaterial);
                 this.updateMaterialsInStore();
                 this.$emit('changeMaterials', this.materials);
             },
+            scheduleAutoUpdate(index) {
+                console.debug('[DMaterialsList] scheduleAutoUpdate for index', index);
+                // debounce per index
+                if (this.updateTimers[index]) clearTimeout(this.updateTimers[index]);
+                this.updateTimers[index] = setTimeout(() => {
+                    console.debug('[DMaterialsList] debounce fired for index', index);
+                    this.autoUpdateMaterial(index);
+                    delete this.updateTimers[index];
+                }, 600);
+            },
+            async autoUpdateMaterial(index) {
+                console.debug('[DMaterialsList] autoUpdateMaterial start for index', index);
+                const item = this.materials[index];
+                if (!item) {
+                    console.debug('[DMaterialsList] autoUpdateMaterial: no item at index', index);
+                    return;
+                }
+                // build payload: include rate and/or materialId if available
+                const payload = {};
+                if (item.rate !== '' && item.rate !== null && item.rate !== undefined) {
+                    // ensure string with two decimals
+                    const n = Number(String(item.rate).replace(',', '.'));
+                    payload.rate = Number.isNaN(n) ? null : n.toFixed(2);
+                }
+                if (item.material_id !== undefined && item.material_id !== null) {
+                    payload.materialId = Number(item.material_id);
+                }
+
+
+                // if we have a server id and quoteDetailId, call PATCH endpoint
+                const serverId = this.getItemId(item);
+                console.debug('[DMaterialsList] autoUpdate: serverId=', serverId, 'quoteDetailId=', this.quoteDetailId, 'item raw=', item.__raw ?? item);
+                if (serverId && this.quoteDetailId) {
+                    const prev = { rate: item.rate, material_id: item.material_id };
+                    try {
+                        const url = `/api/QuoteDetail/${this.quoteDetailId}/CarpetMaterial/${serverId}`;
+                        // server controller expects a PUT with the rate only
+                        const putPayload = { rate: payload.rate };
+                        console.debug('[DMaterialsList] PUT', url, putPayload);
+                        const res = await axiosInstance.put(url, putPayload);
+                        console.debug('[DMaterialsList] PUT response', res && res.data ? res.data : res);
+                        // success -> update store/emit
+                        this.updateMaterialsInStore();
+                        this.$emit('changeMaterials', this.materials);
+                    } catch (e) {
+                        console.error('[DMaterialsList] Failed to auto-update material', e);
+                        // revert to previous value
+                        item.rate = prev.rate;
+                        item.material_id = prev.material_id;
+                        this.updateMaterialsInStore();
+                        handleApiErrorLocal(e, 'Erreur lors de la mise à jour de la matière');
+                    }
+                } else {
+                    // no server id: if we have quoteDetailId, try to create it on server (POST), otherwise just update local
+                    if (this.quoteDetailId) {
+                        try {
+                            const createUrl = `/api/QuoteDetail/${this.quoteDetailId}/CarpetMaterial`;
+                            console.debug('[DMaterialsList] POST create', createUrl, payload);
+                            const createRes = await axiosInstance.post(createUrl, payload);
+                            console.debug('[DMaterialsList] POST response', createRes && createRes.data ? createRes.data : createRes);
+                            // attempt to extract returned id
+                            const returned = (createRes?.data?.response) ?? createRes?.data ?? createRes;
+                            const newId = returned?.id ?? returned?.carpetMaterialId ?? returned?.carpet_material_id ?? (returned && returned.carpetMaterial && returned.carpetMaterial.id) ?? null;
+                            if (newId) {
+                                // set the item id so future edits PATCH
+                                this.$set ? this.$set(item, 'id', newId) : (item.id = newId);
+                                console.debug('[DMaterialsList] created material id=', newId);
+                            }
+                            // reconcile other returned fields (rate might be in response)
+                            const newRate = returned?.rate ?? returned?.taux ?? returned?.orderSilkPercentage ?? null;
+                            if (newRate !== undefined && newRate !== null) {
+                                item.rate = Number(newRate);
+                            }
+                            this.updateMaterialsInStore();
+                            this.$emit('changeMaterials', this.materials);
+                        } catch (e) {
+                            console.error('[DMaterialsList] Failed to create material on server', e);
+                            handleApiErrorLocal(e, 'Erreur lors de la création de la matière');
+                            // fallback to local update
+                            this.updateMaterialsInStore();
+                            this.$emit('changeMaterials', this.materials);
+                        }
+                    } else {
+                        // no server id and no quote context: just update store/local
+                        this.updateMaterialsInStore();
+                        this.$emit('changeMaterials', this.materials);
+                    }
+                }
+                console.debug('[DMaterialsList] autoUpdateMaterial done for index', index);
+            },
+            getItemId(item) {
+                if (!item) return null;
+                // prefer normalized top-level ids
+                const top = item.id ?? item.carpetMaterialId ?? item.carpet_material_id ?? null;
+                if (top) return top;
+                // try to inspect raw object if present
+                const raw = item.__raw ?? item;
+                // helper: shallow recursive search for numeric id-like props
+                const seen = new Set();
+
+                function findId(obj, depth = 0) {
+                    if (!obj || typeof obj !== 'object' || depth > 4) return null;
+                    if (seen.has(obj)) return null;
+                    seen.add(obj);
+                    for (const k of Object.keys(obj)) {
+                        try {
+                            const v = obj[k];
+                            if (v == null) continue;
+                            const key = String(k).toLowerCase();
+                            if ((key === 'id' || key.endsWith('id') || key.includes('carpet') && key.includes('id')) && (typeof v === 'number' || (typeof v === 'string' && !Number.isNaN(Number(v))))) {
+                                const n = Number(v);
+                                if (Number.isFinite(n) && n > 0) return n;
+                            }
+                            if (typeof v === 'object') {
+                                const nested = findId(v, depth + 1);
+                                if (nested) return nested;
+                            }
+                        } catch (e) {
+                            // continue
+                        }
+                    }
+                    return null;
+                }
+
+                const found = findId(raw, 0);
+                if (found) {
+                    console.debug('[DMaterialsList] getItemId found id in raw:', found, 'raw=', raw);
+                    return found;
+                }
+                return null;
+            },
+            getDeleteApi(item) {
+                const serverId = this.getItemId(item);
+                if (serverId && this.quoteDetailId) {
+                    return `/api/QuoteDetail/${this.quoteDetailId}/CarpetMaterial/${serverId}`;
+                }
+                if (serverId) {
+                    return `/api/workshop-information-materials/${serverId}`;
+                }
+                return '';
+            },
             handleDelete(index) {
+                console.debug('[DMaterialsList] local delete index', index);
+                // local-only removal for unsaved materials
+                this.materials.splice(index, 1);
+                this.updateMaterialsInStore();
+                this.$emit('changeMaterials', this.materials);
+            },
+            handleServerDelete(index) {
+                console.debug('[DMaterialsList] server delete confirmed index', index);
+                // Called after d-delete performed the API deletion successfully
                 this.materials.splice(index, 1);
                 this.updateMaterialsInStore();
                 this.$emit('changeMaterials', this.materials);
@@ -151,27 +333,34 @@
             },
             handleAddMaterialClick() {
                 this.$emit('add-materials-click');
-            },
+            }
         },
         watch: {
-            materialsProps() {
-                this.formatDataProps();
-                if (!this.firstLoad) {
-                    this.$emit('changeMaterials', this.materials);
-                }
-            },
-        },
+            materialsProps: {
+                handler() {
+                    console.debug('[DMaterialsList] materialsProps changed or initial', this.materialsProps);
+                    this.formatDataProps();
+                    if (!this.firstLoad) {
+                        this.$emit('changeMaterials', this.materials);
+                    }
+                },
+                immediate: true,
+                deep: true
+            }
+        }
     };
 </script>
 <style scoped>
     ul {
         list-style-type: none;
     }
+
     /* Fade effect for error message */
     .fade-enter-active,
     .fade-leave-active {
         transition: opacity 0.3s ease-in-out;
     }
+
     .fade-enter,
     .fade-leave-to {
         opacity: 0;

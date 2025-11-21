@@ -11,9 +11,12 @@
     import DPanelTitle from '@/components/common/d-panel-title.vue';
     import checkingListService from '../../../Services/checkingList-service';
     import workshopService from '@/Services/workshop-service.js';
-    import DTarifTextureDropdown from '@/components/workshop/dropdown/d-tarif-texture-dropdown.vue';
+    import DTarifGroupDropdown from '@/components/workshop/dropdown/d-tarif-texture-dropdown.vue';
     import DMaterialsDropdown from '@/components/projet/contremarques/dropdown/d-materials-dropdown.vue';
+    import DQualitiesDropdown from '@/components/projet/contremarques/dropdown/d-qualities-dropdown.vue';
     import dMaterialsList from '@/components/projet/contremarques/_Partials/d-materials-list.vue';
+    import DWorkshopInformationMaterialsList
+        from '@/components/workshop/_partial/d-workshop-information-materials-list.vue';
     import DCoherenceCheck from '@/components/workshop/_partial/d-coherence-check.vue';
 
     const props = defineProps({
@@ -132,6 +135,7 @@
     const checkingLists = ref([]);
     const router = useRouter();
     const error = ref({});
+    const changeRn = ref(false);
 
     const fieldLabelMap: Record<string, string> = {
         expectedEndDate: 'Date fin Théo'
@@ -142,6 +146,18 @@
             match: /Missing required date value/i,
             field: 'expectedEndDate',
             message: 'La date de fin théorique est requise. Veuillez renseigner ce champ au format AAAA-MM-JJ HH:mm:ss.'
+        },
+        // Map server RuntimeException for missing manufacturer price grid to a friendly French message and attach to tarif group field
+        {
+            match: /Manufacturer price grid not found for provided workshop information\./i,
+            field: 'idTarifGroup',
+            message: 'Grille tarifaire du fabricant introuvable pour les informations d\'atelier fournies.'
+        },
+        // Map RN uniqueness error to RN field
+        {
+            match: /RN existe déjà\./i,
+            field: 'Rn',
+            message: 'RN existe déjà.'
         }
     ];
 
@@ -151,7 +167,12 @@
         const normalizedField = field.trim();
         const label = getFieldLabel(normalizedField);
         error.value = { ...error.value, [normalizedField]: message };
-        window.showMessage(`${label} : ${message}`, 'error');
+        // For tarif-group specific message, display the translated message alone to match UX expectation
+        if (normalizedField === 'idTarifGroup') {
+            window.showMessage(message, 'error');
+        } else {
+            window.showMessage(`${label} : ${message}`, 'error');
+        }
     };
 
     const handleApiError = (e: any, defaultMessage: string) => {
@@ -167,8 +188,11 @@
             return;
         }
         const detail = data.detail;
-        if (typeof detail === 'string') {
-            const detailMapping = detailErrorMappings.find(mapping => mapping.match.test(detail));
+        const messageStr = data.message;
+        // Search for mapping in detail, message, or thrown error message
+        const searchTargets = [detail, messageStr, e?.message].filter(v => typeof v === 'string');
+        for (const target of searchTargets) {
+            const detailMapping = detailErrorMappings.find(mapping => mapping.match.test(target as string));
             if (detailMapping) {
                 if (detailMapping.field) {
                     showFieldError(detailMapping.field, detailMapping.message);
@@ -264,7 +288,8 @@
             expectedEndDate: props.formData.infoCommande.dateFinTheo || null,
             dateEndAtelierPrev: props.formData.infoCommande.dateFinAtelierPrev || '',
             productionTime: Number(props.formData.infoCommande.delaisProd) || null,
-            orderSilkPercentage: props.formData.infoCommande.pourcentCommande,
+            // orderSilkPercentage intentionally passed as null (field removed from UI)
+            orderSilkPercentage: null,
             orderedWidth: props.formData.infoCommande.largeurCmd,
             orderedHeigh: props.formData.infoCommande.longueurCmd,
             orderedSurface: props.formData.infoCommande.srfCmd,
@@ -272,7 +297,6 @@
             realHeight: props.formData.infoCommande.longueurReelle || '0',
             realSurface: props.formData.infoCommande.srfReelle || '0',
             idTarifGroup: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
-            idTarifTexture: Number(props.formData.infoCommande.anneeGrilleTarif) || 0,
             reductionRate: props.formData.reductionTapis || null,
             upcharge: props.formData.upcharge || null,
             commentUpcharge: props.formData.comment_upcharge,
@@ -289,12 +313,11 @@
             manufacturerId: parseInt(props.formData.tapisDuProjet.fabricant),
             Rn: props.formData.tapisDuProjet.rn,
             copy: copyValue,
-            idQuality: imageSpecification.value?.quality?.id,
+            idQuality: props.formData.infoCommande.idQuality ?? imageSpecification.value?.quality?.id,
             currencyId: props.formData.currencyId,
             availableForSale: props.formData.disponibleVente,
             sent: props.formData.envoye,
             receivedInParis: props.formData.receptionParis,
-            specialRateInParis: props.formData.tarifSpecial,
             specialRate: props.formData.tarifSpecial
         };
         try {
@@ -370,8 +393,9 @@
             props.formData.infoCommande.largeurReelle = Helper.FormatNumber(props.workshopInfo.realWidth);
             props.formData.infoCommande.longueurReelle = Helper.FormatNumber(props.workshopInfo.realHeight);
             props.formData.infoCommande.srfReelle = Helper.FormatNumber(props.workshopInfo.realSurface);
-            props.formData.infoCommande.anneeGrilleTarif = props.workshopInfo.idTarifTexture || '';
-            props.formData.currencyId = props.workshopInfo.idCurrency || 1;
+            // prefer new API keys (idTarifGroup, currencyId) with fallbacks to older keys
+            props.formData.infoCommande.anneeGrilleTarif = props.workshopInfo.idTarifGroup ?? props.workshopInfo.idTarifTexture ?? '';
+            props.formData.currencyId = props.workshopInfo.currencyId ?? props.workshopInfo.idCurrency ?? 1;
             props.formData.prixAchat = [];
 
             props.formData.reductionTapis = Helper.FormatNumber(props.workshopInfo.reductionRate);
@@ -409,7 +433,7 @@
             props.formData.disponibleVente = props.workshopInfo.availableForSale ?? false;
             props.formData.envoye = props.workshopInfo.sent ?? false;
             props.formData.receptionParis = props.workshopInfo.receivedInParis ?? false;
-            props.formData.tarifSpecial = (props.workshopInfo.specialRateInParis ?? props.workshopInfo.specialRate) ?? false;
+            props.formData.tarifSpecial = props.workshopInfo.specialRate ?? props.workshopInfo.specialRateInParis ?? false;
         }
     };
     const createNewCheckingList = async () => {
@@ -429,6 +453,13 @@
         updateImageSpecification(props.imageCommande);
         const customerValidationDate = props.imageCommande?.carpetDesignOrder?.customerInstruction?.customerValidationDate || '';
         const typeCommande = props.imageCommande?.carpetDesignOrder?.location?.carpetType_id || '';
+        // ensure quality selection follows the image specification when available
+        if (!props.formData.infoCommande.idQuality) {
+            const qualityIdFromImage = imageSpecification.value?.quality?.id ?? props.imageCommande?.carpetDesignOrder?.quality?.id ?? null;
+            if (qualityIdFromImage) {
+                props.formData.infoCommande.idQuality = qualityIdFromImage;
+            }
+        }
         if (customerValidationDate) {
             props.formData.dateValidationClient = Helper.FormatDate(customerValidationDate, 'YYYY-MM-DD');
         } else if (!props.formData.dateValidationClient) {
@@ -447,6 +478,15 @@
             props.formData.infoCommande.srfCmd = Helper.FormatNumber(long * larg);
         }
     };
+
+    // keep image-based quality in sync: if imageSpecification updates and there's no explicit form selection, set it
+    watch(imageSpecification, (newSpec) => {
+        if (newSpec && !props.formData.infoCommande.idQuality) {
+            const q = newSpec?.quality?.id ?? null;
+            if (q) props.formData.infoCommande.idQuality = q;
+        }
+    });
+
     const updatePurchasePrice = async (index, price) => {
         const pa = props.formData.prixAchat[index];
         if (pa) {
@@ -520,9 +560,10 @@
                                      rootClass="pink-bg" />
                         </div>
 
-                        <div class="form-row">
-                            <d-input label="% commande soie" v-model="props.formData.infoCommande.pourcentCommande"
-                                     rootClass="pink-bg" :required="true" :error="error.orderSilkPercentage" />
+                        <div class="form-row qualities-field">
+                            <d-qualities-dropdown v-model="props.formData.infoCommande.idQuality"
+                                                  rootClass="pink-bg" :required="false"
+                                                  disabled />
                         </div>
 
                         <div class="form-row">
@@ -540,9 +581,9 @@
                                      :required="true" :error="error.orderedSurface" />
                         </div>
 
-                        <d-tarif-texture-dropdown v-model="props.formData.infoCommande.anneeGrilleTarif"
-                                                  rootClass="pink-bg" :required="true"
-                                                  :error="error.idTarifGroup || error.idTarifTexture" />
+                        <d-tarif-group-dropdown v-model="props.formData.infoCommande.anneeGrilleTarif"
+                                                rootClass="pink-bg" :required="true"
+                                                :error="error.idTarifGroup" />
 
                         <div class="form-row special-tarif row py-3">
                             <div class="col-12 p-0">
@@ -589,8 +630,9 @@
                             </div>
 
                             <div class="form-row py-2">
-                                <router-link :to="{ name: 'tarification-taxes' }"
-                                             class="btn btn-custom text-uppercase w-100">
+                                <router-link
+                                    :to="{ name: 'tarification-taxes', query: { tab: 'manufacturer-price-grid' } }"
+                                    class="btn btn-custom text-uppercase w-100">
                                     GESTION GRILLE TARIFAIRE
                                 </router-link>
                             </div>
@@ -602,7 +644,7 @@
                     </div>
                 </div>
 
-                <div class="row mb-4 my-4 align-items-center">
+                <div class="row mb-4 my-4 align-items-center d-none">
                     <div class="col-md-12">
                         <div class="row align-items-center" v-for="(material, index) in props.formData.prixAchat"
                              :key="index">
@@ -628,10 +670,13 @@
 
                 <div class="row my-4">
                     <div class="col-md-12">
-                        <d-materials-list
-                            :materialsProps="carpetMaterials"
+                        <!-- Use workshop-specific materials list when available so we can include price and CRUD operations -->
+                        <d-workshop-information-materials-list
+                            :materialsProps="(props.workshopInfo && (props.workshopInfo.workshopInformationMaterials || props.workshopInfo.workshopInformationMaterials)) || carpetMaterials || props.formData.prixAchat"
+                            :workshopInfoId="props.workshopInfo?.id || props.workshopInfoId"
                             :disabled="specialTarifDisabled"
-                        ></d-materials-list>
+                            @change-materials="(m) => { props.formData.prixAchat = m }"
+                        ></d-workshop-information-materials-list>
                     </div>
                 </div>
 
@@ -773,11 +818,16 @@
                     v-model="props.formData.tapisDuProjet.typeCommande"
                     root-class="pink-bg"
                 />
-
                 <div class="form-row">
-                    <d-input label="RN" v-model="props.formData.tapisDuProjet.rn" rootClass="pink-bg" disabled
+                    <input class="form-check-input" type="checkbox" id="changeRnCheckbox" v-model="changeRn">
+                    <label class="form-check-label ms-2" for="changeRnCheckbox">
+                        changer RN
+                    </label>
+                    <d-input label="RN" v-model="props.formData.tapisDuProjet.rn" rootClass="pink-bg"
+                             :disabled="!changeRn"
                              :required="true" :error="error.Rn" />
                 </div>
+
 
                 <div class="form-row">
                     <d-input label="N° d'exemplaire" type="number"
@@ -798,5 +848,7 @@
 </template>
 
 <style scoped lang="scss">
-
+    .qualities-field .row {
+        width: 100%;
+    }
 </style>

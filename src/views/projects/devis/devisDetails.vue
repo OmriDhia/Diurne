@@ -100,6 +100,7 @@
                             <d-panel-title title="Matières" className="ps-2"></d-panel-title>
                             <div class="row pe-2 ps-2 align-items-center align-items-center">
                                 <d-materials-list :showTitle="false"
+                                                  :quoteDetailId="quoteDetailId"
                                                   :materialsProps="quoteDetail.carpetSpecification?.carpetMaterials"
                                                   @add-materials-click="handleAddMaterialsClick"></d-materials-list>
                             </div>
@@ -375,7 +376,8 @@
                                                  v-model="data.additionalDiscount"></d-input>
                                     </div>
                                     <div class="col-md-6 col-sm-12">
-                                        <d-input :disabled="true" label="Acompte réçu HT" :modelValue="depositAmountHt"></d-input>
+                                        <d-input :disabled="true" label="Acompte réçu HT"
+                                                 :modelValue="depositAmountHt"></d-input>
                                     </div>
                                 </div>
                                 <div class="row align-items-center p-2">
@@ -686,12 +688,17 @@
     });
     // Validation function
     const validationSubmitData = () => {
-        validationSubmitErrors.value.locationId = parseInt(data.value.quoteDetail.locationId) !== 0 ? '' : 'la localisation est requis';
-        validationSubmitErrors.value.collectionId = parseInt(data.value.carpetSpecification.collectionId) !== 0 ? '' : 'la collection est requis';
-        validationSubmitErrors.value.modelId = parseInt(data.value.carpetSpecification.modelId) !== 0 ? '' : 'Le modele est requis';
-        validationSubmitErrors.value.qualityId = parseInt(data.value.carpetSpecification.qualityId) !== 0 ? '' : 'la qualité est requis';
-        validationSubmitErrors.value.locationId = parseInt(data.value.quoteDetail.locationId) !== 0 ? '' : 'Le genre est requis';
-        validationSubmitErrors.value.tarifId = parseInt(data.value.quoteDetail.TarifId) !== 0 ? '' : 'Le tarif est requis';
+        const locId = Number(data.value?.quoteDetail?.locationId);
+        validationSubmitErrors.value.locationId = Number.isFinite(locId) && locId > 0 ? '' : 'la localisation est requis';
+        const collectionId = Number(data.value?.carpetSpecification?.collectionId);
+        validationSubmitErrors.value.collectionId = Number.isFinite(collectionId) && collectionId > 0 ? '' : 'la collection est requis';
+        const modelId = Number(data.value?.carpetSpecification?.modelId);
+        validationSubmitErrors.value.modelId = Number.isFinite(modelId) && modelId > 0 ? '' : 'Le modele est requis';
+        const qualityId = Number(data.value?.carpetSpecification?.qualityId);
+        validationSubmitErrors.value.qualityId = Number.isFinite(qualityId) && qualityId > 0 ? '' : 'la qualité est requis';
+        // duplicate locationId check removed; keep tarifId check
+        const tarifId = Number(data.value?.quoteDetail?.TarifId);
+        validationSubmitErrors.value.tarifId = Number.isFinite(tarifId) && tarifId > 0 ? '' : 'Le tarif est requis';
         console.log('test : ', validationSubmitErrors.value.tarifId, data.value.quoteDetail.TarifId);
     };
     const saveDevisDetails = async () => {
@@ -757,6 +764,22 @@
     };
 
     const handleAddMaterialsClick = async () => {
+        // Run validation before attempting to save — avoid server 422 errors for missing fields
+        validationSubmitData();
+        const hasErrors = Object.values(validationSubmitErrors.value).some((err) => err && err !== '');
+        if (hasErrors) {
+            // Build a friendly message listing missing fields
+            const msgs = [];
+            if (validationSubmitErrors.value.locationId) msgs.push('localisation');
+            if (validationSubmitErrors.value.collectionId) msgs.push('collection');
+            if (validationSubmitErrors.value.modelId) msgs.push('modèle');
+            if (validationSubmitErrors.value.qualityId) msgs.push('qualité');
+            if (validationSubmitErrors.value.tarifId) msgs.push('tarif');
+            const msg = `Impossible d'ajouter la matière — merci de renseigner: ${msgs.join(', ')}.`;
+            window.showMessage(msg, 'error');
+            return;
+        }
+
         await saveDevisDetails();
     };
 
@@ -898,11 +921,32 @@
         await saveAndCalculate();
     };
     const saveAndCalculate = async () => {
+        // Avoid autosave if a deletion just occurred to prevent loop (d-delete triggers server changes)
+        if (typeof window !== 'undefined') {
+            const now = Date.now();
+            const recentlyDeleted = window.__recentlyDeleted || 0;
+            // if deletion happened in the last 2 seconds, skip autosave
+            if (recentlyDeleted && (now - recentlyDeleted) < 2000) {
+                try {
+                    window.__recentlyDeleted = 0;
+                } catch (e) {
+                }
+                console.debug('Skipped autosave: recent deletion detected');
+                return;
+            }
+            if (window.__isDeleting) {
+                console.debug('Skipped autosave: deletion in progress');
+                return;
+            }
+            const suppressUntil = window.__suppressAutoSaveUntil || 0;
+            if (suppressUntil && now < suppressUntil) {
+                console.debug('Skipped autosave: suppression until', suppressUntil);
+                return;
+            }
+        }
         if (quoteDetailId && !disableAutoSave) {
             document.getElementById('clickConvertCalculation').click();
             await saveDevisDetails();
-
-
         }
     };
 
