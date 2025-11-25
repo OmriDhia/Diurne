@@ -118,6 +118,7 @@ export const filterDevis = {
     customer: null,
     contremarque: null,
     commercial: null,
+    cmd: null,
     devis: null
 };
 

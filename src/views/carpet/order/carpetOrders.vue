@@ -21,13 +21,18 @@
                             <d-input label="Commercial" v-model="filter.commercial"></d-input>
                         </div>
                         <div class="row">
-                            <d-input label="Devis" type="text" v-model="filter.devis"></d-input>
+                            <d-input label="Numéro commande" type="text" v-model="filter.cmd"></d-input>
+                        </div>
+                        <div class="row">
+                            <d-input label="Numéro devis" type="text" v-model="filter.devis"></d-input>
                         </div>
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <div class="row mt-2">
                             <div class="col-auto" v-if="filterActive">
-                                <button class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">Reset filtre</button>
+                                <button class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">Reset
+                                    filtre
+                                </button>
                             </div>
                             <div class="col-auto me-2">
                                 <button class="btn btn-custom pe-3 ps-3" @click.prevent="doSearch">Recherche</button>
@@ -42,7 +47,8 @@
                         <div class="row mb-4 relative align-items-center justify-content-between">
                             <div class="col-auto">
                                 <div class="btn-group custom-dropdown me-2 btn-group-lg">
-                                    <button class="btn btn-outline-custom p-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button class="btn btn-outline-custom p-2 dropdown-toggle" type="button"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Cacher / Montrer Colonnes
                                     </button>
                                     <ul class="dropdown-menu p-2">
@@ -56,7 +62,8 @@
                                                     @change="col.hide = !$event.target.checked"
                                                     :name="col.field"
                                                 />
-                                                <label class="custom-control-label text-black" :for="col.field"> {{ col.title }} </label>
+                                                <label class="custom-control-label text-black" :for="col.field">
+                                                    {{ col.title }} </label>
                                             </div>
                                         </li>
                                     </ul>
@@ -86,8 +93,22 @@
                                     <strong class="text-truncate" :title="data.value.reference">
                                         {{ truncateText(data.value.reference, 14) }}
                                     </strong>
-                                    <router-link :to="'/projet/commande/manage/' + data.value.cloned_quote" v-if="$hasPermission('update carpet')">
-                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    <router-link :to="'/projet/commande/manage/' + data.value.cloned_quote"
+                                                 v-if="$hasPermission('update carpet')">
+                                        <vue-feather type="search" stroke-width="1"
+                                                     class="cursor-pointer"></vue-feather>
+                                    </router-link>
+                                </div>
+                            </template>
+                            <template #originalQuoteReference="data">
+                                <div class="d-flex justify-content-between">
+                                    <strong class="text-truncate" :title="data.value.original_quote_reference">
+                                        {{ truncateText(data.value.original_quote_reference, 14) }}
+                                    </strong>
+                                    <router-link :to="'/projet/devis/manage/' + data.value.original_quote"
+                                                 v-if="$hasPermission('update carpet')">
+                                        <vue-feather type="search" stroke-width="1"
+                                                     class="cursor-pointer"></vue-feather>
                                     </router-link>
                                 </div>
                             </template>
@@ -96,8 +117,10 @@
                                     <strong class="text-truncate" :title="data.value.designation">
                                         {{ truncateText(data.value.designation, 14) }}
                                     </strong>
-                                    <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id" v-if="$hasPermission('update contremarque')">
-                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    <router-link :to="'/projet/contremarques/manage/' + data.value.contremarque_id"
+                                                 v-if="$hasPermission('update contremarque')">
+                                        <vue-feather type="search" stroke-width="1"
+                                                     class="cursor-pointer"></vue-feather>
                                     </router-link>
                                 </div>
                             </template>
@@ -106,8 +129,10 @@
                                     <strong class="text-truncate" :title="data.value.customer">
                                         {{ truncateText(data.value.customer, 14) }}
                                     </strong>
-                                    <router-link :to="'/contacts/manage/' + data.value.customer_id" v-if="$hasPermission('update contremarque')">
-                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    <router-link :to="'/contacts/manage/' + data.value.customer_id"
+                                                 v-if="$hasPermission('update contremarque')">
+                                        <vue-feather type="search" stroke-width="1"
+                                                     class="cursor-pointer"></vue-feather>
                                     </router-link>
                                 </div>
                             </template>
@@ -164,7 +189,7 @@
         current_page: 1,
         pagesize: 50,
         orderBy: '',
-        orderWay: '',
+        orderWay: ''
     });
 
     const filter = ref(Object.assign({}, filterDevis));
@@ -173,12 +198,13 @@
 
     const cols =
         ref([
-            { field: 'reference', title: 'Numéro devis' },
+            { field: 'reference', title: 'Numéro commande' },
+            { field: 'originalQuoteReference', title: 'Numéro devis' },
             { field: 'contremarque', title: 'Contremarque' },
             { field: 'customer', title: 'Client' },
             { field: 'commercial', title: 'Commercial' },
             { field: 'creationDate', title: 'Date création' },
-            { field: 'validationDate', title: 'Date validation' },
+            { field: 'validationDate', title: 'Date validation' }
         ]) || [];
 
     onMounted(() => {
@@ -223,7 +249,8 @@
             const data = response.data;
             total_rows.value = data.count;
             rows.value = data.carpetOrders;
-        } catch {}
+        } catch {
+        }
 
         loading.value = false;
     };
@@ -250,8 +277,11 @@
         if (filter.value.contremarque) {
             param += '&contremarque=' + filter.value.contremarque;
         }
+        if (filter.value.cmd) {
+            param += '&reference=' + filter.value.cmd;
+        }
         if (filter.value.devis) {
-            param += '&reference=' + filter.value.devis;
+            param += '&originalQuoteReference=' + filter.value.devis;
         }
         if (filter.value.commercial) {
             param += '&commercial=' + filter.value.commercial;
