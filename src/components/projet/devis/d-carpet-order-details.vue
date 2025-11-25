@@ -3,69 +3,99 @@
         <table class="table table-striped">
             <thead>
             <tr class="border-top text-black bg-black">
-                <th  class="border-start border-end text-white">Réf. tapis</th>
-                <th  class="border-end bg-gradient-dark text-white">% Prix total</th>
-                <th  class="border-end bg-gradient-dark text-white">Collection</th>
-                <th  class="border-end bg-gradient-dark text-white">Modèle</th>
-                <th  class="border-end bg-gradient-dark text-white">m²</th>
-                <th  class="border-end bg-gradient-dark text-white">sqft</th>
-                <th  class="border-end bg-gradient-dark text-white">Prix(m²)</th>
-                <th  class="border-end bg-gradient-dark text-white">Prix(sqft)</th>
-                <th  class="border-end bg-gradient-dark text-white">Total</th>
-                <th  class="border-end bg-gradient-dark text-white">Trait</th>
-                <th  class="border-end bg-gradient-dark text-white">RN</th>
-                <th  class="border-end bg-gradient-dark text-white">Emplacement</th>
-                <th  class="border-end bg-gradient-dark text-white">Versement</th>
-                <th  class="border-end bg-gradient-dark text-white">Status</th>
-                <th  class="border-end bg-gradient-dark text-white">Actions</th>
+                <th class="border-start border-end text-white">Réf. tapis</th>
+                <th class="border-end bg-gradient-dark text-white">% Prix total</th>
+                <th class="border-end bg-gradient-dark text-white">Collection</th>
+                <th class="border-end bg-gradient-dark text-white">Modèle</th>
+                <th class="border-end bg-gradient-dark text-white">m²</th>
+                <th class="border-end bg-gradient-dark text-white">sqft</th>
+                <th class="border-end bg-gradient-dark text-white">Prix(m²)</th>
+                <th class="border-end bg-gradient-dark text-white">Prix(sqft)</th>
+                <th class="border-end bg-gradient-dark text-white">Total</th>
+                <th class="border-end bg-gradient-dark text-white">Trait</th>
+                <!-- New RN column header -->
+                <th class="border-end bg-gradient-dark text-white">RN</th>
+                <th class="border-end bg-gradient-dark text-white">Emplacement</th>
+                <th class="border-end bg-gradient-dark text-white">Versement</th>
+                <th class="border-end bg-gradient-dark text-white">Status</th>
+                <th class="border-end bg-gradient-dark text-white">Actions</th>
             </tr>
             </thead>
             <tbody>
-                <tr v-for="(row, rowIndex) in props.quoteDetails" :key="rowIndex">
-                    <td class="border-start border-end text-center">{{ row.reference}}</td>
-                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.impactOnTheQuotePrice)}}</td>
-                    <td class="border-start border-end text-center"><d-collections-dropdown v-if="row.carpetSpecification?.collection" :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.collection.id"></d-collections-dropdown></td>
-                    <td class="border-start border-end text-center"><d-model-dropdown v-if="row.carpetSpecification?.model" :disabled="true" :showOnlyDropdown="true" v-model="row.carpetSpecification.model.id"></d-model-dropdown></td>
-                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'tarif.m².price')) }}</td> 
-                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'tarif.sqft.price')) }}</td> 
-                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'prix-propose-avant-remise-complementaire.m².price')) }}</td> 
-                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'prix-propose-avant-remise-complementaire.sqft.price')) }}</td> 
-                    <td class="border-start border-end text-center">{{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc')) }}</td> 
-                    <td class="border-start border-end text-center">{{ row.isValidated }}</td> 
-                    <td class="border-start border-end text-center">{{ row.rn }}</td>
-                    <td class="border-start border-end text-center"><d-location-dropdown v-if="row.location" :showOnlyDropdown="true" :disabled="true" :contremarqueId="props.contremarque.contremarque_id" v-model="row.location.location_id"> </d-location-dropdown> </td>
-                    <td class="border-start border-end text-center"></td>
-                    <td class="border-start border-end text-center">
-                        <label class="switch s-outline s-outline-success mb-4 me-2">
-                            <input type="checkbox" v-model="row.active" @change="changeStatus(row.id,rowIndex,row.active)"/>
-                            <span class="slider round"></span>
-                        </label>
-                    </td>
-                    <td class="border-start">
-                        <div class="row ps-4 align-items-center">
-                            <div class="col-auto p-1">
-                                <d-delete :api="''" class="btn-small"></d-delete>
-                            </div>
-                            <div class="col-auto p-1 btn-small">
-                                <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"  @click="goToCarpetOrderDetails(row.id)">
-                                    <vue-feather type="search" size="14"></vue-feather>
-                                </button>
-                            </div>
+            <tr v-for="(row, rowIndex) in props.quoteDetails" :key="rowIndex">
+                <td class="border-start border-end text-center">{{ row.reference }}</td>
+                <td class="border-start border-end text-center">{{ $Helper.FormatNumber(row.impactOnTheQuotePrice) }}
+                </td>
+                <td class="border-start border-end text-center">
+                    <d-collections-dropdown v-if="row.carpetSpecification?.collection" :disabled="true"
+                                            :showOnlyDropdown="true"
+                                            v-model="row.carpetSpecification.collection.id"></d-collections-dropdown>
+                </td>
+                <td class="border-start border-end text-center">
+                    <d-model-dropdown v-if="row.carpetSpecification?.model" :disabled="true" :showOnlyDropdown="true"
+                                      v-model="row.carpetSpecification.model.id"></d-model-dropdown>
+                </td>
+                <td class="border-start border-end text-center">
+                    {{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'tarif.m².price')) }}
+                </td>
+                <td class="border-start border-end text-center">
+                    {{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'tarif.sqft.price')) }}
+                </td>
+                <td class="border-start border-end text-center">
+                    {{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'prix-propose-avant-remise-complementaire.m².price'))
+                    }}
+                </td>
+                <td class="border-start border-end text-center">
+                    {{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'prix-propose-avant-remise-complementaire.sqft.price'))
+                    }}
+                </td>
+                <td class="border-start border-end text-center">
+                    {{ $Helper.FormatNumber($Helper.getPrice(row.prices, 'prix-propose-avant-remise-complementaire.totalPriceTtc'))
+                    }}
+                </td>
+                <td class="border-start border-end text-center">{{ row.isValidated }}</td>
+                <!-- New RN cell showing row.rn (expected to be filled from response.quoteData.quoteDetails[0].rn in parent) -->
+                <td class="border-start border-end text-center">{{ row.rn }}</td>
+                <td class="border-start border-end text-center">
+                    <d-location-dropdown v-if="row.location" :showOnlyDropdown="true" :disabled="true"
+                                         :contremarqueId="props.contremarque.contremarque_id"
+                                         v-model="row.location.location_id"></d-location-dropdown>
+                </td>
+                <td class="border-start border-end text-center"></td>
+                <td class="border-start border-end text-center">
+                    <label class="switch s-outline s-outline-success mb-4 me-2">
+                        <input type="checkbox" v-model="row.active"
+                               @change="changeStatus(row.id,rowIndex,row.active)" />
+                        <span class="slider round"></span>
+                    </label>
+                </td>
+                <td class="border-start">
+                    <div class="row ps-4 align-items-center">
+                        <div class="col-auto p-1">
+                            <d-delete :api="''" class="btn-small"></d-delete>
                         </div>
-                    </td>
-                </tr>
-                <tr>
-                  <td colspan="15">
-                      <div class="row justify-content-end align-items-start mt-1 pe-2">
-                          <div class="col-auto">
-                              <button class="btn w-100 btn-custom text-uppercase" @click="goToDetails">Nouveau</button>
-                          </div>
-                          <div class="col-auto">
-                              <button class="btn w-100 btn-custom text-uppercase">Nouveau stock</button>
-                          </div>
-                      </div>
-                  </td>  
-                </tr>
+                        <div class="col-auto p-1 btn-small">
+                            <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"
+                                    @click="goToCarpetOrderDetails(row.id)">
+                                <vue-feather type="search" size="14"></vue-feather>
+                            </button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <!-- Colspan already matches number of columns (15) including new RN column -->
+                <td colspan="15">
+                    <div class="row justify-content-end align-items-start mt-1 pe-2">
+                        <div class="col-auto">
+                            <button class="btn w-100 btn-custom text-uppercase" @click="goToDetails">Nouveau</button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn w-100 btn-custom text-uppercase">Nouveau stock</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>
@@ -73,101 +103,111 @@
 
 <script setup>
     import { ref, watch, onMounted } from 'vue';
-    import { useStore } from "vuex";
+    import { useStore } from 'vuex';
     import { useRouter } from 'vue-router';
     import VueFeather from 'vue-feather';
-    import dDelete from "../../common/d-delete.vue";
-    import dInput from "../../base/d-input.vue";
-    import contremarqueService from "../../../Services/contremarque-service";
-    import dModelDropdown from "../contremarques/dropdown/d-model-dropdown.vue";
-    import dCollectionsDropdown from "../contremarques/dropdown/d-collections-dropdown.vue";
-    import dLocationDropdown from "../contremarques/dropdown/d-location-dropdown.vue";
-    import axiosInstance from "../../../config/http";
+    import dDelete from '../../common/d-delete.vue';
+    import dInput from '../../base/d-input.vue';
+    import contremarqueService from '../../../Services/contremarque-service';
+    import dModelDropdown from '../contremarques/dropdown/d-model-dropdown.vue';
+    import dCollectionsDropdown from '../contremarques/dropdown/d-collections-dropdown.vue';
+    import dLocationDropdown from '../contremarques/dropdown/d-location-dropdown.vue';
+    import axiosInstance from '../../../config/http';
 
     const props = defineProps({
         quoteId: {
-            type: Number,
+            type: Number
         },
         quoteDetails: {
-            type: Array,
+            type: Array
         },
         disabled: {
             type: Boolean,
-            default: false,
+            default: false
         },
         contremarque: {
-            type: Object,
-        },
+            type: Object
+        }
     });
 
     const store = useStore();
     const router = useRouter();
     const emit = defineEmits(['changeStatus']);
-    const changeStatus = async (id,rowIndex,status) => {
-        try{
-            if(id){
+    const changeStatus = async (id, rowIndex, status) => {
+        try {
+            if (id) {
                 const res = await axiosInstance.put(`/api/triggerStatus`,
                     {
                         quoteDetailId: id,
                         newStatus: status
                     });
                 emit('changeStatus');
-                window.showMessage("Mise a jour status avec succées.")
+                window.showMessage('Mise a jour status avec succées.');
             }
-        }catch(e){
+        } catch (e) {
             props.quoteDetails[rowIndex].active = !status;
-            window.showMessage(e.message,'error')
+            window.showMessage(e.message, 'error');
         }
-    }
+    };
     const goToDetails = () => {
-        router.push({name: 'devisDetails', params: { qouteId: props.quoteId }});
+        router.push({ name: 'devisDetails', params: { qouteId: props.quoteId } });
     };
     const goToCarpetOrderDetails = (id) => {
-        router.push({name: 'carpetOrderDetails', params: { carpetOrder: props.quoteId, id: id }});
+        router.push({ name: 'carpetOrderDetails', params: { carpetOrder: props.quoteId, id: id } });
     };
 </script>
 
 <style>
-    .switch.s-outline.s-outline-success .slider{
+    .switch.s-outline.s-outline-success .slider {
         border: 2px solid #e7515a;
     }
-    .switch.s-outline.s-outline-success .slider:before{
+
+    .switch.s-outline.s-outline-success .slider:before {
         border: 2px solid #e7515a;
         background-color: #e7515a;
-        box-shadow: 0 1px 15px 1px rgba(52,40,104,.34)
+        box-shadow: 0 1px 15px 1px rgba(52, 40, 104, .34)
     }
+
     .table > thead > tr > th {
         font-size: 0.6rem;
         vertical-align: middle;
         color: #000000;
     }
+
     .table > thead > tr > th:first-child {
         min-width: 82px;
     }
+
     .table > tbody > tr:last-child > td {
         --bs-table-accent-bg: unset !important;
     }
-    .border-top{
+
+    .border-top {
         border-top: 1px solid #dee2e6 !important;
     }
+
     .table > thead > tr {
         border-radius-: 10px 0px 0px 10px;
     }
+
     .multiselect,
     .multiselect__input,
     .multiselect__single,
     input.form-control,
-    textarea{
+    textarea {
         font-size: 0.8rem !important;
         color: black;
     }
-    .w-4{
+
+    .w-4 {
         width: 4rem !important;
         text-align: center;
     }
-    .multiselect{
+
+    .multiselect {
         min-width: 115px;
     }
+
     /*.multiselect .multiselect__content-wrapper{
         position: relative;
         z-index: 1000;

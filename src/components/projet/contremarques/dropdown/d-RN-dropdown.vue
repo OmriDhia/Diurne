@@ -2,7 +2,10 @@
     <div class="row space-x-6">
         <div v-if="canceldAttribution" class="row align-items-center">
             <div class="col-4">
-                <d-input :disabled="true" :model-value="`${getRnNumber(canceldAttribution.carpet)}`"></d-input>
+                <d-input
+                    :disabled="true"
+                    :model-value="canceldAttribution.carpetRnNumber || getRnNumber(canceldAttribution.carpet)"
+                ></d-input>
             </div>
             <div class="col-4">
                 <div class="text-gray-700">Annulée le {{ $Helper.FormatDate(canceldAttribution.canceledAt, 'DD/MM/YYYY')
@@ -31,9 +34,10 @@
                 {{ $t('Le champ collection est obligatoire.') }}
             </div>
         </div>
-        <div class="col-md-4" v-if="!showOnlyDropdown">
+        <div class="col-md-4" v-if="!showOnlyDropdown && currentAttribution">
+            <!-- Display selected RN coming from response.active.rn -->
             <a href="#" class="text-black underline text-sm mt-1">
-                <u>Voir RN</u>
+                <u>Voir RN : {{ currentAttribution.carpetRnNumber }}</u>
             </a>
         </div>
         <div class="col-4">
@@ -55,11 +59,13 @@
 </template>
 
 <script setup>
-    import { ref, watch, onMounted, computed } from 'vue';
+    import { ref, watch, onMounted } from 'vue';
     import axiosInstance from '../../../../config/http';
     import Multiselect from 'vue-multiselect';
     import 'vue-multiselect/dist/vue-multiselect.css';
     import dInput from '../../../base/d-input.vue';
+    import { Helper } from '../../../../composables/global-methods';
+
     // Props
     const props = defineProps({
         modelValue: {
@@ -91,7 +97,7 @@
         }
     });
 
-    const emit = defineEmits(['update:modelValue', 'rn-attribution-created']);
+    const emit = defineEmits(['update:modelValue', 'rn-attribution-created', 'rn-attribution-canceled']);
 
     const data = ref([]);
     const selectedValue = ref(null);
@@ -112,7 +118,7 @@
 
             if (active && !active.canceledAt) {
                 console.log('currentAttribution', active);
-                currentAttribution.value = active;
+                currentAttribution.value = active; // active contains rn field according to backend
                 // Set selected RN if attribution exists
                 selectedValue.value = data.value.find((item) => item.id === currentAttribution.value.carpet) || null;
             } else {
@@ -156,34 +162,54 @@
             currentAttribution.value = response.data.response;
             emit('rn-attribution-created', response.data);
             emit('update:modelValue', selectedValue.value.id);
-            alert('RN attribution créée avec succès!');
+            window.showMessage('RN attribution créée avec succès!');
         } catch (error) {
             console.error('Error creating RN attribution:', error);
-            alert('Erreur lors de la création de l\'attribution RN');
+            window.showMessage('Erreur lors de la création de l\'attribution RN', 'error');
         } finally {
             isLoading.value = false;
         }
     };
 
     const cancelRnAttribution = async () => {
-        console.log('clicked', currentAttribution.value.id);
         if (!currentAttribution.value) return;
 
-        isLoading.value = true;
-        try {
-            const payload = {};
-            const response = await axiosInstance.put(`/api/rnAttributions/${currentAttribution.value.id}`, payload);
-            canceldAttribution.value = response.data.response;
-            currentAttribution.value = null;
-            selectedValue.value = null;
-            emit('rn-attribution-canceled', response.data);
-            alert('RN annulé avec succès!');
-        } catch (error) {
-            console.error('Error canceling RN attribution:', error);
-            alert(`Erreur: ${error.response?.data?.message || 'Erreur inconnue'}`);
-        } finally {
-            isLoading.value = false;
-        }
+        const rnNumber =
+            currentAttribution.value.carpetRnNumber ||
+            getRnNumber(currentAttribution.value.carpet);
+
+        new window.Swal({
+            title: 'Êtes-vous sûr ?',
+            text: `Voulez-vous vraiment supprimer l'association avec le RN ${rnNumber} ?`,
+            type: 'warning',
+            showCancelButton: true,
+            cancelButtonText: 'Annuler',
+            confirmButtonText: 'Supprimer',
+            padding: '2em'
+        }).then(async (result) => {
+            if (result.isConfirmed || result.value) {
+                isLoading.value = true;
+                try {
+                    const payload = {
+                        rn: currentAttribution.value.rn,
+                        attributedAt: currentAttribution.value.attributedAt,
+                        // Use global Helper to match backend expected format 'YYYY-MM-DD HH:mm:ss'
+                        canceledAt: Helper.FormatDateTime(new Date(), 'YYYY-MM-DD HH:mm:ss')
+                    };
+                    const response = await axiosInstance.put(`/api/rnAttributions/${currentAttribution.value.id}`, payload);
+                    canceldAttribution.value = response.data.response;
+                    currentAttribution.value = null;
+                    selectedValue.value = null;
+                    emit('rn-attribution-canceled', response.data);
+                    window.showMessage('RN annulé avec succès!');
+                } catch (error) {
+                    console.error('Error canceling RN attribution:', error);
+                    window.showMessage(`Erreur: ${error.response?.data?.message || 'Erreur inconnue'}`, 'error');
+                } finally {
+                    isLoading.value = false;
+                }
+            }
+        });
     };
     const goToSettings = () => {
         console.log('Redirection vers la création d\'une collection...');
