@@ -94,6 +94,9 @@
                 }
             },
             filterData() {
+                if (this.models.length === 0) {
+                    return;
+                }
                 if (this.collectionId) {
                     this.data = this.models.filter(m => m.carpet_collection_id === parseInt(this.collectionId));
                 } else {
