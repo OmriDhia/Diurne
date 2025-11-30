@@ -21,6 +21,16 @@
                         <!-- <d-input label="RN" class="pb-2" v-model="filter.rn" /> -->
                         <d-rn-number-dropdown v-model="filter.rn"></d-rn-number-dropdown>
                         <div class="row">
+                            <label for="cleared" class="col-4">Soldé</label>
+                            <div class="col-8">
+                                <select id="cleared" class="form-control" v-model="filter.cleared">
+                                    <option :value="null">Tous</option>
+                                    <option :value="true">Oui</option>
+                                    <option :value="false">Non</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
                             <label for="date_from" class="col-4">Date Env</label>
                             <div class="col-8 d-flex justify-content-between align-items-center">
                                 <input id="date_from" class="form-control custom-date" type="date" v-model="filter.date_from" />
@@ -91,12 +101,31 @@
                                     </router-link>
                                 </div>
                             </template>
+                            <template #amount_ht="data">
+                                <span>{{ formatNumber(data.value.amount_ht) }}</span>
+                            </template>
+                            <template #amount_tva="data">
+                                <span>{{ formatNumber(data.value.amount_tva) }}</span>
+                            </template>
                             <template #amount_ttc="data">
                                 <span :title="formatNumber(data.value.amount_ttc)">
                                     {{ formatNumber(data.value.amount_ttc) }}
                                 </span>
                             </template>
+                            <template #payment="data">
+                                <span>{{ formatNumber(data.value.payment) }}</span>
+                            </template>
+                            <template #cleared="data">
+                                <span :class="data.value.cleared ? 'text-success' : 'text-danger'">
+                                    {{ data.value.cleared ? 'Oui' : 'Non' }}
+                                </span>
+                            </template>
                         </vue3-datatable>
+                    </div>
+                </div>
+                <div class="row mt-3" v-if="rows.length > 0">
+                    <div class="col-auto">
+                        <strong>Total Montant HT: {{ formatNumber(totalAmountHt) }}</strong>
                     </div>
                 </div>
             </div>
@@ -119,6 +148,7 @@
     import { Helper } from '../../../composables/global-methods';
     import { useMeta } from '/src/composables/use-meta';
     import dRnNumberDropdown from '../../../components/common/d-rn-number-dropdown.vue';
+    import { computed } from 'vue';
     useMeta({ title: 'Facture Client' });
 
     const router = useRouter();
@@ -134,14 +164,18 @@
         orderWay: 'desc',
     });
 
-    const filter = ref({ ...filterClientInvoice });
+    const filter = ref({ ...filterClientInvoice, cleared: null });
 
     const cols = ref([
         { field: 'invoice_number', title: 'Numéro facture' },
         { field: 'invoice_date', title: 'Date de facture' },
-        { field: 'customer', title: 'Raison sociale' }, //customer== ??
+        { field: 'customer', title: 'Raison sociale' },
         { field: 'contremarque', title: 'Contremarque' },
-        { field: 'amount_ttc', title: 'Montant TTC' }, //?
+        { field: 'amount_ht', title: 'Montant HT' },
+        { field: 'amount_tva', title: 'TVA' },
+        { field: 'amount_ttc', title: 'Montant TTC' },
+        { field: 'payment', title: 'Règlement' },
+        { field: 'cleared', title: 'Soldé' },
         { field: 'actions', title: '', sort: false },
     ]);
 
@@ -215,6 +249,7 @@
         if (filter.value.date_from) p += `&fromDate=${filter.value.date_from}`;
         if (filter.value.date_to) p += `&toDate=${filter.value.date_to}`;
         if (filter.value.contremarque) p += `&contremarque=${filter.value.contremarque}`;
+        if (filter.value.cleared !== null) p += `&cleared=${filter.value.cleared ? 1 : 0}`;
         return p;
     };
 
@@ -226,6 +261,10 @@
         if (!text) return '';
         return text.length > length ? text.substring(0, length) + '...' : text;
     };
+
+    const totalAmountHt = computed(() => {
+        return rows.value.reduce((sum, row) => sum + parseFloat(row.amount_ht || 0), 0);
+    });
 </script>
 <style>
     .text-size-16 {
