@@ -209,8 +209,11 @@
                     const prev = { rate: item.rate, material_id: item.material_id };
                     try {
                         const url = `/api/QuoteDetail/${this.quoteDetailId}/CarpetMaterial/${serverId}`;
-                        // server controller expects a PUT with the rate only
+                        // server controller expects a PUT with the rate and optionally materialId
                         const putPayload = { rate: payload.rate };
+                        if (payload.materialId) {
+                            putPayload.materialId = payload.materialId;
+                        }
                         console.debug('[DMaterialsList] PUT', url, putPayload);
                         const res = await axiosInstance.put(url, putPayload);
                         console.debug('[DMaterialsList] PUT response', res && res.data ? res.data : res);
