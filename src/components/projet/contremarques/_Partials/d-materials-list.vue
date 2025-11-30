@@ -22,7 +22,7 @@
                                     max="100"
                                     style="padding: 3px"
                                     class="form-control form-control-sm"
-                                    @input="() => { updateMaterialsInStore(); scheduleAutoUpdate(index); }"
+                                    @blur="() => { updateMaterialsInStore(); scheduleAutoUpdate(index); }"
                                     :disabled="disabled"
                                 />
                             </div>
@@ -128,41 +128,57 @@
         },
         methods: {
             formatDataProps() {
+                let mappedArray = [];
                 if (Array.isArray(this.materialsProps)) {
-                    this.materials = this.materialsProps.map((m) => {
+                    mappedArray = this.materialsProps.map((m) => {
                         const detectedId = this.getItemId(m) || null;
                         const detectedMaterialId = m.material_id ?? (m.material && (m.material.id ?? null)) ?? (m.material && m.material.id) ?? null;
-                        const row = {
+                        return {
                             id: detectedId,
                             material_id: detectedMaterialId,
                             rate: parseFloat(m.rate),
                             __raw: m
                         };
-                        if (!detectedId) console.debug('[DMaterialsList] formatDataProps: no id found for raw material', m);
-                        return row;
                     });
                 } else if (typeof this.materialsProps === 'object' && this.materialsProps !== null) {
-                    // Convert object to an array with the object values
-                    this.materials = Object.values(this.materialsProps).map((m) => {
+                    mappedArray = Object.values(this.materialsProps).map((m) => {
                         const detectedId = this.getItemId(m) || null;
                         const detectedMaterialId = m.material_id ?? (m.material && (m.material.id ?? null)) ?? null;
-                        const row = {
+                        return {
                             id: detectedId,
                             material_id: detectedMaterialId,
                             rate: parseFloat(m.rate),
                             __raw: m
                         };
-                        if (!detectedId) console.debug('[DMaterialsList] formatDataProps (object): no id found for raw material', m);
-                        return row;
                     });
                 } else {
                     console.error('Unexpected materialsProps format:', this.materialsProps);
-                    this.materials = [];
-                    // this.materials = this.materialsProps.map((m) => ({
-                    // material_id: m.material_id,
-                    // rate: parseFloat(m.rate),
-                    // }));
                 }
+
+                // Smart merge to preserve local state (IDs and focus)
+                if (this.materials.length === mappedArray.length) {
+                    this.materials.forEach((item, index) => {
+                        const newItem = mappedArray[index];
+                        // Preserve local ID if prop ID is missing (e.g. after local creation before parent refresh)
+                        if (!newItem.id && item.id) {
+                            newItem.id = item.id;
+                        }
+                        
+                        // Update properties
+                        item.id = newItem.id;
+                        item.material_id = newItem.material_id;
+                        item.__raw = newItem.__raw;
+                        
+                        // Only update rate if significantly different to avoid input fighting
+                        if (Math.abs(item.rate - newItem.rate) > 0.001) {
+                            item.rate = newItem.rate;
+                        }
+                    });
+                } else {
+                    // Length changed, full replace
+                    this.materials = mappedArray;
+                }
+
                 this.updateMaterialsInStore();
                 console.debug('[DMaterialsList] mapped materials:', this.materials);
             },
@@ -220,6 +236,7 @@
                         // success -> update store/emit
                         this.updateMaterialsInStore();
                         this.$emit('changeMaterials', this.materials);
+                        window.showMessage('Matière mise à jour avec succès');
                     } catch (e) {
                         console.error('[DMaterialsList] Failed to auto-update material', e);
                         // revert to previous value
