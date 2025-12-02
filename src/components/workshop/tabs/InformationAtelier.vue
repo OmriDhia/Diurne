@@ -18,6 +18,7 @@
     import DWorkshopInformationMaterialsList
         from '@/components/workshop/_partial/d-workshop-information-materials-list.vue';
     import DCoherenceCheck from '@/components/workshop/_partial/d-coherence-check.vue';
+    import VueFeather from 'vue-feather';
 
     const props = defineProps({
         formData: {
@@ -507,6 +508,17 @@
     const goToImageDetails = () => {
         router.push({ name: 'imagesCommadeDetails', params: { id: props.imageCommandId } });
     };
+
+    const goToWorkshop = () => {
+        // prefer direct orderId prop (likely the workshopOrderId), then check workshopInfo for nested workshopOrderId
+        const id = props.orderId || props.workshopInfo?.workshopOrderId || props.workshopInfo?.id || null;
+        if (!id) {
+            window.showMessage('Aucun identifiant de commande atelier trouvé', 'error');
+            return;
+        }
+        router.push({ name: 'showCarpetWorkshop', params: { workshopOrderId: id } });
+    };
+
     onMounted(() => {
         loadCheckingLists();
         setDataForUpdate();
@@ -818,7 +830,7 @@
                     v-model="props.formData.tapisDuProjet.typeCommande"
                     root-class="pink-bg"
                 />
-                <div class="form-row">
+                <div class="form-row align-items-center">
                     <input class="form-check-input" type="checkbox" id="changeRnCheckbox" v-model="changeRn">
                     <label class="form-check-label ms-2" for="changeRnCheckbox">
                         changer RN
@@ -826,6 +838,8 @@
                     <d-input label="RN" v-model="props.formData.tapisDuProjet.rn" rootClass="pink-bg"
                              :disabled="!changeRn"
                              :required="true" :error="error.Rn" />
+                    <vue-feather type="search" size="14 " class="ms-2 clickable-icon" role="button"
+                                 @click="goToWorkshop" aria-label="Voir commande atelier" />
                 </div>
 
 
