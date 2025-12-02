@@ -178,7 +178,9 @@
     const cancelRnAttribution = async () => {
         if (!currentAttribution.value) return;
 
+        // Prefer the actual rn provided by API, then carpetRnNumber, then lookup from data
         const rnNumber =
+            currentAttribution.value.rn ||
             currentAttribution.value.carpetRnNumber ||
             getRnNumber(currentAttribution.value.carpet);
 
@@ -208,7 +210,8 @@
                     window.showMessage('RN annulé avec succès!');
                 } catch (error) {
                     console.error('Error canceling RN attribution:', error);
-                    window.showMessage(`Erreur: ${error.response?.data?.message || 'Erreur inconnue'}`, 'error');
+                    const serverMessage = error?.response?.data?.message || error?.message || 'Erreur inconnue';
+                    window.showMessage(`Erreur: ${serverMessage}`, 'error');
                 } finally {
                     isLoading.value = false;
                 }

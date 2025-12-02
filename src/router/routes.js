@@ -668,6 +668,16 @@ export const routes = [
                 }
             },
             {
+                path: 'details/:workshopOrderId',
+                name: 'workshopOrderDetails',
+                component: () => import('../views/workshop/workshopDetails.vue'),
+                meta: {
+                    requiresAuth: true,
+                    class: 'tapis',
+                    permission: 'read workshop'
+                }
+            },
+            {
                 path: ':imagesCommadeId/create',
                 name: 'createCarpetWorkshop',
                 component: () => import('../views/workshop/workshop-info.vue'),
