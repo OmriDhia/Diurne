@@ -90,7 +90,7 @@
                     this.models = res.data.response.data;
                     this.filterData();
                 } catch (error) {
-                    console.error('Failed to fetch address types:', error);
+                    console.error('Failed to fetch models:', error);
                 }
             },
             filterData() {
@@ -98,7 +98,8 @@
                     return;
                 }
                 if (this.collectionId) {
-                    this.data = this.models.filter(m => m.carpet_collection_id === parseInt(this.collectionId));
+                    const parsedId = parseInt(this.collectionId);
+                    this.data = this.models.filter(m => m.carpet_collection_id === parsedId);
                 } else {
                     this.data = this.models;
                 }

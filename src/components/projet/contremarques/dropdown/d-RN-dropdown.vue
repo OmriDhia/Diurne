@@ -8,7 +8,7 @@
                 ></d-input>
             </div>
             <div class="col-4">
-                <div class="text-gray-700">Annulée le {{ $Helper.FormatDate(canceldAttribution.canceledAt, 'DD/MM/YYYY')
+                <div class="text-gray-700">Annulée le {{ Helper.FormatDate(canceldAttribution.canceledAt, 'DD/MM/YYYY')
                     }}
                 </div>
             </div>
@@ -34,11 +34,14 @@
                 {{ $t('Le champ collection est obligatoire.') }}
             </div>
         </div>
-        <div class="col-md-4" v-if="!showOnlyDropdown && currentAttribution">
-            <!-- Display selected RN coming from response.active.rn -->
-            <a href="#" class="text-black underline text-sm mt-1">
+        <div class="col-md-4" v-if="!showOnlyDropdown && currentAttribution && currentAttribution.workshopOrderId">
+            <!-- Display selected RN and link to workshop order details using response.active.workshopOrderId -->
+            <RouterLink
+                :to="{ name: 'showCarpetWorkshop', params: { workshopOrderId: currentAttribution.workshopOrderId } }"
+                class="text-black underline text-sm mt-1"
+            >
                 <u>Voir RN : {{ currentAttribution.carpetRnNumber }}</u>
-            </a>
+            </RouterLink>
         </div>
         <div class="col-4">
             <button class="px-6 py-2 bg-black text-white rounded" @click="cancelRnAttribution"
@@ -60,6 +63,7 @@
 
 <script setup>
     import { ref, watch, onMounted } from 'vue';
+    import { RouterLink } from 'vue-router';
     import axiosInstance from '../../../../config/http';
     import Multiselect from 'vue-multiselect';
     import 'vue-multiselect/dist/vue-multiselect.css';

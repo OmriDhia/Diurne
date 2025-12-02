@@ -28,7 +28,7 @@
         name: 'InputField',
         props: {
             modelValue: {
-                type: [String,null],
+                type: [String, Number, null],
                 required: true
             },
             error: {

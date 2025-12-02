@@ -201,7 +201,7 @@
                                 <d-mesurement-quote :areaSquareFeet="quoteDetail?.areaSquareFeet"
                                                     :areaSquareMeter="quoteDetail?.areaSquareMeter"
                                                     :dimensionsProps="quoteDetail?.carpetSpecification?.carpetDimensions"
-                                                    :totalHt="prices?.tarif_avant_remise_complementaire?.total_ht"
+                                                    :totalHt="Number(prices?.tarif_avant_remise_complementaire?.total_ht)"
                                                     :currencyId="data.quoteDetail.currencyId"
                                                     :calculateHt="data.quoteDetail.calculateFromTotalExcludingTax"
                                                     :quoteDetailId="quoteDetailId"
@@ -497,7 +497,7 @@
     const contremarqueId = ref(0);
     const quote_id = route.params.carpetOrder;
     console.log(quote_id);
-    const quoteDetailId = route.params.id;
+    const quoteDetailId = route.params.id ? parseInt(route.params.id) : null;
     console.log(quoteDetailId);
     const quoteNumber = ref('');
     const carpetNumber = ref('');

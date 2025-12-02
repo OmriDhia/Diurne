@@ -139,6 +139,13 @@
                                 <d-input label="Quantité de tapis" v-model="data.quoteDetail.wantedQuantity"
                                          @changeValue="handleDetailAutoSave"></d-input>
                                 <d-input label="RN" v-model="data.quoteDetail.rn"></d-input>
+                                <div v-if="rnWorkshopOrderId" class="mt-2">
+                                    <RouterLink
+                                        :to="{ name: 'showCarpetWorkshop', params: { workshopOrderId: rnWorkshopOrderId } }"
+                                        class="text-black underline text-sm">
+                                        <u>Voir RN : {{ data.quoteDetail.rn }}</u>
+                                    </RouterLink>
+                                </div>
                             </div>
                         </div>
                         <div class="row mt-3 mb-3 pe-0 align-items-center">
@@ -205,7 +212,7 @@
                                                 <d-input label="Total HT" :disabled="true"
                                                          v-model="prices.remise.total_ht"></d-input>
                                             </div>
-                                            <div class="col-md-3 col-sm-12">
+                                            <div class="col-md-3 col-sm-12" v-if="!hideTotalTtc">
                                                 <d-input label="Total TTC" :disabled="true"
                                                          v-model="prices.remise.total_ttc"></d-input>
                                             </div>
@@ -261,7 +268,7 @@
                                                          v-model="prices.tarif_avant_remise_complementaire.total_ht"
                                                          @changeValue="handleDetailAutoSave"></d-input>
                                             </div>
-                                            <div class="col-md-3 col-sm-12">
+                                            <div class="col-md-3 col-sm-12" v-if="!hideTotalTtc">
                                                 <d-input label="Total TTC" :disabled="true"
                                                          v-model="prices.tarif_avant_remise_complementaire.total_ttc"></d-input>
                                             </div>
@@ -308,7 +315,7 @@
                                                 <d-input label="Total HT" :disabled="true"
                                                          v-model="prices.tarif_propose.total_ht"></d-input>
                                             </div>
-                                            <div class="col-md-3 col-sm-12">
+                                            <div class="col-md-3 col-sm-12" v-if="!hideTotalTtc">
                                                 <d-input label="Total TTC" :disabled="true"
                                                          v-model="prices.tarif_propose.total_ttc"></d-input>
                                             </div>
@@ -442,7 +449,7 @@
     import moment from 'moment';
     import { useStore } from 'vuex';
     import VueFeather from 'vue-feather';
-    import { useRoute, useRouter } from 'vue-router';
+    import { useRoute, useRouter, RouterLink } from 'vue-router';
     import { ref, onMounted, watch, computed } from 'vue';
     import { useMeta } from '/src/composables/use-meta';
     import { Helper, formatErrorViolations, formatErrorViolationsComposed } from '../../../composables/global-methods';
@@ -493,6 +500,17 @@
     const createdDate = ref(moment().format('YYYY-MM-DD'));
     const quote = ref({});
     const quoteDetail = ref([]);
+
+    // For RN link to workshop details
+    const rnWorkshopOrderId = ref(null);
+    const fetchRnAttribution = async (detailId) => {
+        try {
+            const res = await axiosInstance.get(`/api/rnAttributions/${detailId}`);
+            rnWorkshopOrderId.value = res?.data?.response?.active?.workshopOrderId || null;
+        } catch (e) {
+            rnWorkshopOrderId.value = null;
+        }
+    };
 
     const carpetDesignOrder = ref(null);
     const normalizeId = (value) => {
@@ -675,6 +693,21 @@
         }
     });
 
+    // Tax rule from quoteData.taxRule; used to hide all "Total TTC" fields when no tax is applied
+    const taxRule = computed(() => {
+        // quote.value comes from quoteService.getQuoteById and returns response.quoteData
+        const q = quote.value || {};
+        return q.taxRule || null;
+    });
+
+    const hideTotalTtc = computed(() => {
+        const rule = taxRule.value || {};
+        const id = rule.id !== undefined && rule.id !== null ? Number(rule.id) : null;
+        const rate = rule.taxRate !== undefined && rule.taxRate !== null ? String(rule.taxRate) : '';
+        // Business rule: hide Total TTC when tax rule indicates 0% tax
+        return id === 1 && rate === '0.000000';
+    });
+
     let applyConfirmationTarifId = true;
     let disableAutoSave = true;
 
@@ -852,6 +885,8 @@
                         randomWeight: quoteDetail.value.carpetSpecification?.randomWeight
                     }
                 };
+                // also fetch RN attribution to get workshopOrderId for link
+                await fetchRnAttribution(quoteDetailId);
             }
         } catch (e) {
             console.log(e);
