@@ -30,10 +30,11 @@
                         <div class="col-md-12">
                             <div class="row mt-2" v-for="(process,index) in processes" :key="index">
                                 <div class="col-md-3">
-                                    <d-progress-process-dropdown :disabled="true" v-model="process.processId"></d-progress-process-dropdown>
+                                    <d-progress-process-dropdown :disabled="true"
+                                                                 v-model="process.processId"></d-progress-process-dropdown>
                                 </div>
                                 <div class="col-md-3">
-                                    <d-input type="date" label="fin"  v-model="process.debut"></d-input>
+                                    <d-input type="date" label="fin" v-model="process.debut"></d-input>
                                 </div>
                                 <div class="col-md-3">
                                     <d-input type="date" label="fin" v-model="process.fin"></d-input>
@@ -49,7 +50,17 @@
                             <d-contremarque-dropdown v-model="form.contremarque" :disabled="true" />
                             <d-input type="date" label="date évènement" v-model="form.dateEvent" />
                             <d-input type="date" label="date atelier cible" v-model="form.dateWorkshop" />
-                            <d-input label="Tissage" v-model="form.tissage" v-if="form.statusId?.id === 2"/>
+                            <div class="row align-items-center" v-if="form.statusId?.id === 2">
+                                <div class="col-9">
+                                    <d-input label="Tissage" v-model="form.tissage" />
+                                </div>
+                                <div class="col-3 d-flex align-items-center mt-2 p-0">
+                                    <div v-if="form.orderedHeigh !== '' && form.orderedHeigh !== null">
+                                        <span class="text-muted">/ ({{ Helper.FormatNumber(form.orderedHeigh)
+                                            }})</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <d-textarea label="Comment" v-model="form.comment" />
@@ -75,7 +86,7 @@
 </template>
 
 <script setup>
-import {ref, onMounted, watch} from 'vue';
+    import { ref, onMounted, watch } from 'vue';
     import dBasePage from '@/components/base/d-base-page.vue';
     import dInput from '@/components/base/d-input.vue';
     import dTextarea from '@/components/base/d-textarea.vue';
@@ -85,12 +96,13 @@ import {ref, onMounted, watch} from 'vue';
     import dBaseDropdown from '@/components/base/d-base-dropdown.vue';
     import dUsersDropdown from '@/components/common/d-users-dropdown.vue';
     import progressReportService from '@/Services/progress-report-service';
-    import {useRoute, useRouter} from "vue-router";
-    import axiosInstance from "@/config/http.js";
-    import DContremarqueDropdown from "@/components/common/d-contremarque-dropdown.vue";
-import {async} from "vue3-number-spinner";
-import DProgressProcessDropdown from "@/components/workshop/dropdown/d-progress-process-dropdown.vue";
-import userService from "@/Services/user-service.js";
+    import { useRoute, useRouter } from 'vue-router';
+    import axiosInstance from '@/config/http.js';
+    import DContremarqueDropdown from '@/components/common/d-contremarque-dropdown.vue';
+    import { async } from 'vue3-number-spinner';
+    import DProgressProcessDropdown from '@/components/workshop/dropdown/d-progress-process-dropdown.vue';
+    import userService from '@/Services/user-service.js';
+    import { Helper } from '@/composables/global-methods';
 
     const route = useRoute();
     const router = useRouter();
@@ -98,17 +110,19 @@ import userService from "@/Services/user-service.js";
     const provisionalCalendar = ref({});
     const form = ref({
         authorId: [],
-        datePr: '',
+        // Default Date PR to today's date (YYYY-MM-DD)
+        datePr: Helper.FormatDate(new Date(), 'YYYY-MM-DD'),
         rn: '',
         contremarque: '',
         comment: '',
         dateEvent: '',
         dateWorkshop: '',
         tissage: '',
+        orderedHeigh: '',
         statusId: null,
-        provisionalCalendarId: parseInt(route.params.provisionalCalendarId),
+        provisionalCalendarId: parseInt(route.params.provisionalCalendarId)
     });
-    const processes = ref([])
+    const processes = ref([]);
     const statuses = ref([]);
     const loadStatuses = async () => {
         try {
@@ -122,18 +136,22 @@ import userService from "@/Services/user-service.js";
         try {
             const res = await axiosInstance.get(`/api/provisionalCalendar/${form.value.provisionalCalendarId}`);
             provisionalCalendar.value = res.data?.response;
-            form.value.rn = provisionalCalendar.value.workshopOrder.workshopInformation.rn
-            const userData = userService.getUserInfo()
+            form.value.rn = provisionalCalendar.value.workshopOrder.workshopInformation.rn;
+            // populate orderedHeigh from workshopInformation if available
+            form.value.orderedHeigh = provisionalCalendar.value.workshopOrder.workshopInformation.orderedHeigh ?? '';
+            // populate date atelier cible (dateEndAtelierPrev) from workshopInformation if available
+            form.value.dateWorkshop = provisionalCalendar.value.workshopOrder.workshopInformation.dateEndAtelierPrev ?? form.value.dateWorkshop ?? '';
+            const userData = userService.getUserInfo();
             form.value.authorId = [parseInt(userData?.id)];
-            form.value.contremarque = provisionalCalendar.value.workshopOrder.imageCommand.carpetDesignOrder.location.contremarque_id
+            form.value.contremarque = provisionalCalendar.value.workshopOrder.imageCommand.carpetDesignOrder.location.contremarque_id;
         } catch (e) {
             window.showMessage(e.message, 'error');
         }
     };
 
     onMounted(() => {
-        loadStatuses()
-        getCalndar()
+        loadStatuses();
+        getCalndar();
     });
 
     const save = async () => {
@@ -146,23 +164,24 @@ import userService from "@/Services/user-service.js";
                 dateEvent: form.value.dateEvent,
                 dateWorkshop: form.value.dateWorkshop,
                 tissage: form.value.tissage,
+                orderedHeigh: form.value.orderedHeigh,
                 statusId: form.value.statusId?.id,
                 provisionalCalendarId: form.value.provisionalCalendarId
             });
-            for (const process of processes.value){
+            for (const process of processes.value) {
                 try {
                     const response = await axiosInstance.post('/api/processDeadline', {
                         progressReportId: res.id,
-                        processId:  process.processId,
-                        dateStart:  process.debut,
-                        dateEnd:  process.fin,
+                        processId: process.processId,
+                        dateStart: process.debut,
+                        dateEnd: process.fin,
                         comment: process.comment
                     });
                 } catch (error) {
                     throw error;
                 }
             }
-            
+
             window.showMessage('Ajout avec succées.');
         } catch (e) {
             window.showMessage(e.message, 'error');
@@ -173,7 +192,7 @@ import userService from "@/Services/user-service.js";
     const goToWorkshop = () => {
         router.back();
     };
-    
+
     const switchProcessByStatusId = async () => {
         processes.value = [];
         const statusId = form.value.statusId?.id;
@@ -181,31 +200,31 @@ import userService from "@/Services/user-service.js";
             case 1 || 2:
                 processes.value.push({
                     processId: 1,
-                    debut: "",
-                    fin: "",
-                    comment: ""
+                    debut: '',
+                    fin: '',
+                    comment: ''
                 });
-                if(statusId === 1){
+                if (statusId === 1) {
                     processes.value.push({
                         processId: 2,
-                        debut: "",
-                        fin: "",
-                        comment: ""
+                        debut: '',
+                        fin: '',
+                        comment: ''
                     });
                 }
                 break;
             case 3:
                 processes.value.push({
                     processId: 3,
-                    debut: "",
-                    fin: "",
-                    comment: ""
+                    debut: '',
+                    fin: '',
+                    comment: ''
                 });
                 processes.value.push({
                     processId: 4,
-                    debut: "",
-                    fin: "",
-                    comment: ""
+                    debut: '',
+                    fin: '',
+                    comment: ''
                 });
                 break;
         }
@@ -214,4 +233,3 @@ import userService from "@/Services/user-service.js";
 </script>
 
 <style scoped></style>
-
