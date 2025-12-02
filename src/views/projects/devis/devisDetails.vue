@@ -139,6 +139,13 @@
                                 <d-input label="Quantité de tapis" v-model="data.quoteDetail.wantedQuantity"
                                          @changeValue="handleDetailAutoSave"></d-input>
                                 <d-input label="RN" v-model="data.quoteDetail.rn"></d-input>
+                                <div v-if="rnWorkshopOrderId" class="mt-2">
+                                    <RouterLink
+                                        :to="{ name: 'showCarpetWorkshop', params: { workshopOrderId: rnWorkshopOrderId } }"
+                                        class="text-black underline text-sm">
+                                        <u>Voir RN : {{ data.quoteDetail.rn }}</u>
+                                    </RouterLink>
+                                </div>
                             </div>
                         </div>
                         <div class="row mt-3 mb-3 pe-0 align-items-center">
@@ -442,7 +449,7 @@
     import moment from 'moment';
     import { useStore } from 'vuex';
     import VueFeather from 'vue-feather';
-    import { useRoute, useRouter } from 'vue-router';
+    import { useRoute, useRouter, RouterLink } from 'vue-router';
     import { ref, onMounted, watch, computed } from 'vue';
     import { useMeta } from '/src/composables/use-meta';
     import { Helper, formatErrorViolations, formatErrorViolationsComposed } from '../../../composables/global-methods';
@@ -493,6 +500,17 @@
     const createdDate = ref(moment().format('YYYY-MM-DD'));
     const quote = ref({});
     const quoteDetail = ref([]);
+
+    // For RN link to workshop details
+    const rnWorkshopOrderId = ref(null);
+    const fetchRnAttribution = async (detailId) => {
+        try {
+            const res = await axiosInstance.get(`/api/rnAttributions/${detailId}`);
+            rnWorkshopOrderId.value = res?.data?.response?.active?.workshopOrderId || null;
+        } catch (e) {
+            rnWorkshopOrderId.value = null;
+        }
+    };
 
     const carpetDesignOrder = ref(null);
     const normalizeId = (value) => {
@@ -867,6 +885,8 @@
                         randomWeight: quoteDetail.value.carpetSpecification?.randomWeight
                     }
                 };
+                // also fetch RN attribution to get workshopOrderId for link
+                await fetchRnAttribution(quoteDetailId);
             }
         } catch (e) {
             console.log(e);
