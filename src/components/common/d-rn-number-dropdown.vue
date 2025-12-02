@@ -36,34 +36,34 @@
     export default {
         components: {
             Multiselect,
-            VueFeather,
+            VueFeather
         },
         props: {
             modelValue: {
                 type: [String, Number, null],
-                required: true,
+                required: true
             },
             error: {
                 type: String,
-                default: '',
+                default: ''
             },
             required: {
                 type: Boolean,
-                default: false,
+                default: false
             },
             disabled: {
                 type: Boolean,
-                default: false,
+                default: false
             },
             showActionRn: {
                 type: Boolean,
-                default: false,
-            },
+                default: false
+            }
         },
         data() {
             return {
                 selectedRn: null,
-                rns: [],
+                rns: []
             };
         },
         methods: {
@@ -72,6 +72,7 @@
                 this.$emit('update:modelValue', value ? value.rnNumber : null);
             },
             async selectRnChoix() {
+                if (!this.selectedRn) return;
                 const res = await axiosInstance.get(`/api/carpets/rn/${this.selectedRn.id}`);
                 this.$emit('dataOfRn', res);
             },
@@ -79,22 +80,27 @@
                 this.getRn(searchQuery);
             },
             async getRn() {
-                // if (!rnNumber) {
-                //     this.rns = [];
-                //     return;
-                // }
                 try {
-                    // const res = await axiosInstance.get(`/api/carpets/rn/${rnNumber}`);
                     const res = await axiosInstance.get('api/carpets');
-                    const data = res.data.response || res.data;
-                    this.rns = data;
+                    const data = res.data.response || res.data || [];
+                    // Normalize RN property so multiselect label='rnNumber' always works
+                    this.rns = (Array.isArray(data) ? data : Object.values(data)).map((item) => {
+                        const rnVal = item.rn ?? item.carpetRnNumber ?? item.rnNumber ?? item.reference ?? item.name ?? '';
+                        return {
+                            ...item,
+                            rnNumber: rnVal
+                        };
+                    });
                     if (this.modelValue) {
-                        this.selectedRn = this.rns.find((r) => r.rnNumber === this.modelValue) || null;
+                        // modelValue may be an RN string or an id
+                        const byRn = this.rns.find((r) => r.rnNumber === String(this.modelValue));
+                        const byId = this.rns.find((r) => String(r.id) === String(this.modelValue));
+                        this.selectedRn = byRn || byId || null;
                     }
                 } catch (e) {
                     console.error('Erreur get RN list.', e);
                 }
-            },
+            }
         },
         mounted() {
             this.getRn();
@@ -102,11 +108,14 @@
         watch: {
             modelValue(newValue) {
                 if (newValue) {
-                    return true;
+                    // If modelValue changes externally, try to sync selectedRn
+                    const byRn = this.rns.find((r) => r.rnNumber === String(newValue));
+                    const byId = this.rns.find((r) => String(r.id) === String(newValue));
+                    this.selectedRn = byRn || byId || null;
                 } else {
                     this.selectedRn = null;
                 }
-            },
-        },
+            }
+        }
     };
 </script>
