@@ -205,7 +205,7 @@
                                                 <d-input label="Total HT" :disabled="true"
                                                          v-model="prices.remise.total_ht"></d-input>
                                             </div>
-                                            <div class="col-md-3 col-sm-12">
+                                            <div class="col-md-3 col-sm-12" v-if="!hideTotalTtc">
                                                 <d-input label="Total TTC" :disabled="true"
                                                          v-model="prices.remise.total_ttc"></d-input>
                                             </div>
@@ -261,7 +261,7 @@
                                                          v-model="prices.tarif_avant_remise_complementaire.total_ht"
                                                          @changeValue="handleDetailAutoSave"></d-input>
                                             </div>
-                                            <div class="col-md-3 col-sm-12">
+                                            <div class="col-md-3 col-sm-12" v-if="!hideTotalTtc">
                                                 <d-input label="Total TTC" :disabled="true"
                                                          v-model="prices.tarif_avant_remise_complementaire.total_ttc"></d-input>
                                             </div>
@@ -308,7 +308,7 @@
                                                 <d-input label="Total HT" :disabled="true"
                                                          v-model="prices.tarif_propose.total_ht"></d-input>
                                             </div>
-                                            <div class="col-md-3 col-sm-12">
+                                            <div class="col-md-3 col-sm-12" v-if="!hideTotalTtc">
                                                 <d-input label="Total TTC" :disabled="true"
                                                          v-model="prices.tarif_propose.total_ttc"></d-input>
                                             </div>
@@ -673,6 +673,21 @@
             total_ht: 0,
             total_ttc: 0
         }
+    });
+
+    // Tax rule from quoteData.taxRule; used to hide all "Total TTC" fields when no tax is applied
+    const taxRule = computed(() => {
+        // quote.value comes from quoteService.getQuoteById and returns response.quoteData
+        const q = quote.value || {};
+        return q.taxRule || null;
+    });
+
+    const hideTotalTtc = computed(() => {
+        const rule = taxRule.value || {};
+        const id = rule.id !== undefined && rule.id !== null ? Number(rule.id) : null;
+        const rate = rule.taxRate !== undefined && rule.taxRate !== null ? String(rule.taxRate) : '';
+        // Business rule: hide Total TTC when tax rule indicates 0% tax
+        return id === 1 && rate === '0.000000';
     });
 
     let applyConfirmationTarifId = true;
