@@ -15,18 +15,22 @@
                                              role="menu" data-bs-toggle="collapse" :data-bs-target="'#event'+index"
                                              aria-expanded="false" :aria-controls="'address'+index">
                                             <div class="d-flex w-100 justify-content-between align-items-center">
-                                                <div>
-                                                    <strong>
-                                                        {{ item.event || ('Evenement ' + (index + 1)) }}
-                                                        <!-- If the event/status is Tissage, show the tissage value next to the event -->
-                                                        <span
-                                                            v-if="(item.event === 'Tissage' || item.status?.status === 'Tissage') && item.tissage"
-                                                            class="ms-2 text-muted">- {{ item.tissage }}</span>
-                                                    </strong>
-                                                    <small
-                                                        class="text-muted ms-2">{{ item.dateEvent ? Helper.FormatDate(item.dateEvent, 'DD/MM/YYYY') : ''
-                                                        }}</small>
-                                                </div>
+                                                
+                                                <strong>
+                                                    {{ item.event || ('Evenement ' + (index + 1)) }}
+                                                    <!-- If the event/status is Tissage, show the tissage value next to the event -->
+                                                    <span
+                                                        v-if="(item.event === 'Tissage' || item.status?.status === 'Tissage') && item.tissage"
+                                                        class="ms-2 text-muted">- {{ item.tissage }}</span>
+                                                    <span
+                                                        v-if="(item.event === 'Tissage' || item.status?.status === 'Tissage') && item.orderedHeigh"
+                                                        class="text-muted">/{{ Helper.FormatNumber(item.orderedHeigh)
+                                                        }}</span>
+                                                </strong>
+                                                <small
+                                                    class="text-muted ms-2">{{ item.dateEvent ? Helper.FormatDate(item.dateEvent, 'DD/MM/YYYY') : ''
+                                                    }}</small>
+
                                             </div>
                                             <div class="icons">
                                                 <vue-feather type="chevron-down" size="14"></vue-feather>
@@ -116,11 +120,15 @@
             const provisionalCalendar = res.data?.response;
             if (provisionalCalendar.length > 0) {
                 const d = await progressReportService.getByPrevId(provisionalCalendar[0].id);
+                // read orderedHeigh from workshopInformation if available
+                const orderedHeighFromCalendar = provisionalCalendar[0]?.workshopOrder?.workshopInformation?.orderedHeigh ?? '';
                 data.value = d.map((item) => {
                     // set readable event/status
                     item.event = item.status?.status;
                     // prefer tissage available at top-level, then under status, then under response
                     item.tissage = item.tissage ?? item.status?.tissage ?? item.response?.tissage ?? '';
+                    // attach orderedHeigh from calendar when not present in item
+                    item.orderedHeigh = item.orderedHeigh ?? item.response?.workshopInformation?.orderedHeigh ?? orderedHeighFromCalendar ?? '';
                     return item;
                 });
                 emit('lastOne', data.value[data.value.length - 1]);
