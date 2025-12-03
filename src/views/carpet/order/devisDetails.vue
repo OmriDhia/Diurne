@@ -111,6 +111,10 @@
                                          v-model="data.totalDiscountAmount" type="date"></d-input>
                             </div>
                             <div class="row pe-2 ps-0 align-items-center">
+                                <d-input label="Date de cmd client" v-model="data.customerOrderDate" type="date"
+                                         :disabled="true"></d-input>
+                            </div>
+                            <div class="row pe-2 ps-0 align-items-center">
                                 <div class="row align-items-center pt-2">
                                     <div class="col-4"><label class="form-label" for="shippingDelay">Délais livraison
                                         (semaine):</label></div>
@@ -122,7 +126,7 @@
                             </div>
                             <div class="row align-items-center pe-2 ps-0">
                                 <d-input type="date" label="Date de livraison prévu"
-                                         v-model="data.additionalDiscount"></d-input>
+                                         v-model="data.additionalDiscount" :disabled="true"></d-input>
                             </div>
                             <div class="row align-items-center pe-2 ps-0">
                                 <d-input label="Quantité de tapis" v-model="data.quoteDetail.wantedQuantity"></d-input>
@@ -546,7 +550,11 @@
             dimensions: [],
             materials: [],
             randomWeight: 0
-        }
+        },
+        // UI and computed dates
+        totalDiscountAmount: '', // deposit date (will be filled from carpetOrder.created_at if present)
+        customerOrderDate: '', // last date between validatedAt and deposit date
+        additionalDiscount: '' // used for computed delivery date (planned delivery)
     });
     const currentCustomer = ref({});
     const prices = ref({
@@ -693,11 +701,96 @@
                 CarpetOrderDetail.value = response;
                 carpetOrderDetailsId.value = response.id;
                 console.log('Parent - Set carpetOrderDetailsId:', response.id);
+                // Try to extract carpet order creation date from response and set it as deposit date if available
+                const tryExtractDate = (obj) => {
+                    if (!obj) return null;
+                    // Common shapes: 'createdAt' as string or object { date: '...' } or 'created_at'
+                    if (typeof obj === 'string') return obj;
+                    if (obj.createdAt) {
+                        if (typeof obj.createdAt === 'string') return obj.createdAt;
+                        if (obj.createdAt.date) return obj.createdAt.date;
+                    }
+                    if (obj.created_at) {
+                        if (typeof obj.created_at === 'string') return obj.created_at;
+                        if (obj.created_at.date) return obj.created_at.date;
+                    }
+                    if (obj.carpetOrder && obj.carpetOrder.createdAt) {
+                        if (typeof obj.carpetOrder.createdAt === 'string') return obj.carpetOrder.createdAt;
+                        if (obj.carpetOrder.createdAt.date) return obj.carpetOrder.createdAt.date;
+                    }
+                    if (obj.carpetOrder && obj.carpetOrder.created_at) {
+                        if (typeof obj.carpetOrder.created_at === 'string') return obj.carpetOrder.created_at;
+                        if (obj.carpetOrder.created_at.date) return obj.carpetOrder.created_at.date;
+                    }
+                    return null;
+                };
+
+                const extracted = tryExtractDate(response) || tryExtractDate(response.carpetOrder) || tryExtractDate(response.carpetOrder?.contremarqueData) || null;
+                if (extracted) {
+                    const asDate = moment(extracted).isValid() ? moment(extracted).format('YYYY-MM-DD') : null;
+                    if (asDate && (!data.value.totalDiscountAmount || data.value.totalDiscountAmount === '')) {
+                        data.value.totalDiscountAmount = asDate;
+                    }
+                }
+
+                // Recompute customer order date and planned delivery when we have carpet order detail
+                computeCustomerOrderDate();
+                computeDeliveryDate();
             }
         } catch (e) {
             console.error('Error fetching carpet order:', e);
         }
     };
+
+    // Compute customer order date = last date between quoteDetail.validatedAt and deposit date (totalDiscountAmount)
+    const computeCustomerOrderDate = () => {
+        try {
+            const validated = data.value.quoteDetail?.validatedAt ? moment(data.value.quoteDetail.validatedAt) : null;
+            const deposit = data.value.totalDiscountAmount ? moment(data.value.totalDiscountAmount) : null;
+            let chosen = null;
+            if (validated && deposit) {
+                chosen = validated.isAfter(deposit) ? validated : deposit;
+            } else if (validated) chosen = validated;
+            else if (deposit) chosen = deposit;
+            data.value.customerOrderDate = chosen ? chosen.format('YYYY-MM-DD') : '';
+        } catch (err) {
+            console.error('Error computing customer order date', err);
+            data.value.customerOrderDate = '';
+        }
+    };
+
+    // Compute planned delivery date = customerOrderDate + estimatedDeliveryTime (weeks)
+    const computeDeliveryDate = () => {
+        try {
+            if (data.value.customerOrderDate && data.value.quoteDetail?.estimatedDeliveryTime != null) {
+                const weeks = parseInt(data.value.quoteDetail.estimatedDeliveryTime) || 0;
+                const base = moment(data.value.customerOrderDate);
+                if (base.isValid()) {
+                    const delivery = base.add(weeks, 'weeks');
+                    data.value.additionalDiscount = delivery.format('YYYY-MM-DD');
+                    return;
+                }
+            }
+            // fallback: if no customerOrderDate but quoteDetail has a target date in quote/carpet order
+            data.value.additionalDiscount = '';
+        } catch (err) {
+            console.error('Error computing delivery date', err);
+            data.value.additionalDiscount = '';
+        }
+    };
+
+    // Watch for changes that affect computed dates
+    watch(() => data.value.totalDiscountAmount, () => {
+        computeCustomerOrderDate();
+        computeDeliveryDate();
+    });
+    watch(() => data.value.quoteDetail.validatedAt, () => {
+        computeCustomerOrderDate();
+        computeDeliveryDate();
+    });
+    watch(() => data.value.quoteDetail.estimatedDeliveryTime, () => {
+        computeDeliveryDate();
+    });
 
     const changePrices = async (price) => {
         applyStopAutoSave();
@@ -722,7 +815,7 @@
                         currencyId: quoteDetail.value.currency ? quoteDetail.value.currency.id : quote.value?.currency.id,
                         totalPriceRate: quoteDetail.value.totalPriceRate,
                         isValidated: quoteDetail.value.isValidated,
-                        validatedAt: null,
+                        validatedAt: quoteDetail.value.validatedAt || quoteDetail.value.validated_at || null,
                         wantedQuantity: quoteDetail.value.wantedQuantity,
                         estimatedDeliveryTime: parseInt(quoteDetail.value.estimatedDeliveryTime),
                         applyLargeProjectRate: quoteDetail.value.applyLargeProjectRate,
@@ -749,6 +842,10 @@
                         randomWeight: quoteDetail.value.carpetSpecification?.randomWeight
                     }
                 };
+                +
+                    +                // compute dates now that data has been initialized
+                        +computeCustomerOrderDate();
+                +computeDeliveryDate();
             }
         } catch (e) {
             console.log(e);
