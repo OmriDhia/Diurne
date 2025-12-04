@@ -989,7 +989,12 @@
 
     const goToDi = () => {
         if (projectDi.value.contremarque) {
-            router.push({ name: 'projectDIS', params: { id: projectDi.value.contremarque } });
+            // include selected_di in query so the DI listing can pre-select the related DI row
+            router.push({
+                name: 'projectDIS',
+                params: { id: projectDi.value.contremarque },
+                query: { selected_di: id_di }
+            });
         }
     };
 
