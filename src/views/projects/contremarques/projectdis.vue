@@ -216,7 +216,8 @@
                         </button>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-custom pe-5 ps-5" :disabled="selectedData.transmitted_to_studio"
+                        <button class="btn btn-custom pe-5 ps-5"
+                               
                                 @click="TransStudio"
                                 title="Transmettre toutes les demandes de cette DI au studio">
                             Transmettre au studio

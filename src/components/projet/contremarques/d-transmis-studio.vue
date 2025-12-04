@@ -30,9 +30,9 @@
                 </button>
             </div>
             <div class="col-auto" v-if="canShowTransmisStudio">
-                <button class="btn btn-custom ps-4 pe-4 text-uppercase font-size-0-7" @click="transmisStudio">
-                    Transmettre la demande au studio
-                </button>
+                <!--                <button class="btn btn-custom ps-4 pe-4 text-uppercase font-size-0-7" @click="transmisStudio">
+                                    Transmettre la demande au studio
+                                </button>-->
             </div>
         </div>
         <div class="row justify-content-end align-items-center mt-3">
