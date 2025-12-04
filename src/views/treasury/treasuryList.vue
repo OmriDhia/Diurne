@@ -8,7 +8,8 @@
                 <div class="row d-flex justify-content-center align-items-start p-2">
                     <div class="col-md-6 col-sm-12">
                         <div class="row">
-                            <d-input label="Client" v-model="filter.customer"></d-input>
+
+                            <d-customer-dropdown v-model="filter.customer" :showCustomer="true"></d-customer-dropdown>
                         </div>
                         <div class="row">
                             <d-input label="Commercial" v-model="filter.commercial"></d-input>
@@ -70,6 +71,7 @@
     import { ref, reactive, onMounted, computed, toRaw, watch } from 'vue';
     import dDataGrid from '../../components/base/d-data-grid.vue';
     import dInput from '../../components/base/d-input.vue';
+    import DCustomerDropdown from '../../components/common/d-customer-dropdown.vue';
     import dPageTitle from '../../components/common/d-page-title.vue';
     import axiosInstance from '../../config/http';
     import contactService from '../../Services/contact-service';
@@ -79,6 +81,22 @@
         FILTER_ORDER_PAYMENT_STORAGE_NAME
     } from '../../composables/constants';
     import { Helper } from '../../composables/global-methods';
+
+    const API_DATETIME_FORMAT = 'YYYY-MM-DD';
+    const normalizeDateValue = (rawDate) => {
+        if (!rawDate) {
+            return null;
+        }
+        const source = typeof rawDate === 'object' && rawDate.date ? rawDate.date : rawDate;
+        const formatted = Helper.FormatDateTime(source, API_DATETIME_FORMAT);
+        return formatted && formatted !== 'Invalid date' ? formatted : null;
+    };
+    const formatDateForApi = (rawDate) => {
+        if (!rawDate) {
+            return null;
+        }
+        return normalizeDateValue(rawDate);
+    };
 
     const loading = ref(false);
     const rows = ref([]);
@@ -513,7 +531,7 @@
 
         return {
             id: rawPayment.id,
-            dateOfReceipt: rawPayment.dateOfReceipt?.date,
+            dateOfReceipt: normalizeDateValue(rawPayment.dateOfReceipt),
             paymentMethod: paymentMethod,
             accountLabel: rawPayment.accountLabel,
             paymentAmountHt: parseFloat(rawPayment.paymentAmountHt),
@@ -594,7 +612,7 @@
         try {
             console.log(row.customer);
             const payload = {
-                dateOfReceipt: row.dateOfReceipt || null,
+                dateOfReceipt: formatDateForApi(row.dateOfReceipt),
                 paymentMethod: row.paymentMethod?.id ?? row.paymentMethod ?? null,
                 accountLabel: row.accountLabel || null,
                 paymentAmountHt: row.paymentAmountHt !== null && row.paymentAmountHt !== undefined
@@ -616,7 +634,7 @@
     const addData = async (row) => {
         try {
             const payload = {
-                dateOfReceipt: row.dateOfReceipt || null,
+                dateOfReceipt: formatDateForApi(row.dateOfReceipt),
                 paymentMethod: row.paymentMethod || null,
                 accountLabel: row.accountLabel || null,
                 paymentAmountHt: row.paymentAmountHt !== null && row.paymentAmountHt !== undefined
@@ -664,17 +682,79 @@
         }
     };
 
+    // Helper to extract a readable name from a selected customer value (object or string/number)
+    function serializeCustomerForFilter(customerValue) {
+        if (!customerValue && customerValue !== 0 && customerValue !== '0') return null;
+
+        if (typeof customerValue === 'object') {
+            return customerValue.customer || customerValue.customerName || customerValue.social_reason ||
+                (`${customerValue.firstname || ''} ${customerValue.lastname || ''}`.trim()) || String(customerValue.id || customerValue.customer_id || '');
+        }
+
+        return String(customerValue);
+    }
+
+    // Helper to extract readable commercial name for filter param
+    function serializeCommercialForFilter(commercialValue) {
+        if (!commercialValue && commercialValue !== 0 && commercialValue !== '0') return null;
+
+        if (typeof commercialValue === 'object') {
+            return commercialValue.name || commercialValue.commercialName ||
+                (`${commercialValue.firstname || ''} ${commercialValue.lastname || ''}`.trim()) || String(commercialValue.id || commercialValue.user_id || '');
+        }
+
+        return String(commercialValue);
+    }
+
     const getFilterParams = () => {
+        const filters = filter.value || {};
         let param = '';
-        const filters = filter.value;
-        for (const key in filters) {
-            if (filters[key]) {
-                param += `&${key}=${encodeURIComponent(filters[key])}`;
+
+        // Map amount => minPaymentAmount & maxPaymentAmount
+        if (filters.amount || filters.amount === 0) {
+            const amount = String(filters.amount).trim();
+            if (amount !== '') {
+                param += `&minPaymentAmount=${encodeURIComponent(amount)}`;
+                param += `&maxPaymentAmount=${encodeURIComponent(amount)}`;
             }
         }
+
+        // Customer: API expects a search string (used with LIKE)
+        const customerValue = serializeCustomerForFilter(filters.customer);
+        if (customerValue) {
+            param += `&customer=${encodeURIComponent(customerValue)}`;
+        }
+
+        // Commercial: API expects a search string (used with LIKE)
+        const commercialValue = serializeCommercialForFilter(filters.commercial);
+        if (commercialValue) {
+            param += `&commercial=${encodeURIComponent(commercialValue)}`;
+        }
+
+        // Currency: accept object or primitive id
+        if (filters.currency || filters.currency === 0) {
+            const currencyId = (typeof filters.currency === 'object') ? (filters.currency.id ?? '') : filters.currency;
+            if (currencyId !== '' && currencyId !== null && currencyId !== undefined) {
+                param += `&currency=${encodeURIComponent(currencyId)}`;
+            }
+        }
+
+        // hasNoChilds (boolean)
+        if (filters.hasNoChilds !== undefined && filters.hasNoChilds !== null) {
+            param += `&hasNoChilds=${filters.hasNoChilds ? 'true' : 'false'}`;
+        }
+
+        // Keep other simple filters if present (devis/commande/prescriptor/contremarque)
+        const passthroughKeys = ['contremarque', 'devis', 'commande', 'prescriptor'];
+        passthroughKeys.forEach(k => {
+            if (filters[k] || filters[k] === 0) {
+                const v = String(filters[k]);
+                if (v.trim() !== '') param += `&${k}=${encodeURIComponent(v)}`;
+            }
+        });
+
         return param;
     };
-
     const doSearch = async () => {
         Helper.setStorage(FILTER_ORDER_PAYMENT_STORAGE_NAME, filter.value);
         filterActive.value = true;
