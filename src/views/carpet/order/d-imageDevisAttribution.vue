@@ -23,6 +23,7 @@
 <script setup>
     import { ref, onMounted, watch, defineProps } from 'vue';
     import axiosInstance from '../../../config/http'; // Adjust your axios import as needed
+    import { API_URL } from '../../../config/config';
 
     const props = defineProps({
         contremarqueId: { type: Number, default: 0 },
@@ -114,7 +115,22 @@
      * Convert image name to a direct path
      */
     const getImageUrl = (imageName) => {
-        return `http://localhost:8741/uploads/attachments/${imageName}`;
+        if (!imageName) return '';
+        // if it's already an absolute url, return as-is
+        if (/^https?:\/\//i.test(imageName) || /^\/\//.test(imageName)) {
+            return imageName;
+        }
+        // Choose base: explicit API_URL, axios baseURL, or current origin
+        const base = (typeof API_URL !== 'undefined' && API_URL) || (axiosInstance && axiosInstance.defaults && axiosInstance.defaults.baseURL) || window.location.origin;
+        // Remove trailing slash from base if present
+        const normalizedBase = String(base).replace(/\/$/, '');
+        // Ensure filename is URI-encoded
+        const safeName = encodeURIComponent(imageName);
+        // If imageName starts with a slash treat it as absolute path on the host
+        if (imageName.startsWith('/')) {
+            return `${normalizedBase}${imageName}`;
+        }
+        return `${normalizedBase}/uploads/attachments/${safeName}`;
     };
 
     onMounted(() => {

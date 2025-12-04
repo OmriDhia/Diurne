@@ -154,6 +154,7 @@
     import axiosInstance from '../../../config/http';
 
     import { formatErrorViolationsComposed } from '../../../composables/global-methods';
+    import { API_URL } from '../../../config/config';
 
     const props = defineProps({
         contremarqueId: { type: Number, default: 0 },
@@ -417,7 +418,18 @@
      * Convert image name to a direct path
      */
     const getImageUrl = (imageName) => {
-        return `https://diurne-api.webntricks.com/uploads/attachments/${imageName}`;
+        if (!imageName) return '';
+        // If already absolute URL, return as-is
+        if (/^https?:\/\//i.test(imageName) || /^\/\//.test(imageName)) {
+            return imageName;
+        }
+        const base = (typeof API_URL !== 'undefined' && API_URL) || (axiosInstance && axiosInstance.defaults && axiosInstance.defaults.baseURL) || window.location.origin;
+        const normalizedBase = String(base).replace(/\/$/, '');
+        const safeName = encodeURIComponent(imageName);
+        if (imageName.startsWith('/')) {
+            return `${normalizedBase}${imageName}`;
+        }
+        return `${normalizedBase}/uploads/attachments/${safeName}`;
     };
 
     const fetchCarpetDesignOrderById = async (orderId) => {

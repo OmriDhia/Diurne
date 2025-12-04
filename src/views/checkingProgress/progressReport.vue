@@ -1,12 +1,12 @@
 <template>
     <d-base-page :loading="loading">
         <template #title>
-            <d-page-title title="Progress Report" />
+            <d-page-title title="Créer un progress report" />
         </template>
         <template #body>
             <d-panel>
                 <template #panel-header>
-                    <d-panel-title title="Create progress report" />
+                    <d-panel-title title="Créer un rapport d'avancement" />
                 </template>
                 <template #panel-body>
                     <div class="row">
@@ -14,7 +14,7 @@
                             <d-input type="date" label="Date PR" v-model="form.datePr" />
                         </div>
                         <div class="col-md-6">
-                            <d-users-dropdown label="Auteur" v-model="form.authorId" :required="true" />
+                            <d-users-dropdown label="Auteur" v-model="form.authorId" :required="true" disabled />
                         </div>
                         <div class="col-md-6">
                             <d-input type="text" label="RN" v-model="form.rn" />
@@ -30,8 +30,8 @@
                         <div class="col-md-12">
                             <div class="row mt-2" v-for="(process,index) in processes" :key="index">
                                 <div class="col-md-3">
-                                    <d-progress-process-dropdown :disabled="true"
-                                                                 v-model="process.processId"></d-progress-process-dropdown>
+                                    <d-progress-process-dropdown
+                                        v-model="process.processId"></d-progress-process-dropdown>
                                 </div>
                                 <div class="col-md-3">
                                     <d-input type="date" label="fin" v-model="process.debut"></d-input>
@@ -47,7 +47,7 @@
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-6">
-                            <d-contremarque-dropdown v-model="form.contremarque" :disabled="true" />
+                            <d-contremarque-dropdown v-model="form.contremarque" />
                             <d-input type="date" label="date évènement" v-model="form.dateEvent" />
                             <d-input type="date" label="date atelier cible" v-model="form.dateWorkshop" />
                             <div class="row align-items-center" v-if="form.statusId?.id === 2">
@@ -69,9 +69,6 @@
                     <div class="row mt-4 justify-content-end">
                         <div class="col-auto">
                             <button class="btn btn-custom" @click="save">Enregistrer</button>
-                        </div>
-                        <div class="col-auto">
-                            <button class="btn btn-custom" @click="save">Nouveau PR</button>
                         </div>
                         <div class="col-auto">
                             <button class="btn btn-custom pe-5 ps-5" @click="goToWorkshop">
@@ -193,41 +190,23 @@
         router.back();
     };
 
-    const switchProcessByStatusId = async () => {
+    const switchProcessByStatusId = () => {
         processes.value = [];
         const statusId = form.value.statusId?.id;
-        switch (statusId) {
-            case 1 || 2:
-                processes.value.push({
-                    processId: 1,
-                    debut: '',
-                    fin: '',
-                    comment: ''
-                });
-                if (statusId === 1) {
-                    processes.value.push({
-                        processId: 2,
-                        debut: '',
-                        fin: '',
-                        comment: ''
-                    });
-                }
-                break;
-            case 3:
-                processes.value.push({
-                    processId: 3,
-                    debut: '',
-                    fin: '',
-                    comment: ''
-                });
-                processes.value.push({
-                    processId: 4,
-                    debut: '',
-                    fin: '',
-                    comment: ''
-                });
-                break;
+        if (!statusId) return;
+        if (statusId === 1 || statusId === 2) {
+            processes.value.push({ processId: 1, debut: '', fin: '', comment: '' });
+            if (statusId === 1) {
+                processes.value.push({ processId: 2, debut: '', fin: '', comment: '' });
+            }
+        } else if (statusId === 3) {
+            processes.value.push({ processId: 3, debut: '', fin: '', comment: '' });
+            processes.value.push({ processId: 4, debut: '', fin: '', comment: '' });
         }
+    };
+
+    const addProcess = () => {
+        processes.value.push({ processId: null, debut: '', fin: '', comment: '' });
     };
     watch(() => form.value.statusId, switchProcessByStatusId);
 </script>
