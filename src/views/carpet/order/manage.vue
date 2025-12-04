@@ -92,7 +92,7 @@
                             <d-input label="frais de port" v-model="data.shippingPrice"
                                      :error="error.shippingPrice"></d-input>
                             <d-input label="Poids global (kg)" v-model="data.weight" :error="error.weight"></d-input>
-                            <d-input type="Date" label="Date commande"></d-input>
+                            <d-input type="Date" label="Date commande" v-model="createdDate"></d-input>
                             <div class="row justify-content-center align-items-center mt-5">
                                 <div class="col-md-6">
                                     <button class="btn btn-custom font-size-0-7 text-uppercase" data-bs-toggle="modal"
@@ -417,10 +417,14 @@
             if (quote_id) {
                 loading.value = true;
                 quote.value = await quoteService.getQuoteById(quote_id);
-                contremarqueId.value = quote.value?.contremarqueId;
-                quoteNumber.value = quote.value?.reference;
-                quoteDetails.value = quote.value?.quoteDetails;
-                createdDate.value = moment(quote.value.createdAt).format('YYYY-MM-DD');
+                // support multiple possible response shapes from the API
+                // e.g. quote.value.createdAt OR quote.value.response.quoteData.createdAt OR quote.value.quoteData.createdAt
+                contremarqueId.value = quote.value?.contremarqueId || quote.value?.response?.quoteData?.contremarqueId || quote.value?.quoteData?.contremarqueId;
+                quoteNumber.value = quote.value?.reference || quote.value?.response?.quoteData?.reference || quote.value?.quoteData?.reference || '';
+                quoteDetails.value = quote.value?.quoteDetails || quote.value?.response?.quoteData?.quoteDetails || quote.value?.quoteData?.quoteDetails || [];
+                // resolve createdAt robustly
+                const rawCreatedAt = quote.value?.createdAt || quote.value?.response?.quoteData?.createdAt || quote.value?.quoteData?.createdAt || quote.value?.response?.createdAt || null;
+                createdDate.value = rawCreatedAt ? moment(rawCreatedAt).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
                 applyStopAutoSave();
                 data.value = {
                     discountRuleId: 0,

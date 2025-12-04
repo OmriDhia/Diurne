@@ -743,7 +743,15 @@
                 const res = await axiosInstance.put(`/api/carpet-design-order/${carpetDesignOrderId}`, dataCarpetOrder.value);
                 window.showMessage('Mise à jour avec succées.');
                 transDate.value = moment().format('YYYY-MM-DD HH:mm:ss');
-                applyCarpetStatus(statusId);
+                // Apply the status; if no explicit statusId was provided (saving specs only),
+                // use the current status stored on the order to avoid unintentionally toggling store flags.
+                // const appliedStatus = (typeof statusId !== 'undefined' && statusId !== null) ? statusId : dataCarpetOrder.value.status_id;
+                // applyCarpetStatus(appliedStatus);
+                // Only apply status changes when an explicit statusId is provided.
+                // Saving specifications should not change store flags that control UI disabling.
+                if (typeof statusId !== 'undefined' && statusId !== null) {
+                    applyCarpetStatus(statusId);
+                }
             } else {
                 const res = await axiosInstance.post(`/api/projectDi/${id_di}/carpet-design-order`, dataCarpetOrder.value);
                 window.showMessage('Ajout avec succées.');
