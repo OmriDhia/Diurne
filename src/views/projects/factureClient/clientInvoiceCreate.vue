@@ -2,7 +2,7 @@
     <div class="create-facture-client">
         <d-base-page :loading="loading">
             <template #title>
-                <d-page-title title="Nouvelle Facture" />
+                <d-page-title title="Facture" />
             </template>
 
             <template #body>
@@ -173,12 +173,11 @@
                                     <thead>
                                     <tr class="border-top text-black bg-black">
                                         <th rowspan="2" class="text-white">% Prix total</th>
-                                        <th rowspan="2" class="text-white">RN<span class="required">*</span></th>
+                                        <th rowspan="2" class="text-white">RN</th>
                                         <th rowspan="2" class="text-white">Collection</th>
                                         <th rowspan="2" class="text-white">Modèle</th>
                                         <!--                                            <th rowspan="2" class="text-white">Ref tapis devis</th>-->
-                                        <th rowspan="2" class="text-white">Ref tapis commande<span
-                                            class="required">*</span></th>
+                                        <th rowspan="2" class="text-white">Ref tapis commande</th>
                                         <th rowspan="2" class="border-end text-white">Versement</th>
                                         <th colspan="4" class="border-start border-end text-white text-center">Prix
                                             vendu
@@ -1013,7 +1012,10 @@
                 }
 
                 window.showMessage('Mise à jour effectuée (id: ' + (updateResult?.id || invoiceId) + ').', 'success');
-                router.push({ name: 'client-invoice-list' });
+                // Stay on the same edit page after update (do not redirect to the list)
+                // The current route is already the edit page (route.params.id)
+                // Optionally refresh the current route to reload data if needed
+                // router.replace({ name: 'client-invoice-edit', params: { id: updateResult?.id || invoiceId } });
             } else {
                 // Create invoice (send strictly-typed camelCase payload to satisfy validators)
                 const createdInvoice = await customerInvoiceService.create(finalPayloadCamel);
@@ -1052,7 +1054,11 @@
                 }
 
                 window.showMessage('Ajout effectué (id: ' + (createdInvoice?.id || '') + ').', 'success');
-                router.push({ name: 'client-invoice-list' });
+                // Stay on the same page: switch to edit mode for the newly created invoice so user can continue editing
+                if (createdInvoice?.id) {
+                    // Replace the route so the user stays on the form but now with the invoice id in URL
+                    router.replace({ name: 'client-invoice-edit', params: { id: createdInvoice.id } });
+                }
             }
         } catch (e) {
             const serverData = e?.response?.data;
@@ -1140,14 +1146,14 @@
     };
 
     const removeLine = async (index) => {
-        lines.value.splice(index, 1);
         const line = lines.value[index];
-        if (line.id) {
+        if (line && line.id) {
             try {
                 loading.value = true; // Add loading state for deletion
-                lines.value.splice(index, 1);
                 await customerInvoiceDetailsService.delete(line.id);
                 window.showMessage('Ligne supprimée avec succès.');
+                // Remove after successful API delete
+                lines.value.splice(index, 1);
             } catch (e) {
                 window.showMessage(e.message, 'error');
                 loading.value = false; // Ensure loading is turned off on error
@@ -1155,8 +1161,10 @@
             } finally {
                 loading.value = false; // Ensure loading is turned off on success
             }
+        } else {
+            // Remove from array when it doesn't have an ID (not persisted yet)
+            lines.value.splice(index, 1);
         }
-        // Remove from array only after successful API delete if line had an ID
     };
 
     // parse input string into a numeric string with 2 decimals stored on the line
@@ -1182,6 +1190,7 @@
             });
         }
     };
+
 </script>
 
 <style>
