@@ -5,7 +5,7 @@
         <div class="row layout-top-spacing mt-3 p-2">
             <div class="panel br-6 p-2">
                 <div class="row p-2">
-                    <div class="table-checkable table-highlight-head table-responsive">
+                    <div class="table-checkable table-highlight-head table-responsive di-listing">
                         <table role="table" aria-busy="false" aria-colcount="5"
                                class="w-50 histories-event-table table b-table table-striped">
                             <thead>
@@ -271,7 +271,19 @@
             const res = await axiosInstance.get(`/api/contremarque/${contremarque_id}/projectDis`);
             datas.value = res.data.response.projectDis;
             selectedDiId.value = null;
-            await handleSelected(0);
+            // If the route contains a selected_di query parameter, pre-select that DI
+            const selectedDiFromQuery = route.query.selected_di || null;
+            if (selectedDiFromQuery) {
+                const idx = datas.value.findIndex(d => String(d.project_di) === String(selectedDiFromQuery));
+                if (idx !== -1) {
+                    await handleSelected(idx);
+                    return;
+                }
+            }
+            // Fallback to first DI if none specified or not found
+            if (datas.value.length) {
+                await handleSelected(0);
+            }
         } catch (e) {
             console.log('Erreur get data di');
         }
