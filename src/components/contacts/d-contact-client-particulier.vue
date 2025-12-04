@@ -3,11 +3,13 @@
         <div class="row pe-2">
             <div id="toggleAccordion" class="accordion">
                 <div class="card mb-1">
-                    <div id="headingOne1" class="collapse show" aria-labelledby="headingOne1" data-bs-parent="#toggleAccordion">
+                    <div id="headingOne1" class="collapse show" aria-labelledby="headingOne1"
+                         data-bs-parent="#toggleAccordion">
                         <div class="card-body">
                             <div class="row p-1 align-items-center">
                                 <div class="col-sm-12 col-md-6">
-                                    <d-gender :required="true" v-model="data.gender_id" :error="props.error?.gender_id"></d-gender>
+                                    <d-gender :required="true" v-model="data.gender_id"
+                                              :error="props.error?.gender_id"></d-gender>
                                 </div>
                             </div>
                             <div class="row p-1 align-items-center">
@@ -17,12 +19,14 @@
                             </div>
                             <div class="row p-1 align-items-center">
                                 <div class="col-sm-12 col-md-6">
-                                    <d-input label="Tel. portable" v-model="data.mobile_phone" :error="props.error?.mobile_phone"></d-input>
+                                    <d-input label="Tel. portable" v-model="data.mobile_phone"
+                                             :error="props.error?.mobile_phone"></d-input>
                                 </div>
                             </div>
                             <div class="row p-1 align-items-center">
                                 <div class="col-sm-12 col-md-6">
-                                    <d-input label="Tél. fixe" v-model="data.phone" :error="props.error?.phone"></d-input>
+                                    <d-input label="Tél. fixe" v-model="data.phone"
+                                             :error="props.error?.phone"></d-input>
                                 </div>
                             </div>
                         </div>
@@ -34,7 +38,7 @@
 </template>
 
 <script setup>
-    import { defineProps, ref, watch } from 'vue';
+    import { defineProps, ref, watch, nextTick } from 'vue';
     import axiosInstance from '../../config/http';
     import VueFeather from 'vue-feather';
     import dContactFormParticulier from './_partial/d-contact-form-particulier.vue';
@@ -43,27 +47,28 @@
     import { formatErrorViolations } from '../../composables/global-methods';
     import '../../assets/sass/components/tabs-accordian/custom-accordions.scss';
     import dBtnOutlined from '../base/d-btn-outlined.vue';
+
     const props = defineProps({
         contactData: {
             type: Array,
-            default: [],
+            default: []
         },
         isParticular: {
-            type: Boolean,
+            type: Boolean
         },
         required: {
             type: Boolean,
-            default: true,
+            default: true
         },
         formData: {
             // New prop for form data
             type: Object,
-            required: true,
+            required: true
         },
         error: {
             type: Object,
-            default: () => ({}),
-        },
+            default: () => ({})
+        }
     });
     const emit = defineEmits(['updateFormData']);
     // const error = ref({});
@@ -72,12 +77,14 @@
         gender_id: 0,
         email: '',
         phone: null,
-        mobile_phone: null,
+        mobile_phone: null
 
     });
     const CONTACT_FIELDS = Object.keys(DEFAULT_CONTACT);
 
     const data = ref({ ...DEFAULT_CONTACT, ...props.formData });
+    // Flag used to suppress emitting while we are synchronizing data from parent props
+    const updatingFromParent = ref(false);
 
     const assignFromSource = (source, { replace = false } = {}) => {
         if (!source) {
@@ -94,7 +101,13 @@
             }
         });
 
+        // Mark that this assignment originates from parent input so data watcher won't re-emit
+        updatingFromParent.value = true;
         data.value = target;
+        // clear the flag on next tick so subsequent user edits will emit normally
+        nextTick(() => {
+            updatingFromParent.value = false;
+        });
     };
 
     // Prefer the contact payload coming from the API when it is available.
@@ -142,11 +155,13 @@
     watch(
         data,
         (newValue) => {
+            // If we're currently applying a parent-driven assignment, skip emitting back
+            if (updatingFromParent.value) return;
             emit('updateFormData', newValue);
         },
         { deep: true }
     );
 
-    
+
 </script>
 <style></style>
