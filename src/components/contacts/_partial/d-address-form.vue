@@ -40,7 +40,8 @@
                 </div-->
                 <div class="col-md-auto">
                     <div class="checkbox-primary custom-control custom-checkbox text-color rounded">
-                        <input type="checkbox" v-model="data.is_wrong" class="custom-control-input" :id="'addressCheckbox3-'+props.index"/>
+                        <input type="checkbox" v-model="data.is_wrong" class="custom-control-input"
+                               :id="'addressCheckbox3-'+props.index" />
                         <label class="custom-control-label" :for="'addressCheckbox3-'+props.index">Erronée</label>
                     </div>
                 </div>
@@ -69,18 +70,18 @@
 </template>
 
 <script setup>
-    import {defineProps, ref, watch, onMounted} from 'vue';
-    import axiosInstance from "../../../config/http";
+    import { defineProps, ref, watch, onMounted } from 'vue';
+    import axiosInstance from '../../../config/http';
     import VueFeather from 'vue-feather';
-    import dInput from "../../base/d-input.vue";
-    import {formatErrorViolations} from "../../../composables/global-methods";
+    import dInput from '../../base/d-input.vue';
+    import { formatErrorViolations } from '../../../composables/global-methods';
     import '../../../assets/sass/components/tabs-accordian/custom-accordions.scss';
-    import dAddressType from "../../common/d-address-type.vue";
-    import dCountries from "../../common/d-countries.vue";
-    import dDelete from "../../common/d-delete.vue";
-    import store from "../../../store/index";
-    import $i18n from "../../../i18n" ;
-    
+    import dAddressType from '../../common/d-address-type.vue';
+    import dCountries from '../../common/d-countries.vue';
+    import dDelete from '../../common/d-delete.vue';
+    import store from '../../../store/index';
+    import $i18n from '../../../i18n' ;
+
     const props = defineProps({
         addressData: {
             type: Object,
@@ -89,7 +90,7 @@
         customerId: {
             type: Number
         },
-        index:{
+        index: {
             type: Number,
             default: 0
         }
@@ -97,41 +98,67 @@
 
     const data = ref({
         address_id: null,
-        fullName: "",
-        address1: "",
-        city: "",
-        zip_code: "",
-        state: "",
+        fullName: '',
+        address1: '',
+        city: '',
+        zip_code: '',
+        state: '',
         is_f_valide: null,
         is_l_valide: null,
         is_wrong: null,
-        comment: "",
-        phone: "",
-        mobile_phone: "",
+        comment: '',
+        phone: '',
+        mobile_phone: '',
         addressTypeId: 0,
         countryId: 0
     });
     const error = ref({});
 
     const updateAddress = async () => {
-        try{
+        try {
             error.value = {};
-            const res = await axiosInstance.put("api/updateAddress/" + data.value.address_id, data.value);
-            window.showMessage("Mise a jour avec succées.")
-        }catch(e){
-            if(e.response.data.violations){
-                error.value = formatErrorViolations(e.response.data.violations)
+            // API expects boolean or null for these flags
+            const toBoolOrNull = (v) => {
+                if (v === null || v === undefined) return null;
+                return !!v;
+            };
+
+            const payload = {
+                fullName: data.value.fullName || '',
+                address1: data.value.address1 || '',
+                city: data.value.city || '',
+                zip_code: data.value.zip_code || '',
+                state: data.value.state || '',
+                is_f_valide: toBoolOrNull(data.value.is_f_valide),
+                is_l_valide: toBoolOrNull(data.value.is_l_valide),
+                is_wrong: toBoolOrNull(data.value.is_wrong),
+                comment: data.value.comment || '',
+                phone: data.value.phone || '',
+                mobile_phone: data.value.mobile_phone || '',
+                addressTypeId: data.value.addressTypeId || 0,
+                countryId: data.value.countryId || 0,
+                // camelCase duplicates
+                isFValide: toBoolOrNull(data.value.is_f_valide),
+                isLValide: toBoolOrNull(data.value.is_l_valide),
+                isWrong: toBoolOrNull(data.value.is_wrong)
+            };
+
+            const res = await axiosInstance.put('api/updateAddress/' + data.value.address_id, payload);
+            window.showMessage('Mise a jour avec succées.');
+        } catch (e) {
+            if (e.response.data.violations) {
+                error.value = formatErrorViolations(e.response.data.violations);
                 Object.entries(error.value).forEach(([key, value]) => {
-                    window.showMessage($i18n.global.t(key) +': ' + $i18n.global.t(value),'error')
+                    window.showMessage($i18n.global.t(key) + ': ' + $i18n.global.t(value), 'error');
                 });
-            }else{
-                window.showMessage(e.message,'error')
+            } else {
+                window.showMessage(e.message, 'error');
             }
-            
+
         }
     };
     onMounted(() => {
-        affectData(props.addressData)
+        affectData(props.addressData);
     });
     const affectData = (address) => {
         data.value.address_id = address.address_id;
@@ -139,17 +166,29 @@
         data.value.address1 = address.address1;
         data.value.city = address.city;
         data.value.zip_code = address.postcode;
-        data.value.state = (address.state) ? address.state : "";
-        data.value.is_f_valide = address.is_f_valide;
-        data.value.is_l_valide = address.is_l_valide;
-        data.value.is_wrong = address.is_wrong;
-        data.value.comment = (address.comment) ? address.comment : "";
-        data.value.phone = (address.phone) ? address.phone : "";
+        data.value.state = (address.state) ? address.state : '';
+        // Normalize returned flags to boolean/null
+        const normalizeFlag = (v) => {
+            if (v === null || v === undefined) return null;
+            if (typeof v === 'number') return !!v;
+            if (typeof v === 'string') {
+                // some APIs send '0'/'1' as strings
+                if (v === '0') return false;
+                if (v === '1') return true;
+            }
+            return !!v;
+        };
+
+        data.value.is_f_valide = normalizeFlag(address.is_f_valide);
+        data.value.is_l_valide = normalizeFlag(address.is_l_valide);
+        data.value.is_wrong = normalizeFlag(address.is_wrong);
+        data.value.comment = (address.comment) ? address.comment : '';
+        data.value.phone = (address.phone) ? address.phone : '';
         /*data.value.mobile_phone = address.mobile_phone;*/
         data.value.addressTypeId = address.addressType.addressTypeId;
         data.value.countryId = address.countryId;
     };
-   watch(
+    watch(
         () => props.addressData,
         (newVal) => {
             affectData(newVal);
