@@ -125,7 +125,7 @@
                         <template #commercial="data">
                             <template v-if="isRowEditing(data.value)">
                                 <CommercialSettings v-model="data.value.commercial"
-                                                    :commercials="commercials"
+                                                    :commercials="rowCommercials[data.value.id] || commercials"
                                                     :isEditing="true" />
                             </template>
                             <template v-else>
@@ -184,10 +184,12 @@
                                         <vue-feather type="eye" :size="14"></vue-feather>
                                     </button>
                                 </template>
-                                <button type="button" class="btn btn-dark mb-1 me-2" @click="alertCommercial(data.value)">
+                                <button type="button" class="btn btn-dark mb-1 me-2"
+                                        @click="alertCommercial(data.value)">
                                     Alerte commercial
                                 </button>
-                                <div class="t-dot reglement" :class="hasOrderPaymentDetails(data.value) ? 'bg-success' : 'bg-danger'"></div>
+                                <div class="t-dot reglement"
+                                     :class="hasOrderPaymentDetails(data.value) ? 'bg-success' : 'bg-danger'"></div>
                             </div>
                         </template>
                     </vue3-datatable>
@@ -250,6 +252,7 @@
 
     const customersCache = ref(new Map());
     const commercialsCache = ref(new Map());
+    const rowCommercials = reactive({});
 
     const params = reactive({
         current_page: 1,
@@ -500,15 +503,84 @@
         }
     }
 
-    watch(
-        () => filter.value.customer,
-        async (newCustomer) => {
-            const customerId = extractCustomerId(newCustomer);
-
-            await loadCommercialsForCustomer(customerId);
-
+    // Fetch commercials for a customer (used for per-row commercial list)
+    async function fetchCommercialsForCustomerId(customerId) {
+        if (!customerId) return [];
+        try {
+            const res = await axiosInstance.get(`/api/customer/${customerId}`);
+            const customerData = res.data?.response?.customerData || res.data?.response || res.data;
+            const histories = customerData?.contactCommercialHistoriesData || customerData?.contactCommercialHistories || [];
+            const list = [];
+            const seen = new Set();
+            histories.forEach(h => {
+                const cid = h.commercial_id ?? h.commercialId ?? h.commercial_id ?? null;
+                if (!cid || seen.has(cid)) return;
+                seen.add(cid);
+                const firstname = h.firstname || '';
+                const lastname = h.lastname || '';
+                list.push({ user_id: cid, id: cid, firstname, lastname, name: `${firstname} ${lastname}`.trim() });
+            });
+            return list;
+        } catch (e) {
+            console.error('Failed to fetch customer commercials for id', customerId, e);
+            return [];
         }
-    );
+    }
+
+    // Watch when editingRowId changes: preload commercials for that row if customer present
+    watch(() => editingRowId.value, async (newId) => {
+        if (!newId) return;
+        const row = rows.value.find(r => r.id === newId);
+        if (!row) return;
+        const custId = extractCustomerId(row.customer);
+        if (custId) {
+            const list = await fetchCommercialsForCustomerId(custId);
+            rowCommercials[newId] = list;
+            // if current commercial is empty but we have commercials, set to first commercial
+            if ((!row.commercial || row.commercial === '') && list.length) {
+                row.commercial = {
+                    user_id: list[0].user_id,
+                    id: list[0].id,
+                    firstname: list[0].firstname,
+                    lastname: list[0].lastname,
+                    name: list[0].name
+                };
+            }
+        } else {
+            rowCommercials[newId] = [];
+        }
+    });
+
+    // Watch the currently edited row's customer field to update per-row commercials when user changes client
+    const getEditingRowCustomer = () => {
+        const r = rows.value.find(rr => rr.id === editingRowId.value);
+        return r ? r.customer : null;
+    };
+
+    watch(getEditingRowCustomer, async (newCust, oldCust) => {
+        const editId = editingRowId.value;
+        if (!editId) return;
+        const custId = extractCustomerId(newCust);
+        if (!custId) {
+            rowCommercials[editId] = [];
+            return;
+        }
+        const list = await fetchCommercialsForCustomerId(custId);
+        rowCommercials[editId] = list;
+        // if the selected commercial is not in list, set to first available
+        const row = rows.value.find(r => r.id === editId);
+        if (!row) return;
+        const selectedCommercialId = row.commercial?.user_id ?? row.commercial?.id ?? row.commercial ?? null;
+        if (list.length && !list.some(c => c.user_id == selectedCommercialId)) {
+            row.commercial = {
+                user_id: list[0].user_id,
+                id: list[0].id,
+                firstname: list[0].firstname,
+                lastname: list[0].lastname,
+                name: list[0].name
+            };
+        }
+    });
 
     const fetchData = async ({ page = params.current_page, itemsPerPage = params.pagesize, sort } = {}) => {
         try {
@@ -681,16 +753,22 @@
     const saveData = async (row) => {
         try {
             console.log(row.customer);
+            // Build payload matching API expected keys
+            const customerId = extractCustomerId(row.customer);
+            const commercialId = row.commercial?.user_id ?? row.commercial?.id ?? row.commercial?.commercialId ?? row.commercial ?? null;
+            const paymentAmountHt = (row.paymentAmountHt !== null && row.paymentAmountHt !== undefined && row.paymentAmountHt !== '') ? String(row.paymentAmountHt) : null;
+            const paymentAmountTtc = (row.paymentAmountTtc !== null && row.paymentAmountTtc !== undefined && row.paymentAmountTtc !== '') ? String(row.paymentAmountTtc) : (paymentAmountHt !== null ? paymentAmountHt : null);
+
             const payload = {
                 dateOfReceipt: formatDateForApi(row.dateOfReceipt),
-                paymentMethod: row.paymentMethod?.id ?? row.paymentMethod ?? null,
+                paymentMethodId: row.paymentMethod?.id ?? row.paymentMethod ?? null,
                 accountLabel: row.accountLabel || null,
-                paymentAmountHt: row.paymentAmountHt !== null && row.paymentAmountHt !== undefined
-                    ? String(row.paymentAmountHt)
-                    : null,
-                currency: row.currency?.id ?? row.currency ?? null,
-                customerId: row.customer?.id ?? null,
-                commercialId: row.commercial?.user_id ?? null
+                paymentAmountHt: paymentAmountHt,
+                paymentAmountTtc: paymentAmountTtc,
+                currencyId: row.currency?.id ?? row.currency ?? null,
+                customerId: customerId ?? null,
+                commercialId: commercialId ?? null,
+                taxRuleId: row.taxRule?.id ?? row.taxRule ?? 1
             };
 
             const { data } = await axiosInstance.put(`/api/order-payments/${row.id}/update`, payload);
@@ -703,19 +781,24 @@
 
     const addData = async (row) => {
         try {
+            const customerId = extractCustomerId(row.customer);
+            const commercialId = row.commercial?.user_id ?? row.commercial?.id ?? row.commercial?.commercialId ?? row.commercial ?? null;
+            const paymentAmountHt = (row.paymentAmountHt !== null && row.paymentAmountHt !== undefined && row.paymentAmountHt !== '') ? String(row.paymentAmountHt) : null;
+            const paymentAmountTtc = (row.paymentAmountTtc !== null && row.paymentAmountTtc !== undefined && row.paymentAmountTtc !== '') ? String(row.paymentAmountTtc) : (paymentAmountHt !== null ? paymentAmountHt : null);
+
             const payload = {
                 dateOfReceipt: formatDateForApi(row.dateOfReceipt),
-                paymentMethod: row.paymentMethod?.id ?? row.paymentMethod ?? null,
+                paymentMethodId: row.paymentMethod?.id ?? row.paymentMethod ?? null,
                 accountLabel: row.accountLabel || null,
-                paymentAmountHt: row.paymentAmountHt !== null && row.paymentAmountHt !== undefined
-                    ? String(row.paymentAmountHt)
-                    : null,
-                currency: row.currency?.id ?? row.currency ?? null,
-                customer: row.customer?.customerId ?? row.customer ?? null,
-                commercial: row.commercial?.commercialId ?? row.commercial ?? null
+                paymentAmountHt: paymentAmountHt,
+                paymentAmountTtc: paymentAmountTtc,
+                currencyId: row.currency?.id ?? row.currency ?? null,
+                customerId: customerId ?? null,
+                commercialId: commercialId ?? null,
+                taxRuleId: row.taxRule?.id ?? row.taxRule ?? 1
             };
 
-            const { data } = await axiosInstance.post('/api/order-payments', payload);
+            const { data } = await axiosInstance.post('/api/order-payment', payload);
             return data.response;
         } catch (error) {
             console.error('Error adding payment:', error);
@@ -928,7 +1011,10 @@
     const formatAmount = (amount) => {
         if (amount === null || amount === undefined || amount === '') return '-';
         const parsed = Number(amount);
-        return Number.isNaN(parsed) ? '-' : parsed.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return Number.isNaN(parsed) ? '-' : parsed.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
     };
 
     const hasOrderPaymentDetails = (row) => Array.isArray(row?.orderPaymentDetails) && row.orderPaymentDetails.length > 0;
@@ -941,8 +1027,12 @@
             dateOfReceipt: '',
             paymentMethod: '',
             accountLabel: '',
-            paymentAmountHt: null,
+            paymentAmountHt: '',
+            // Payment amount TTC is required by API; default to same as HT until user modifies
+            paymentAmountTtc: '',
             currency: '',
+            // taxRule placeholder (API expects taxRuleId) - default to 1 to avoid validation errors
+            taxRule: { id: 1 },
             customer: '',
             commercial: '',
             orderPaymentDetails: []
@@ -971,13 +1061,51 @@
 
     const handleSaveRow = async (row) => {
         if (!row) return;
+        // Client-side validation to avoid API 422 errors
+        const paymentMethodId = row.paymentMethod?.id ?? row.paymentMethod ?? null;
+        const currencyId = row.currency?.id ?? row.currency ?? null;
+        const paymentAmountHtVal = (row.paymentAmountHt !== null && row.paymentAmountHt !== undefined && row.paymentAmountHt !== '') ? String(row.paymentAmountHt) : null;
+        const paymentAmountTtcVal = (row.paymentAmountTtc !== null && row.paymentAmountTtc !== undefined && row.paymentAmountTtc !== '') ? String(row.paymentAmountTtc) : null;
+
+        if (!paymentMethodId) {
+            window.showMessage && window.showMessage('Veuillez sélectionner un type de règlement.', 'warning');
+            return;
+        }
+        if (!currencyId) {
+            window.showMessage && window.showMessage('Veuillez sélectionner une devise.', 'warning');
+            return;
+        }
+        // Ensure we have at least one amount; prefer TTC if provided, else HT
+        if (!paymentAmountTtcVal && !paymentAmountHtVal) {
+            window.showMessage && window.showMessage('Veuillez saisir un montant HT ou TTC.', 'warning');
+            return;
+        }
+        // Auto-fill TTC from HT if missing
+        if (!paymentAmountTtcVal && paymentAmountHtVal) {
+            row.paymentAmountTtc = paymentAmountHtVal;
+        }
+
+        // Client-side validation for customer and commercial
+        const customerId = extractCustomerId(row.customer);
+        const commercialId = row.commercial?.user_id ?? row.commercial?.id ?? row.commercial?.commercialId ?? row.commercial ?? null;
+
+        if (!customerId) {
+            window.showMessage && window.showMessage('Veuillez sélectionner un client.', 'warning');
+            return;
+        }
+
+        if (!commercialId) {
+            window.showMessage && window.showMessage('Veuillez sélectionner un commercial.', 'warning');
+            return;
+        }
+
         try {
             if (row.isNew) {
                 await addData(row);
             } else {
                 await saveData(row);
             }
-            window?.showMessage?.("La modification a été effectuée avec succès.");
+            window?.showMessage?.('La modification a été effectuée avec succès.');
             editingRowId.value = null;
             rowBackups.value.delete(row.id);
             await fetchData({
@@ -986,7 +1114,7 @@
                 sort: { field: params.orderBy, direction: params.orderWay }
             });
         } catch (error) {
-            window?.showMessage?.("La modification n'a pas pu être effectuée.", 'error');
+            window?.showMessage?.('La modification n\'a pas pu être effectuée.', 'error');
             console.error('Error saving row:', error);
         }
     };
@@ -1011,9 +1139,9 @@
                         itemsPerPage: params.pagesize,
                         sort: { field: params.orderBy, direction: params.orderWay }
                     });
-                    window?.showMessage?.("La suppression a été effectuée avec succès.");
+                    window?.showMessage?.('La suppression a été effectuée avec succès.');
                 } catch (error) {
-                    window?.showMessage?.("Erreur lors de la suppression des données.", 'error');
+                    window?.showMessage?.('Erreur lors de la suppression des données.', 'error');
                     console.error('Erreur lors de la suppression des données :', error);
                 }
             }
