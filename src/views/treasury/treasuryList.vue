@@ -705,7 +705,7 @@
         try {
             const payload = {
                 dateOfReceipt: formatDateForApi(row.dateOfReceipt),
-                paymentMethod: row.paymentMethod || null,
+                paymentMethod: row.paymentMethod?.id ?? row.paymentMethod ?? null,
                 accountLabel: row.accountLabel || null,
                 paymentAmountHt: row.paymentAmountHt !== null && row.paymentAmountHt !== undefined
                     ? String(row.paymentAmountHt)
@@ -939,12 +939,12 @@
             id: tempId,
             isNew: true,
             dateOfReceipt: '',
-            paymentMethod: null,
+            paymentMethod: '',
             accountLabel: '',
             paymentAmountHt: null,
-            currency: null,
-            customer: null,
-            commercial: null,
+            currency: '',
+            customer: '',
+            commercial: '',
             orderPaymentDetails: []
         };
         rows.value = [newRow, ...rows.value];
