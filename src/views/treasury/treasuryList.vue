@@ -48,28 +48,160 @@
             </div>
 
             <div class="panel br-6 p-2 mt-3" id="fullscreen">
-                <div class="row p-2">
+                <div class="row p-2 align-items-center">
                     <div class="col-auto">
                         <button class="btn btn-primary pe-5 ps-5" @click="goToNewReglement">
                             Nouveau Réglement
                         </button>
                     </div>
+                    <div class="col-auto">
+                        <button class="btn btn-outline-primary pe-5 ps-5" @click="addNewPaymentRow">
+                            Ajouter Paiement
+                        </button>
+                    </div>
                 </div>
-                <d-data-grid ref="dataGrid" :fetchData="fetchData" :saveData="saveData" :addData="addData"
-                             :disableAddNew="true"
-                             :deleteData="deleteData" :columns="processedColumns" :rows="rows" title="Règlements"
-                             rowKey="id" :showViewButton="true"
-                             @view="handleView" :isServerMode="true"
-                             :initialSort="{ field: params.orderBy, direction: params.orderWay }"
-                             @sort-change="handleSortChange" :loading="loading" />
+
+                <div class="vue3-datatable w-100">
+                    <vue3-datatable
+                        :rows="rows"
+                        :columns="cols"
+                        :loading="loading"
+                        :isServerMode="true"
+                        :sortColumn="params.orderBy"
+                        :sortDirection="params.orderWay"
+                        :totalRows="total_rows"
+                        :page="params.current_page"
+                        :pageSize="params.pagesize"
+                        :pageSizeOptions="[10, 25, 50, 100]"
+                        noDataContent="Aucun règlement trouvé."
+                        paginationInfo="Affichage de {0} à {1} sur {2} entrées"
+                        :sortable="true"
+                        @change="changeServer"
+                        class="advanced-table text-nowrap"
+                    >
+                        <template #dateOfReceipt="data">
+                            <template v-if="isRowEditing(data.value)">
+                                <input type="datetime-local"
+                                       class="form-control"
+                                       :value="formatDateForInput(data.value.dateOfReceipt)"
+                                       @input="data.value.dateOfReceipt = $event.target.value" />
+                            </template>
+                            <template v-else>
+                                {{ formatDateDisplay(data.value.dateOfReceipt) || '-' }}
+                            </template>
+                        </template>
+
+                        <template #paymentMethod="data">
+                            <template v-if="isRowEditing(data.value)">
+                                <PaymentTypeSettings v-model="data.value.paymentMethod"
+                                                     :paymentTypes="paymentTypes"
+                                                     :isEditing="true" />
+                            </template>
+                            <template v-else>
+                                {{ getPaymentMethodLabel(data.value.paymentMethod) }}
+                            </template>
+                        </template>
+
+                        <template #accountLabel="data">
+                            <template v-if="isRowEditing(data.value)">
+                                <input type="text" class="form-control" v-model="data.value.accountLabel" />
+                            </template>
+                            <template v-else>
+                                {{ data.value.accountLabel || '-' }}
+                            </template>
+                        </template>
+
+                        <template #customer="data">
+                            <template v-if="isRowEditing(data.value)">
+                                <CustomerSettings v-model="data.value.customer"
+                                                  :customers="customers"
+                                                  :isEditing="true" />
+                            </template>
+                            <template v-else>
+                                {{ getCustomerLabel(data.value.customer) }}
+                            </template>
+                        </template>
+
+                        <template #commercial="data">
+                            <template v-if="isRowEditing(data.value)">
+                                <CommercialSettings v-model="data.value.commercial"
+                                                    :commercials="rowCommercials[data.value.id] || commercials"
+                                                    :isEditing="true" />
+                            </template>
+                            <template v-else>
+                                {{ getCommercialLabel(data.value.commercial) }}
+                            </template>
+                        </template>
+
+                        <template #paymentAmountHt="data">
+                            <template v-if="isRowEditing(data.value)">
+                                <input type="number" class="form-control" step="0.01"
+                                       v-model.number="data.value.paymentAmountHt" />
+                            </template>
+                            <template v-else>
+                                {{ formatAmount(data.value.paymentAmountHt) }}
+                            </template>
+                        </template>
+
+                        <template #currency="data">
+                            <template v-if="isRowEditing(data.value)">
+                                <CurrencySettings v-model="data.value.currency"
+                                                  :currencies="currencies"
+                                                  :isEditing="true" />
+                            </template>
+                            <template v-else>
+                                {{ getCurrencyLabel(data.value.currency) }}
+                            </template>
+                        </template>
+
+                        <template #actions="data">
+                            <div class="d-flex align-items-center gap-1">
+                                <template v-if="isRowEditing(data.value)">
+                                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"
+                                            @click="handleSaveRow(data.value)">
+                                        <vue-feather type="save" :size="14"></vue-feather>
+                                    </button>
+                                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"
+                                            @click="cancelEditRow(data.value)">
+                                        <vue-feather type="slash" :size="14"></vue-feather>
+                                    </button>
+                                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"
+                                            @click="handleView(data.value)">
+                                        <vue-feather type="eye" :size="14"></vue-feather>
+                                    </button>
+                                </template>
+                                <template v-else>
+                                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"
+                                            @click="startEditRow(data.value)">
+                                        <vue-feather type="edit" :size="14"></vue-feather>
+                                    </button>
+                                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"
+                                            @click="confirmDeleteRow(data.value)">
+                                        <vue-feather type="x" :size="14"></vue-feather>
+                                    </button>
+                                    <button type="button" class="btn btn-dark mb-1 me-1 rounded-circle"
+                                            @click="handleView(data.value)">
+                                        <vue-feather type="eye" :size="14"></vue-feather>
+                                    </button>
+                                </template>
+                                <button type="button" class="btn btn-dark mb-1 me-2"
+                                        @click="alertCommercial(data.value)">
+                                    Alerte commercial
+                                </button>
+                                <div class="t-dot reglement"
+                                     :class="hasOrderPaymentDetails(data.value) ? 'bg-success' : 'bg-danger'"></div>
+                            </div>
+                        </template>
+                    </vue3-datatable>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-    import { ref, reactive, onMounted, computed, toRaw, watch } from 'vue';
-    import dDataGrid from '../../components/base/d-data-grid.vue';
+    import { ref, reactive, onMounted, toRaw, watch, defineAsyncComponent } from 'vue';
+    import Vue3Datatable from '@bhplugin/vue3-datatable';
     import dInput from '../../components/base/d-input.vue';
     import DCustomerDropdown from '../../components/common/d-customer-dropdown.vue';
     import dPageTitle from '../../components/common/d-page-title.vue';
@@ -81,6 +213,13 @@
         FILTER_ORDER_PAYMENT_STORAGE_NAME
     } from '../../composables/constants';
     import { Helper } from '../../composables/global-methods';
+    import VueFeather from 'vue-feather';
+    import Swal from 'sweetalert2';
+
+    const PaymentTypeSettings = defineAsyncComponent(() => import('../../components/common/settings/d-payment-type-dropdown-settings.vue'));
+    const CustomerSettings = defineAsyncComponent(() => import('../../components/common/settings/d-customer-dropdown-settings.vue'));
+    const CommercialSettings = defineAsyncComponent(() => import('../../components/common/settings/d-commercial-dropdown-settings.vue'));
+    const CurrencySettings = defineAsyncComponent(() => import('../../components/common/settings/d-currency-settings.vue'));
 
     const API_DATETIME_FORMAT = 'YYYY-MM-DD';
     const normalizeDateValue = (rawDate) => {
@@ -100,16 +239,20 @@
 
     const loading = ref(false);
     const rows = ref([]);
+    const total_rows = ref(0);
+    const editingRowId = ref(null);
+    const rowBackups = ref(new Map());
     const currencies = ref([]);
     const customers = ref([]);
     const commercials = ref([]);
     const defaultCommercials = ref([]);
-    const dataGrid = ref(null);
     const router = useRouter();
     const paymentTypes = ref([]);
+    const newRowCounter = ref(0);
 
     const customersCache = ref(new Map());
     const commercialsCache = ref(new Map());
+    const rowCommercials = reactive({});
 
     const params = reactive({
         current_page: 1,
@@ -121,82 +264,16 @@
     const filter = ref({ ...filterOrderPayment });
     const filterActive = ref(false);
 
-    const columns = ref([
-        { key: 'dateOfReceipt', label: 'Date réception', type: 'date', editable: false },
-        {
-            key: 'paymentMethod',
-            label: 'Type de règlement',
-            type: 'custom',
-            editable: true,
-            component: 'd-payment-type-dropdown-settings',
-            props: {
-                paymentTypes: paymentTypes.value
-            }
-        },
-        { key: 'accountLabel', label: 'Libellé sur le compte', type: 'text', editable: true },
-        {
-            key: 'customer',
-            label: 'Client',
-            type: 'custom',
-            editable: true,
-            component: 'd-customer-dropdown-settings',
-            idKey: 'id',
-            nameKey: 'name',
-            props: {
-                isCommercial: false
-            }
-        },
-        {
-            key: 'commercial',
-            label: 'Commercial',
-            type: 'custom',
-            editable: true,
-            component: 'd-commercial-dropdown-settings',
-            idKey: 'id',
-            nameKey: 'name',
-            props: {
-                isCommercial: true
-            }
-        },
-        { key: 'paymentAmountHt', label: 'Montant', type: 'number', editable: true },
-        {
-            key: 'currency',
-            label: 'Devise',
-            editable: true,
-            type: 'custom',
-            component: 'd-currency-settings',
-            idKey: 'id',
-            nameKey: 'name'
-        }
+    const cols = ref([
+        { field: 'dateOfReceipt', title: 'Date réception', is_unique: true },
+        { field: 'paymentMethod', title: 'Type de règlement' },
+        { field: 'accountLabel', title: 'Libellé sur le compte' },
+        { field: 'customer', title: 'Client' },
+        { field: 'commercial', title: 'Commercial' },
+        { field: 'paymentAmountHt', title: 'Montant' },
+        { field: 'currency', title: 'Devise' },
+        { field: 'actions', title: 'Actions', sort: false }
     ]);
-
-    const processedColumns = computed(() => {
-        return columns.value.map(col => {
-            const newCol = { ...col };
-            if (newCol.component === 'd-currency-settings') {
-                newCol.props = {
-                    ...(newCol.props || {}),
-                    currencies: currencies.value
-                };
-            } else if (newCol.component === 'd-customer-dropdown-settings') {
-                newCol.props = {
-                    ...(newCol.props || {}),
-                    customers: customers.value
-                };
-            } else if (newCol.component === 'd-commercial-dropdown-settings') {
-                newCol.props = {
-                    ...(newCol.props || {}),
-                    commercials: commercials.value
-                };
-            } else if (newCol.component === 'd-payment-type-dropdown-settings') {
-                newCol.props = {
-                    ...(newCol.props || {}),
-                    paymentTypes: paymentTypes.value
-                };
-            }
-            return newCol;
-        });
-    });
 
     onMounted(async () => {
         try {
@@ -208,6 +285,11 @@
                 fetchDefaultCommercials(),
                 loadSavedFilters()
             ]);
+            await fetchData({
+                page: params.current_page,
+                itemsPerPage: params.pagesize,
+                sort: { field: params.orderBy, direction: params.orderWay }
+            });
         } finally {
             loading.value = false;
         }
@@ -421,19 +503,90 @@
         }
     }
 
-    watch(
-        () => filter.value.customer,
-        async (newCustomer) => {
-            const customerId = extractCustomerId(newCustomer);
-
-            await loadCommercialsForCustomer(customerId);
-
+    // Fetch commercials for a customer (used for per-row commercial list)
+    async function fetchCommercialsForCustomerId(customerId) {
+        if (!customerId) return [];
+        try {
+            const res = await axiosInstance.get(`/api/customer/${customerId}`);
+            const customerData = res.data?.response?.customerData || res.data?.response || res.data;
+            const histories = customerData?.contactCommercialHistoriesData || customerData?.contactCommercialHistories || [];
+            const list = [];
+            const seen = new Set();
+            histories.forEach(h => {
+                const cid = h.commercial_id ?? h.commercialId ?? h.commercial_id ?? null;
+                if (!cid || seen.has(cid)) return;
+                seen.add(cid);
+                const firstname = h.firstname || '';
+                const lastname = h.lastname || '';
+                list.push({ user_id: cid, id: cid, firstname, lastname, name: `${firstname} ${lastname}`.trim() });
+            });
+            return list;
+        } catch (e) {
+            console.error('Failed to fetch customer commercials for id', customerId, e);
+            return [];
         }
-    );
+    }
 
-    const fetchData = async ({ page, itemsPerPage, sort }) => {
+    // Watch when editingRowId changes: preload commercials for that row if customer present
+    watch(() => editingRowId.value, async (newId) => {
+        if (!newId) return;
+        const row = rows.value.find(r => r.id === newId);
+        if (!row) return;
+        const custId = extractCustomerId(row.customer);
+        if (custId) {
+            const list = await fetchCommercialsForCustomerId(custId);
+            rowCommercials[newId] = list;
+            // if current commercial is empty but we have commercials, set to first commercial
+            if ((!row.commercial || row.commercial === '') && list.length) {
+                row.commercial = {
+                    user_id: list[0].user_id,
+                    id: list[0].id,
+                    firstname: list[0].firstname,
+                    lastname: list[0].lastname,
+                    name: list[0].name
+                };
+            }
+        } else {
+            rowCommercials[newId] = [];
+        }
+    });
+
+    // Watch the currently edited row's customer field to update per-row commercials when user changes client
+    const getEditingRowCustomer = () => {
+        const r = rows.value.find(rr => rr.id === editingRowId.value);
+        return r ? r.customer : null;
+    };
+
+    watch(getEditingRowCustomer, async (newCust, oldCust) => {
+        const editId = editingRowId.value;
+        if (!editId) return;
+        const custId = extractCustomerId(newCust);
+        if (!custId) {
+            rowCommercials[editId] = [];
+            return;
+        }
+        const list = await fetchCommercialsForCustomerId(custId);
+        rowCommercials[editId] = list;
+        // if the selected commercial is not in list, set to first available
+        const row = rows.value.find(r => r.id === editId);
+        if (!row) return;
+        const selectedCommercialId = row.commercial?.user_id ?? row.commercial?.id ?? row.commercial ?? null;
+        if (list.length && !list.some(c => c.user_id == selectedCommercialId)) {
+            row.commercial = {
+                user_id: list[0].user_id,
+                id: list[0].id,
+                firstname: list[0].firstname,
+                lastname: list[0].lastname,
+                name: list[0].name
+            };
+        }
+    });
+
+    const fetchData = async ({ page = params.current_page, itemsPerPage = params.pagesize, sort } = {}) => {
         try {
             loading.value = true;
+            params.current_page = page;
+            params.pagesize = itemsPerPage;
             let url = `/api/order-payments?page=${page}&limit=${itemsPerPage}`;
 
             if (sort?.field) {
@@ -452,18 +605,7 @@
             const payments = data.data || data;
 
             rows.value = await batchTransformPayments(payments, 5);
-
-            return {
-                response: {
-                    data: rows.value,
-                    meta: {
-                        total_items: data.total || data.count || payments.length,
-                        total_pages: Math.ceil((data.total || data.count || payments.length) / itemsPerPage),
-                        current_page: page,
-                        items_per_page: itemsPerPage
-                    }
-                }
-            };
+            total_rows.value = data.total || data.count || payments.length;
         } catch (error) {
             console.error('Error fetching order payments:', error);
             throw error;
@@ -611,16 +753,22 @@
     const saveData = async (row) => {
         try {
             console.log(row.customer);
+            // Build payload matching API expected keys
+            const customerId = extractCustomerId(row.customer);
+            const commercialId = row.commercial?.user_id ?? row.commercial?.id ?? row.commercial?.commercialId ?? row.commercial ?? null;
+            const paymentAmountHt = (row.paymentAmountHt !== null && row.paymentAmountHt !== undefined && row.paymentAmountHt !== '') ? String(row.paymentAmountHt) : null;
+            const paymentAmountTtc = (row.paymentAmountTtc !== null && row.paymentAmountTtc !== undefined && row.paymentAmountTtc !== '') ? String(row.paymentAmountTtc) : (paymentAmountHt !== null ? paymentAmountHt : null);
+
             const payload = {
                 dateOfReceipt: formatDateForApi(row.dateOfReceipt),
-                paymentMethod: row.paymentMethod?.id ?? row.paymentMethod ?? null,
+                paymentMethodId: row.paymentMethod?.id ?? row.paymentMethod ?? null,
                 accountLabel: row.accountLabel || null,
-                paymentAmountHt: row.paymentAmountHt !== null && row.paymentAmountHt !== undefined
-                    ? String(row.paymentAmountHt)
-                    : null,
-                currency: row.currency?.id ?? row.currency ?? null,
-                customerId: row.customer?.id ?? null,
-                commercialId: row.commercial?.user_id ?? null
+                paymentAmountHt: paymentAmountHt,
+                paymentAmountTtc: paymentAmountTtc,
+                currencyId: row.currency?.id ?? row.currency ?? null,
+                customerId: customerId ?? null,
+                commercialId: commercialId ?? null,
+                taxRuleId: row.taxRule?.id ?? row.taxRule ?? 1
             };
 
             const { data } = await axiosInstance.put(`/api/order-payments/${row.id}/update`, payload);
@@ -633,19 +781,24 @@
 
     const addData = async (row) => {
         try {
+            const customerId = extractCustomerId(row.customer);
+            const commercialId = row.commercial?.user_id ?? row.commercial?.id ?? row.commercial?.commercialId ?? row.commercial ?? null;
+            const paymentAmountHt = (row.paymentAmountHt !== null && row.paymentAmountHt !== undefined && row.paymentAmountHt !== '') ? String(row.paymentAmountHt) : null;
+            const paymentAmountTtc = (row.paymentAmountTtc !== null && row.paymentAmountTtc !== undefined && row.paymentAmountTtc !== '') ? String(row.paymentAmountTtc) : (paymentAmountHt !== null ? paymentAmountHt : null);
+
             const payload = {
                 dateOfReceipt: formatDateForApi(row.dateOfReceipt),
-                paymentMethod: row.paymentMethod || null,
+                paymentMethodId: row.paymentMethod?.id ?? row.paymentMethod ?? null,
                 accountLabel: row.accountLabel || null,
-                paymentAmountHt: row.paymentAmountHt !== null && row.paymentAmountHt !== undefined
-                    ? String(row.paymentAmountHt)
-                    : null,
-                currency: row.currency?.id ?? row.currency ?? null,
-                customer: row.customer?.customerId ?? row.customer ?? null,
-                commercial: row.commercial?.commercialId ?? row.commercial ?? null
+                paymentAmountHt: paymentAmountHt,
+                paymentAmountTtc: paymentAmountTtc,
+                currencyId: row.currency?.id ?? row.currency ?? null,
+                customerId: customerId ?? null,
+                commercialId: commercialId ?? null,
+                taxRuleId: row.taxRule?.id ?? row.taxRule ?? 1
             };
 
-            const { data } = await axiosInstance.post('/api/order-payments', payload);
+            const { data } = await axiosInstance.post('/api/order-payment', payload);
             return data.response;
         } catch (error) {
             console.error('Error adding payment:', error);
@@ -758,18 +911,24 @@
     const doSearch = async () => {
         Helper.setStorage(FILTER_ORDER_PAYMENT_STORAGE_NAME, filter.value);
         filterActive.value = true;
-        if (dataGrid.value?.refresh) {
-            await dataGrid.value.refresh();
-        }
+        params.current_page = 1;
+        await fetchData({
+            page: params.current_page,
+            itemsPerPage: params.pagesize,
+            sort: { field: params.orderBy, direction: params.orderWay }
+        });
     };
 
     const doReset = async () => {
         filter.value = { ...filterOrderPayment };
         filterActive.value = false;
         Helper.removeStorage(FILTER_ORDER_PAYMENT_STORAGE_NAME);
-        if (dataGrid.value?.refresh) {
-            await dataGrid.value.refresh();
-        }
+        params.current_page = 1;
+        await fetchData({
+            page: params.current_page,
+            itemsPerPage: params.pagesize,
+            sort: { field: params.orderBy, direction: params.orderWay }
+        });
     };
 
     const goToNewReglement = () => {
@@ -777,7 +936,6 @@
     };
 
     const handleView = (row) => {
-        console.log('View clicked, row:', row);
         if (!row?.id) {
             console.error('Invalid row data:', row);
             return;
@@ -785,10 +943,213 @@
         router.push({ name: 'reglement_view', params: { id: row.id } });
     };
 
-    const handleSortChange = (sort) => {
-        params.orderBy = sort.field;
-        params.orderWay = sort.direction;
-        dataGrid.value?.refresh();
+    const changeServer = (data) => {
+        params.current_page = data.current_page;
+        params.pagesize = data.pagesize;
+        params.orderBy = data.sort_column || params.orderBy;
+        params.orderWay = data.sort_direction || params.orderWay;
+        fetchData({
+            page: params.current_page,
+            itemsPerPage: params.pagesize,
+            sort: { field: params.orderBy, direction: params.orderWay }
+        });
+    };
+
+    const isRowEditing = (row) => editingRowId.value === row?.id;
+
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return '';
+        try {
+            const date = new Date(dateString);
+            const pad = num => num.toString().padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        } catch (e) {
+            console.error('Error formatting date for input:', e);
+            return '';
+        }
+    };
+
+    const formatDateDisplay = (dateString) => {
+        if (!dateString) return '';
+        const formatted = Helper.FormatDateTime(dateString, 'YYYY-MM-DD');
+        return formatted && formatted !== 'Invalid date' ? formatted : '';
+    };
+
+    const getPaymentMethodLabel = (paymentMethod) => {
+        if (!paymentMethod) return 'Aucun type sélectionné';
+        if (typeof paymentMethod === 'object') {
+            return paymentMethod.label || 'Aucun type sélectionné';
+        }
+        const found = paymentTypes.value.find(t => t.id == paymentMethod);
+        return found ? found.label : `Type #${paymentMethod}`;
+    };
+
+    const getCustomerLabel = (customer) => {
+        if (!customer) return 'N/A';
+        if (typeof customer === 'object') {
+            return customer.customerName || customer.customer || customer.customerId || customer.customer_id || 'N/A';
+        }
+        return `Client #${customer}`;
+    };
+
+    const getCommercialLabel = (commercial) => {
+        if (!commercial) return 'N/A';
+        if (typeof commercial === 'object') {
+            return commercial.commercialName || commercial.name || `${commercial.firstname || ''} ${commercial.lastname || ''}`.trim() || 'N/A';
+        }
+        return `Commercial #${commercial}`;
+    };
+
+    const getCurrencyLabel = (currency) => {
+        if (!currency) return 'N/A';
+        if (typeof currency === 'object') {
+            return currency.name || currency.code || 'N/A';
+        }
+        return currency;
+    };
+
+    const formatAmount = (amount) => {
+        if (amount === null || amount === undefined || amount === '') return '-';
+        const parsed = Number(amount);
+        return Number.isNaN(parsed) ? '-' : parsed.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    };
+
+    const hasOrderPaymentDetails = (row) => Array.isArray(row?.orderPaymentDetails) && row.orderPaymentDetails.length > 0;
+
+    const addNewPaymentRow = () => {
+        const tempId = `temp-${Date.now()}-${newRowCounter.value++}`;
+        const newRow = {
+            id: tempId,
+            isNew: true,
+            dateOfReceipt: '',
+            paymentMethod: '',
+            accountLabel: '',
+            paymentAmountHt: '',
+            // Payment amount TTC is required by API; default to same as HT until user modifies
+            paymentAmountTtc: '',
+            currency: '',
+            // taxRule placeholder (API expects taxRuleId) - default to 1 to avoid validation errors
+            taxRule: { id: 1 },
+            customer: '',
+            commercial: '',
+            orderPaymentDetails: []
+        };
+        rows.value = [newRow, ...rows.value];
+        rowBackups.value.set(tempId, JSON.parse(JSON.stringify(newRow)));
+        editingRowId.value = tempId;
+    };
+
+    const startEditRow = (row) => {
+        if (!row?.id) return;
+        rowBackups.value.set(row.id, JSON.parse(JSON.stringify(row)));
+        editingRowId.value = row.id;
+    };
+
+    const cancelEditRow = (row) => {
+        if (!row?.id) return;
+        const backup = rowBackups.value.get(row.id);
+        if (row.isNew) {
+            rows.value = rows.value.filter(r => r.id !== row.id);
+        } else if (backup) {
+            Object.assign(row, backup);
+        }
+        editingRowId.value = null;
+    };
+
+    const handleSaveRow = async (row) => {
+        if (!row) return;
+        // Client-side validation to avoid API 422 errors
+        const paymentMethodId = row.paymentMethod?.id ?? row.paymentMethod ?? null;
+        const currencyId = row.currency?.id ?? row.currency ?? null;
+        const paymentAmountHtVal = (row.paymentAmountHt !== null && row.paymentAmountHt !== undefined && row.paymentAmountHt !== '') ? String(row.paymentAmountHt) : null;
+        const paymentAmountTtcVal = (row.paymentAmountTtc !== null && row.paymentAmountTtc !== undefined && row.paymentAmountTtc !== '') ? String(row.paymentAmountTtc) : null;
+
+        if (!paymentMethodId) {
+            window.showMessage && window.showMessage('Veuillez sélectionner un type de règlement.', 'warning');
+            return;
+        }
+        if (!currencyId) {
+            window.showMessage && window.showMessage('Veuillez sélectionner une devise.', 'warning');
+            return;
+        }
+        // Ensure we have at least one amount; prefer TTC if provided, else HT
+        if (!paymentAmountTtcVal && !paymentAmountHtVal) {
+            window.showMessage && window.showMessage('Veuillez saisir un montant HT ou TTC.', 'warning');
+            return;
+        }
+        // Auto-fill TTC from HT if missing
+        if (!paymentAmountTtcVal && paymentAmountHtVal) {
+            row.paymentAmountTtc = paymentAmountHtVal;
+        }
+
+        // Client-side validation for customer and commercial
+        const customerId = extractCustomerId(row.customer);
+        const commercialId = row.commercial?.user_id ?? row.commercial?.id ?? row.commercial?.commercialId ?? row.commercial ?? null;
+
+        if (!customerId) {
+            window.showMessage && window.showMessage('Veuillez sélectionner un client.', 'warning');
+            return;
+        }
+
+        if (!commercialId) {
+            window.showMessage && window.showMessage('Veuillez sélectionner un commercial.', 'warning');
+            return;
+        }
+
+        try {
+            if (row.isNew) {
+                await addData(row);
+            } else {
+                await saveData(row);
+            }
+            window?.showMessage?.('La modification a été effectuée avec succès.');
+            editingRowId.value = null;
+            rowBackups.value.delete(row.id);
+            await fetchData({
+                page: params.current_page,
+                itemsPerPage: params.pagesize,
+                sort: { field: params.orderBy, direction: params.orderWay }
+            });
+        } catch (error) {
+            window?.showMessage?.('La modification n\'a pas pu être effectuée.', 'error');
+            console.error('Error saving row:', error);
+        }
+    };
+
+    const confirmDeleteRow = (row) => {
+        if (!row?.id) return;
+        Swal.fire({
+            title: 'Êtes-vous sûr ?',
+            text: 'Cette action est irréversible !',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Oui, supprimer !',
+            cancelButtonText: 'Annuler'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await deleteData(row);
+                    await fetchData({
+                        page: params.current_page,
+                        itemsPerPage: params.pagesize,
+                        sort: { field: params.orderBy, direction: params.orderWay }
+                    });
+                    window?.showMessage?.('La suppression a été effectuée avec succès.');
+                } catch (error) {
+                    window?.showMessage?.('Erreur lors de la suppression des données.', 'error');
+                    console.error('Erreur lors de la suppression des données :', error);
+                }
+            }
+        });
+    };
+
+    const alertCommercial = (row) => {
+        console.log('Alert commercial clicked', row);
     };
 </script>
 
@@ -815,5 +1176,13 @@
     .dropdown-item:active,
     .dropdown-item:hover {
         background: none !important;
+    }
+
+    .reglement.t-dot {
+        height: 20px;
+        width: 20px;
+        border-radius: 50%;
+        cursor: pointer;
+        margin: 0 auto;
     }
 </style>

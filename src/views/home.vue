@@ -65,10 +65,17 @@
                         permission: 'read order'
                     },
                     {
-                        title: 'Recherche Facture',
+                        title: 'Recherche Facture fournisseur',
                         image: 'facture.png',
                         color: menuHomeColor.facture,
                         href: '/tapis/invoices',
+                        permission: 'read invoice'
+                    },
+                    {
+                        title: 'Recherche Facture client',
+                        image: 'facture.png',
+                        color: menuHomeColor.contremarque,
+                        href: '/projet/invoices',
                         permission: 'read invoice'
                     },
                     {
