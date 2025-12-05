@@ -9,7 +9,7 @@
                     <div class="col-md-6 col-sm-12">
                         <div class="row">
 
-                            <d-customer-dropdown v-model="filter.customer" :showCustomer="true"></d-customer-dropdown>
+                            <d-customer-dropdown v-model="filter.customer"></d-customer-dropdown>
                         </div>
                         <div class="row">
                             <d-input label="Commercial" v-model="filter.commercial"></d-input>
@@ -920,10 +920,28 @@
     };
 
     const doReset = async () => {
+        // Reset filter object to default template
         filter.value = { ...filterOrderPayment };
+        // Mark filter inactive and remove saved filters
         filterActive.value = false;
         Helper.removeStorage(FILTER_ORDER_PAYMENT_STORAGE_NAME);
+
+        // Reset pagination to first page
         params.current_page = 1;
+
+        // Clear any per-row commercials and editing state
+        try {
+            // delete all keys from reactive rowCommercials
+            Object.keys(rowCommercials).forEach(k => delete rowCommercials[k]);
+        } catch (e) {
+            // noop
+        }
+        editingRowId.value = null;
+
+        // Ensure global commercials list is refreshed (if needed)
+        await fetchDefaultCommercials();
+
+        // Fetch data with reset params
         await fetchData({
             page: params.current_page,
             itemsPerPage: params.pagesize,

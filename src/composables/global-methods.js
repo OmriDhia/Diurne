@@ -8,7 +8,7 @@ export function generateUniqueId(prefix = 'input') {
 
 export const checkImageExists = async (url) => {
     try {
-        const response = await fetch(url, { method: "HEAD" });
+        const response = await fetch(url, { method: 'HEAD' });
         console.log(response);
         return response.ok;
     } catch {
@@ -18,11 +18,12 @@ export const checkImageExists = async (url) => {
 
 export function formatErrorViolations(violations) {
     let obj = {};
-    const err = violations.map( m => {
-        obj = {...obj, [m.propertyPath]: m.title}
+    const err = violations.map(m => {
+        obj = { ...obj, [m.propertyPath]: m.title };
     });
     return obj;
 }
+
 export function handleObjectViolations(violations) {
     let obj = {};
     violations.forEach(m => {
@@ -32,7 +33,7 @@ export function handleObjectViolations(violations) {
 }
 
 export function handleStringViolations(violations) {
-    return { message: violations.join(", ") }; // Concatenates all error messages into a single string
+    return { message: violations.join(', ') }; // Concatenates all error messages into a single string
 }
 
 export function formatErrorViolationsComposed(violations) {
@@ -68,7 +69,7 @@ export const Helper = {
     FormatPrice: (price) => {
         const formatter = new Intl.NumberFormat('fr-FR', {
             style: 'currency',
-            currency: 'EUR',
+            currency: 'EUR'
         });
         return formatter.format(price);
     },
@@ -79,7 +80,7 @@ export const Helper = {
         }
         return '/assets/images/No-Image-Placeholder.svg';
     },
-    getImagePathNew: (path, name = "") => {
+    getImagePathNew: (path, name = '') => {
         const noImage = '/assets/images/No-Image-Placeholder.svg';
         if (path) {
             const baseUrl = path.replace('/var/www/html/api_diurne/public', FILE_URL);
@@ -109,4 +110,11 @@ export const Helper = {
             localStorage.setItem(name, JSON.stringify(value));
         }
     },
+    removeStorage: (name) => {
+        try {
+            localStorage.removeItem(name);
+        } catch (e) {
+            // ignore
+        }
+    }
 };
