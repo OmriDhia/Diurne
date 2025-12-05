@@ -1,5 +1,4 @@
 import moment from 'moment';
-import i18n from '../i18n';
 import { FILE_URL } from './constants';
 
 export function generateUniqueId(prefix = 'input') {
@@ -18,7 +17,7 @@ export const checkImageExists = async (url) => {
 
 export function formatErrorViolations(violations) {
     let obj = {};
-    const err = violations.map(m => {
+    violations.forEach(m => {
         obj = { ...obj, [m.propertyPath]: m.title };
     });
     return obj;
@@ -38,7 +37,7 @@ export function handleStringViolations(violations) {
 
 export function formatErrorViolationsComposed(violations) {
     let obj = {};
-    const err = violations.map((m) => {
+    violations.forEach((m) => {
         // Replace dot (.) with underscore (_) in the key
         const key = m.propertyPath.replace(/\./g, '_');
         obj = { ...obj, [key]: m.title };
@@ -75,21 +74,65 @@ export const Helper = {
     },
     getImagePath: (attachment) => {
         if (attachment && attachment.path) {
-            const baseUrl = attachment.path.replace('/var/www/html/api_diurne/public', FILE_URL);
-            return baseUrl + '/' + attachment.file;
+            try {
+                const fileName = attachment.file ? encodeURIComponent(attachment.file) : '';
+                const path = String(attachment.path);
+                // If path already contains the API host, use it
+                if (/^https?:\/\//i.test(path)) {
+                    return path.replace(/\/$/, '') + (fileName ? '/' + fileName : '');
+                }
+                // If path contains /public, use the portion after /public as the public URL
+                let publicRelative = '';
+                if (path.includes('/public')) {
+                    publicRelative = path.split('/public').pop(); // includes leading /
+                } else if (path.includes('/var/www')) {
+                    // fallback: remove server filesystem prefix up to /var/www.../public
+                    const idx = path.indexOf('/uploads');
+                    publicRelative = idx !== -1 ? path.substring(idx) : '';
+                }
+                const base = String(FILE_URL || '').replace(/\/$/, '');
+                if (publicRelative) {
+                    return base + publicRelative + (fileName ? '/' + fileName : '');
+                }
+                // Final fallback: join base + path + filename
+                return base + '/' + path.replace(/^\//, '') + (fileName ? '/' + fileName : '');
+            } catch (e) {
+                return '/assets/images/No-Image-Placeholder.svg';
+            }
         }
         return '/assets/images/No-Image-Placeholder.svg';
     },
     getImagePathNew: (path, name = '') => {
         const noImage = '/assets/images/No-Image-Placeholder.svg';
-        if (path) {
-            const baseUrl = path.replace('/var/www/html/api_diurne/public', FILE_URL);
-            if (name) {
-                return baseUrl + '/' + name;
+        try {
+            if (!path) return noImage;
+            const p = String(path);
+            // If it's already a full url
+            if (/^https?:\/\//i.test(p) || /^\/\//.test(p)) {
+                const base = p.replace(/\/$/, '');
+                return name ? base + '/' + encodeURIComponent(name) : base;
             }
-            return baseUrl;
+            // If contains /public, use portion after /public
+            let publicRelative = '';
+            if (p.includes('/public')) {
+                publicRelative = p.split('/public').pop();
+            } else if (p.includes('/uploads')) {
+                const idx = p.indexOf('/uploads');
+                publicRelative = idx !== -1 ? p.substring(idx) : p;
+            } else if (p.startsWith('/')) {
+                publicRelative = p;
+            }
+
+            const base = String(FILE_URL || '').replace(/\/$/, '');
+            if (publicRelative) {
+                return base + publicRelative + (name ? '/' + encodeURIComponent(name) : '');
+            }
+
+            // fallback: assume path is relative to base
+            return base + '/' + p.replace(/^\//, '') + (name ? '/' + encodeURIComponent(name) : '');
+        } catch (e) {
+            return '/assets/images/No-Image-Placeholder.svg';
         }
-        return noImage;
     },
     hasDefinedValue: (obj, excludedKey = '') => {
         for (let key in obj) {

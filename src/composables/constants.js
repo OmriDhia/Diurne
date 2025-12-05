@@ -1,4 +1,6 @@
-export const FILE_URL = 'https://diurne-api.webntricks.com';
+import { FILE_URL as CONFIG_FILE_URL } from '../config/config';
+
+export const FILE_URL = CONFIG_FILE_URL;
 export const CRYPTO_KEY = 'QdSr3pKrmW';
 export const TOKEN_STORAGE_NAME = 'auth_token';
 export const USER_INFO_STORAGE_NAME = 'user_info';
