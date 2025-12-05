@@ -74,8 +74,9 @@
                                         @change="changeServer" class="advanced-table text-nowrap">
                             <template #image="data">
                                 <div class="d-flex justify-content-center">
-                                    <img :src="$Helper.getImagePathNew(data.value.image_path, data.value.model_name)"
-                                         alt="Carpet Image" class="img-thumbnail" style="width: 80px; height: auto;">
+                                    <img
+                                        :src="$Helper.getImagePathNew(data.value.image_path, data.value.image_name || data.value.model_name)"
+                                        alt="Carpet Image" class="img-thumbnail" style="width: 80px; height: auto;">
                                 </div>
                             </template>
                             <template #model_name="data">
@@ -246,10 +247,6 @@
         { field: 'carpet_status', title: 'Etat de tapis dans le DI' },
         { field: 'wrong_image', title: 'Image eronnée' }
     ]) || [];
-    const getImageUrl = (imageName) => {
-        if (!imageName) return ''; // Handle missing images
-        return `/uploads/attachments/${imageName}`;
-    };
     onMounted(() => {
         const f = Helper.getStorage(FILTER_SUIVI_DI_STORAGE_NAME);
         if (f && Helper.hasDefinedValue(f)) {
