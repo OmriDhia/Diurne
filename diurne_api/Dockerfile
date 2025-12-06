@@ -20,11 +20,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/symfony
 
-# Copy project files
-COPY . .
+# Copy project files - REMOVED for Dev (Volume Mount used instead)
+# COPY . .
 
-# Install PHP dependencies
-# We use --no-scripts to avoid running auto-scripts that might fail without database
-RUN composer install --no-scripts --no-interaction --optimize-autoloader
+# Install PHP dependencies - REMOVED for Dev
+# RUN composer install ...
 
 CMD ["php-fpm"]

@@ -10,7 +10,7 @@ services:
       - db_data:/var/lib/mysql
       - ./diurne_api/api_database.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "3306:3306"
+      - "3307:3306"
     networks:
       - diurne-network
 
@@ -31,7 +31,7 @@ services:
       - ./diurne_api:/var/www/symfony
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - "8000:80"
+      - "8001:80"
     depends_on:
       - backend
     networks:
@@ -42,7 +42,10 @@ services:
       context: ./diurne_vuejs
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "8081:5173"
+    volumes:
+      - ./diurne_vuejs:/app
+      - /app/node_modules
     networks:
       - diurne-network
 
