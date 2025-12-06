@@ -7,6 +7,7 @@
     import dTextarea from '../../../components/base/d-textarea.vue';
     import DCurrency from '@/components/common/d-currency.vue';
     import dCarpetDropdown from '@/components/common/d-carpet-dropdown.vue';
+    import dFabricantDropdown from '@/components/common/d-fabricant-dropdown.vue';
     import { Helper, formatErrorViolations } from '@/composables/global-methods';
     import DPanelTitle from '@/components/common/d-panel-title.vue';
     import checkingListService from '../../../Services/checkingList-service';
@@ -51,7 +52,6 @@
         }
     });
 
-    const manufacturers = ref<Array<{ value: number | string, label: string }>>([]);
     const specialTarifDisabled = computed(() => !props.formData.tarifSpecial);
 
     const imageSpecification = ref<Record<string, any> | null>(null);
@@ -119,22 +119,7 @@
 
     });
 
-    const fetchManufacturers = async () => {
-        try {
-            const data = await workshopService.getManufacturers({ page: 1, itemsPerPage: 300 });
-            const list = data.response?.data || data.data || [];
-            manufacturers.value = list.map((m: any) => ({ value: m.id, label: m.name }));
-        } catch (e) {
-            handleApiError(e, 'Failed to load manufacturers');
-        }
-    };
-
-    onMounted(() => {
-        fetchManufacturers();
-    });
-
     const checkingLists = ref([]);
-    const router = useRouter();
     const error = ref({});
     const changeRn = ref(false);
 
@@ -814,16 +799,8 @@
                 <d-coherence-check v-if="props.orderId" :imageCommandId="props.imageCommandId"
                                    :workshopOrderId="props.orderId"></d-coherence-check>
 
-                <div class="form-row row py-2 align-items-center">
-                    <div class="col-4"><label>Fabricant <span class="required">*</span> :</label></div>
-                    <div class="col-8">
-                        <SelectInput v-model="props.formData.tapisDuProjet.fabricant" :options="manufacturers"
-                                     rootClass="pink-bg" />
-                        <div v-if="error.manufacturerId" class="invalid-feedback">
-                            {{ $t('Le champ fabricant est abligatoire.') }}
-                        </div>
-                    </div>
-                </div>
+                <d-fabricant-dropdown v-model="props.formData.tapisDuProjet.fabricant"
+                                      :error="error.manufacturerId" :required="true" :hideLabel="false" />
                 <d-carpet-dropdown
                     class="form-row py-2"
                     label="Type commandé"

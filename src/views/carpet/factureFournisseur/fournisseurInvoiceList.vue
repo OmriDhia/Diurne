@@ -23,15 +23,19 @@
                         <div class="row">
                             <label for="date_from" class="col-4">Début Recherche :</label>
                             <div class="col-8 d-flex justify-content-between align-items-center">
-                                <input id="date_from" class="form-control custom-date" type="date" v-model="filter.startDate" />
+                                <input id="date_from" class="form-control custom-date" type="date"
+                                       v-model="filter.startDate" />
                                 <label for="date_to" class="custom-between">au</label>
-                                <input id="date_to" class="form-control custom-date" type="date" v-model="filter.endDate" />
+                                <input id="date_to" class="form-control custom-date" type="date"
+                                       v-model="filter.endDate" />
                             </div>
                         </div>
 
                         <div class="row mt-2 justify-content-end">
                             <div class="col-auto" v-if="filterActive">
-                                <button class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">Reset filtre</button>
+                                <button class="btn btn-outline-secondary btn-reset" @click.prevent="doReset">Reset
+                                    filtre
+                                </button>
                             </div>
                             <div class="col-auto">
                                 <button class="btn btn-custom pe-3 ps-3" @click.prevent="doSearch">Recherche</button>
@@ -66,9 +70,34 @@
                                     <strong class="text-truncate" :title="data.value.invoice_number">
                                         {{ truncateText(data.value.invoice_number, 14) }}
                                     </strong>
-                                    <router-link :to="{ name: 'fournisseur-invoice-edit', params: { id: data.value.id } }">
-                                        <vue-feather type="search" stroke-width="1" class="cursor-pointer"></vue-feather>
+                                    <router-link
+                                        :to="{ name: 'fournisseur-invoice-edit', params: { id: data.value.id } }">
+                                        <vue-feather type="search" stroke-width="1"
+                                                     class="cursor-pointer"></vue-feather>
                                     </router-link>
+                                </div>
+                            </template>
+                            <template #invoice_date="data">
+                                <div>
+                                    <!-- format date as dd/MM/yy -->
+                                    {{ Helper.FormatDate(data.value.invoice_date, 'DD/MM/YY') }}
+                                </div>
+                            </template>
+
+                            <template #supplier="data">
+                                <div>
+                                    <!-- display static Atelier label as requested -->
+                                    Atelier de test
+                                </div>
+                            </template>
+
+                            <template #rn="data">
+                                <div>
+                                    <!-- data.value.rns may be an array or string; show comma-separated list or fallback -->
+                                    <span
+                                        v-if="Array.isArray(data.value.rns)">{{ (data.value.rns || []).map(r => r.rn || r).join(', ')
+                                        }}</span>
+                                    <span v-else>{{ data.value.rns || '' }}</span>
                                 </div>
                             </template>
                         </vue3-datatable>
@@ -95,6 +124,7 @@
     import { Helper } from '../../../composables/global-methods';
     import { useMeta } from '/src/composables/use-meta';
     import dRnNumberDropdown from '../../../components/common/d-rn-number-dropdown.vue';
+
     useMeta({ title: 'Facture Client' });
 
     const router = useRouter();
@@ -107,7 +137,7 @@
         current_page: 1,
         pagesize: 50,
         orderBy: 'invoice_number',
-        orderWay: 'desc',
+        orderWay: 'desc'
     });
 
     const filter = ref({ ...filterFactureFournisseur });
@@ -116,7 +146,7 @@
         { field: 'invoice_number', title: 'Numéro facture' },
         { field: 'invoice_date', title: 'Date de facture' },
         { field: 'supplier', title: 'Atelier' }, //atelier == supplier??
-        { field: 'rn', title: 'RN' }, //?
+        { field: 'rn', title: 'RN' } //?
     ]);
 
     onMounted(() => {
@@ -200,6 +230,7 @@
     .text-size-16 {
         font-size: 16px !important;
     }
+
     .custom-date {
         width: 45%;
         padding: 0.375rem 0.75rem;
