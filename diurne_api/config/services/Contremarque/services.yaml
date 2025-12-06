@@ -1,0 +1,120 @@
+parameters:
+  upload_directory: "%kernel.project_dir%/public/uploads/attachments"
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  # Cache service definition (required for setCache calls)
+  cache.app:
+    class: Symfony\Component\Cache\Adapter\FilesystemAdapter
+    arguments:
+      $namespace: ""
+      $defaultLifetime: 3600
+      $directory: "%kernel.project_dir%/var/cache/systemfile"
+
+  # -- MENU MODULE --
+  App\Contremarque\:
+    resource: "../../../src/Contremarque"
+
+  App\Contremarque\Controller\:
+    resource: "../../../src/Contremarque/Controller"
+    tags: [ "controller.service_arguments" ]
+
+  # Instance configuration for specific classes
+  _instanceof:
+    App\Common\Bus\Command\CommandHandler:
+      tags: [ "user.command_handler" ]
+    App\Common\Bus\Query\QueryHandler:
+      tags: [ "user.query_handler" ]
+    App\Contremarque\Validator\ValidateQuoteFieldsValidator:
+      tags: [ validator.constraint_validator ]
+  # Defines the InMemorySymfonyQueryBus service
+  App\Common\Bus\Query\Symfony\InMemorySymfonyQueryBus:
+    arguments: [ !tagged_iterator user.query_handler ] # Injects all tagged query handlers
+
+  # Defines the InMemorySymfonyCommandBus service
+  App\Common\Bus\Command\Symfony\InMemorySymfonyCommandBus:
+    arguments: [ !tagged_iterator user.command_handler ] # Injects all tagged command handlers
+
+  # Console commands
+  App\Contremarque\Command\CreateUnitsOfMeasurementCommand:
+    tags: [ "console.command" ]
+
+  App\Contremarque\Command\CreateDiStatusCommand:
+    tags: [ "console.command" ]
+
+  App\Contremarque\Command\CreateContremarqueFixtureDataCommand:
+    tags: [ "console.command" ]
+
+  App\Contremarque\Command\CreateCarpetStatusCommand:
+    tags: [ "console.command" ]
+
+  App\Contremarque\Command\CreateMesurementCommand:
+    tags: [ "console.command" ]
+
+  App\Contremarque\Command\CreateDesignerUsersCommand:
+    tags: [ "console.command" ]
+
+  App\Contremarque\Command\RefactorCommercialCommand:
+    tags: [ "console.command" ]
+
+  App\Contremarque\Command\ExecuteContremarqueCommands:
+    tags: [ "console.command" ]
+
+  App\Contremarque\Command\CreateQuoteCommand:
+    tags: [ "console.command" ]
+
+  App\Contremarque\Command\CreateCustomerInstructionCommand:
+    tags: [ "console.command" ]
+
+  App\Contremarque\Command\SendTestEmailCommand:
+    tags: [ "console.command" ]
+
+  # Service with specific arguments
+  App\Contremarque\Bus\Command\AttachmentUpload\UploadFileHandler:
+    arguments:
+      $em: "@doctrine.orm.entity_manager" # Ensure you're using the correct entity manager if there are multiple
+      $slugger: "@slugger"
+      $uploadDirectory: "%upload_directory%"
+
+  # Event listener for CustomerInstruction
+  App\Contremarque\EventListener\CustomerInstructionListener:
+    tags:
+      - { name: doctrine.event_listener, event: postPersist }
+      - { name: doctrine.event_listener, event: postUpdate }
+
+  # Services with specific dependencies
+  App\Contremarque\Service\ImageProvider: ~
+
+  App\Contremarque\Service\QuoteHtmlGenerator:
+    arguments:
+      $quoteRepository: '@App\Contremarque\Repository\QuoteRepository'
+      $customerRepository: '@App\Contact\Repository\CustomerRepository'
+      $materialRepository: '@App\Setting\Repository\MaterialRepository'
+      $imageAttachmentRepository: '@App\Contremarque\Repository\ImageAttachmentRepository'
+      $imageProvider: '@App\Contremarque\Service\ImageProvider'
+      $qualityLangRepository: '@App\Setting\Repository\QualityLangRepository'
+      $languageRepository: '@App\Setting\Repository\LanguageRepository'
+
+  App\Contremarque\Controller\ExportQuote\ExportQuotePdfController:
+    arguments:
+      $security: "@security.helper"
+      $twig: "@twig"
+      $quoteRepository: '@App\Contremarque\Repository\QuoteRepository'
+      $snappyPdf: "@knp_snappy.pdf" # Ensure KnpSnappyBundle is configured
+
+  cache.messenger.restart_workers_signal:
+    class: Symfony\Component\Cache\Adapter\FilesystemAdapter
+    arguments:
+      $namespace: "messenger.restart_workers_signal"
+      $defaultLifetime: 0
+      $directory: "%kernel.cache_dir%/messenger"
+
+  doctrine.result_cache_pool:
+    class: Symfony\Component\Cache\Adapter\FilesystemAdapter
+    arguments:
+      $namespace: "doctrine_result_cache"
+      $defaultLifetime: 0
+      $directory: "%kernel.cache_dir%/doctrine/result_cache"

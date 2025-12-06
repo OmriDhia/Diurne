@@ -1,0 +1,20 @@
+//  =================
+//      Imports
+//  =================
+@import '../../../base/base'; // Base Variables
+
+
+.card-header {
+    //background-color: #EFF0F1;
+    
+    section > div {
+        cursor: pointer;
+        display: block;
+        font-size: 14px;
+        letter-spacing: 1px;
+        color: #000000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}

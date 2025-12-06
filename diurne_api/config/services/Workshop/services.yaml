@@ -1,0 +1,28 @@
+# config/services/Workshop.yaml
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+  App\Workshop\:
+    resource: ../../../src/Workshop
+
+  # Workshop Controllers
+
+  App\Workshop\Controller\:
+    resource: ../../../src/Workshop/Controller
+    tags: [controller.service_arguments]
+  # Instance configuration for specific classes.
+  _instanceof:
+    App\Common\Bus\Command\CommandHandler:
+      tags: [ user.command_handler ]
+    App\Common\Bus\Query\QueryHandler:
+      tags: [ user.query_handler ]
+
+  # Defines the InMemorySymfonyQueryBus service.
+  App\Common\Bus\Query\Symfony\InMemorySymfonyQueryBus:
+    arguments: [ !tagged_iterator user.query_handler ]  # Injects all tagged query handlers.
+  # Defines the InMemorySymfonyCommandBus service.
+  App\Common\Bus\Command\Symfony\InMemorySymfonyCommandBus:
+    arguments: [ !tagged_iterator user.command_handler ]  # Injects all tagged command handlers.
+

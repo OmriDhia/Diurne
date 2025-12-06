@@ -1,0 +1,7 @@
+RewriteEngine On
+
+# Redirect only requests to the root path (/)
+RewriteCond %{REQUEST_URI} ^/$
+
+# Rewrite to /api/doc
+RewriteRule ^ /api/doc [L]

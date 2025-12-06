@@ -1,0 +1,165 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+env:
+  APP_ENV: prod
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  PROJECT_DIR: /var/www/html/api_diurne
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    name: Code Quality
+    if: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, 'Merge') || github.event_name == 'pull_request' && github.event.pull_request.merged == true }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, dom, curl
+          tools: composer:v2
+
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Dependencies
+        run: composer install --no-progress --prefer-dist --no-scripts --optimize-autoloader
+
+      - name: Validate Composer
+        run: composer validate --no-check-publish  # Suppression de --strict
+
+      - name: Run PHP CS Fixer (dry-run)
+        run: vendor/bin/php-cs-fixer fix src --dry-run --quiet || true
+
+      - name: Get Changed Files
+        id: changed-files
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            CHANGED_FILES=$(git diff --name-only origin/main...HEAD | grep -E '\.php$' || true)
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD^ HEAD | grep -E '\.php$' || true)
+          fi
+          echo "files=$CHANGED_FILES" >> "$GITHUB_ENV"
+
+      - name: Run PHPStan
+        if: env.files != ''
+        run: vendor/bin/phpstan analyse --configuration=phpstan.neon --memory-limit=1G --error-format=github $files
+
+      - name: Run Rector (dry-run)
+        run: vendor/bin/rector process --dry-run || true
+
+  deploy:
+    runs-on: ubuntu-latest
+    name: Déploiement
+    needs: quality
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true || github.event_name == 'push' }}
+    steps:
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DIURNE_HOST }}
+          username: ${{ secrets.DIURNE_USERNAME }}
+          password: ${{ secrets.DIURNE_PASSWORD }}
+          port: 22
+          envs: PROJECT_DIR,APP_ENV,GITHUB_TOKEN
+          script: |
+            cd "$PROJECT_DIR" || {
+              echo "Directory $PROJECT_DIR does not exist, creating and cloning..."
+              mkdir -p "$PROJECT_DIR" || exit 1
+              cd "$PROJECT_DIR" || exit 1
+              git clone https://sayari.slim:$GITHUB_TOKEN@github.com/slimsayari/diurne_api.git . || exit 1
+            }
+            
+            # Ajout: Correction des permissions avant les opérations Git
+            echo "🔧 Correction des permissions..."
+            sudo chown -R ${{ secrets.DIURNE_USERNAME }}:${{ secrets.DIURNE_USERNAME }} . || exit 1
+            sudo chmod -R u+rwX . || exit 1
+            
+            [ -f .git/index.lock ] && {
+              echo "Removing git index.lock..."
+              rm -f .git/index.lock
+            }
+            echo "Updating repository..."
+            git fetch --all || exit 1
+            git reset --hard origin/main || exit 1
+            
+            # Ajout: Réappliquer les permissions pour www-data après déploiement
+            echo "🔐 Application des permissions finales..."
+            sudo chown -R www-data:www-data var/ public/ || exit 1
+            sudo find var/ -type d -exec chmod 775 {} \;
+            sudo find var/ -type f -exec chmod 664 {} \;
+            
+            echo "🔧 Setting up environment..."
+            if [ -f ".env.preprod" ]; then
+              cp .env.preprod .env
+              chmod 640 .env
+              chown www-data:www-data .env
+              echo "✅ .env.preprod configured"
+            else
+              echo "❌ Error: .env.preprod missing"
+              exit 1
+            fi
+
+            echo "📦 Installing dependencies..."
+            composer update --no-progress --prefer-dist --no-scripts --optimize-autoloader || exit 1
+
+            echo "🛠️ Database migrations..."
+            rm -f migrations/*.php || true
+            echo "Clearing metadata cache..."
+            php bin/console doctrine:cache:clear-metadata || exit 1
+            echo "Generating migration diff..."
+            php bin/console doctrine:migrations:diff || echo "No migration changes"
+            echo "Running migrations..."
+            php -d memory_limit=-1 bin/console doctrine:migrations:migrate --allow-no-migration --no-interaction || exit 1
+            echo "Clearing and warming up cache..."
+            php -d memory_limit=-1 bin/console cache:clear || exit 1
+            php -d memory_limit=-1 bin/console cache:warmup || exit 1
+
+      - name: Set Ownership and Permissions
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DIURNE_HOST }}
+          username: ${{ secrets.DIURNE_USERNAME }}
+          password: ${{ secrets.DIURNE_PASSWORD }}
+          port: 22
+          envs: PROJECT_DIR
+          script: |
+            cd "$PROJECT_DIR" || exit 1
+            echo "Setting ownership and permissions..."
+            sudo chown -R ubuntu:www-data . || exit 1
+            sudo find . -type d -exec chmod 755 {} \; || exit 1
+            sudo find . -type f -exec chmod 644 {} \; || exit 1
+            sudo chmod +x bin/console || exit 1
+            sudo chmod -R 775 var/ public/uploads/ || true
+            sudo chown -R ubuntu:www-data var/ public/uploads/ || true
+      - name: Verify Deployment
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DIURNE_HOST }}
+          username: ${{ secrets.DIURNE_USERNAME }}
+          password: ${{ secrets.DIURNE_PASSWORD }}
+          port: 22
+          script: |
+            cd "$PROJECT_DIR" || exit 1
+            echo "🧪 Running health check..."
+            curl -I https://diurne-api.webntricks.com/api/doc || exit 1
+            echo "🚀 Deployment successful!"

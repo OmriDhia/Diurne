@@ -1,0 +1,55 @@
+<style>
+    body * {
+        font-family: Garamond, serif;
+    }
+</style>
+<div style="page-break-before: always;margin-top: 20pt;  font-family: Garamond, serif;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; font-family: Arial, sans-serif;">
+        <caption style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">Récapitulatif du devis</caption>
+        <tbody>
+        <tr>
+            <td style="padding: 8px; width: 50%; text-align: right;">Total Prix brut :</td>
+            <td style="padding: 8px; text-align: left;">{{withoutDiscountPrice}} EUR</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px;width: 50%; text-align: right;">Remise tapis cumulé :</td>
+            <td style="padding: 8px; text-align: left;">{{cumulatedDiscountAmount}} EUR</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px;width: 50%; text-align: right;">Remise complémentaire sur le devis :</td>
+            <td style="padding: 8px; text-align: left;">{{additionalDiscount}} EUR</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; font-weight: bold;width: 50%; text-align: right;">Remise globale :</td>
+            <td style="padding: 8px; text-align: left; font-weight: bold;">{{totalDiscountAmount}} EUR</td>
+        </tr>
+        <!--tr>
+        <td colspan="2" style="border-top: 1px solid black;"></td>
+    </tr-->
+        <tr>
+            <td style="padding: 8px;width: 50%; text-align: right;">Transport :</td>
+            <td style="padding: 8px; text-align: left;">{{shipping}} EUR</td>
+        </tr>
+        <!--tr>
+        <td colspan="2" style="border-top: 1px solid black;"></td>
+    </tr-->
+        <tr>
+            <td style="padding: 8px; font-weight: bold;width: 50%; text-align: right;">Total HT :</td>
+            <td style="padding: 8px; text-align: left; font-weight: bold;">{{total_price_ht}} EUR</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px;width: 50%; text-align: right;">TVA (`{{tva}}`%) :</td>
+            <td style="padding: 8px; text-align: left;">{{tax}} EUR</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border-top: 1px solid black;"></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; font-size: 1.1em; font-weight: bold;width: 50%; text-align: right;">Total TTC :
+            </td>
+            <td style="padding: 8px; text-align: left; font-size: 1.1em; font-weight: bold;">{{total_price_ttc}} EUR
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

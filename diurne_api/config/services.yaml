@@ -1,0 +1,20 @@
+imports:
+  - { resource: ./services/Common/services.yaml }
+  - { resource: ./services/User/services.yaml }
+  - { resource: ./services/Menu/services.yaml }
+  - { resource: ./services/Contact/services.yaml }
+  - { resource: ./services/Setting/services.yaml }
+  - { resource: ./services/Event/services.yaml }
+  - { resource: ./services/Contremarque/services.yaml }
+  - { resource: ./services/Workshop/services.yaml }
+  - { resource: ./services/CheckingList/services.yaml }
+  - { resource: ./services/ProgressReport/services.yaml }
+  - { resource: ./services/Invoices/services.yaml }
+
+parameters:
+
+services:
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.

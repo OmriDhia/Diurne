@@ -1,0 +1,71 @@
+name: Feature Validation
+
+on:
+  pull_request:
+    branches:
+      - main  # Runs only when PR targets main
+
+env:
+  APP_ENV: test
+  PROJECT_DIR: /var/www/html/api_diurne
+
+jobs:
+  check-changes:
+    name: Check for PHP Changes
+    runs-on: ubuntu-latest
+    outputs:
+      has_php_changes: ${{ steps.get-changes.outputs.has_php_changes }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Fetches the current and previous commit to diff changes
+
+      - name: Get Changed Files
+        id: get-changes
+        run: |
+          git diff --name-only HEAD^ HEAD | grep -E '\.php$' > changed_files.txt || true
+          if [ -s changed_files.txt ]; then
+            echo "has_php_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_php_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+  quality-check:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.has_php_changes == 'true' }}  # Skip if no PHP changes
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Fetches the current and previous commit to diff changes
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, dom, curl
+          tools: composer:v2, phpstan, rector
+
+      - name: Get Changed Files
+        run: |
+          git diff --name-only HEAD^ HEAD | grep -E '\.php$' > changed_files.txt || true
+          echo "CHANGED_FILES=$(cat changed_files.txt | tr '\n' ' ')" >> $GITHUB_ENV
+
+      - name: Run PHPStan on Changed Files
+        if: env.CHANGED_FILES != ''
+        run: |
+          vendor/bin/phpstan analyse --configuration=phpstan.neon --memory-limit=1G $CHANGED_FILES > phpstan-report.txt 2>&1 || true
+          if grep -i "error" phpstan-report.txt; then
+            echo "PHPSTAN_FAILED=true" >> $GITHUB_ENV
+          fi
+
+      - name: Run Rector on Changed Files
+        if: env.CHANGED_FILES != ''
+        run: |
+          vendor/bin/rector process --dry-run $CHANGED_FILES > rector-report.txt 2>&1 || true
+          if grep -i "error" rector-report.txt; then
+            echo "RECTOR_FAILED=true" >> $GITHUB_ENV
+          fi

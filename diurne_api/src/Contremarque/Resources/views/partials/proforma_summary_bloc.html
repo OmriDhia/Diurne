@@ -1,0 +1,55 @@
+<style>
+    body * {
+        font-family: Garamond, serif;
+
+        table, th, td {
+            border: 1px solid black;
+            color: #585858;
+        }
+    }
+</style>
+<div style="page-break-before: always;margin-top: 20pt;font-family: Garamond, serif;display: flex;justify-content: space-between;gap: 30px;">
+    <table style="width: 50%; border-collapse: collapse; text-align: left; font-family: Arial, sans-serif;">
+        <tbody>
+        <tr>
+            <th style="padding: 8px; font-weight: bold;width: 50%; text-align: center;">Remarques, instructions
+                spéciales
+            </th>
+        </tr>
+        <tr>
+            <td style="padding: 8px; text-align: center; font-weight: bold;">{{instructions}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <table style="width: 50%; border-collapse: collapse; text-align: left; font-family: Arial, sans-serif;">
+        <tbody>
+        <tr>
+            <td style="padding: 8px; font-weight: bold;width: 50%; text-align: left;">Total HT :</td>
+            <td style="padding: 8px; text-align: left; font-weight: bold;">{{total_price_ht}} EUR</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px;width: 50%; text-align: left;">Transport :</td>
+            <td style="padding: 8px; text-align: left;">{{shipping}} EUR</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px;width: 50%; text-align: left;">TVA ({{tva}}%) :</td>
+            <td style="padding: 8px; text-align: left;">{{tax}} EUR</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; font-size: 1.1em; font-weight: bold;width: 50%; text-align: left;">Total TTC :
+            </td>
+            <td style="padding: 8px; text-align: left; font-size: 1.1em; font-weight: bold;">{{total_price_ttc}} EUR
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 8px;width: 50%; text-align: left;">Paiement reçu :</td>
+            <td style="padding: 8px; text-align: left;">{{payment_received}} EUR</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px;width: 50%; text-align: left;">Acompte demandé ({{deposit_rate}}%) :</td>
+            <td style="padding: 8px; text-align: left;">{{deposit}} EUR</td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>

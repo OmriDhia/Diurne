@@ -1,0 +1,24 @@
+ID_FABRIQUANT,NOM_FABRIQUANT,INITIAL_TAPIS,INITIAL_ECHANTILLON,reliea,LIEU,TYPE_DEVISE,MONTANT_AVOIR,ETAT_DU_FOURNISSEUR,TYPE,ATELIER,BONUS_COMPLEXITE,BONUS_OVERSIZE,BONUS_OVERSIZE_MOHAIR,BONUS_SPECIAL_FORM,BONUS_MULTI_LEVEL
+2,Tauquir,B,F,,Inde,Dollars,0,FALSE,Carpet,Indian Export House,"0,1","0,1","0,05",0,0
+4,Stock Diurne,S,S,,France,Euro,0,FALSE,Rien,Stock Diurne,0,0,0,0,0
+5,Young Sail,Y,Z,,Chine,Euro,0,FALSE,Carpet,Young Sail Co LTD,0,0,0,0,0
+6,Tauquir Échantillons,B,F,2,Inde,Dollars,0,TRUE,Sample,Indian Export House,"0,1","0,1","0,05",0,0
+7,Ujjwal Échantillons,U,T,10,Inde,Dollars,0,TRUE,Sample,Home Tex India,0,0,0,0,0
+8,Perennials Echantillons,P,R,11,U-S,Dollars,0,TRUE,Sample,Perennials,0,0,0,0,0
+9,Dilip,C,D,,Népal,Euro,0,FALSE,Carpet,Dhamstik Carpet Industries,"0,08",0,0,0,"0,08"
+10,Ujjwal,U,T,,Inde,Dollars,0,FALSE,Carpet,Home Tex India,0,0,0,0,0
+11,Perennials,P,R,,U-S,Dollars,0,TRUE,Sample,Perennials,0,0,0,0,0
+12,Everest,N,P,,Népal,Dollars,0,FALSE,Carpet,Everest Loom,0,0,0,0,0
+14,Young Sail Échantillons,Y,Z,5,Chine,Euro,0,TRUE,Sample,Young Sail Co LTD,0,0,0,0,0
+15,Deep,,E,,,,0,TRUE,Carpet,Deep,0,0,0,0,0
+16,Deep Echantillons,,E,15,,,0,TRUE,Sample,Deep,0,0,0,0,0
+17,Stone Age,G,H,,,,0,TRUE,Carpet,Indesign Rugs Carpets,0,0,0,0,0
+18,Stone Age Echantillons,G,H,17,,,0,TRUE,Sample,Indesign Rugs Carpets,0,0,0,0,0
+19,Dawa,J,K,,,,0,TRUE,Carpet,Dawa,0,0,0,0,0
+20,Varanasi Carpets,L,,,Inde,,0,TRUE,Carpet,Varanasi Carpets,0,0,0,0,0
+21,Dawa Échantillons,J,K,19,,,0,TRUE,Sample,Dawa,0,0,0,0,0
+22,Dilip Échantillons,C,D,9,Népal,Euro,0,TRUE,Sample,Dhamstik Carpet Industries,"0,08",0,0,0,"0,08"
+23,Vishal Carpets,V,W,,Inde,Dollars,0,FALSE,Carpet,Vishal Carpets,0,0,0,0,0
+24,Vishal Échantillons,V,W,23,Inde,Dollars,0,TRUE,Sample,Vishal Carpets,0,0,0,0,0
+25,Everest Échantillons,N,P,12,Népal,Dollars,0,TRUE,Sample,Everest Loom,0,0,0,0,0
+26,Varanasi Carpet,M,M,,Inde,Dollars,0,FALSE,,Varanasi Carpet,0,0,0,0,0

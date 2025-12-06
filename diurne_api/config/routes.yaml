@@ -1,0 +1,18 @@
+#authenticate_user:
+#    path: /api/authenticate
+#    controller: App\User\Controller\AuthController
+redirect_home:
+  path: /
+  controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::redirectAction
+  defaults:
+    route: app.swagger_ui
+    permanent: true
+app.swagger_ui:
+  path: /api/doc
+  methods: GET
+  defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+
+#coop_tilleuls_forgot_password.reset:
+#  path:   '/api/forgot-password'
+#  defaults:  { _controller:  coop_tilleuls_forgot_password.controller.forgot_password:resetPasswordAction}
+#  methods:  [POST]

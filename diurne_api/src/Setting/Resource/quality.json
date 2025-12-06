@@ -1,0 +1,263 @@
+[
+  {
+    "ID_QUALITE": 1,
+    "QUALITE": "Quilon",
+    "DESCRIPTION_QUALITE": "Tapis tufté main, 4 kg/m² ; Laine 100 % Nouvelle Zélande, filée à la main, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "Hand-tufted carpet, 4kg/m²; Wool 100 % New Zealand, hand-spun, clipping and carving by hand",
+    "POIDS": 4.2,
+    "DESCRIPTION_QUALITE_ALL": "Handgetuftet, 4kg/m², Wolle 100% Neuseeland, handgesponnen, handgeschnitten und -ziseliert",
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 2,
+    "QUALITE": "Metture",
+    "DESCRIPTION_QUALITE": "80 000 nœuds/m² Laines 40% Bikaner, 30 % Nouvelle Zélande, 30 % Tibet, filées à la main, nœud tibétain, arasage & ciselure mécanique.",
+    "DESCRIPTION_QUALITE_AN": "80 000 kn/m² - Wool 40% Bikaneer, 30 % New Zealand, 30 % Tibet, hand-spun, Tibetan knot, carving and clipping by machine",
+    "POIDS": 5,
+    "DESCRIPTION_QUALITE_ALL": "80 000 kn/m² - Wolle 40% Bikaner, 30% Neuseeland, 30% Tibet, handgesponnen, tibetanischer Knoten, mechanisch ziseliert",
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 3,
+    "QUALITE": "Mysore",
+    "DESCRIPTION_QUALITE": "50 000 noeuds/m² - Laine 100 % mérinos, filée à la main, nœud ouchak, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "50 000 kn/m² - Wool 100 % Merino, hand-spun, Ushak-knot, clipping and carving by hand",
+    "POIDS": 5,
+    "DESCRIPTION_QUALITE_ALL": "50 000 kn/m² - Wolle 100% Merino, handgesponnen, Utchak-Knoten, handgeschnitten und -ziseliert",
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 4,
+    "QUALITE": "Gadag",
+    "DESCRIPTION_QUALITE": "50 000 nœuds /m² -  Laines 50 % Tibet, 50 % Nouvelle Zélande, filées à la main, nœud tibétain, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "50 000 kn/m² - Wool 50 % Tibet, 50 % New Zealand, Tibetan knot, hand-spun, clipping and carving by hand",
+    "POIDS": 5.2,
+    "DESCRIPTION_QUALITE_ALL": "50 000 kn/m² - Wolle 50% Tibet, 50% Neuseeland, handgesponnen, tibetanischer Knoten, handgeschnitten und -ziseliert",
+    "Standard_Velours": 16
+  },
+  {
+    "ID_QUALITE": 5,
+    "QUALITE": "Belgaum",
+    "DESCRIPTION_QUALITE": "80 000 nœuds /m² - Laines 50 % Tibet, 50 % Nouvelle Zélande, filées à la main, nœud tibétain, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "80 000 kn/m² - Wool 50 % Tibet, 50 % New Zealand, hand-spun, Tibetan knot, clipping and carving by hand",
+    "POIDS": 5.2,
+    "DESCRIPTION_QUALITE_ALL": "80 000 kn/m² - Wolle 50% Tibet, 50% Neuseeland, handgesponnen, tibetanischer Knoten, handgeschnitten und -ziseliert",
+    "Standard_Velours": 16
+  },
+  {
+    "ID_QUALITE": 6,
+    "QUALITE": "Nagpur",
+    "DESCRIPTION_QUALITE": "100 000 nœuds/m² - Laines 50 % Tibet, 50 % Nouvelle Zélande, filées à la main, nœud tibétain, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "100 000 kn/m² - Wool 50 % Tibet, 50 % New Zealand, hand-spun, Tibetan knot, clipping and carving by hand",
+    "POIDS": 3.7,
+    "DESCRIPTION_QUALITE_ALL": "100 000 kn/m² - Wolle 50% Tibet, 50% Neuseeland, handgesponnen, tibetanischer Knoten, handgeschnitten und -ziseliert",
+    "Standard_Velours": 8
+  },
+  {
+    "ID_QUALITE": 7,
+    "QUALITE": "Jammu",
+    "DESCRIPTION_QUALITE": "150 000 nœuds/m² - Laines 33 % Nouvelle Zélande, 33 % Tibet, 33 % Sardaigne, filées à la main, nœud tibétain, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "150 000 kn/m² - Wool 33 % New Zealand, 33 % Tibet, 33 % Sardinia, hand-spun, Tibetan knot, clipping and carving by hand",
+    "POIDS": 6,
+    "DESCRIPTION_QUALITE_ALL": "150 000 kn/m² - Wolle 33% Neuseeland, 33% Tibet, 33% Sardinien, handgesponnen, tibetanischer Knoten, handgeschnitten und -ziseliert",
+    "Standard_Velours": 18
+  },
+  {
+    "ID_QUALITE": 8,
+    "QUALITE": "Mandu",
+    "DESCRIPTION_QUALITE": "100 000 nœuds/m² - Laines 70 % Mohair, 30 % Nouvelle Zélande, filées à la main, nœud tibétain, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "100 000 kn/m² - Wool 70 % Mohair, 30 % New Zealand, hand-spun, Tibetan knot, clipping and carving by hand",
+    "POIDS": 6,
+    "DESCRIPTION_QUALITE_ALL": "100 000 kn/m² - Wolle 70% Mohair, 30% Neuseeland, handgesponnen, tibetanischer Knoten, handgeschnitten und -ziseliert",
+    "Standard_Velours": 14
+  },
+  {
+    "ID_QUALITE": 9,
+    "QUALITE": "Katni",
+    "DESCRIPTION_QUALITE": "200 000 nœuds/m² - Laines 50 % Tibet, 50 % Nouvelle Zélande, filées à la main, nœud tibétain, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "200 000 kn/m² - Wool 50 % Tibet, 50 % New Zealand, hand-spun, Tibetan knot, clipping and carving by hand",
+    "POIDS": 3.5,
+    "DESCRIPTION_QUALITE_ALL": "200 000 kn/m² - Wolle 50% Tibet, 50% Neuseeland, handgesponnen, tibetanischer Knoten, handgeschnitten und -ziseliert",
+    "Standard_Velours": 6
+  },
+  {
+    "ID_QUALITE": 10,
+    "QUALITE": "Ranchi",
+    "DESCRIPTION_QUALITE": "150 000 nœuds/m² - 50 % soie, 50 % laine (70 % Nouvelle Zélande, 30 % Tibet) filées à la main, nœud tibétain, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "150 000 kn/m² - 50 % silk, 50 % wool (70 % New Zealand, 30 % Tibet), hand-spun, Tibetan knot, clipping and carving by hand",
+    "POIDS": 4.75,
+    "DESCRIPTION_QUALITE_ALL": "150 000 kn/m² - 50% Seide, 50% Wolle (70% Neuseeland, 30 % Tibet) handgesponnen, tibetanischer Knoten, handgeschnitten und -ziseliert",
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 11,
+    "QUALITE": "Kota",
+    "DESCRIPTION_QUALITE": "80 000 nœuds/m² - Laines 50 % Tibet, 50 % Nouvelle Zélande, filées à la main, nœud Gördes, arasage & ciselure manuelle, trame & chaine en laine",
+    "DESCRIPTION_QUALITE_AN": "80 000 kn/m² - Wool 50 % Tibet, 50 % New Zealand, hand-spun, Gördes knot, clipping and carving by hand - warp & weft woollen",
+    "POIDS": 4,
+    "DESCRIPTION_QUALITE_ALL": "80 000 kn/m² - Wolle 50% Tibet, 50% Neuseeland, handgesponnen, Gördes-Knoten, handgeschnitten und -ziseliert - Kette & Schuß Wolle",
+    "Standard_Velours": 18
+  },
+  {
+    "ID_QUALITE": 12,
+    "QUALITE": "Kampur",
+    "DESCRIPTION_QUALITE": "350 000 nœuds/m² - Laines 50 % Tibet, 50 % Nouvelle Zélande, filées à la main, nœud tibétain, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "350 000 kn/m² -  Wool 50 % Tibet, 50 % New Zealand, hand-spun, Tibetan knot, clipping and carving by hand",
+    "POIDS": 3,
+    "DESCRIPTION_QUALITE_ALL": "350 000 kn/m² - Wolle 50% Tibet, 50% Neuseeland, handgesponnen, tibetanischer Knoten, handgeschnitten und -ziseliert",
+    "Standard_Velours": 5
+  },
+  {
+    "ID_QUALITE": 13,
+    "QUALITE": "Jhansi",
+    "DESCRIPTION_QUALITE": "Tapis tufté main, 2,8 kg/m² ; Laine 100 % Nouvelle Zélande, filée à la main, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "Hand-tufted carpet, 2,8 kg/m²; Wool 100 % New Zealand, hand-spun, clipping and carving by hand",
+    "POIDS": 4,
+    "DESCRIPTION_QUALITE_ALL": "Handgetuftet, 2,8 kg/m², Wolle 100% Neuseeland, handgesponnen, handgeschnitten und -ziseliert",
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 14,
+    "QUALITE": "Barmer",
+    "DESCRIPTION_QUALITE": "150 000 kn/m² - 100% Lin, filées à la main, nœud tibétain, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "150 000 kn/m² - 100% Linen, hand-spun, Tibetan knot, clipping and carving by hand",
+    "POIDS": 3.5,
+    "DESCRIPTION_QUALITE_ALL": "150 000 kn/m² - 100% Leinen, handgesponnen, tibetanischer Knoten, handgeschnitten und -ziseliert",
+    "Standard_Velours": 8
+  },
+  {
+    "ID_QUALITE": 15,
+    "QUALITE": "Gwalior",
+    "DESCRIPTION_QUALITE": "Nœuds Soumak",
+    "DESCRIPTION_QUALITE_AN": "Soumak knots",
+    "POIDS": 3,
+    "DESCRIPTION_QUALITE_ALL": "Sumak knots",
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 16,
+    "QUALITE": "Perennials",
+    "DESCRIPTION_QUALITE": "Fibre Perennials nano-teintée - conçus pour les environnements exposés (anti-humidité, anti-taches, anti-UV...). 100 000 nds/m², noeuds Tibétain - arrasage et ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "Patented Perennials yarns – specific for outdoor and humid atmosphere. Handknotted with Tibetan knot – clipping and carving by hand",
+    "POIDS": 0,
+    "DESCRIPTION_QUALITE_ALL": null,
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 17,
+    "QUALITE": "Ajmer",
+    "DESCRIPTION_QUALITE": null,
+    "DESCRIPTION_QUALITE_AN": null,
+    "POIDS": 0,
+    "DESCRIPTION_QUALITE_ALL": null,
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 18,
+    "QUALITE": "Alwar",
+    "DESCRIPTION_QUALITE": "80 000 noeuds/ m²: 100% chanvre filé à la main, nœud tibétain, tissage & arasage manuel",
+    "DESCRIPTION_QUALITE_AN": "80 000 Knots/sq.m.: 100% hemp, Tibetan knots, spinning, knotting and carving by hand.",
+    "POIDS": 0,
+    "DESCRIPTION_QUALITE_ALL": null,
+    "Standard_Velours": 16
+  },
+  {
+    "ID_QUALITE": 19,
+    "QUALITE": "Simia",
+    "DESCRIPTION_QUALITE": "150 000 nœuds/m²; 70% Pashmina, 30% laine de Nouvelle Zélande, filées à la main,nœud tibétain, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "150 000 knots/m²; 70% Pachmina, 30% New Zealand Wool, hand-spun, Tibetan knot, clipping and carving by hand",
+    "POIDS": 0,
+    "DESCRIPTION_QUALITE_ALL": "150 000 kn/m² - 70% Pachmina, 30% Neuseelandwolle, handgesponnen, tibetanischer Knoten, handgeschnitten und -ziseliert",
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 20,
+    "QUALITE": "Kulu",
+    "DESCRIPTION_QUALITE": null,
+    "DESCRIPTION_QUALITE_AN": null,
+    "POIDS": 0,
+    "DESCRIPTION_QUALITE_ALL": null,
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 21,
+    "QUALITE": "Mahathuha",
+    "DESCRIPTION_QUALITE": "80 000 nœuds/m² - Laine naturelle sans teinture -  Nœud Gördes - velours 12mm",
+    "DESCRIPTION_QUALITE_AN": "80 000 kn/m² -Natural Wool without dyeing - Gördes knot - velvet 12mm",
+    "POIDS": 4.5,
+    "DESCRIPTION_QUALITE_ALL": "80 000 kn/m² -Natürliche ungefärbte Wolle - Gördes-Knoten - Velourshöhe 12mm",
+    "Standard_Velours": 8
+  },
+  {
+    "ID_QUALITE": 22,
+    "QUALITE": "Bundi",
+    "DESCRIPTION_QUALITE": null,
+    "DESCRIPTION_QUALITE_AN": null,
+    "POIDS": 0,
+    "DESCRIPTION_QUALITE_ALL": null,
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 24,
+    "QUALITE": "Teor",
+    "DESCRIPTION_QUALITE": "200 000 nœuds par mètre carré - Nœud Tibétain - Laine 100% Mohair, filée à la main, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "200 000 Knots per square meter, Tibetan Knots - Wool 100% Mohair, hand-spun, clipping and carving by hand",
+    "POIDS": 0,
+    "DESCRIPTION_QUALITE_ALL": null,
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 25,
+    "QUALITE": "Aubusson",
+    "DESCRIPTION_QUALITE": "260 lignes/mètre",
+    "DESCRIPTION_QUALITE_AN": "260 lines / meter",
+    "POIDS": 0,
+    "DESCRIPTION_QUALITE_ALL": "260 Reihen/meter",
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 26,
+    "QUALITE": "Hand-Loom",
+    "DESCRIPTION_QUALITE": null,
+    "DESCRIPTION_QUALITE_AN": null,
+    "POIDS": 0,
+    "DESCRIPTION_QUALITE_ALL": null,
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 27,
+    "QUALITE": "Jhali",
+    "DESCRIPTION_QUALITE": "100 000 nœuds/m² - Laines 100 % Mohair, filées à la main, nœud tibétain, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "100 000 kn/m² - Wool 100 % Mohair, hand-spun, Tibetan knot, clipping and carving by hand",
+    "POIDS": 0,
+    "DESCRIPTION_QUALITE_ALL": "100 000 kn/m² - Wolle 100% Mohair, handgesponnen, tibetanischer Knoten, handgeschnitten und -ziseliert",
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 28,
+    "QUALITE": "Orai",
+    "DESCRIPTION_QUALITE": "Tapis tufté main, 4,1 kg/m² ; Laine 100 % Nouvelle Zélande, filée à la main, arasage & ciselure manuelle",
+    "DESCRIPTION_QUALITE_AN": "Hand-tufted carpet, 4,1kg/m²; Wool 100 % New Zealand, hand-spun, clipping and carving by hand",
+    "POIDS": 0,
+    "DESCRIPTION_QUALITE_ALL": null,
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 29,
+    "QUALITE": "Kulti",
+    "DESCRIPTION_QUALITE": "150 000 nœuds/m² - Laines 50 % Nouvelle Zélande, 50 % Tibet, filées à la main, nœud Gordes, arasage & ciselure manuelle, finition oxydée",
+    "DESCRIPTION_QUALITE_AN": null,
+    "POIDS": 0,
+    "DESCRIPTION_QUALITE_ALL": null,
+    "Standard_Velours": null
+  },
+  {
+    "ID_QUALITE": 30,
+    "QUALITE": "Tissage",
+    "DESCRIPTION_QUALITE": "Nœud Soumak 100% Jute",
+    "DESCRIPTION_QUALITE_AN": null,
+    "POIDS": 0,
+    "DESCRIPTION_QUALITE_ALL": null,
+    "Standard_Velours": null
+  }
+]

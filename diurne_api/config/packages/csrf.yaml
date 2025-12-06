@@ -1,0 +1,8 @@
+# config/packages/framework.yaml
+framework:
+    csrf_protection:
+        enabled: true
+        # stateless_token_ids: ["submit"]
+        # # Optional additional parameters available in your version:
+        # cookie_name: "CSRF-TOKEN" # Customize cookie name
+        # check_header: true # Enable header checking

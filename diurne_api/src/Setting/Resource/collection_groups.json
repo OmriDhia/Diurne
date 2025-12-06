@@ -1,0 +1,386 @@
+[
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°1",
+    "GROUPE": 1,
+    "TARIF": 35,
+    "TARIF_MAX": 12000
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°1",
+    "GROUPE": 2,
+    "TARIF": 159,
+    "TARIF_MAX": 14000
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°1",
+    "GROUPE": 3,
+    "TARIF": 196,
+    "TARIF_MAX": 24000
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°1",
+    "GROUPE": 4,
+    "TARIF": 255,
+    "TARIF_MAX": 30000
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2017 n°1",
+    "GROUPE": 1,
+    "TARIF": 35,
+    "TARIF_MAX": 121200
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2017 n°1",
+    "GROUPE": 2,
+    "TARIF": 153,
+    "TARIF_MAX": 14140
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°2",
+    "GROUPE": 1,
+    "TARIF": 35,
+    "TARIF_MAX": 1236
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°2",
+    "GROUPE": 2,
+    "TARIF": 156,
+    "TARIF_MAX": 14423
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°2",
+    "GROUPE": 3,
+    "TARIF": 203,
+    "TARIF_MAX": 24725
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°2",
+    "GROUPE": 4,
+    "TARIF": 264,
+    "TARIF_MAX": 30906
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2018 n°1",
+    "GROUPE": 1,
+    "TARIF": 35,
+    "TARIF_MAX": 1236
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2018 n°1",
+    "GROUPE": 2,
+    "TARIF": 156,
+    "TARIF_MAX": 14423
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2018 n°1",
+    "GROUPE": 3,
+    "TARIF": 203,
+    "TARIF_MAX": 24725
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2018 n°1",
+    "GROUPE": 4,
+    "TARIF": 264,
+    "TARIF_MAX": 30906
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2019",
+    "GROUPE": 1,
+    "TARIF": 37,
+    "TARIF_MAX": 12610
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2019",
+    "GROUPE": 2,
+    "TARIF": 159,
+    "TARIF_MAX": 14711
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2019",
+    "GROUPE": 3,
+    "TARIF": 207,
+    "TARIF_MAX": 25219
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2019",
+    "GROUPE": 4,
+    "TARIF": 269,
+    "TARIF_MAX": 31524
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2020",
+    "GROUPE": 1,
+    "TARIF": 38,
+    "TARIF_MAX": 12610
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2020",
+    "GROUPE": 2,
+    "TARIF": 163,
+    "TARIF_MAX": 14711
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2020",
+    "GROUPE": 3,
+    "TARIF": 211,
+    "TARIF_MAX": 25219
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2020",
+    "GROUPE": 4,
+    "TARIF": 275,
+    "TARIF_MAX": 31524
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2021",
+    "GROUPE": 1,
+    "TARIF": 38,
+    "TARIF_MAX": 13119
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2021",
+    "GROUPE": 2,
+    "TARIF": 166,
+    "TARIF_MAX": 15306
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2021",
+    "GROUPE": 3,
+    "TARIF": 216,
+    "TARIF_MAX": 26238
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2021",
+    "GROUPE": 4,
+    "TARIF": 280,
+    "TARIF_MAX": 32798
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2022",
+    "GROUPE": 1,
+    "TARIF": 40,
+    "TARIF_MAX": 13775
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2022",
+    "GROUPE": 2,
+    "TARIF": 174,
+    "TARIF_MAX": 16071
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2022",
+    "GROUPE": 3,
+    "TARIF": 226,
+    "TARIF_MAX": 27550
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2022",
+    "GROUPE": 4,
+    "TARIF": 294,
+    "TARIF_MAX": 34438
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°1",
+    "GROUPE": 5,
+    "TARIF": 311,
+    "TARIF_MAX": 24235
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°1",
+    "GROUPE": 6,
+    "TARIF": 366,
+    "TARIF_MAX": 26488
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°1",
+    "GROUPE": 7,
+    "TARIF": 412,
+    "TARIF_MAX": 28741
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°1",
+    "GROUPE": 8,
+    "TARIF": 489,
+    "TARIF_MAX": 30994
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°2",
+    "GROUPE": 5,
+    "TARIF": 343,
+    "TARIF_MAX": 35026
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°2",
+    "GROUPE": 6,
+    "TARIF": 446,
+    "TARIF_MAX": 37087
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°2",
+    "GROUPE": 7,
+    "TARIF": 603,
+    "TARIF_MAX": 39148
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°2",
+    "GROUPE": 8,
+    "TARIF": 814,
+    "TARIF_MAX": 41208
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2016 n°2",
+    "GROUPE": 9,
+    "TARIF": 1058,
+    "TARIF_MAX": 44299
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2017 n°1",
+    "GROUPE": 5,
+    "TARIF": 336,
+    "TARIF_MAX": 34340
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2017 n°1",
+    "GROUPE": 6,
+    "TARIF": 437,
+    "TARIF_MAX": 36360
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2017 n°1",
+    "GROUPE": 7,
+    "TARIF": 582,
+    "TARIF_MAX": 38830
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2017 n°1",
+    "GROUPE": 8,
+    "TARIF": 797,
+    "TARIF_MAX": 40400
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2017 n°1",
+    "GROUPE": 9,
+    "TARIF": 1037,
+    "TARIF_MAX": 43430
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2019",
+    "GROUPE": 5,
+    "TARIF": 350,
+    "TARIF_MAX": 35727
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2019",
+    "GROUPE": 6,
+    "TARIF": 455,
+    "TARIF_MAX": 37859
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2019",
+    "GROUPE": 7,
+    "TARIF": 615,
+    "TARIF_MAX": 39931
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2019",
+    "GROUPE": 8,
+    "TARIF": 830,
+    "TARIF_MAX": 42032
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2019",
+    "GROUPE": 9,
+    "TARIF": 1079,
+    "TARIF_MAX": 45185
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2020",
+    "GROUPE": 5,
+    "TARIF": 357,
+    "TARIF_MAX": 35727
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2020",
+    "GROUPE": 6,
+    "TARIF": 465,
+    "TARIF_MAX": 37859
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2020",
+    "GROUPE": 7,
+    "TARIF": 627,
+    "TARIF_MAX": 39931
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2020",
+    "GROUPE": 8,
+    "TARIF": 847,
+    "TARIF_MAX": 42032
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2020",
+    "GROUPE": 9,
+    "TARIF": 1101,
+    "TARIF_MAX": 45185
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2021",
+    "GROUPE": 5,
+    "TARIF": 364,
+    "TARIF_MAX": 37171
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2021",
+    "GROUPE": 6,
+    "TARIF": 474,
+    "TARIF_MAX": 39357
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2021",
+    "GROUPE": 7,
+    "TARIF": 640,
+    "TARIF_MAX": 41544
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2021",
+    "GROUPE": 8,
+    "TARIF": 864,
+    "TARIF_MAX": 43730
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2021",
+    "GROUPE": 9,
+    "TARIF": 1123,
+    "TARIF_MAX": 47010
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2022",
+    "GROUPE": 5,
+    "TARIF": 383,
+    "TARIF_MAX": 39029
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2022",
+    "GROUPE": 6,
+    "TARIF": 498,
+    "TARIF_MAX": 41325
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2022",
+    "GROUPE": 7,
+    "TARIF": 672,
+    "TARIF_MAX": 43621
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2022",
+    "GROUPE": 8,
+    "TARIF": 907,
+    "TARIF_MAX": 45917
+  },
+  {
+    "ANNEE_TARIF_GROUPE": "2022",
+    "GROUPE": 9,
+    "TARIF": 1179,
+    "TARIF_MAX": 49361
+  }
+]

@@ -1,0 +1,24 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  App\ProgressReport\:
+    resource: ../../../src/ProgressReport
+
+  App\ProgressReport\Controller\:
+    resource: ../../../src/ProgressReport/Controller
+    tags: [ controller.service_arguments ]
+
+  _instanceof:
+    App\Common\Bus\Command\CommandHandler:
+      tags: [ user.command_handler ]
+    App\Common\Bus\Query\QueryHandler:
+      tags: [ user.query_handler ]
+
+  App\Common\Bus\Query\Symfony\InMemorySymfonyQueryBus:
+    arguments: [ !tagged_iterator user.query_handler ]
+  App\Common\Bus\Command\Symfony\InMemorySymfonyCommandBus:
+    arguments: [ !tagged_iterator user.command_handler ]
+

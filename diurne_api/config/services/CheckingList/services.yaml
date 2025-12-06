@@ -1,0 +1,22 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+  App\CheckingList\:
+    resource: ../../../src/CheckingList
+
+  App\CheckingList\Controller\:
+    resource: ../../../src/CheckingList/Controller
+    tags: [controller.service_arguments]
+
+  _instanceof:
+    App\Common\Bus\Command\CommandHandler:
+      tags: [ user.command_handler ]
+    App\Common\Bus\Query\QueryHandler:
+      tags: [ user.query_handler ]
+
+  App\Common\Bus\Query\Symfony\InMemorySymfonyQueryBus:
+    arguments: [ !tagged_iterator user.query_handler ]
+  App\Common\Bus\Command\Symfony\InMemorySymfonyCommandBus:
+    arguments: [ !tagged_iterator user.command_handler ]

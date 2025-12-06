@@ -1,0 +1,94 @@
+"ID_COLLECTION";"REF_COLLECTION";"CODE_COLLECTION";"DESCRIPTION_FR";"DESCRIPTION_AN";"ID_POLICE";"Gen_DESCRIPTION_AN";"NUM_MAX";"Gen_DESCRIPTION_FR";"NUMERO_MAX";"groupe";"Aen_DESCRIPTION_AN";"Aen_DESCRIPTION_FR";"AFFICHER_GRILLE_COLLECTION"
+3;"Plaine";"PLA";"Description de ma premiere collection";"Description of my first collection";0;;0;;0;1;;;1
+7;"Coloriage by Studio Diurne";"COL";"Description Coll 2";"English Col2";0;;37;;0;2;;;1
+8;"Bordures Florales  by Studio Diurne";"BRF";;;0;;24;;0;4;;;1
+9;"Abrach  by Studio Diurne";"ABR";;"Design by Jacques Grange";0;;40;;0;3;;;1
+10;"Kimono by Marcel Zelmanovitch";"KIM";;;0;;15;;0;7;;;1
+11;"Azulejos  by Studio Diurne";"AZU";;;0;;16;;0;8;;;1
+12;"Clef by Marcel Zelmanovitch";"CLE";;;0;;17;;0;5;;;1
+13;"Diff�rent Cie  by Studio Diurne";"DIF";;;0;;24;;0;3;;;1
+14;"Grand Fleuve by Marcel Zelmanovitch";"GFL";;;0;;57;;0;5;;;1
+15;"Mati�re de r�ve by Marcel Zelmanovitch";"MAT";;;0;;20;;0;4;;;1
+16;"Natif";"NAT";;;0;;3;;0;3;;;1
+17;"Peintures by Marcel Zelmanovitch";"PEI";;;0;;21;;0;4;;;1
+18;"Perroquets by Marcel Zelmanovitch";"PER";;;0;;34;;0;5;;;1
+19;"Sol  by Studio Diurne";"SOL";;;0;;35;;0;4;;;1
+20;"Stones";"STO";;;0;;45;;0;5;;;1
+21;"Vitrail by Marcel Zelmanovitch";"VIT";;;0;;28;;0;5;;;1
+22;"Bordures g�om�triques  by Studio Diurne";"BRG";;;0;;28;;0;3;;;1
+23;"Carreaux tantriques by Studio Diurne";"CAR";;;0;;9;;0;3;;;1
+24;"Empreinte  by Studio Diurne";"EMP";;;0;;10;;0;3;;;1
+25;"Tigres by Studio Diurne";"TIG";;;0;;13;;0;4;;;1
+26;"Ferronneries Andalouses  by Studio Diurne";"FER";;;0;;10;;0;8;;;1
+27;"Tapis d'Orient by Studio Diurne";"ORI";;;0;;26;;0;8;;;1
+28;"Tapis d'Occident by Studio Diurne";"OCC";;;0;;37;;0;8;;;1
+29;"Palais � Nice by Studio Diurne";"PAL";;;0;;17;;0;5;;;1
+30;"Jardin Diurne by Studio Diurne";"JAR";;;0;;27;;0;7;;;1
+34;"Hors Collection 1";"HC1";;;0;;0;;0;4;;;1
+35;"Hors Collection 2";"HC2";;;0;;0;;0;5;;;1
+36;"Hors Collection 3";"HC3";;;0;;0;;0;6;;;1
+37;"Hors Collection 4";"HC4";;;;;0;;0;7;;;1
+38;"Hors Collection 5";"HC5";;;0;;0;;0;8;;;1
+39;"Mod�le Client";"MC1";;;0;;0;;0;1;;;0
+40;"Mod�le Client";"MC2";;;0;;0;;0;2;;;0
+41;"Mod�le Client";"MC3";;;0;;0;;0;3;;;0
+42;"Mod�le Client";"MC4";;;0;;0;;0;4;;;0
+43;"Mod�le Client";"MC5";;;0;;0;;0;5;;;0
+44;"S�rie 1";"S01";;;0;;0;;0;6;;;0
+45;"Escalier 1";"ES1";;;0;;0;;0;2;;;0
+46;"Escalier 2";"ES2";;;0;;0;;0;3;;;0
+47;"Escalier 3";"ES3";;;0;;0;;0;4;;;0
+48;"Escalier 4";"ES4";;;0;;0;;0;5;;;0
+49;"Escalier 5";"ES5";;;0;;0;;0;6;;;0
+50;"Textures by Studio Diurne";"TEX";;;0;;0;;0;2;;;1
+51;"Echantillon";"ECH";;;0;;0;;0;1;;;0
+52;"S�rie by Marcel Zelmanovitch";"SER";;;0;;0;;0;6;;;1
+53;"Art D�co  by Studio Diurne";"DEC";;;0;;0;;0;3;;;1
+55;"V�g�tal by Studio Diurne";"VEG";;;0;;0;;0;6;;;1
+56;"S�rie 23";"S23";;;0;;0;;0;6;;;0
+57;"S�rie 18";"S18";;;0;;0;;0;6;;;0
+58;"S�rie 29";"S29";;;0;;0;;0;6;;;0
+59;"S�rie 9";"S09";;;0;;0;;0;6;;;0
+60;"S�rie 24";"S24";;;0;;0;;0;6;;;0
+61;"S�rie 11";"S11";;;0;;0;;0;6;;;0
+62;"S�rie 26";"S26";;;0;;0;;0;6;;;0
+63;"S�rie 27";"S27";;;0;;0;;0;6;;;0
+64;"Vagues by Studio Diurne";"VAG";;;0;;0;;0;5;;;1
+66;"Divertissage";"DTI";;;0;;0;;0;2;;;0
+67;"S�rie 31";"S31";;;0;;0;;0;6;;;0
+68;"Aminima by Studio Diurne";"AMI";;;0;;0;;0;3;;;1
+75;"S�rie 25";"S25";;;0;;0;;0;6;;;0
+76;"Reflets by Studio Diurne";"RFL";;;0;;0;;0;6;;;1
+78;"S�rie 32";"S32";;;0;;0;;0;6;;;0
+79;"Hors Collection (Invalide _ Ne pas utiliser)";"HCO";;;0;;0;;0;1;;;0
+80;"Tiret by Studio Diurne";"TIR";;;0;;0;;0;6;;;1
+81;"Moghol by Studio Diurne";"MOG";;;0;;0;;0;3;;;1
+82;"Diurne for Perennials";"PEN";;;0;;0;;0;0;;;0
+84;"Dessous Dessus by Marcel Zelmanovitch";"DES";;;0;;0;;0;6;;;1
+86;"Abstraction Brute by Marcel Zelmanovitch";"ABS";;;0;;0;;0;5;;;1
+87;"Marbre d'Italie  by Studio Diurne";"MAR";;;0;;0;;0;5;;;1
+88;"S�rie 36";"S36";;;0;;0;;0;6;;;0
+89;"Escalier 6";"ES6";;;0;;0;;0;7;;;0
+90;"Escalier 7";"ES7";;;0;;0;;0;8;;;0
+91;"Escalier 8";"ES8";;;0;;0;;0;9;;;1
+92;"XVIII  by Studio Diurne";"18E";;;0;;0;;0;8;;;1
+93;"MB - Yvy";"MBY";;;0;;0;;0;;;;0
+94;;;;;0;;0;;0;;;;0
+95;;;;;0;;0;;0;;;;0
+96;"Francis";"Dh1";;;0;;0;;0;;;;0
+97;"Autre";"AUT";;"Tous les collections non renseign�es dans la base";0;;0;;0;0;;;0
+98;"Bestiaire  by Studio Diurne";"BES";;;0;;0;;0;4;;;1
+99;"Cali by Marcel Zelmanovitch";"CAL";;;0;;0;;0;8;;;1
+100;"Trames Imaginaires by Luc Delfandre";"LDF";;;0;;0;;0;6;;;1
+101;"Lignes Fluides by Marcel Zelmanovitch";"LF";;;0;;0;;0;6;;;1
+102;"Esquisses by Studio Diurne";"ESQ";;;0;;20;;0;4;;;1
+104;"Origine by Marie Bastide";"ORG";;;0;;0;;0;7;;;1
+105;"Souffle by Studio Diurne";"SFL";;;0;;0;;0;6;;;1
+107;"Land by Rapha�l Navot";"LAN";;;0;;0;;0;8;;;1
+108;"Cosmati by Charles Zana";"COS";;;0;;0;;0;6;;;1
+109;"Origines by Marie Bastide";"OGN";;;0;;0;;0;0;;;1
+110;"Trames imaginaires by Luc Deflandre";"TRA";;;0;;0;;0;6;;;1
+111;"Des Fleurs & Des Fleurs";"DFL";;;0;;0;;0;0;;;0
+112;"Signes & Cygnes";"SIG";;;0;;0;;0;0;;;0
+113;"MB - Tupa";"MBT";;;0;;0;;0;0;;;0
+114;"Origines - D�dale";"DED";;;0;;0;;0;0;;;0

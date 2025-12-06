@@ -1,0 +1,23 @@
+<style>
+    .table-compact {
+        color: #585858;
+    }
+</style>
+<p class="h1" style="padding-top: 12pt;text-align: left;">Emplacement: {{location}}</p>
+<table class="table-compact" style="border-collapse: collapse; width: 100%; border: 1px solid black; margin-top: 6pt;"
+       cellspacing="0"
+       cellpadding="6">
+    <thead>
+    <tr style="border-bottom: 3px solid black; border-top: 3px solid black">
+        <th style="text-align:left; font-style: italic;">RN <span style="font-style: normal;">du</span> tapis</th>
+        <th style="text-align:left; font-style: italic;">Coll./<span style="font-style: normal;">Modèle</span></th>
+        <th style="text-align:left; font-style: italic;">Taille</th>
+        <th style="text-align:left; font-style: italic;">Qualité</th>
+        <th style="text-align:left; font-style: italic;">Matériaux</th>
+        <th style="text-align:left; font-style: italic;">Prix HT</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{rows}}
+    </tbody>
+</table>

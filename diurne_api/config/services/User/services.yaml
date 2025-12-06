@@ -1,0 +1,111 @@
+# config/services.yaml
+
+parameters:
+  locale: "en"
+  jwt_secret: "%env(JWT_SECRET_KEY)%"
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  # -- USER MODULE --
+
+  App\User\:
+    resource: "../../../src/User"
+
+  App\User\Controller\:
+    resource: "../../../src/User/Controller"
+    tags: [controller.service_arguments]
+
+  # Instance configuration for specific classes.
+  _instanceof:
+    App\Common\Bus\Command\CommandHandler:
+      tags: [user.command_handler]
+    App\Common\Bus\Query\QueryHandler:
+      tags: [user.query_handler]
+
+  # Defines the InMemorySymfonyQueryBus service.
+  App\Common\Bus\Query\Symfony\InMemorySymfonyQueryBus:
+    arguments: [!tagged_iterator user.query_handler] # Injects all tagged query handlers.
+  # Defines the InMemorySymfonyCommandBus service.
+  App\Common\Bus\Command\Symfony\InMemorySymfonyCommandBus:
+    arguments: [!tagged_iterator user.command_handler] # Injects all tagged command handlers.
+
+  # add more service definitions when explicit configuration is needed
+  # please note that last definitions always *replace* previous ones
+  App\User\Security\AuthService:
+    arguments:
+      $jwtSecretKey: "%jwt_secret%"
+
+  coop_tilleuls_forgot_password.manager.forgot_password:
+    class: App\User\Manager\ForgotPasswordManager
+    arguments:
+      $passwordTokenManager: "@coop_tilleuls_forgot_password.manager.password_token"
+      $dispatcher: "@event_dispatcher"
+      $providerChain: "@coop_tilleuls_forgot_password.provider_chain"
+
+  coop_tilleuls_forgot_password.manager.password_token:
+    class: App\User\Manager\PasswordTokenManager
+    arguments:
+      $providerChain: "@coop_tilleuls_forgot_password.provider_chain"
+      $tokenGenerator: "@coop_tilleuls_forgot_password.token_generator.bin2hex"
+
+  CoopTilleuls\ForgotPasswordBundle\Manager\ForgotPasswordManager: '@App\User\Manager\ForgotPasswordManager'
+  CoopTilleuls\ForgotPasswordBundle\Manager\PasswordTokenManager: '@App\User\Manager\PasswordTokenManager'
+  CoopTilleuls\ForgotPasswordBundle\Provider\ProviderChainInterface: "@coop_tilleuls_forgot_password.provider_chain"
+
+  coop_tilleuls_forgot_password.controller.reset_password:
+    class: App\User\Controller\ResetPassword
+    arguments:
+      $forgotPasswordManager: "@coop_tilleuls_forgot_password.manager.forgot_password"
+      $passwordTokenManager: "@coop_tilleuls_forgot_password.manager.password_token"
+    tags: ["controller.service_arguments"]
+
+  coop_tilleuls_forgot_password.controller.update_password:
+    class: App\User\Controller\UpdatePassword
+    arguments:
+      $forgotPasswordManager: "@coop_tilleuls_forgot_password.manager.forgot_password"
+    tags: ["controller.service_arguments"]
+
+  App\User\Listener\FirewallTokenController:
+    arguments:
+      $authService: '@App\User\Security\AuthService'
+      $security: "@security.helper"
+    tags:
+      - { name: kernel.event_listener, event: kernel.controller, priority: 3 }
+
+  security.access.permission_voter:
+    class: App\User\Security\Authorization\Voter\PermissionVoter
+    arguments: ["@request_stack"]
+    public: false
+    tags:
+      - { name: security.voter }
+
+  security.access.profile_voter:
+    class: App\User\Security\Authorization\Voter\ProfileVoter
+    arguments: ["@request_stack"]
+    public: false
+    tags:
+      - { name: security.voter }
+
+  App\User\Command\DeleteDummyUsersCommand:
+    tags:
+      - { name: "console.command" }
+
+  # Ensure the token generator service is defined and aliased
+  coop_tilleuls_forgot_password.token_generator.bin2hex:
+    class: CoopTilleuls\ForgotPasswordBundle\TokenGenerator\Bridge\Bin2HexTokenGenerator
+    public: true
+
+  CoopTilleuls\ForgotPasswordBundle\TokenGenerator\TokenGeneratorInterface:
+    alias: coop_tilleuls_forgot_password.token_generator.bin2hex
+
+  App\User\Command\CreateDummyUsersCommand:
+    arguments:
+      $entityManager: "@doctrine.orm.entity_manager"
+      $profileRepository: '@App\User\Repository\ProfileRepository'
+      $userRepository: '@App\User\Repository\UserRepository'
+      $genderRepository: '@App\User\Repository\GenderRepository'
+    tags:
+      - "console.command"

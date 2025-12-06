@@ -1,0 +1,88 @@
+services:
+  _defaults:
+    autowire: true # Enables automatic injection of dependencies.
+    autoconfigure: true # Enables automatic configuration of services.
+
+  # -- COMMON MODULE --
+
+  App\Common\:
+    resource: ../../../src/Common
+  App\Common\Controller\:
+    resource: ../../../src/Common/Controller
+    tags: [controller.service_arguments]
+  #  App\Common\Listener\JsonExceptionListener:
+  #    tags:
+  #      - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+  #
+  #  App\Common\Listener\RequestListener:
+  #    tags:
+  #      - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+  # Monolog
+  Monolog\Logger:
+    arguments:
+      $name: "request"
+      $handlers: ["@monolog.handler"]
+
+  monolog.handler:
+    class: Monolog\Handler\StreamHandler
+    arguments:
+      $level: "error"
+      $stream: "%kernel.logs_dir%/exception_%kernel.environment%.log"
+
+  App\Common\Logger\MonologLogger:
+    arguments:
+      $logger: '@Monolog\Logger'
+
+  Symfony\Contracts\Translation\TranslatorInterface: "@translator.default"
+
+  App\Common\Command\LoadMonolithicDataFixturesDoctrineCommand:
+    arguments:
+      - "@service_container" # Inject the ContainerInterface
+      - "@security.user_password_hasher"
+      - "doctrine:monolithic:fixtures:load" # Set the command name
+    tags:
+      - { name: "console.command" }
+  App\Common\Assert\Validator\ValidDateRangeValidator:
+    tags:
+      - {
+          name: validator.constraint_validator,
+          alias: valid_date_range_validator,
+        }
+
+  App\Common\Service\CsvImporterService:
+  App\Common\Command\ExecuteFixturesCommand:
+    tags:
+      - { name: "console.command" }
+
+  App\Common\Service\MailerService:
+    arguments:
+      $mailer: "@mailer.mailer"
+      $twig: "@twig"
+
+  App\Common\Messenger\EmailMessageHandler:
+    tags: ["messenger.message_handler"]
+
+  App\Common\Listener\ExceptionListener:
+    tags:
+      - { name: kernel.event_listener, event: kernel.exception }
+
+  App\Common\Listener\ValidationExceptionListener:
+    tags:
+      - {
+          name: kernel.event_listener,
+          event: kernel.view,
+          method: onKernelView,
+        }
+
+  App\Common\Assert\Validator\IsSocialReasonRequiredValidator:
+    arguments:
+      $customerGroupRepository: '@App\Contact\Repository\CustomerGroupRepository'
+    tags:
+      - { name: validator.constraint_validator }
+
+  App\Common\Assert\Validator\IsLastnameRequiredValidator:
+    arguments:
+      $customerGroupRepository: '@App\Contact\Repository\CustomerGroupRepository'
+    tags:
+      - { name: validator.constraint_validator }

@@ -1,0 +1,118 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  # -- MENU MODULE --
+
+  App\Setting\:
+    resource: ../../../src/Setting
+
+  App\Setting\Controller\:
+    resource: ../../../src/Setting/Controller
+    tags: [controller.service_arguments]
+
+  # Instance configuration for specific classes.
+  _instanceof:
+    App\Common\Bus\Command\CommandHandler:
+      tags: [user.command_handler]
+    App\Common\Bus\Query\QueryHandler:
+      tags: [user.query_handler]
+
+  # Defines the InMemorySymfonyQueryBus service.
+  App\Common\Bus\Query\Symfony\InMemorySymfonyQueryBus:
+    arguments: [!tagged_iterator user.query_handler] # Injects all tagged query handlers.
+  # Defines the InMemorySymfonyCommandBus service.
+  App\Common\Bus\Command\Symfony\InMemorySymfonyCommandBus:
+    arguments: [!tagged_iterator user.command_handler] # Injects all tagged command handlers.
+
+  App\Setting\Command\CreateCollectionCommand:
+    tags:
+      - { name: "console.command" }
+
+  App\Setting\Command\LoadDiscountsCommand:
+    tags:
+      - { name: "console.command" }
+
+  App\Setting\Command\LoadLanguagesCommand:
+    tags:
+      - { name: "console.command" }
+
+  App\Setting\Command\LoadCountriesCommand:
+    tags:
+      - { name: "console.command" }
+
+  App\Setting\Command\ImportQualityCommand:
+    tags: ["console.command"]
+
+  App\Setting\Command\LoadCollectionGroupPriceCommand:
+    tags: ["console.command"]
+
+  App\Setting\Command\ImportModelsCommand:
+    tags: ["console.command"]
+
+  App\Setting\Command\ImportMaterialsCommand:
+    tags: ["console.command"]
+
+  App\Setting\Command\ImportManufacturersCommand:
+    tags: ["console.command"]
+
+  App\Setting\Command\ImportCarriersCommand:
+    tags: ["console.command"]
+  App\Setting\Command\ExecuteSettingFixturesCommand:
+    tags:
+      - { name: "console.command" }
+  App\Setting\Command\ImportTaxRateCommand:
+    tags:
+      - { name: "console.command" }
+  App\Setting\Command\ImportDominantColorCommand:
+    tags:
+      - { name: "console.command" }
+
+  App\Setting\Command\CreateConversionCommand:
+    tags:
+      - { name: "console.command" }
+
+  App\Setting\Command\LoadPriceTypeCommand:
+    tags:
+      - { name: "console.command" }
+  App\Setting\Command\LoadTarifCommand:
+    tags:
+      - { name: "console.command" }
+  App\Setting\Command\ImportQualityTarifTextureCommand:
+    tags:
+      - { name: "console.command" }
+  App\Setting\Command\CreateProgressReportProcessFixturesCommand:
+    tags:
+      - { name: "console.command" }
+
+    # Explicitly apply setCache to handlers that use CacheableQueryHandlerTrait
+  App\Setting\Bus\Query\CarpetCollection\GetAllCarpetCollectionsQueryHandler:
+    calls:
+      - [setCache, ["@cache.app"]]
+
+  App\Setting\Bus\Query\GetAllModels\GetAllModelsQueryHandler:
+    calls:
+      - [setCache, ["@cache.app"]]
+
+  App\Setting\Bus\Query\GetAllMaterials\GetAllMaterialsQueryHandler:
+    calls:
+      - [setCache, ["@cache.app"]]
+
+  App\Setting\Bus\Query\Carrier\GetAllCarrierQueryHandler:
+    calls:
+      - [setCache, ["@cache.app"]]
+
+  App\Setting\Bus\Query\ImageType\GetImageTypesQueryHandler:
+    calls:
+      - [setCache, ["@cache.app"]]
+
+  App\Setting\Bus\Query\Color\GetAllColorQueryHandler:
+    calls:
+      - [setCache, ["@cache.app"]]
+
+  App\Setting\Command\ImportManufacturerPriceGridsCommand:
+    arguments:
+      $projectDir: "%kernel.project_dir%"
+    tags:
+      - { name: "console.command" }

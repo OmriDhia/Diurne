@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Common\Exception\Constant;
+
+/**
+ * Class ExceptionStatusCode.
+ *
+ * This class defines constants for commonly used HTTP status codes in the context of exceptions.
+ * These status codes can be associated with different types of exceptions to indicate the nature of the error.
+ */
+class ExceptionStatusCode
+{
+    public const INTERNAL_ERROR = 500;
+
+    public const VALIDATION_ERROR = 422;
+
+    public const NOT_FOUND = 404;
+
+    public const DUPLICATE = 409;
+
+    public const NOT_SUPPORTED = 405;
+
+    public const BAD_REQUEST = 400;
+}

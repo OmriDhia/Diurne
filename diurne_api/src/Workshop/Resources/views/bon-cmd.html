@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style type="text/css">
+        @font-face {
+            font-family: 'Garamond';
+            font-style: normal;
+            font-weight: 400;
+            src: url('{{fontPathRegular}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: italic;
+            font-weight: 400;
+            src: url('{{fontPathItalic}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: normal;
+            font-weight: 500;
+            src: url('{{fontPathMedium}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: italic;
+            font-weight: 500;
+            src: url('{{fontPathMediumItalic}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: normal;
+            font-weight: 600;
+            src: url('{{fontPathSemiBold}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: italic;
+            font-weight: 600;
+            src: url('{{fontPathSemiBoldItalic}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: normal;
+            font-weight: 700;
+            src: url('{{fontPathBold}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: italic;
+            font-weight: 700;
+            src: url('{{fontPathBoldItalic}}') format('truetype');
+        }
+
+        @media print {
+            .page-number:after {
+                content: counter(page) " sur " counter(pages);
+            }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .order-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .order-details {
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th,
+        td {
+            border: 1px solid #000000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 10px;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #d9534f;
+        }
+    </style>
+</head>
+
+<body>
+<div class="header">
+
+    <div style="display: flex; justify-content: space-between;">
+        <table style="width: 30%;">
+            <tr>
+                <td class="label" style="font-weight: bold;">RN</td>
+                <td>{{rn}}</td>
+            </tr>
+        </table>
+        <table style="width: 50%;">
+            <tr>
+                <td class="label" style="font-weight: bold;">Order for</td>
+                <td>{{manufacturer}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="info-table" style=" border: 2px solid black;">
+        <tr>
+            <td class="label" style="font-weight: bold;">Customer's name</td>
+            <td>Diurne</td>
+            <td class="label" style="font-weight: bold;">Sidemark</td>
+            <td>Les ombres sur les murs</td>
+        </tr>
+    </table>
+
+    <div class="divider"></div>
+    <table class="info-table">
+        <tr>
+            <td class="label" style="font-weight: bold;">Projet d'Atelier's name</td>
+            <td>ECH1 OMB 13 03</td>
+        </tr>
+    </table>
+
+
+    <table class="info-table">
+        <tr>
+            <td class="label" style="font-weight: bold;">Order date</td>
+            <td>{{launchDate}}</td>
+            <td class="label" style="font-weight: bold;">Delivery date</td>
+            <td>{{expectedEndDate}}</td>
+            <td class="label" style="font-weight: bold;">Length (cm)</td>
+            <td>{{orderedHeigh}}</td>
+            <td class="label" style="font-weight: bold;">Width (cm)</td>
+            <td>{{orderedWidth}}</td>
+        </tr>
+    </table>
+</div>
+
+
+<div class="order-details">
+
+    <table>
+        <thead>
+        <tr>
+            <th>Position</th>
+
+            {{compositionHeader}}
+
+            <th>Remarks</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{compositionRows}}
+        </tbody>
+    </table>
+
+
+    <table class="specs-table">
+        <tr>
+            <td class="label" style="font-weight: bold;">Quality</td>
+            <td>{{quality}}</td>
+            <td class="label" style="font-weight: bold;">Velvet composition</td>
+            <td>Wool & 28% Silk</td>
+        </tr>
+    </table>
+    <div style="display: flex; justify-content: space-between;">
+        <table class="specs-table" style="width: 30%;">
+            <tr>
+                <td class="label" style="font-weight: bold;">Sign. MZ carved</td>
+                <td>NO</td>
+
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <table class="specs-table" style="width: 50%;">
+
+            <tr>
+                <td class="label" style="font-weight: bold;">Price/m² EUR</td>
+                <td>{{carpetPurchasePricePerM2}}</td>
+            </tr>
+            <tr>
+
+                <td class="label" style="font-weight: bold;">Total / sample 0,36 m²</td>
+                <td>{{carpetPurchasePriceTheoretical}}</td>
+            </tr>
+        </table>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <td>
+                <h4 style="text-align: center;"> Instructions</h4>
+
+            </td>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <p>PILE HEIGHT 6 MM</p>
+                <p>NO CARVING</p>
+                <p class="highlight">ATTENTION ON COLOUR LEAKS</p>
+                <p>EXACTLY LIKE C0503</p>
+                <p class="highlight">THIS IS AN ORDER FOR FIVE SAMPLES</p>
+            </td>
+
+        </tr>
+        </tbody>
+    </table>
+    <div class="footer">
+        <p style="text-align: center;"><strong>GALERIE DIURNE</strong></p>
+        <p style="text-align: center;">
+            <span>45, rue Jacob - 75006 Paris - France</span>
+            <span>Tel: +33 1 49 08 02 40 - Fax: +33 1 49 08 02 44</span>
+            <span>Email: office@diurne.com</span>
+        </p>
+
+    </div>
+</body>
+
+</html>
+

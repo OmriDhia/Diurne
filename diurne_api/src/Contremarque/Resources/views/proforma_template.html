@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style type="text/css">
+        @font-face {
+            font-family: 'Garamond';
+            font-style: normal;
+            font-weight: 400;
+            src: url('{{fontPathRegular}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: italic;
+            font-weight: 400;
+            src: url('{{fontPathItalic}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: normal;
+            font-weight: 500;
+            src: url('{{fontPathMedium}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: italic;
+            font-weight: 500;
+            src: url('{{fontPathMediumItalic}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: normal;
+            font-weight: 600;
+            src: url('{{fontPathSemiBold}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: italic;
+            font-weight: 600;
+            src: url('{{fontPathSemiBoldItalic}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: normal;
+            font-weight: 700;
+            src: url('{{fontPathBold}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: italic;
+            font-weight: 700;
+            src: url('{{fontPathBoldItalic}}') format('truetype');
+        }
+
+        @media print {
+            .page-number:after {
+                content: counter(page) " sur " counter(pages);
+            }
+        }
+
+        body {
+            margin: auto;
+            width: 90%;
+            font-family: Garamond, serif;
+        }
+
+        h2 {
+            color: #585858;
+            font-weight: bold;
+            font-size: 11pt;
+        }
+
+        .p, p {
+            color: #585858;
+            font-weight: normal;
+            font-size: 11pt;
+            margin: 0pt;
+        }
+        
+
+        .s1 {
+            font-size: 9pt;
+        }
+
+        .s2 {
+            font-style: italic;
+            text-decoration: underline;
+            font-size: 12pt;
+        }
+
+        .s3 {
+            font-weight: bold;
+            font-size: 9pt;
+        }
+
+        .s4 {
+            font-weight: bold;
+            font-size: 12pt;
+        }
+
+        .s5 {
+            font-style: italic;
+            font-size: 12pt;
+        }
+
+        .s6 {
+            text-decoration: underline;
+            font-size: 11pt;
+        }
+
+        table, tbody {
+            width: 100%;
+            vertical-align: top;
+            overflow: visible;
+        }
+
+        .header {
+            text-align: center;
+            font-size: 14pt;
+            font-weight: bold;
+            margin-bottom: 20pt;
+        }
+    </style>
+</head>
+<body>
+<!--<div class="header">
+    <span style="font-size: 34px">D I U R N E</span><br/>
+    EDITEUR & CREATEUR DE TAPIS
+</div>-->
+
+<h2>Adresse de facturation</h2>
+<p>{{customerName}}</p>
+<p>{{customerAddress}}</p>
+<h2>Adresse de livraison</h2>
+<p>{{customerName}}</p>
+<p>{{customerAddress}}</p>
+<p style="padding-top: 12pt; text-align: right;">Paris le {{date}}</p>
+
+<h2>Contremarque <span class="p">{{contremarqueName}}</span></h2>
+<h2 style="font-size: 16px ; text-align: center">Facture PROFORMA - Ref {{quoteNumberNoD}}</h2>
+<p style="
+    border-top: 3px solid black;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid black;
+">Etat de la commande : {{orderStatus}}</p>
+{{quoteRows}}
+<p><br></p>
+<p><br></p>
+{{proforma_summary}}
+<div style="page-break-before: always; margin-top: 20pt;">
+    <p class="s6" style="text-align: center; margin-bottom: 20pt">Conditions Générales de vente :</p>
+    <p><strong>Condition de paiement :</strong> 50% d’acompte à la commande.</p>
+    <p>Le solde avant la livraison</p>
+    <p><strong>Transport</strong>: {{conditionsTransport}}</p>
+</div>
+</body>
+</html>

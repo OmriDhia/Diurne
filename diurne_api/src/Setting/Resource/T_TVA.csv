@@ -1,0 +1,4 @@
+ID_TVA;Rate;Taux;TVA en cours;Identifiant;IDENTIFIANT_TVA_ANG;IDENTIFIANT_TVA_ALL
+1;0,00%;0.00;1;"HT";"Excl All Taxes";"exkl. Ust."
+2;10,00%;0.10;0;"TTC Taux réduit";"Encl All Taxes (low rate)";"Enkl All Taxes"
+3;20,00%;0.20;1;"TTC";"Incl All Taxes";"Inkl All Taxes"

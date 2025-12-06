@@ -1,0 +1,57 @@
+# security.yaml
+
+security:
+    # Hashing passwords for registered users
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    # User provider configuration
+    providers:
+        # Used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            entity:
+                class: App\User\Entity\User
+                property: email
+
+    # Firewalls configuration
+    firewalls:
+        login:
+            pattern:  ^/api/login_check
+            stateless: false
+        register:
+            pattern:  ^/api/register
+            stateless: false
+        api:
+            pattern:   ^/api
+            stateless: false
+
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        forgot_password:
+            pattern:  ^/api/forgot-password
+            stateless: false
+        main:
+            lazy: true
+            provider: app_user_provider
+
+            # Activate different ways to authenticate
+            # https://symfony.com/doc/current/security.html#the-firewall
+
+            # Enable impersonating user (if needed)
+            # switch_user: true
+
+    # Access control rules
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+        - { path: ^api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/authenticate, roles: PUBLIC_ACCESS }
+        - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
+        - { path: ^/api/doc, roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1, roles: IS_AUTHENTICATED_FULLY  }
+#        - { path: ^/api/createProfile, roles: IS_AUTHENTICATED_FULLY  }
+#        - { path: ^/api/updateProfile, roles: IS_AUTHENTICATED_FULLY  }
+#        - { path: ^/api/AssignProfileToUser, roles: IS_AUTHENTICATED_FULLY  }
+#        - { path: ^/api/createPermission, roles: IS_AUTHENTICATED_ANONYMOUSLY  }
+#        - { path: ^/api/givePermissionToProfile, roles: IS_AUTHENTICATED_FULLY  }
+#        - { path: ^/api/removePermissionFromProfile, roles: IS_AUTHENTICATED_FULLY  }

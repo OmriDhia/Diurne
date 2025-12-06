@@ -1,0 +1,23 @@
+{# filepath: /Ubuntu/home/anisajengui/api_diurne/templates/emails/carpet_design_order_finalized.html.twig #}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Maquette de Tapis Finalisée</title>
+</head>
+<body>
+    <h1>Maquette de Tapis Finalisée</h1>
+    <p>Cher Commercial,</p>
+    <p>La maquette de tapis a été finalisée par le designer.</p>
+    <ul>
+        <li><strong>ID de Contremarque :</strong> {{ contremarqueId }}</li>
+        <li><strong>Numéro DI :</strong> {{ diNumber }}</li>
+        <li><strong>ID de l'Image :</strong> {{ imageId }}</li>
+        <li><strong>Nom du Designer :</strong> {{ designerName }}</li>
+        <li><strong>Emplacement :</strong> {{ location }}</li>
+        <li><strong>Collection :</strong> {{ collection }}</li>
+        <li><strong>Modèle :</strong> {{ model }}</li>
+    </ul>
+    <p>Cordialement,</p>
+    <p>Diurne</p>
+</body>
+</html>

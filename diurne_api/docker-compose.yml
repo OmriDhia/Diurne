@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  db:
+    #comment this line to import the database from a dump
+    build: docker/mysql
+    container_name: db_api_diurne
+    restart: unless-stopped
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_INITDB_SKIP_TZINFO: '1'
+    networks:
+      - dev
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.1
+    container_name: phpmyadmin_api_diurne
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - ${PMA_PORT}:80
+    environment:
+      PMA_HOST: db
+      PMA_ABSOLUTE_URI: ${PMA_ABSOLUTE_URI}
+      UPLOAD_LIMIT: ${PMA_UPLOAD_LIMIT}
+    networks:
+      - dev
+
+  api:
+    build: .
+    container_name: api_diurne
+    ports:
+      - ${API_PORT}:80
+    volumes:
+      - ./:/var/www
+      - ./docker/vhosts:/etc/apache2/sites-enabled
+      - ./docker/php/conf.d:/usr/local/etc/php/conf.d
+    restart: unless-stopped
+    networks:
+      - dev
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      APP_ENV: ${APP_ENV}
+      DATABASE_URL: ${DATABASE_URL}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  dev:
+    name: api_dev_network
+
+volumes:
+  db-data:
+    name: api_db_data
+  storage:
+    name: api_storage

@@ -1,0 +1,355 @@
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style type="text/css">
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: normal;
+            font-weight: 400;
+            src: url('{{fontPathRegular}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: italic;
+            font-weight: 400;
+            src: url('{{fontPathItalic}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: normal;
+            font-weight: 500;
+            src: url('{{fontPathMedium}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: italic;
+            font-weight: 500;
+            src: url('{{fontPathMediumItalic}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: normal;
+            font-weight: 600;
+            src: url('{{fontPathSemiBold}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: italic;
+            font-weight: 600;
+            src: url('{{fontPathSemiBoldItalic}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: normal;
+            font-weight: 700;
+            src: url('{{fontPathBold}}') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Garamond';
+            font-style: italic;
+            font-weight: 700;
+            src: url('{{fontPathBoldItalic}}') format('truetype');
+        }
+
+        @media print {
+            .page-number:after {
+                content: counter(page) " sur " counter(pages);
+            }
+        }
+
+        body {
+            margin: auto;
+            width: 90%;
+        }
+
+        h2 {
+            color: #585858;
+            font-family: Garamond, serif;
+            font-style: normal;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 11pt;
+        }
+
+        .p,
+        p {
+            color: #585858;
+            font-family: Garamond, serif;
+            font-style: normal;
+            font-weight: normal;
+            text-decoration: none;
+            font-size: 11pt;
+            margin: 0pt;
+        }
+
+        .h1 {
+            color: #585858;
+            font-family: Garamond, serif;
+            font-style: normal;
+            font-weight: bold;
+            text-decoration: underline;
+            font-size: 11.5pt;
+        }
+
+        .s1 {
+            color: #585858;
+            font-family: Garamond, serif;
+            font-style: normal;
+            font-weight: normal;
+            text-decoration: none;
+            font-size: 9pt;
+        }
+
+        .s2 {
+            color: #585858;
+            font-family: Garamond, serif;
+            font-style: italic;
+            font-weight: normal;
+            text-decoration: underline;
+            font-size: 12pt;
+        }
+
+        .s3 {
+            color: #585858;
+            font-family: Garamond, serif;
+            font-style: normal;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 9pt;
+        }
+
+        .s4 {
+            color: #585858;
+            font-family: Garamond, serif;
+            font-style: normal;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 12pt;
+        }
+
+        .s5 {
+            color: #585858;
+            font-family: Garamond, serif;
+            font-style: italic;
+            font-weight: normal;
+            text-decoration: none;
+            font-size: 12pt;
+        }
+
+        .s6 {
+            color: #585858;
+            font-family: Garamond, serif;
+            font-style: normal;
+            font-weight: normal;
+            text-decoration: underline;
+            font-size: 11pt;
+        }
+
+        table,
+        tbody {
+            width: 100%;
+            vertical-align: top;
+            overflow: visible;
+        }
+
+        .header {
+            text-align: center;
+            font-family: Garamond, serif;
+            font-size: 14pt;
+            font-weight: bold;
+            margin-bottom: 20pt;
+        }
+    </style>
+</head>
+
+<body>
+<!--<div class="header" style="text-align: center;font-family: 'Times New Roman';">
+    <span style="font-size: 34px">D I U R N E</span>
+    <br/>
+    EDITEUR & CREATEUR DE TAPIS
+</div>-->
+
+<h2 style="text-indent: 0pt;line-height: 12pt;text-align: left;">A l’intention de</h2>
+<p style="text-indent: 0pt;line-height: 12pt;text-align: left;">{{customerName}}</p>
+<p style="text-indent: 0pt;line-height: 12pt;text-align: left;">{{contactName}}</p>
+<p style="text-indent: 0pt;text-align: left;">{{customerAddress}}</p>
+<p style="padding-top: 12pt;text-indent: 0pt;text-align: right;">Paris, le {{date}}</p>
+<h2 style="padding-top: 12pt;text-indent: 0pt;text-align: left;">Contremarque <span
+        class="p">{{contremarqueName}}</span>
+</h2>
+<h2 style="text-indent: 0pt;text-align: left;">Ref <span class="p">:Devis {{quoteNumber}}, {{quoteCarpetCount}}
+            tapis.</span>
+</h2>
+<p style="text-indent: 0pt;text-align: left;">Cher Monsieur,</p>
+
+<p style="text-indent: 0pt;text-align: left;">Veuillez trouver ci-dessous notre devis pour {{quoteCarpetCount}}
+    tapis,
+    noué(s) mains dans notre atelier :</p>
+<p><br></p>
+{{quoteRows}}
+<p><br></p>
+<p><br></p>
+{{summary}}
+<p style="padding-left: 39pt;text-indent: 0pt;line-height: 2pt;text-align: left;"/>
+<p style="padding-top: 1pt;text-indent: 0pt;line-height: 25pt;text-align: left;">Nous restons à votre
+    disposition pour répondre à vos éventuelles questions, </p>
+<p style="text-indent: 0pt;text-align: left;">Avec nos sentiments dévoués,</p>
+<p style="text-indent: 0pt;text-align: left;">Thomas Zelmanovitch</p>
+
+
+<div style="page-break-before: always;margin-top: 20pt;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <p class="s6" style="text-indent: 0pt;text-align: center; margin-bottom: 20pt">Conditions Générales de vente
+            :</p>
+        <tr>
+            <td align="top">
+                <p style="padding-top: 5pt;padding-left: 5pt;text-indent: 0pt;line-height: 12pt;text-align: justify;">
+                    <u>Condition
+                        de
+                        paiement :</u> 50% d’acompte à la commande.
+                </p>
+                <p style="padding-left: 5pt;text-indent: 0pt;line-height: 12pt;text-align: justify;">Le solde avant la
+                    livraison</p>
+
+                <p style="padding-left: 5pt;text-indent: 0pt;text-align: justify;"><u>Transport</u>:
+                    {{conditionsTransport}}</p>
+
+                <p style="padding-left: 5pt;text-indent: 0pt;text-align: justify;"><u>Délai de livraison:</u> le délai
+                    de
+                    livraison
+                    indiqué sur nos devis, démarre à compter de la réception par Diurne du montant de l’acompte <b>et
+                    </b>de
+                    la
+                    confirmation de tous les éléments du projet. Sauf mention contraire notre délai s’entend «
+                    disponible
+                    dans nos
+                    entrepôts à Paris ». Pour des raisons pratiques, la preuve bancaire d’un virement permet le
+                    déclanchement de la
+                    commande (si toutes les informations relatives au projet sont par ailleurs confirmées par le
+                    client).
+                </p>
+
+                <p style="padding-left: 5pt;text-indent: 0pt;text-align: justify;"><u>Validité du Devis </u>: ce devis
+                    est
+                    valable 6
+                    mois à compter de sa date de parution</p>
+
+                <p style="padding-left: 5pt;text-indent: 0pt;text-align: justify;"><u>Stockage de la commande</u>: Sur
+                    demande
+                    exclusivement, Diurne peut stocker le tapis commandé à titre gratuit. La durée de cette prestation
+                    ne
+                    peut excéder
+                    15 jours suivant la date de mise à disposition des marchandises. Au-delà de ce délai, des frais de
+                    magasinage seront
+                    facturés par mois, par tapis (tarifs sur demande).</p>
+
+                <p style="padding-left: 5pt;text-indent: 0pt;text-align: justify;"><u>Echantillons:</u> Des échantillons
+                    spéciaux
+                    peuvent être réalisés sur demande (prix et délai de livraison sur demande). Le délai de livraison
+                    des
+                    tapis
+                    communiqué par Diurne ne prennent pas en compte la durée de livraison de ces échantillons. Si des
+                    échantillons sont
+                    nécessaires à la validation du projet, le délai de livraison court une fois cette validation obtenue
+                    (outre la
+                    réception de l’acompte et la validation du projet).</p>
+                <p style="padding-top: 12pt;padding-left: 5pt;text-indent: 0pt;text-align: justify;"><u>Couleurs
+                    spéciales</u>: des
+                    couleurs non présentes sur notre charte de couleur peuvent être réalisées spécialement pour le
+                    projet
+                    (prix et délai
+                    sur demande).</p>
+                <p style="padding-left: 5pt;text-indent: 0pt;text-align: justify;">Un modèle de la couleur - fils ou
+                    tissus-
+                    doit
+                    préalablement être remis à Diurne (même à titre temporaire), afin de créer la couleur en atelier.
+                    Notre
+                    proposition
+                    de fils à la couleur peut vous être remise pour validation.</p>
+                <p style="padding-left: 5pt;text-indent: 2pt;text-align: justify;">La nuance dépendant nécessairement en
+                    partie du
+                    matériau utilisé, une couleur ne peut être exactement identique sur deux matériaux différent (par
+                    exemple sur de la
+                    laine et de la soie).</p>
+            </td>
+            <td style="padding:10px;" align="top">
+
+                <p style="padding-top: 5pt;padding-left: 5pt;text-indent: 0pt;text-align: justify;"><u>Modification de
+                    commande</u>:
+                    Toute modification une fois la commande passée, à condition qu’elle soit matériellement réalisable,
+                    entraine des
+                    surcoûts et une modification du délai de livraison en fonction de l’état d’avancement du processus
+                    de
+                    production.
+                    Une proposition (surcoût et délai) est remise au client pour validation. Le délai de livraison du
+                    tapis
+                    est alors
+                    suspendu entre la demande de modification et la validation du client. Un acompte de 50% du surcout
+                    est
+                    demandé pour
+                    validation, le solde du surcoût étant réglable avec le solde de la commande avant livraison.</p>
+
+                <p style="padding-left: 5pt;text-indent: 0pt;text-align: justify;"><u>Propriété des &nbsp;&nbsp; modèles
+                    :</u> tous les
+                    modèles de tapis/tapisserie créés par Diurne demeurent la propriété exclusive de Diurne. Leurs
+                    droits
+                    sont gérés par
+                    Diurne</p>
+                <p style="padding-left: 5pt;text-indent: 0pt;text-align: justify;">S.A. qui en interdit la reproduction
+                    sur
+                    quel que
+                    support que ce soit, textile, papiers ou électronique.</p>
+                <p style="padding-top: 12pt;padding-left: 5pt;text-indent: 0pt;text-align: justify;"><u>Tolérance </u>:
+                    les
+                    pièces
+                    proposées étant issu de l’artisanat e plus authentique, réalisées selon un processus entièrement
+                    manuel
+                    à partir de
+                    matériaux naturelles, une légère tolérance dans les dimensions (+/- 3%) et les couleurs sont
+                    possibles,
+                    en accord
+                    avec les règles de l’art.</p>
+
+                <p style="padding-left: 5pt;text-indent: 0pt;text-align: justify;"><u>Sous-tapis</u> : un modèle unique
+                    de
+                    sous-tapis
+                    est proposé si nécessaire (qualité du tapis, type de sol). Prix sur demande.</p>
+
+                <p style="padding-left: 5pt;text-indent: 0pt;text-align: justify;"><u>Reprise :</u> Les tapis sur mesure
+                    ne
+                    sont ni
+                    repris ni échangés</p>
+
+                <p style="padding-left: 5pt;text-indent: 0pt;text-align: justify;"><u>Contraintes Particulières :</u>
+                    Pour
+                    garantir
+                    votre satisfaction, DIURNE contrôle chaque phase de sa production avec le plus grand soin. Pour que
+                    votre conseiller
+                    puissent prendre en compte les spécificités de votre projet et que votre tapis réponde parfaitement
+                    à
+                    votre attente,
+                    toute contrainte particulière, à condition qu’elle soit techniquement réalisable, doit être précisée
+                    à
+                    la commande
+                    et sur le devis accepté par le client : Emprises au sol (poteaux - cheminée – escalier – prises de
+                    courant etc..),
+                    pose tendues dans une fosse, pose mur à mur, dimensions limites…</p>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+
+
+</html>

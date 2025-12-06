@@ -1,0 +1,113 @@
+doctrine:
+  dbal:
+    mapping_types:
+      enum: string
+    url: "%env(resolve:DATABASE_URL)%"
+
+    # IMPORTANT: You MUST configure your server version,
+    # either here or in the DATABASE_URL env var (see .env file)
+    #server_version: '15'
+
+    profiling_collect_backtrace: "%kernel.debug%"
+  orm:
+    auto_generate_proxy_classes: true
+    enable_lazy_ghost_objects: true
+    validate_xml_mapping: true
+    naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+    auto_mapping: true
+    report_fields_where_declared: true
+    mappings:
+      AppUser:
+        is_bundle: false
+        type: attribute
+        dir: "%kernel.project_dir%/src/User/Entity"
+        prefix: 'App\User\Entity'
+        alias: AppUser
+      AppMenu:
+        is_bundle: false
+        type: attribute
+        dir: "%kernel.project_dir%/src/Menu/Entity"
+        prefix: 'App\Menu\Entity'
+        alias: AppMenu
+      AppContact:
+        is_bundle: false
+        type: attribute
+        dir: "%kernel.project_dir%/src/Contact/Entity"
+        prefix: 'App\Contact\Entity'
+        alias: AppContact
+      AppSetting:
+        is_bundle: false
+        type: attribute
+        dir: "%kernel.project_dir%/src/Setting/Entity"
+        prefix: 'App\Setting\Entity'
+        alias: AppSetting
+      AppEvent:
+        is_bundle: false
+        type: attribute
+        dir: "%kernel.project_dir%/src/Event/Entity"
+        prefix: 'App\Event\Entity'
+        alias: AppEvent
+      AppContremarque:
+        is_bundle: false
+        type: attribute
+        dir: "%kernel.project_dir%/src/Contremarque/Entity"
+        prefix: 'App\Contremarque\Entity'
+        alias: AppContremarque
+      ContremarqueValueObjects: # Add this mapping for Value Objects
+        is_bundle: false
+        type: attribute
+        dir: "%kernel.project_dir%/src/Contremarque/ValueObject"
+        prefix: 'App\Contremarque\ValueObject'
+        alias: ContremarqueValueObjects
+      AppWorkshop:
+        is_bundle: false
+        type: attribute
+        dir: '%kernel.project_dir%/src/Workshop/Entity'
+        prefix: 'App\Workshop\Entity'
+        alias: AppWorkshop
+      AppCheckingList:
+        is_bundle: false
+        type: attribute
+        dir: '%kernel.project_dir%/src/CheckingList/Entity'
+        prefix: 'App\CheckingList\Entity'
+        alias: AppCheckingList
+      AppProgressReport:
+        is_bundle: false
+        type: attribute
+        dir: '%kernel.project_dir%/src/ProgressReport/Entity'
+        prefix: 'App\ProgressReport\Entity'
+        alias: AppProgressReport
+      AppInvoices:
+        is_bundle: false
+        type: attribute
+        dir: '%kernel.project_dir%/src/Invoices/Entity'
+        prefix: 'App\Invoices\Entity'
+        alias: AppInvoices
+    controller_resolver:
+      auto_mapping: true
+
+when@test:
+  doctrine:
+    dbal:
+      # "TEST_TOKEN" is typically set by ParaTest
+      dbname_suffix: "_test%env(default::TEST_TOKEN)%"
+
+when@prod:
+  doctrine:
+    orm:
+      auto_generate_proxy_classes: false
+      proxy_dir: "%kernel.build_dir%/doctrine/orm/Proxies"
+      query_cache_driver:
+        type: pool
+        pool: doctrine.system_cache_pool
+      result_cache_driver:
+        type: pool
+        pool: doctrine.result_cache_pool
+
+  framework:
+    cache:
+      pools:
+        doctrine.result_cache_pool:
+          adapter: cache.app
+        doctrine.system_cache_pool:
+          adapter: cache.system

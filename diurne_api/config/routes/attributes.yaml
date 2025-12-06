@@ -1,0 +1,34 @@
+user_controllers:
+  resource: ../../src/User/Controller
+  type: attribute
+
+menu_controllers:
+  resource: ../../src/Menu/Controller
+  type: attribute
+setting_controllers:
+  resource: ../../src/Setting/Controller
+  type: attribute
+contact_controllers:
+  resource: ../../src/Contact/Controller
+  type: attribute
+event_controllers:
+  resource: ../../src/Event/Controller
+  type: attribute
+contremarque_controllers:
+  resource: ../../src/Contremarque/Controller
+  type: attribute
+workshop_controllers:
+  resource: ../../src/Workshop/Controller
+  type: attribute
+checkinglist_controllers:
+  resource: ../../src/CheckingList/Controller
+  type: attribute
+progressRepport_controllers:
+  resource: ../../src/ProgressReport/Controller
+  type: attribute
+invoices_controllers:
+  resource: ../../src/Invoices/Controller
+  type: attribute
+kernel:
+  resource: App\Kernel
+  type: attribute

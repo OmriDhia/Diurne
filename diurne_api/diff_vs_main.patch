@@ -1,0 +1,1959 @@
+diff --git a/diff_vs_main.patch b/diff_vs_main.patch
+new file mode 100644
+index 00000000..e69de29b
+diff --git a/src/Setting/Bus/Command/ManufacturerPriceGrid/CreateManufacturerPriceGridCommand.php b/src/Setting/Bus/Command/ManufacturerPriceGrid/CreateManufacturerPriceGridCommand.php
+new file mode 100644
+index 00000000..a29ec5fe
+--- /dev/null
++++ b/src/Setting/Bus/Command/ManufacturerPriceGrid/CreateManufacturerPriceGridCommand.php
+@@ -0,0 +1,97 @@
++<?php
++
++namespace App\Setting\Bus\Command\ManufacturerPriceGrid;
++
++use App\Common\Bus\Command\Command;
++use Symfony\Component\Validator\Constraints as Assert;
++
++class CreateManufacturerPriceGridCommand implements Command
++{
++    public function __construct(
++        #[Assert\NotBlank(message: 'Manufacturer ID cannot be empty.')]
++        #[Assert\Positive(message: 'Manufacturer ID must be positive.')]
++        public readonly int $manufacturerId,
++
++        #[Assert\NotBlank(message: 'Quality ID cannot be empty.')]
++        #[Assert\Positive(message: 'Quality ID must be positive.')]
++        public readonly int $qualityId,
++
++        #[Assert\NotBlank(message: 'Year cannot be empty.')]
++        #[Assert\Range(min: 2000, max: 2100, notInRangeMessage: 'Year must be between {{ min }} and {{ max }}.')]
++        public readonly int $year,
++        #[Assert\Regex(
++            pattern: '/^\d+(\.\d{1,6})?$/',
++            message: 'Le prix doit être un nombre décimal avec maximum 6 décimales'
++        )]
++        public readonly ?string $woolPrice = null,
++
++        #[Assert\Regex(
++            pattern: '/^\d+(\.\d{1,6})?$/',
++            message: 'Le prix doit être un nombre décimal avec maximum 6 décimales'
++        )]
++        public readonly ?string $silkPrice = null,
++
++        public readonly ?string $tariffGrid = null,
++
++        #[Assert\PositiveOrZero(message: 'Knots must be positive or zero.')]
++        public readonly ?int $knots = null,
++
++        public readonly ?string $special = null,
++
++        #[Assert\PositiveOrZero(message: 'Standard velours must be positive or zero.')]
++        public readonly ?string $standardVelours = null,
++
++        #[Assert\Type(type: 'bool', message: 'Is active must be a boolean.')]
++        public readonly bool $isActive = true
++    ) {}
++
++    public function getManufacturerId(): int
++    {
++        return $this->manufacturerId;
++    }
++
++    public function getQualityId(): int
++    {
++        return $this->qualityId;
++    }
++
++    public function getYear(): int
++    {
++        return $this->year;
++    }
++
++    public function getWoolPrice(): ?string
++    {
++        return $this->woolPrice;
++    }
++
++    public function getSilkPrice(): ?string
++    {
++        return $this->silkPrice;
++    }
++
++    public function getTariffGrid(): ?string
++    {
++        return $this->tariffGrid;
++    }
++
++    public function getKnots(): ?int
++    {
++        return $this->knots;
++    }
++
++    public function getSpecial(): ?string
++    {
++        return $this->special;
++    }
++
++    public function getStandardVelours(): ?string
++    {
++        return $this->standardVelours;
++    }
++
++    public function isActive(): bool
++    {
++        return $this->isActive;
++    }
++}
+diff --git a/src/Setting/Bus/Command/ManufacturerPriceGrid/CreateManufacturerPriceGridCommandHandler.php b/src/Setting/Bus/Command/ManufacturerPriceGrid/CreateManufacturerPriceGridCommandHandler.php
+new file mode 100644
+index 00000000..5baad4fc
+--- /dev/null
++++ b/src/Setting/Bus/Command/ManufacturerPriceGrid/CreateManufacturerPriceGridCommandHandler.php
+@@ -0,0 +1,74 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Bus\Command\ManufacturerPriceGrid;
++
++use App\Common\Bus\Command\CommandHandler;
++use App\Common\Exception\DuplicateValidationResourceException;
++use App\Setting\Entity\ManufacturerPriceGrid;
++use App\Setting\Repository\ManufacturerPriceGridRepository;
++use App\Setting\Repository\ManufacturerRepository;
++use App\Setting\Repository\QualityRepository;
++use Doctrine\ORM\EntityManagerInterface;
++
++class CreateManufacturerPriceGridCommandHandler implements CommandHandler
++{
++    public function __construct(
++        private readonly EntityManagerInterface $entityManager,
++        private readonly ManufacturerPriceGridRepository $priceGridRepository,
++        private readonly ManufacturerRepository $manufacturerRepository,
++        private readonly QualityRepository $qualityRepository
++    ) {}
++
++    public function __invoke(CreateManufacturerPriceGridCommand $command): ManufacturerPriceGridResponse
++    {
++        if ($command->year > (int) date('Y') + 1) {
++            throw new \InvalidArgumentException('Year cannot be more than one year in the future.');
++        }
++        if (null === $command->woolPrice && null === $command->silkPrice) {
++            throw new \InvalidArgumentException('At least one price (wool or silk) must be provided.');
++        }
++        // Vérifier l'existence d'une grille pour le même fabricant, qualité et année
++        $existingGrid = $this->priceGridRepository->findOneBy([
++            'manufacturer' => $command->getManufacturerId(),
++            'quality' => $command->getQualityId(),
++            'year' => $command->getYear()
++        ]);
++
++        if ($existingGrid) {
++            throw new DuplicateValidationResourceException(
++                'A price grid already exists for this manufacturer, quality and year.'
++            );
++        }
++
++        // Vérifier l'existence du fabricant et de la qualité
++        $manufacturer = $this->manufacturerRepository->find($command->getManufacturerId());
++        if (!$manufacturer) {
++            throw new \InvalidArgumentException('Manufacturer not found.');
++        }
++
++        $quality = $this->qualityRepository->find($command->getQualityId());
++        if (!$quality) {
++            throw new \InvalidArgumentException('Quality not found.');
++        }
++
++        // Créer la nouvelle grille tarifaire
++        $priceGrid = new ManufacturerPriceGrid();
++        $priceGrid->setManufacturer($manufacturer);
++        $priceGrid->setQuality($quality);
++        $priceGrid->setYear($command->getYear());
++        $priceGrid->setWoolPrice($command->getWoolPrice());
++        $priceGrid->setSilkPrice($command->getSilkPrice());
++        $priceGrid->setTariffGrid($command->getTariffGrid());
++        $priceGrid->setKnots($command->getKnots());
++        $priceGrid->setSpecial($command->getSpecial());
++        $priceGrid->setStandardVelours($command->getStandardVelours());
++        $priceGrid->setIsActive($command->isActive());
++
++        $this->entityManager->persist($priceGrid);
++        $this->entityManager->flush();
++
++        return new ManufacturerPriceGridResponse($priceGrid);
++    }
++}
+diff --git a/src/Setting/Bus/Command/ManufacturerPriceGrid/DeleteManufacturerPriceGridCommand.php b/src/Setting/Bus/Command/ManufacturerPriceGrid/DeleteManufacturerPriceGridCommand.php
+new file mode 100644
+index 00000000..d88c23fa
+--- /dev/null
++++ b/src/Setting/Bus/Command/ManufacturerPriceGrid/DeleteManufacturerPriceGridCommand.php
+@@ -0,0 +1,20 @@
++<?php
++
++namespace App\Setting\Bus\Command\ManufacturerPriceGrid;
++
++use App\Common\Bus\Command\Command;
++use Symfony\Component\Validator\Constraints as Assert;
++
++class DeleteManufacturerPriceGridCommand implements Command
++{
++    public function __construct(
++        #[Assert\NotBlank(message: 'ID cannot be empty.')]
++        #[Assert\Positive(message: 'ID must be positive.')]
++        public readonly int $id
++    ) {}
++
++    public function getId(): int
++    {
++        return $this->id;
++    }
++}
+diff --git a/src/Setting/Bus/Command/ManufacturerPriceGrid/DeleteManufacturerPriceGridCommandHandler.php b/src/Setting/Bus/Command/ManufacturerPriceGrid/DeleteManufacturerPriceGridCommandHandler.php
+new file mode 100644
+index 00000000..48483f00
+--- /dev/null
++++ b/src/Setting/Bus/Command/ManufacturerPriceGrid/DeleteManufacturerPriceGridCommandHandler.php
+@@ -0,0 +1,30 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Bus\Command\ManufacturerPriceGrid;
++
++use App\Common\Bus\Command\CommandHandler;
++use App\Common\Exception\ResourceNotFoundException;
++use App\Setting\Repository\ManufacturerPriceGridRepository;
++use Doctrine\ORM\EntityManagerInterface;
++
++class DeleteManufacturerPriceGridCommandHandler implements CommandHandler
++{
++    public function __construct(
++        private readonly EntityManagerInterface $entityManager,
++        private readonly ManufacturerPriceGridRepository $priceGridRepository
++    ) {}
++
++    public function __invoke(DeleteManufacturerPriceGridCommand $command): void
++    {
++        $priceGrid = $this->priceGridRepository->find($command->getId());
++
++        if (!$priceGrid) {
++            throw new ResourceNotFoundException('Price grid not found.');
++        }
++
++        $this->entityManager->remove($priceGrid);
++        $this->entityManager->flush();
++    }
++}
+diff --git a/src/Setting/Bus/Command/ManufacturerPriceGrid/ManufacturerPriceGridResponse.php b/src/Setting/Bus/Command/ManufacturerPriceGrid/ManufacturerPriceGridResponse.php
+new file mode 100644
+index 00000000..f9a2ec4f
+--- /dev/null
++++ b/src/Setting/Bus/Command/ManufacturerPriceGrid/ManufacturerPriceGridResponse.php
+@@ -0,0 +1,48 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Bus\Command\ManufacturerPriceGrid;
++
++use App\Common\Bus\Command\CommandResponse;
++use App\Setting\Entity\ManufacturerPriceGrid;
++
++class ManufacturerPriceGridResponse implements CommandResponse
++{
++    public function __construct(private readonly ManufacturerPriceGrid $priceGrid) {}
++
++    public function toArray(): array
++    {
++        $manufacturer = $this->priceGrid->getManufacturer();
++        $quality = $this->priceGrid->getQuality();
++
++        return [
++            'id' => $this->priceGrid->getId(),
++            'manufacturer' => $manufacturer ? [
++                'id' => $manufacturer->getId(),
++                'name' => $manufacturer->getName(),
++                'company' => $manufacturer->getCompany(),
++            ] : null,
++            'quality' => $quality ? [
++                'id' => $quality->getId(),
++                'name' => $quality->getName(),
++                'weight' => $quality->getWeight(),
++            ] : null,
++            'year' => $this->priceGrid->getYear(),
++            'woolPrice' => $this->priceGrid->getWoolPrice(),
++            'silkPrice' => $this->priceGrid->getSilkPrice(),
++            'tariffGrid' => $this->priceGrid->getTariffGrid(),
++            'knots' => $this->priceGrid->getKnots(),
++            'special' => $this->priceGrid->getSpecial(),
++            'standardVelours' => $this->priceGrid->getStandardVelours(),
++            'isActive' => $this->priceGrid->isActive(),
++            'createdAt' => $this->priceGrid->getCreatedAt()?->format(\DateTimeInterface::ATOM),
++            'updatedAt' => $this->priceGrid->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
++        ];
++    }
++
++    public function getPriceGrid(): ManufacturerPriceGrid
++    {
++        return $this->priceGrid;
++    }
++}
+diff --git a/src/Setting/Bus/Command/ManufacturerPriceGrid/UpdateManufacturerPriceGridCommand.php b/src/Setting/Bus/Command/ManufacturerPriceGrid/UpdateManufacturerPriceGridCommand.php
+new file mode 100644
+index 00000000..57a2bdd3
+--- /dev/null
++++ b/src/Setting/Bus/Command/ManufacturerPriceGrid/UpdateManufacturerPriceGridCommand.php
+@@ -0,0 +1,74 @@
++<?php
++
++namespace App\Setting\Bus\Command\ManufacturerPriceGrid;
++
++use App\Common\Bus\Command\Command;
++use Symfony\Component\Validator\Constraints as Assert;
++
++class UpdateManufacturerPriceGridCommand implements Command
++{
++    public function __construct(
++        #[Assert\NotBlank(message: 'ID cannot be empty.')]
++        #[Assert\Positive(message: 'ID must be positive.')]
++        public readonly int $id,
++
++        #[Assert\PositiveOrZero(message: 'Wool price must be positive or zero.')]
++        public readonly ?string $woolPrice = null,
++
++        #[Assert\PositiveOrZero(message: 'Silk price must be positive or zero.')]
++        public readonly ?string $silkPrice = null,
++
++        public readonly ?string $tariffGrid = null,
++
++        #[Assert\PositiveOrZero(message: 'Knots must be positive or zero.')]
++        public readonly ?int $knots = null,
++
++        public readonly ?string $special = null,
++
++        #[Assert\PositiveOrZero(message: 'Standard velours must be positive or zero.')]
++        public readonly ?string $standardVelours = null,
++
++        #[Assert\Type(type: 'bool', message: 'Is active must be a boolean.')]
++        public readonly ?bool $isActive = null
++    ) {}
++
++    public function getId(): int
++    {
++        return $this->id;
++    }
++
++    public function getWoolPrice(): ?string
++    {
++        return $this->woolPrice;
++    }
++
++    public function getSilkPrice(): ?string
++    {
++        return $this->silkPrice;
++    }
++
++    public function getTariffGrid(): ?string
++    {
++        return $this->tariffGrid;
++    }
++
++    public function getKnots(): ?int
++    {
++        return $this->knots;
++    }
++
++    public function getSpecial(): ?string
++    {
++        return $this->special;
++    }
++
++    public function getStandardVelours(): ?string
++    {
++        return $this->standardVelours;
++    }
++
++    public function isActive(): ?bool
++    {
++        return $this->isActive;
++    }
++}
+diff --git a/src/Setting/Bus/Command/ManufacturerPriceGrid/UpdateManufacturerPriceGridCommandHandler.php b/src/Setting/Bus/Command/ManufacturerPriceGrid/UpdateManufacturerPriceGridCommandHandler.php
+new file mode 100644
+index 00000000..c9cdcfd1
+--- /dev/null
++++ b/src/Setting/Bus/Command/ManufacturerPriceGrid/UpdateManufacturerPriceGridCommandHandler.php
+@@ -0,0 +1,59 @@
++<?php
++
++namespace App\Setting\Bus\Command\ManufacturerPriceGrid;
++
++use App\Common\Bus\Command\CommandHandler;
++use App\Common\Exception\ResourceNotFoundException;
++use App\Setting\Repository\ManufacturerPriceGridRepository;
++use Doctrine\ORM\EntityManagerInterface;
++
++class UpdateManufacturerPriceGridCommandHandler implements CommandHandler
++{
++    public function __construct(
++        private readonly EntityManagerInterface $entityManager,
++        private readonly ManufacturerPriceGridRepository $priceGridRepository
++    ) {}
++
++    public function __invoke(UpdateManufacturerPriceGridCommand $command): ManufacturerPriceGridResponse
++    {
++        $priceGrid = $this->priceGridRepository->find($command->getId());
++
++        if (!$priceGrid) {
++            throw new ResourceNotFoundException('Price grid not found.');
++        }
++
++        // Mettre à jour uniquement les champs fournis
++        if (null !== $command->getWoolPrice()) {
++            $priceGrid->setWoolPrice($command->getWoolPrice());
++        }
++
++        if (null !== $command->getSilkPrice()) {
++            $priceGrid->setSilkPrice($command->getSilkPrice());
++        }
++
++        if (null !== $command->getTariffGrid()) {
++            $priceGrid->setTariffGrid($command->getTariffGrid());
++        }
++
++        if (null !== $command->getKnots()) {
++            $priceGrid->setKnots($command->getKnots());
++        }
++
++        if (null !== $command->getSpecial()) {
++            $priceGrid->setSpecial($command->getSpecial());
++        }
++
++        if (null !== $command->getStandardVelours()) {
++            $priceGrid->setStandardVelours($command->getStandardVelours());
++        }
++
++        if (null !== $command->isActive()) {
++            $priceGrid->setIsActive($command->isActive());
++        }
++
++
++        $this->entityManager->flush();
++
++        return new ManufacturerPriceGridResponse($priceGrid);
++    }
++}
+diff --git a/src/Setting/Bus/Query/ManufacturerPriceGrid/GetAllManufacturerPriceGridsQuery.php b/src/Setting/Bus/Query/ManufacturerPriceGrid/GetAllManufacturerPriceGridsQuery.php
+new file mode 100644
+index 00000000..aebaa9e7
+--- /dev/null
++++ b/src/Setting/Bus/Query/ManufacturerPriceGrid/GetAllManufacturerPriceGridsQuery.php
+@@ -0,0 +1,49 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Bus\Query\ManufacturerPriceGrid;
++
++use App\Common\Bus\Query\Query;
++
++class GetAllManufacturerPriceGridsQuery implements Query
++{
++    public function __construct(
++        private readonly ?int $manufacturerId = null,
++        private readonly ?int $year = null,
++        private readonly ?int $qualityId = null,
++        private readonly ?int $page = null,
++        private readonly ?int $itemsPerPage = null,
++        private readonly bool $onlyActive = true
++    ) {}
++
++    public function getManufacturerId(): ?int
++    {
++        return $this->manufacturerId;
++    }
++
++    public function getYear(): ?int
++    {
++        return $this->year;
++    }
++
++    public function getQualityId(): ?int
++    {
++        return $this->qualityId;
++    }
++
++    public function getPage(): ?int
++    {
++        return $this->page;
++    }
++
++    public function getItemsPerPage(): ?int
++    {
++        return $this->itemsPerPage;
++    }
++
++    public function isOnlyActive(): bool
++    {
++        return $this->onlyActive;
++    }
++}
+diff --git a/src/Setting/Bus/Query/ManufacturerPriceGrid/GetAllManufacturerPriceGridsQueryHandler.php b/src/Setting/Bus/Query/ManufacturerPriceGrid/GetAllManufacturerPriceGridsQueryHandler.php
+new file mode 100644
+index 00000000..b657b972
+--- /dev/null
++++ b/src/Setting/Bus/Query/ManufacturerPriceGrid/GetAllManufacturerPriceGridsQueryHandler.php
+@@ -0,0 +1,58 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Bus\Query\ManufacturerPriceGrid;
++
++use App\Common\Bus\Query\QueryHandler;
++use App\Setting\Repository\ManufacturerPriceGridRepository;
++
++class GetAllManufacturerPriceGridsQueryHandler implements QueryHandler
++{
++    public function __construct(
++        private readonly ManufacturerPriceGridRepository $priceGridRepository
++    ) {}
++
++    public function __invoke(GetAllManufacturerPriceGridsQuery $query): ManufacturerPriceGridQueryResponse
++    {
++        $criteria = [];
++        $page = $query->getPage() ?? 1;
++        $itemsPerPage = $query->getItemsPerPage() ?? 25;
++        $offset = ($page - 1) * $itemsPerPage;
++
++        // Limiter le nombre maximum d'éléments par page
++        $itemsPerPage = min($itemsPerPage, 100);
++        if ($query->getManufacturerId()) {
++            $criteria['manufacturer'] = $query->getManufacturerId();
++        }
++
++        if ($query->getYear()) {
++            $criteria['year'] = $query->getYear();
++        }
++
++        if ($query->getQualityId()) {
++            $criteria['quality'] = $query->getQualityId();
++        }
++
++        if ($query->isOnlyActive()) {
++            $criteria['isActive'] = true;
++        }
++
++        $isFetchingAll = empty($query->getPage()) && empty($query->getItemsPerPage());
++        $offset = $isFetchingAll ? 0 : ($query->getPage() - 1) * $query->getItemsPerPage();
++        $limit = $isFetchingAll ? null : $query->getItemsPerPage();
++
++        $priceGrids = $isFetchingAll
++            ? $this->priceGridRepository->findBy($criteria, ['year' => 'DESC', 'quality' => 'ASC'])
++            : $this->priceGridRepository->findBy($criteria, ['year' => 'DESC', 'quality' => 'ASC'], $limit, $offset);
++
++        $totalItems = $this->priceGridRepository->count($criteria);
++
++        return new ManufacturerPriceGridQueryResponse(
++            $priceGrids,
++            $totalItems,
++            $query->getPage(),
++            $query->getItemsPerPage()
++        );
++    }
++}
+diff --git a/src/Setting/Bus/Query/ManufacturerPriceGrid/GetManufacturerPriceGridByIdQuery.php b/src/Setting/Bus/Query/ManufacturerPriceGrid/GetManufacturerPriceGridByIdQuery.php
+new file mode 100644
+index 00000000..ab08f0e1
+--- /dev/null
++++ b/src/Setting/Bus/Query/ManufacturerPriceGrid/GetManufacturerPriceGridByIdQuery.php
+@@ -0,0 +1,19 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Bus\Query\ManufacturerPriceGrid;
++
++use App\Common\Bus\Query\Query;
++
++class GetManufacturerPriceGridByIdQuery implements Query
++{
++    public function __construct(
++        private readonly int $id
++    ) {}
++
++    public function getId(): int
++    {
++        return $this->id;
++    }
++}
+diff --git a/src/Setting/Bus/Query/ManufacturerPriceGrid/GetManufacturerPriceGridByIdQueryHandler.php b/src/Setting/Bus/Query/ManufacturerPriceGrid/GetManufacturerPriceGridByIdQueryHandler.php
+new file mode 100644
+index 00000000..c4e5b732
+--- /dev/null
++++ b/src/Setting/Bus/Query/ManufacturerPriceGrid/GetManufacturerPriceGridByIdQueryHandler.php
+@@ -0,0 +1,27 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Bus\Query\ManufacturerPriceGrid;
++
++use App\Common\Bus\Query\QueryHandler;
++use App\Common\Exception\ResourceNotFoundException;
++use App\Setting\Repository\ManufacturerPriceGridRepository;
++
++class GetManufacturerPriceGridByIdQueryHandler implements QueryHandler
++{
++    public function __construct(
++        private readonly ManufacturerPriceGridRepository $priceGridRepository
++    ) {}
++
++    public function __invoke(GetManufacturerPriceGridByIdQuery $query): ManufacturerPriceGridResponse
++    {
++        $priceGrid = $this->priceGridRepository->find($query->getId());
++
++        if (!$priceGrid) {
++            throw new ResourceNotFoundException('Price grid not found.');
++        }
++
++        return new ManufacturerPriceGridResponse($priceGrid);
++    }
++}
+diff --git a/src/Setting/Bus/Query/ManufacturerPriceGrid/GetManufacturerPriceHistoryQuery.php b/src/Setting/Bus/Query/ManufacturerPriceGrid/GetManufacturerPriceHistoryQuery.php
+new file mode 100644
+index 00000000..8f3863fc
+--- /dev/null
++++ b/src/Setting/Bus/Query/ManufacturerPriceGrid/GetManufacturerPriceHistoryQuery.php
+@@ -0,0 +1,31 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Bus\Query\ManufacturerPriceGrid;
++
++use App\Common\Bus\Query\Query;
++
++class GetManufacturerPriceHistoryQuery implements Query
++{
++    public function __construct(
++        private readonly int $manufacturerId,
++        private readonly int $qualityId,
++        private readonly ?int $limit = 10
++    ) {}
++
++    public function getManufacturerId(): int
++    {
++        return $this->manufacturerId;
++    }
++
++    public function getQualityId(): int
++    {
++        return $this->qualityId;
++    }
++
++    public function getLimit(): ?int
++    {
++        return $this->limit;
++    }
++}
+diff --git a/src/Setting/Bus/Query/ManufacturerPriceGrid/GetManufacturerPriceHistoryQueryHandler.php b/src/Setting/Bus/Query/ManufacturerPriceGrid/GetManufacturerPriceHistoryQueryHandler.php
+new file mode 100644
+index 00000000..f5906f9f
+--- /dev/null
++++ b/src/Setting/Bus/Query/ManufacturerPriceGrid/GetManufacturerPriceHistoryQueryHandler.php
+@@ -0,0 +1,29 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Bus\Query\ManufacturerPriceGrid;
++
++use App\Common\Bus\Query\QueryHandler;
++use App\Setting\Repository\ManufacturerPriceGridRepository;
++
++class GetManufacturerPriceHistoryQueryHandler implements QueryHandler
++{
++    public function __construct(
++        private readonly ManufacturerPriceGridRepository $priceGridRepository
++    ) {}
++
++    public function __invoke(GetManufacturerPriceHistoryQuery $query): array
++    {
++        $priceHistory = $this->priceGridRepository->findPriceHistory(
++            $query->getManufacturerId(),
++            $query->getQualityId(),
++            $query->getLimit()
++        );
++
++        return array_map(
++            fn($priceGrid) => (new ManufacturerPriceGridResponse($priceGrid))->toArray(),
++            $priceHistory
++        );
++    }
++}
+diff --git a/src/Setting/Bus/Query/ManufacturerPriceGrid/ManufacturerPriceGridQueryResponse.php b/src/Setting/Bus/Query/ManufacturerPriceGrid/ManufacturerPriceGridQueryResponse.php
+new file mode 100644
+index 00000000..375019ce
+--- /dev/null
++++ b/src/Setting/Bus/Query/ManufacturerPriceGrid/ManufacturerPriceGridQueryResponse.php
+@@ -0,0 +1,55 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Bus\Query\ManufacturerPriceGrid;
++
++use App\Common\Bus\Query\QueryResponse;
++use App\Setting\Entity\ManufacturerPriceGrid;
++
++class ManufacturerPriceGridQueryResponse implements QueryResponse
++{
++    public function __construct(
++        private readonly array $priceGrids,
++        private readonly int $totalItems,
++        private readonly ?int $page,
++        private readonly ?int $itemsPerPage
++    ) {}
++
++    public function toArray(): array
++    {
++        $response = array_map(
++            fn(ManufacturerPriceGrid $priceGrid) => (new ManufacturerPriceGridResponse($priceGrid))->toArray(),
++            $this->priceGrids
++        );
++
++        if (empty($this->page)) {
++            return $response;
++        }
++
++        return [
++            'data' => $response,
++            'pagination' => [
++                'totalItems' => $this->totalItems,
++                'totalPages' => ceil($this->totalItems / $this->itemsPerPage),
++                'currentPage' => $this->page,
++                'itemsPerPage' => $this->itemsPerPage,
++            ]
++        ];
++    }
++
++    public function getTotalItems(): int
++    {
++        return $this->totalItems;
++    }
++
++    public function getPage(): ?int
++    {
++        return $this->page;
++    }
++
++    public function getItemsPerPage(): ?int
++    {
++        return $this->itemsPerPage;
++    }
++}
+diff --git a/src/Setting/Controller/CreateManufacturerPriceGridController.php b/src/Setting/Controller/CreateManufacturerPriceGridController.php
+new file mode 100644
+index 00000000..8cf37c29
+--- /dev/null
++++ b/src/Setting/Controller/CreateManufacturerPriceGridController.php
+@@ -0,0 +1,72 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Controller;
++
++use App\Common\Controller\CommandQueryController;
++use App\Common\Response\SuccessResponse;
++use App\Setting\Bus\Command\ManufacturerPriceGrid\CreateManufacturerPriceGridCommand;
++use App\Setting\DTO\CreateManufacturerPriceGridRequestDto;
++use Nelmio\ApiDocBundle\Annotation\Model;
++use OpenApi\Attributes as OA;
++use Symfony\Component\HttpFoundation\JsonResponse;
++use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
++use Symfony\Component\Routing\Attribute\Route;
++
++#[Route('/api/manufacturer-price-grids', name: 'manufacturer_price_grid_create', methods: ['POST'])]
++class CreateManufacturerPriceGridController extends CommandQueryController
++{
++    #[OA\Response(
++        response: 200,
++        description: 'Manufacturer price grid created successfully',
++        content: new OA\JsonContent(ref: new Model(type: SuccessResponse::class))
++    )]
++    #[OA\RequestBody(
++        description: 'Manufacturer price grid data',
++        content: new OA\JsonContent(
++            required: ['manufacturerId', 'qualityId', 'year'],
++            properties: [
++                new OA\Property(property: 'manufacturerId', type: 'integer'),
++                new OA\Property(property: 'qualityId', type: 'integer'),
++                new OA\Property(property: 'year', type: 'integer'),
++                new OA\Property(property: 'woolPrice', type: 'string'),
++                new OA\Property(property: 'silkPrice', type: 'string'),
++                new OA\Property(property: 'tariffGrid', type: 'string'),
++                new OA\Property(property: 'knots', type: 'integer'),
++                new OA\Property(property: 'special', type: 'string'),
++                new OA\Property(property: 'standardVelours', type: 'string'),
++                new OA\Property(property: 'isActive', type: 'boolean'),
++            ]
++        )
++    )]
++    #[OA\Tag(name: 'Manufacturer Price Grids')]
++    public function __invoke(
++        #[MapRequestPayload] CreateManufacturerPriceGridRequestDto $requestDto
++    ): JsonResponse {
++        if (!$this->isGranted('create', 'setting')) {
++            return new JsonResponse(['code' => 401, 'message' => 'Unauthorized to access this content'], 401);
++        }
++
++        $command = new CreateManufacturerPriceGridCommand(
++            $requestDto->manufacturerId,
++            $requestDto->qualityId,
++            $requestDto->year,
++            $requestDto->woolPrice,
++            $requestDto->silkPrice,
++            $requestDto->tariffGrid,
++            $requestDto->knots,
++            $requestDto->special,
++            $requestDto->standardVelours,
++            $requestDto->isActive ?? true
++        );
++
++        $response = $this->handle($command);
++
++        return SuccessResponse::create(
++            'manufacturer_price_grid_create',
++            $response->toArray(),
++            'Manufacturer price grid created successfully'
++        );
++    }
++}
+diff --git a/src/Setting/Controller/DeleteManufacturerPriceGridController.php b/src/Setting/Controller/DeleteManufacturerPriceGridController.php
+new file mode 100644
+index 00000000..d1a785bc
+--- /dev/null
++++ b/src/Setting/Controller/DeleteManufacturerPriceGridController.php
+@@ -0,0 +1,46 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Controller;
++
++use App\Common\Controller\CommandQueryController;
++use App\Common\Response\SuccessResponse;
++use App\Setting\Bus\Command\ManufacturerPriceGrid\DeleteManufacturerPriceGridCommand;
++use OpenApi\Attributes as OA;
++use Symfony\Component\HttpFoundation\JsonResponse;
++use Symfony\Component\Routing\Attribute\Route;
++use Nelmio\ApiDocBundle\Annotation\Model;
++
++#[Route('/api/manufacturer-price-grids/{id}', name: 'manufacturer_price_grid_delete', methods: ['DELETE'])]
++class DeleteManufacturerPriceGridController extends CommandQueryController
++{
++    #[OA\Response(
++        response: 200,
++        description: 'Manufacturer price grid deleted successfully',
++        content: new OA\JsonContent(ref: new Model(type: SuccessResponse::class))
++    )]
++    #[OA\Parameter(
++        name: 'id',
++        in: 'path',
++        description: 'Price grid ID',
++        required: true,
++        schema: new OA\Schema(type: 'integer')
++    )]
++    #[OA\Tag(name: 'Manufacturer Price Grids')]
++    public function __invoke(int $id): JsonResponse
++    {
++        if (!$this->isGranted('delete', 'setting')) {
++            return new JsonResponse(['code' => 401, 'message' => 'Unauthorized to access this content'], 401);
++        }
++
++        $command = new DeleteManufacturerPriceGridCommand($id);
++        $this->handle($command);
++
++        return SuccessResponse::create(
++            'manufacturer_price_grid_delete',
++            [],
++            'Manufacturer price grid deleted successfully'
++        );
++    }
++}
+diff --git a/src/Setting/Controller/GetAllManufacturerPriceGridsController.php b/src/Setting/Controller/GetAllManufacturerPriceGridsController.php
+new file mode 100644
+index 00000000..b414382d
+--- /dev/null
++++ b/src/Setting/Controller/GetAllManufacturerPriceGridsController.php
+@@ -0,0 +1,90 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Controller;
++
++use App\Common\Controller\CommandQueryController;
++use App\Common\Response\SuccessResponse;
++use App\Setting\Bus\Query\ManufacturerPriceGrid\GetAllManufacturerPriceGridsQuery;
++use Nelmio\ApiDocBundle\Annotation\Model;
++use OpenApi\Attributes as OA;
++use Symfony\Component\HttpFoundation\JsonResponse;
++use Symfony\Component\HttpFoundation\Request;
++use Symfony\Component\Routing\Attribute\Route;
++
++#[Route('/api/manufacturer-price-grids', name: 'manufacturer_price_grids_get_all', methods: ['GET'])]
++class GetAllManufacturerPriceGridsController extends CommandQueryController
++{
++    #[OA\Parameter(
++        name: 'manufacturerId',
++        in: 'query',
++        description: 'Filter by manufacturer ID',
++        required: false,
++        schema: new OA\Schema(type: 'integer')
++    )]
++    #[OA\Parameter(
++        name: 'year',
++        in: 'query',
++        description: 'Filter by year',
++        required: false,
++        schema: new OA\Schema(type: 'integer')
++    )]
++    #[OA\Parameter(
++        name: 'qualityId',
++        in: 'query',
++        description: 'Filter by quality ID',
++        required: false,
++        schema: new OA\Schema(type: 'integer')
++    )]
++    #[OA\Parameter(
++        name: 'page',
++        in: 'query',
++        description: 'Page number',
++        required: false,
++        schema: new OA\Schema(type: 'integer')
++    )]
++    #[OA\Parameter(
++        name: 'itemsPerPage',
++        in: 'query',
++        description: 'Items per page',
++        required: false,
++        schema: new OA\Schema(type: 'integer')
++    )]
++    #[OA\Parameter(
++        name: 'onlyActive',
++        in: 'query',
++        description: 'Show only active price grids',
++        required: false,
++        schema: new OA\Schema(type: 'boolean')
++    )]
++    #[OA\Response(
++        response: 200,
++        description: 'Manufacturer price grids retrieved successfully',
++        content: new OA\JsonContent(ref: new Model(type: SuccessResponse::class))
++    )]
++    #[OA\Tag(name: 'Manufacturer Price Grids')]
++    public function __invoke(Request $request): JsonResponse
++    {
++        if (!$this->isGranted('read', 'setting')) {
++            return new JsonResponse(['code' => 401, 'message' => 'Unauthorized to access this content'], 401);
++        }
++
++        $query = new GetAllManufacturerPriceGridsQuery(
++            $request->query->getInt('manufacturerId') ?: null,
++            $request->query->getInt('year') ?: null,
++            $request->query->getInt('qualityId') ?: null,
++            $request->query->getInt('page') ?: null,
++            $request->query->getInt('itemsPerPage') ?: null,
++            $request->query->getBoolean('onlyActive', true)
++        );
++
++        $response = $this->ask($query);
++
++        return SuccessResponse::create(
++            'manufacturer_price_grids_get_all',
++            $response->toArray(),
++            'Manufacturer price grids retrieved successfully'
++        );
++    }
++}
+diff --git a/src/Setting/Controller/GetManufacturerPriceGridByIdController.php b/src/Setting/Controller/GetManufacturerPriceGridByIdController.php
+new file mode 100644
+index 00000000..d55c7b26
+--- /dev/null
++++ b/src/Setting/Controller/GetManufacturerPriceGridByIdController.php
+@@ -0,0 +1,46 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Controller;
++
++use App\Common\Controller\CommandQueryController;
++use App\Common\Response\SuccessResponse;
++use App\Setting\Bus\Query\ManufacturerPriceGrid\GetManufacturerPriceGridByIdQuery;
++use Nelmio\ApiDocBundle\Annotation\Model;
++use OpenApi\Attributes as OA;
++use Symfony\Component\HttpFoundation\JsonResponse;
++use Symfony\Component\Routing\Attribute\Route;
++
++#[Route('/api/manufacturer-price-grids/{id}', name: 'manufacturer_price_grid_get_by_id', methods: ['GET'])]
++class GetManufacturerPriceGridByIdController extends CommandQueryController
++{
++    #[OA\Response(
++        response: 200,
++        description: 'Manufacturer price grid retrieved successfully',
++        content: new OA\JsonContent(ref: new Model(type: SuccessResponse::class))
++    )]
++    #[OA\Parameter(
++        name: 'id',
++        in: 'path',
++        description: 'Price grid ID',
++        required: true,
++        schema: new OA\Schema(type: 'integer')
++    )]
++    #[OA\Tag(name: 'Manufacturer Price Grids')]
++    public function __invoke(int $id): JsonResponse
++    {
++        if (!$this->isGranted('read', 'setting')) {
++            return new JsonResponse(['code' => 401, 'message' => 'Unauthorized to access this content'], 401);
++        }
++
++        $query = new GetManufacturerPriceGridByIdQuery($id);
++        $response = $this->ask($query);
++
++        return SuccessResponse::create(
++            'manufacturer_price_grid_get_by_id',
++            $response->toArray(),
++            'Manufacturer price grid retrieved successfully'
++        );
++    }
++}
+diff --git a/src/Setting/Controller/GetManufacturerPriceHistoryController.php b/src/Setting/Controller/GetManufacturerPriceHistoryController.php
+new file mode 100644
+index 00000000..6d6cadc0
+--- /dev/null
++++ b/src/Setting/Controller/GetManufacturerPriceHistoryController.php
+@@ -0,0 +1,66 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Controller;
++
++use App\Common\Controller\CommandQueryController;
++use App\Common\Response\SuccessResponse;
++use App\Setting\Bus\Query\ManufacturerPriceGrid\GetManufacturerPriceHistoryQuery;
++use Nelmio\ApiDocBundle\Annotation\Model;
++use OpenApi\Attributes as OA;
++use Symfony\Component\HttpFoundation\JsonResponse;
++use Symfony\Component\HttpFoundation\Request;
++use Symfony\Component\Routing\Attribute\Route;
++
++#[Route('/api/manufacturer-price-history', name: 'manufacturer_price_history_get', methods: ['GET'])]
++class GetManufacturerPriceHistoryController extends CommandQueryController
++{
++    #[OA\Parameter(
++        name: 'manufacturerId',
++        in: 'query',
++        description: 'Manufacturer ID',
++        required: true,
++        schema: new OA\Schema(type: 'integer')
++    )]
++    #[OA\Parameter(
++        name: 'qualityId',
++        in: 'query',
++        description: 'Quality ID',
++        required: true,
++        schema: new OA\Schema(type: 'integer')
++    )]
++    #[OA\Parameter(
++        name: 'limit',
++        in: 'query',
++        description: 'Number of history items to return',
++        required: false,
++        schema: new OA\Schema(type: 'integer')
++    )]
++    #[OA\Response(
++        response: 200,
++        description: 'Manufacturer price history retrieved successfully',
++        content: new OA\JsonContent(ref: new Model(type: SuccessResponse::class))
++    )]
++    #[OA\Tag(name: 'Manufacturer Price Grids')]
++    public function __invoke(Request $request): JsonResponse
++    {
++        if (!$this->isGranted('read', 'setting')) {
++            return new JsonResponse(['code' => 401, 'message' => 'Unauthorized to access this content'], 401);
++        }
++
++        $query = new GetManufacturerPriceHistoryQuery(
++            $request->query->getInt('manufacturerId'),
++            $request->query->getInt('qualityId'),
++            $request->query->getInt('limit', 10)
++        );
++
++        $response = $this->ask($query);
++
++        return SuccessResponse::create(
++            'manufacturer_price_history_get',
++            $response,
++            'Manufacturer price history retrieved successfully'
++        );
++    }
++}
+diff --git a/src/Setting/Controller/UpdateManufacturerPriceGridController.php b/src/Setting/Controller/UpdateManufacturerPriceGridController.php
+new file mode 100644
+index 00000000..185e4c20
+--- /dev/null
++++ b/src/Setting/Controller/UpdateManufacturerPriceGridController.php
+@@ -0,0 +1,74 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Controller;
++
++use App\Common\Controller\CommandQueryController;
++use App\Common\Response\SuccessResponse;
++use App\Setting\Bus\Command\ManufacturerPriceGrid\UpdateManufacturerPriceGridCommand;
++use App\Setting\DTO\UpdateManufacturerPriceGridRequestDto;
++use Nelmio\ApiDocBundle\Annotation\Model;
++use OpenApi\Attributes as OA;
++use Symfony\Component\HttpFoundation\JsonResponse;
++use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
++use Symfony\Component\Routing\Attribute\Route;
++
++#[Route('/api/manufacturer-price-grids/{id}', name: 'manufacturer_price_grid_update', methods: ['PUT'])]
++class UpdateManufacturerPriceGridController extends CommandQueryController
++{
++    #[OA\Response(
++        response: 200,
++        description: 'Manufacturer price grid updated successfully',
++        content: new OA\JsonContent(ref: new Model(type: SuccessResponse::class))
++    )]
++    #[OA\Parameter(
++        name: 'id',
++        in: 'path',
++        description: 'Price grid ID',
++        required: true,
++        schema: new OA\Schema(type: 'integer')
++    )]
++    #[OA\RequestBody(
++        description: 'Manufacturer price grid update data',
++        content: new OA\JsonContent(
++            properties: [
++                new OA\Property(property: 'woolPrice', type: 'string'),
++                new OA\Property(property: 'silkPrice', type: 'string'),
++                new OA\Property(property: 'tariffGrid', type: 'string'),
++                new OA\Property(property: 'knots', type: 'integer'),
++                new OA\Property(property: 'special', type: 'string'),
++                new OA\Property(property: 'standardVelours', type: 'string'),
++                new OA\Property(property: 'isActive', type: 'boolean'),
++            ]
++        )
++    )]
++    #[OA\Tag(name: 'Manufacturer Price Grids')]
++    public function __invoke(
++        int $id,
++        #[MapRequestPayload] UpdateManufacturerPriceGridRequestDto $requestDto
++    ): JsonResponse {
++        if (!$this->isGranted('update', 'setting')) {
++            return new JsonResponse(['code' => 401, 'message' => 'Unauthorized to access this content'], 401);
++        }
++
++        $command = new UpdateManufacturerPriceGridCommand(
++            $id,
++            $requestDto->woolPrice,
++            $requestDto->silkPrice,
++            $requestDto->tariffGrid,
++            $requestDto->knots,
++            $requestDto->special,
++            $requestDto->standardVelours,
++            $requestDto->isActive
++        );
++
++        $response = $this->handle($command);
++
++        return SuccessResponse::create(
++            'manufacturer_price_grid_update',
++            $response->toArray(),
++            'Manufacturer price grid updated successfully'
++        );
++    }
++}
+diff --git a/src/Setting/DTO/CreateManufacturerPriceGridRequestDto.php b/src/Setting/DTO/CreateManufacturerPriceGridRequestDto.php
+new file mode 100644
+index 00000000..807fa443
+--- /dev/null
++++ b/src/Setting/DTO/CreateManufacturerPriceGridRequestDto.php
+@@ -0,0 +1,40 @@
++<?php
++
++namespace App\Setting\DTO;
++
++use Symfony\Component\Validator\Constraints as Assert;
++
++class CreateManufacturerPriceGridRequestDto
++{
++    public function __construct(
++        #[Assert\NotBlank]
++        #[Assert\Positive]
++        public int $manufacturerId,
++
++        #[Assert\NotBlank]
++        #[Assert\Positive]
++        public int $qualityId,
++
++        #[Assert\NotBlank]
++        #[Assert\Range(min: 2000, max: 2100)]
++        public int $year,
++
++        #[Assert\PositiveOrZero]
++        public ?string $woolPrice = null,
++
++        #[Assert\PositiveOrZero]
++        public ?string $silkPrice = null,
++
++        public ?string $tariffGrid = null,
++
++        #[Assert\PositiveOrZero]
++        public ?int $knots = null,
++
++        public ?string $special = null,
++
++        #[Assert\PositiveOrZero]
++        public ?string $standardVelours = null,
++
++        public ?bool $isActive = true
++    ) {}
++}
+diff --git a/src/Setting/DTO/UpdateManufacturerPriceGridRequestDto.php b/src/Setting/DTO/UpdateManufacturerPriceGridRequestDto.php
+new file mode 100644
+index 00000000..8fb7e867
+--- /dev/null
++++ b/src/Setting/DTO/UpdateManufacturerPriceGridRequestDto.php
+@@ -0,0 +1,28 @@
++<?php
++
++namespace App\Setting\DTO;
++
++use Symfony\Component\Validator\Constraints as Assert;
++
++class UpdateManufacturerPriceGridRequestDto
++{
++    public function __construct(
++        #[Assert\PositiveOrZero]
++        public ?string $woolPrice = null,
++
++        #[Assert\PositiveOrZero]
++        public ?string $silkPrice = null,
++
++        public ?string $tariffGrid = null,
++
++        #[Assert\PositiveOrZero]
++        public ?int $knots = null,
++
++        public ?string $special = null,
++
++        #[Assert\PositiveOrZero]
++        public ?string $standardVelours = null,
++
++        public ?bool $isActive = null
++    ) {}
++}
+diff --git a/src/Setting/Entity/Manufacturer.php b/src/Setting/Entity/Manufacturer.php
+index 1599a9d2..121664cb 100644
+--- a/src/Setting/Entity/Manufacturer.php
++++ b/src/Setting/Entity/Manufacturer.php
+@@ -48,6 +48,16 @@ class Manufacturer
+ 
+     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 6, nullable: true)]
+     private ?string $specialFormBonus = null;
++    /**
++     * @var Collection<int, ManufacturerPriceGrid>
++     */
++    #[ORM\OneToMany(targetEntity: ManufacturerPriceGrid::class, mappedBy: 'manufacturer')]
++    private Collection $priceGrids;
++
++    public function __construct()
++    {
++        $this->priceGrids = new ArrayCollection();
++    }
+ 
+     public function getId(): ?int
+     {
+@@ -185,7 +195,44 @@ class Manufacturer
+ 
+         return $this;
+     }
++    /**
++     * @return Collection<int, ManufacturerPriceGrid>
++     */
++    public function getPriceGrids(): Collection
++    {
++        return $this->priceGrids;
++    }
++
++    public function addPriceGrid(ManufacturerPriceGrid $priceGrid): static
++    {
++        if (!$this->priceGrids->contains($priceGrid)) {
++            $this->priceGrids->add($priceGrid);
++            $priceGrid->setManufacturer($this);
++        }
++        return $this;
++    }
++
++    public function removePriceGrid(ManufacturerPriceGrid $priceGrid): static
++    {
++        if ($this->priceGrids->removeElement($priceGrid)) {
++            if ($priceGrid->getManufacturer() === $this) {
++                $priceGrid->setManufacturer(null);
++            }
++        }
++        return $this;
++    }
++
++    public function getSpecialFormBonus(): ?string
++    {
++        return $this->specialFormBonus;
++    }
+ 
++    public function setSpecialFormBonus(?string $specialFormBonus): static
++    {
++        $this->specialFormBonus = $specialFormBonus;
++
++        return $this;
++    }
+     public function toArray(): array
+     {
+         return [
+@@ -204,16 +251,4 @@ class Manufacturer
+             'currency' => $this->getCurrency()?->toArray(),
+         ];
+     }
+-
+-    public function getSpecialFormBonus(): ?string
+-    {
+-        return $this->specialFormBonus;
+-    }
+-
+-    public function setSpecialFormBonus(?string $specialFormBonus): static
+-    {
+-        $this->specialFormBonus = $specialFormBonus;
+-
+-        return $this;
+-    }
+ }
+diff --git a/src/Setting/Entity/ManufacturerPriceGrid.php b/src/Setting/Entity/ManufacturerPriceGrid.php
+new file mode 100644
+index 00000000..4cde4eb5
+--- /dev/null
++++ b/src/Setting/Entity/ManufacturerPriceGrid.php
+@@ -0,0 +1,232 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Entity;
++
++use Doctrine\DBAL\Types\Types;
++use Doctrine\ORM\Mapping as ORM;
++
++#[ORM\Entity]
++#[ORM\HasLifecycleCallbacks]
++#[ORM\Table(name: 'manufacturer_price_grid')]
++#[ORM\UniqueConstraint(name: 'unique_manufacturer_quality_year', columns: ['manufacturer_id', 'quality_id', 'year'])]
++class ManufacturerPriceGrid
++{
++    #[ORM\Id]
++    #[ORM\GeneratedValue]
++    #[ORM\Column]
++    private ?int $id = null;
++
++    #[ORM\ManyToOne(targetEntity: Manufacturer::class)]
++    #[ORM\JoinColumn(nullable: false)]
++    private ?Manufacturer $manufacturer = null;
++
++    #[ORM\ManyToOne(targetEntity: Quality::class)]
++    #[ORM\JoinColumn(nullable: false)]
++    private ?Quality $quality = null;
++
++    #[ORM\Column(type: Types::INTEGER)]
++    private ?int $year = null;
++
++    #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 6, nullable: true)]
++    private ?string $woolPrice = null;
++
++    #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 6, nullable: true)]
++    private ?string $silkPrice = null;
++
++    #[ORM\Column(type: Types::STRING, length: 50, nullable: true)]
++    private ?string $tariffGrid = null;
++
++    #[ORM\Column(type: Types::INTEGER, nullable: true)]
++    private ?int $knots = null;
++
++    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
++    private ?string $special = null;
++
++    #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 6, nullable: true)]
++    private ?string $standardVelours = null;
++
++    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
++    private ?bool $isActive = true;
++
++    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
++    private ?\DateTimeImmutable $createdAt = null;
++
++    #[ORM\Column(type: Types::DATETIME, nullable: true)]
++    private ?\DateTime $updatedAt = null;
++    public function __construct()
++    {
++        $this->createdAt = new \DateTimeImmutable();
++    }
++    // -------------------------------
++    // LIFECYCLE CALLBACKS
++    // -------------------------------
++    #[ORM\PrePersist]
++    public function prePersist(): void
++    {
++        $this->createdAt = new \DateTimeImmutable();
++        $this->updatedAt = new \DateTime();
++    }
++
++    #[ORM\PreUpdate]
++    public function preUpdate(): void
++    {
++        $this->updatedAt = new \DateTime();
++    }
++
++    // -------------------------------
++    // GETTERS & SETTERS
++    // -------------------------------
++    public function getId(): ?int
++    {
++        return $this->id;
++    }
++
++    public function getManufacturer(): ?Manufacturer
++    {
++        return $this->manufacturer;
++    }
++
++    public function setManufacturer(?Manufacturer $manufacturer): static
++    {
++        $this->manufacturer = $manufacturer;
++        return $this;
++    }
++
++    public function getQuality(): ?Quality
++    {
++        return $this->quality;
++    }
++
++    public function setQuality(?Quality $quality): static
++    {
++        $this->quality = $quality;
++        return $this;
++    }
++
++    public function getYear(): ?int
++    {
++        return $this->year;
++    }
++
++    public function setYear(?int $year): static
++    {
++        $this->year = $year;
++        return $this;
++    }
++
++    public function getWoolPrice(): ?string
++    {
++        return $this->woolPrice;
++    }
++
++    public function setWoolPrice(?string $woolPrice): static
++    {
++        $this->woolPrice = $woolPrice;
++        return $this;
++    }
++
++    public function getSilkPrice(): ?string
++    {
++        return $this->silkPrice;
++    }
++
++    public function setSilkPrice(?string $silkPrice): static
++    {
++        $this->silkPrice = $silkPrice;
++        return $this;
++    }
++
++    public function getTariffGrid(): ?string
++    {
++        return $this->tariffGrid;
++    }
++
++    public function setTariffGrid(?string $tariffGrid): static
++    {
++        $this->tariffGrid = $tariffGrid;
++        return $this;
++    }
++
++    public function getKnots(): ?int
++    {
++        return $this->knots;
++    }
++
++    public function setKnots(?int $knots): static
++    {
++        $this->knots = $knots;
++        return $this;
++    }
++
++    public function getSpecial(): ?string
++    {
++        return $this->special;
++    }
++
++    public function setSpecial(?string $special): static
++    {
++        $this->special = $special;
++        return $this;
++    }
++
++    public function getStandardVelours(): ?string
++    {
++        return $this->standardVelours;
++    }
++
++    public function setStandardVelours(?string $standardVelours): static
++    {
++        $this->standardVelours = $standardVelours;
++        return $this;
++    }
++
++    public function isActive(): ?bool
++    {
++        return $this->isActive;
++    }
++
++    public function setIsActive(?bool $isActive): static
++    {
++        $this->isActive = $isActive;
++        return $this;
++    }
++
++    public function getCreatedAt(): ?\DateTimeImmutable
++    {
++        return $this->createdAt;
++    }
++
++    public function getUpdatedAt(): ?\DateTime
++    {
++        return $this->updatedAt;
++    }
++
++    public function toArray(): array
++    {
++        return [
++            'id' => $this->id,
++            'manufacturer' => [
++                'id' => $this->manufacturer?->getId(),
++                'name' => $this->manufacturer?->getName(),
++                'company' => $this->manufacturer?->getCompany(),
++            ],
++            'quality' => [
++                'id' => $this->quality?->getId(),
++                'name' => $this->quality?->getName(),
++                'weight' => $this->quality?->getWeight(),
++            ],
++            'year' => $this->year,
++            'woolPrice' => $this->woolPrice,
++            'silkPrice' => $this->silkPrice,
++            'tariffGrid' => $this->tariffGrid,
++            'knots' => $this->knots,
++            'special' => $this->special,
++            'standardVelours' => $this->standardVelours,
++            'isActive' => $this->isActive,
++            'createdAt' => $this->createdAt?->format('Y-m-d H:i:s'),
++            'updatedAt' => $this->updatedAt?->format('Y-m-d H:i:s'),
++        ];
++    }
++}
+diff --git a/src/Setting/Exception/ManufacturerPriceGridNotFoundException.php b/src/Setting/Exception/ManufacturerPriceGridNotFoundException.php
+new file mode 100644
+index 00000000..71e0590f
+--- /dev/null
++++ b/src/Setting/Exception/ManufacturerPriceGridNotFoundException.php
+@@ -0,0 +1,15 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Exception;
++
++use App\Common\Exception\ResourceNotFoundException;
++
++class ManufacturerPriceGridNotFoundException extends ResourceNotFoundException
++{
++    public function __construct(int $id)
++    {
++        parent::__construct(sprintf('Manufacturer price grid with ID %d not found.', $id));
++    }
++}
+diff --git a/src/Setting/Repository/ManufacturerPriceGridRepository.php b/src/Setting/Repository/ManufacturerPriceGridRepository.php
+new file mode 100644
+index 00000000..0d344a7b
+--- /dev/null
++++ b/src/Setting/Repository/ManufacturerPriceGridRepository.php
+@@ -0,0 +1,38 @@
++<?php
++
++namespace App\Setting\Repository;
++
++use App\Common\Repository\BaseRepository;
++
++interface ManufacturerPriceGridRepository extends BaseRepository
++{
++    /**
++     * Trouve les grilles par fabricant et année
++     */
++    public function findByManufacturerAndYear(int $manufacturerId, int $year): array;
++
++    /**
++     * Récupère les années disponibles pour un fabricant
++     */
++    public function findAvailableYearsForManufacturer(int $manufacturerId): array;
++
++    /**
++     * Trouve une grille spécifique par fabricant, qualité et année
++     */
++    public function findOneByManufacturerQualityAndYear(int $manufacturerId, int $qualityId, int $year): ?object;
++
++    /**
++     * Récupère l'historique des prix pour un fabricant et une qualité
++     */
++    public function findPriceHistory(int $manufacturerId, int $qualityId, ?int $limit = null): array;
++
++    /**
++     * Désactive toutes les grilles d'un fabricant pour une année
++     */
++    public function deactivateAllForManufacturerAndYear(int $manufacturerId, int $year): int;
++
++    /**
++     * Sauvegarde une grille tarifaire
++     */
++    public function save(object $entity, bool $flush = false): void;
++}
+diff --git a/src/Setting/Repository/ORM/Doctrine/DoctrineORMManufacturerPriceGridRepository.php b/src/Setting/Repository/ORM/Doctrine/DoctrineORMManufacturerPriceGridRepository.php
+new file mode 100644
+index 00000000..62e7270c
+--- /dev/null
++++ b/src/Setting/Repository/ORM/Doctrine/DoctrineORMManufacturerPriceGridRepository.php
+@@ -0,0 +1,300 @@
++<?php
++
++declare(strict_types=1);
++
++namespace App\Setting\Repository\ORM\Doctrine;
++
++use App\Common\Repository\ORM\Doctrine\DoctrineORMRepository;
++use App\Setting\Entity\ManufacturerPriceGrid;
++use App\Setting\Repository\ManufacturerPriceGridRepository;
++use Doctrine\ORM\EntityManagerInterface;
++use Doctrine\ORM\NonUniqueResultException;
++use Doctrine\ORM\NoResultException;
++use Doctrine\ORM\QueryBuilder;
++
++class DoctrineORMManufacturerPriceGridRepository extends DoctrineORMRepository implements ManufacturerPriceGridRepository
++{
++    protected const ENTITY_CLASS = ManufacturerPriceGrid::class;
++    protected const ALIAS = 'mpg';
++
++    public function __construct(EntityManagerInterface $manager)
++    {
++        parent::__construct($manager, self::ENTITY_CLASS, self::ALIAS);
++    }
++
++    /**
++     * {@inheritdoc}
++     */
++    public function findByManufacturerAndYear(int $manufacturerId, int $year): array
++    {
++        $qb = $this->query();
++
++        return $qb
++            ->leftJoin('mpg.manufacturer', 'm')
++            ->leftJoin('mpg.quality', 'q')
++            ->where('m.id = :manufacturerId')
++            ->andWhere('mpg.year = :year')
++            ->andWhere('mpg.isActive = true')
++            ->setParameter('manufacturerId', $manufacturerId)
++            ->setParameter('year', $year)
++            ->orderBy('q.name', 'ASC')
++            ->getQuery()
++            ->getResult();
++    }
++
++    /**
++     * {@inheritdoc}
++     */
++    public function findAvailableYearsForManufacturer(int $manufacturerId): array
++    {
++        $qb = $this->query();
++
++        return $qb
++            ->select('DISTINCT mpg.year')
++            ->where('mpg.manufacturer = :manufacturerId')
++            ->setParameter('manufacturerId', $manufacturerId)
++            ->orderBy('mpg.year', 'DESC')
++            ->getQuery()
++            ->getSingleColumnResult();
++    }
++
++    /**
++     * {@inheritdoc}
++     */
++    public function findOneByManufacturerQualityAndYear(int $manufacturerId, int $qualityId, int $year): ?object
++    {
++        $qb = $this->query();
++
++        try {
++            return $qb
++                ->where('mpg.manufacturer = :manufacturerId')
++                ->andWhere('mpg.quality = :qualityId')
++                ->andWhere('mpg.year = :year')
++                ->setParameter('manufacturerId', $manufacturerId)
++                ->setParameter('qualityId', $qualityId)
++                ->setParameter('year', $year)
++                ->getQuery()
++                ->getOneOrNullResult();
++        } catch (NonUniqueResultException) {
++            return null;
++        }
++    }
++
++    /**
++     * {@inheritdoc}
++     */
++    public function findPriceHistory(int $manufacturerId, int $qualityId, ?int $limit = null): array
++    {
++        $qb = $this->query();
++
++        $qb
++            ->where('mpg.manufacturer = :manufacturerId')
++            ->andWhere('mpg.quality = :qualityId')
++            ->setParameter('manufacturerId', $manufacturerId)
++            ->setParameter('qualityId', $qualityId)
++            ->orderBy('mpg.year', 'DESC');
++
++        if ($limit !== null) {
++            $qb->setMaxResults($limit);
++        }
++
++        return $qb->getQuery()->getResult();
++    }
++
++    /**
++     * {@inheritdoc}
++     */
++    public function deactivateAllForManufacturerAndYear(int $manufacturerId, int $year): int
++    {
++        $qb = $this->manager->createQueryBuilder();
++
++        return $qb
++            ->update(self::ENTITY_CLASS, 'mpg')
++            ->set('mpg.isActive', ':active')
++            ->where('mpg.manufacturer = :manufacturerId')
++            ->andWhere('mpg.year = :year')
++            ->setParameter('active', false)
++            ->setParameter('manufacturerId', $manufacturerId)
++            ->setParameter('year', $year)
++            ->getQuery()
++            ->execute();
++    }
++
++    /**
++     * Sauvegarde une grille tarifaire
++     */
++    public function save(object $entity, bool $flush = false): void
++    {
++        $this->manager->persist($entity);
++
++        if ($flush) {
++            $this->manager->flush();
++        }
++    }
++
++    /**
++     * {@inheritdoc}
++     */
++    public function create(array $data): object
++    {
++        $priceGrid = new ManufacturerPriceGrid();
++
++        if (isset($data['manufacturer'])) {
++            $priceGrid->setManufacturer($data['manufacturer']);
++        }
++
++        if (isset($data['quality'])) {
++            $priceGrid->setQuality($data['quality']);
++        }
++
++        if (isset($data['year'])) {
++            $priceGrid->setYear($data['year']);
++        }
++
++        if (isset($data['woolPrice'])) {
++            $priceGrid->setWoolPrice($data['woolPrice']);
++        }
++
++        if (isset($data['silkPrice'])) {
++            $priceGrid->setSilkPrice($data['silkPrice']);
++        }
++
++        if (isset($data['tariffGrid'])) {
++            $priceGrid->setTariffGrid($data['tariffGrid']);
++        }
++
++        if (isset($data['knots'])) {
++            $priceGrid->setKnots($data['knots']);
++        }
++
++        if (isset($data['special'])) {
++            $priceGrid->setSpecial($data['special']);
++        }
++
++        if (isset($data['standardVelours'])) {
++            $priceGrid->setStandardVelours($data['standardVelours']);
++        }
++
++        if (isset($data['isActive'])) {
++            $priceGrid->setIsActive($data['isActive']);
++        }
++
++        $this->manager->persist($priceGrid);
++
++        if (($data['flush'] ?? false) === true) {
++            $this->manager->flush();
++        }
++
++        return $priceGrid;
++    }
++
++    /**
++     * {@inheritdoc}
++     */
++    public function update($entity, array $data): void
++    {
++        if (!$entity instanceof ManufacturerPriceGrid) {
++            throw new \InvalidArgumentException('Entity must be an instance of ManufacturerPriceGrid');
++        }
++
++        if (isset($data['woolPrice'])) {
++            $entity->setWoolPrice($data['woolPrice']);
++        }
++
++        if (isset($data['silkPrice'])) {
++            $entity->setSilkPrice($data['silkPrice']);
++        }
++
++        if (isset($data['tariffGrid'])) {
++            $entity->setTariffGrid($data['tariffGrid']);
++        }
++
++        if (isset($data['knots'])) {
++            $entity->setKnots($data['knots']);
++        }
++
++        if (isset($data['special'])) {
++            $entity->setSpecial($data['special']);
++        }
++
++        if (isset($data['standardVelours'])) {
++            $entity->setStandardVelours($data['standardVelours']);
++        }
++
++        if (isset($data['isActive'])) {
++            $entity->setIsActive($data['isActive']);
++        }
++
++        $this->manager->persist($entity);
++
++        if (($data['flush'] ?? false) === true) {
++            $this->manager->flush();
++        }
++    }
++
++    /**
++     * Méthode utilitaire pour construire des requêtes complexes
++     */
++    public function createQueryBuilderWithFilters(array $filters = []): QueryBuilder
++    {
++        $qb = $this->query();
++
++        if (isset($filters['manufacturerId'])) {
++            $qb->andWhere('mpg.manufacturer = :manufacturerId')
++                ->setParameter('manufacturerId', $filters['manufacturerId']);
++        }
++
++        if (isset($filters['year'])) {
++            $qb->andWhere('mpg.year = :year')
++                ->setParameter('year', $filters['year']);
++        }
++
++        if (isset($filters['qualityId'])) {
++            $qb->andWhere('mpg.quality = :qualityId')
++                ->setParameter('qualityId', $filters['qualityId']);
++        }
++
++        if (isset($filters['isActive'])) {
++            $qb->andWhere('mpg.isActive = :isActive')
++                ->setParameter('isActive', $filters['isActive']);
++        }
++
++        // Tri par défaut
++        if (!isset($filters['orderBy'])) {
++            $qb->orderBy('mpg.year', 'DESC')
++                ->addOrderBy('mpg.quality', 'ASC');
++        }
++
++        return $qb;
++    }
++
++    /**
++     * Compte le nombre de grilles selon des critères
++     */
++    public function countByCriteria(array $criteria): int
++    {
++        $qb = $this->query()
++            ->select('COUNT(mpg.id)');
++
++        if (isset($criteria['manufacturer'])) {
++            $qb->andWhere('mpg.manufacturer = :manufacturer')
++                ->setParameter('manufacturer', $criteria['manufacturer']);
++        }
++
++        if (isset($criteria['year'])) {
++            $qb->andWhere('mpg.year = :year')
++                ->setParameter('year', $criteria['year']);
++        }
++
++        if (isset($criteria['isActive'])) {
++            $qb->andWhere('mpg.isActive = :isActive')
++                ->setParameter('isActive', $criteria['isActive']);
++        }
++
++        try {
++            return (int) $qb->getQuery()->getSingleScalarResult();
++        } catch (NoResultException | NonUniqueResultException) {
++            return 0;
++        }
++    }
++}
