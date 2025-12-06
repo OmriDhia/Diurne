@@ -73,8 +73,16 @@
             },
             async selectRnChoix() {
                 if (!this.selectedRn) return;
+                // ensure parent v-model (string RN) is updated with selected RN number
+                this.$emit('update:modelValue', this.selectedRn ? this.selectedRn.rnNumber : null);
                 const res = await axiosInstance.get(`/api/carpets/rn/${this.selectedRn.id}`);
+                // Emit both camelCase and kebab-case events to support different listener styles
                 this.$emit('dataOfRn', res);
+                this.$emit('data-of-rn', res);
+                // Also emit a simplified payload (parsed response body) for convenience
+                const parsed = res?.data?.response || res?.data || null;
+                this.$emit('rnData', parsed);
+                this.$emit('rn-data', parsed);
             },
             handleSearch(searchQuery) {
                 this.getRn(searchQuery);
