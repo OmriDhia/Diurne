@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  database:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: diurne
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./diurne_api/api_database.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - diurne-network
+
+  backend:
+    build:
+      context: ./diurne_api
+      dockerfile: Dockerfile
+    volumes:
+      - ./diurne_api:/var/www/symfony
+    networks:
+      - diurne-network
+    depends_on:
+      - database
+
+  backend-web:
+    image: nginx:alpine
+    volumes:
+      - ./diurne_api:/var/www/symfony
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8000:80"
+    depends_on:
+      - backend
+    networks:
+      - diurne-network
+
+  frontend:
+    build:
+      context: ./diurne_vuejs
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    networks:
+      - diurne-network
+
+networks:
+  diurne-network:
+    driver: bridge
+
+volumes:
+  db_data:

@@ -1,0 +1,8 @@
+diurne_api/vendor/
+diurne_api/var/
+diurne_api/.env.local
+diurne_vuejs/node_modules/
+diurne_vuejs/dist/
+.idea/
+.DS_Store
+*.log
