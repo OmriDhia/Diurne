@@ -1,14 +1,3 @@
-Voici **un seul fichier `.md` complet**, structuré, propre et prêt à être utilisé comme **prompt IA**.
-Il contient :
-✔ toutes les vues
-✔ l’arbre de navigation
-✔ les intents
-✔ les actions
-✔ les descriptions détaillées (mise à jour selon vos captures)
-✔ format compatible pour un LLM / agent conversationnel
-
----
-
 # 📘 **APPLICATION MOBILE – DOCUMENTATION IA COMPLÈTE**
 
 ## *Arbre de navigation • Intents • Actions • Description fonctionnelle*
@@ -383,14 +372,3 @@ Gérer :
 
 # ✔️ **Fichier `.md` prêt à l’usage IA / prompt**
 
-Ce fichier peut être **collé tel quel** dans un prompt système pour un agent conversationnel ou un moteur IA d'assistance métier.
-
----
-
-Si vous voulez une version :
-📌 optimisée LLM (compressée),
-📌 orientée agent (actions + policy),
-📌 version JSON/FSM (machine d’état),
-📌 ou une version Figma / wireframes
-
-Je peux la générer aussi.
