@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  php-mdb-api:
+    networks:
+      - diurne_network
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: php-mdb-api:latest
+    container_name: php-mdb-api
+    ports:
+      - "8585:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - PHP_INI_DIR=/usr/local/etc/php
+
+networks:
+  diurne_network:
+    external: true

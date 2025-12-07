@@ -1,0 +1,36 @@
+{
+    "name": "mdb-tools/mdb-parser",
+    "authors": [
+        {
+            "name": "Oleksii Fedorchak",
+            "email": "ofedorchak68@gmail.com",
+            "homepage": "https://www.linkedin.com/in/oleksii-fedorchak-web-developer/"
+        }
+    ],
+    "description": "Parser for MS Access Database files. This package is build and tested on .mdb files but can be tested with other formats",
+    "keywords": ["mdb","ms access","parser"],
+    "require": {
+        "php": "^7.2.5"
+    },
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/OleksiiFedorchak/mdb-to-csv"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "MDBTools\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MDBTools\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}

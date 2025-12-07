@@ -1,0 +1,68 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "3ea18f28a242dd5a8f26d25c3913546e",
+    "packages": [
+        {
+            "name": "mdb-tools/mdb-parser",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/OleksiiFedorchak/mdb-tools.git",
+                "reference": "d2a6b9713b7b5dc1cb51de974d5f3b300240fd07"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/OleksiiFedorchak/mdb-tools/zipball/d2a6b9713b7b5dc1cb51de974d5f3b300240fd07",
+                "reference": "d2a6b9713b7b5dc1cb51de974d5f3b300240fd07",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2.5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MDBTools\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oleksii Fedorchak",
+                    "email": "ofedorchak68@gmail.com",
+                    "homepage": "https://www.linkedin.com/in/oleksii-fedorchak-web-developer/"
+                }
+            ],
+            "description": "Parser for MS Access Database files. This package is build and tested on .mdb files but can be tested with other formats",
+            "keywords": [
+                "MDB",
+                "MS Access",
+                "parser"
+            ],
+            "support": {
+                "issues": "https://github.com/OleksiiFedorchak/mdb-tools/issues",
+                "source": "https://github.com/OleksiiFedorchak/mdb-tools/tree/v1.0.0"
+            },
+            "time": "2021-04-02T17:13:13+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
+}

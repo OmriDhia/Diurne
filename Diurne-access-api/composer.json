@@ -1,0 +1,10 @@
+{
+  "require": {
+    "mdb-tools/mdb-parser": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "ApiAccess\\": "/src"
+    }
+  }
+}
