@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   database:
+    container_name: diurne_database
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -9,23 +10,43 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./diurne_api/api_database.sql:/docker-entrypoint-initdb.d/init.sql
+    env_file:
+      - .env
     ports:
       - "3307:3306"
     networks:
       - diurne-network
 
+  phpmyadmin:
+    container_name: diurne_phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: database
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8002:80"
+    networks:
+      - diurne-network
+    depends_on:
+      - database
+
   backend:
+    container_name: diurne_backend
     build:
       context: ./diurne_api
       dockerfile: Dockerfile
     volumes:
       - ./diurne_api:/var/www/symfony
+    env_file:
+      - .env
     networks:
       - diurne-network
     depends_on:
       - database
 
   backend-web:
+    container_name: diurne_backend_web
     image: nginx:alpine
     volumes:
       - ./diurne_api:/var/www/symfony
@@ -38,6 +59,7 @@ services:
       - diurne-network
 
   frontend:
+    container_name: diurne_frontend
     build:
       context: ./diurne_vuejs
       dockerfile: Dockerfile
@@ -46,6 +68,8 @@ services:
     volumes:
       - ./diurne_vuejs:/app
       - /app/node_modules
+    env_file:
+      - .env
     networks:
       - diurne-network
 

@@ -7,12 +7,15 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libicu-dev \
     libonig-dev \
+    libpng-dev \
+    && docker-php-ext-configure gd \
     && docker-php-ext-install \
     pdo_mysql \
     zip \
     intl \
     mbstring \
-    opcache
+    opcache \
+    gd
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
