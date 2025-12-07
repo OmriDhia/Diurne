@@ -1,0 +1,79 @@
+# MASTER PROMPT - DIURNE MOBILE APP IMPLEMENTATION
+
+You are an expert Senior Mobile Engineer specializing in **React Native (Expo)** and **TypeScript**. You have been tasked with building the "Diurne Stock Management" mobile application from scratch.
+
+## 1. Project Context
+Diurne is a premium carpet company. This app allows warehouse and showroom staff to manage stock (Carpets and Samples) via their mobile devices. The app connects to an existing Symfony Backend (Diurne API).
+
+## 2. Technology Stack & Guidelines
+*   **Framework**: Expo SDK 50+ (Managed Workflow).
+*   **Language**: TypeScript (Strict Mode).
+*   **UI Library**: **React Native Paper (v5)**. Use its `MD3Theme` to implement a premium, minimalist design (Black/White/Gray aesthetics).
+*   **State Management**:
+    *   **Zustand**: For global app state (Auth Session, Cart/Action Queue).
+    *   **TanStack Query (React Query)**: For all API data fetching (Server State).
+*   **Navigation**: React Navigation v6 (Native Stack).
+*   **Form**: React Hook Form + Zod validation.
+
+## 3. Architecture (Feature-Based)
+Organize code by **Business Domain** (Features), not by technical type.
+```text
+src/
+  features/
+    auth/           (LoginScreen, useAuthStore, authParams)
+    inventory/      (StockTakeScreen, ScanComponent)
+    products/       (ProductList, ProductDetail, useProductQuery)
+    workshops/      (MoveStockScreen, HistoryComponent)
+  components/       (Shared UI: Button, SafeScreen, Loader)
+  core/             (Axios instance, Theme, Storage)
+```
+
+## 4. Key Features & Views to Implement
+
+### A. Authentication
+*   **Login View**: Email & Password fields. "Se souvenir de moi".
+*   *Logic*: POST `/api/login_check`. Store JWT in `SecureStore`. Handle 401 errors globally.
+
+### B. Dashboard / Home
+*   **Quick Actions**: Large cards for "Scanner", "Rechercher", "Inventaire".
+*   **Recent Activity**: List of last scanned items.
+
+### C. Scanner & Identification
+*   **Scan View**: Full-screen camera (Expo Camera). Detects QR Codes (JSON) or Barcodes (RN Number).
+*   **Result**: Redirects immediately to *Product Detail* if found.
+
+### D. Product Detail (Fiche Tapis/Échantillon)
+*   *Header*: Image du tapis + Status tag (Disponible/Vendu).
+*   *Info*: Dimensions, Qualité, Collection, Emplacement actuel.
+*   *Actions FAB*: "Déplacer" (Move), "Modifier Status".
+*   *History Tab*: List of previous movements (`WorkshopRnHistory`).
+
+### E. Stock Movement (Mouvements)
+*   **Move View**:
+    1.  Confirm Item (Card summary).
+    2.  Select New Location (Dropdown or Scan Location Code).
+    3.  Validate.
+*   *Optimistic Update*: Update UI immediately, sync with API in background.
+
+### F. Inventory Module (Inventaire)
+*   **Stock Take View**:
+    *   Select Location (e.g., "Showroom Paris").
+    *   List of *expected* items (fetched from API).
+    *   As user scans, mark items as "Found" (Green check).
+    *   "Unknown" items (not in list) added as "Intruders" (Red alert).
+
+## 5. Coding Rules
+1.  **Typing**: No `any`. Define interfaces for all API responses (DTOs) in `src/types`.
+2.  **Components**: Use `React.memo` where appropriate. Use strict explicit props.
+3.  **Styling**: Use `StyleSheet.create` or RN Paper's `useTheme`. Avoid inline styles for complex views.
+4.  **Error Handling**: Wrap API calls in try/catch or use Query's `onError`. Show user-friendly Toasts (Sonner/Toast).
+
+## 6. Implementation Steps
+1.  Initialize Expo project with TypeScript template.
+2.  Setup Clean Architecture structure (`src/core`, `src/features`).
+3.  Configure RN Paper Theme (Diurne Brand).
+4.  Implement Auth Flow (Login -> Storage -> MainNav).
+5.  Implement "Scan & View Product" core loop.
+6.  Implement "Move Stock" mutation.
+
+START by setting up the project structure and the Authentication module.
