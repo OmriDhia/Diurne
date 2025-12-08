@@ -88,7 +88,7 @@ diurne_mobile/
 *   Utilisation de la caméra pour détecter QR Codes (format JSON interne) ou Code-barres (RN Number).
 *   Mode "Rafale" pour l'inventaire : Scanne et ajoute à une liste temporaire sans changer d'écran.
 
-### 3.3. Gestion Offline (Optionnel/Futur)
+### 3.3. Gestion Offline 
 *   Grâce à **React Query**, l'application affichera les dernières données connues si le réseau est coupé.
 *   Les actions d'inventaire peuvent être stockées dans une file d'attente (Queue) persistée localement et synchronisée au retour du réseau.
 
