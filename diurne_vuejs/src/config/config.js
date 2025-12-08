@@ -1,6 +1,6 @@
 // Use Vite environment variables for the API / file host when available.
 // Vite exposes variables prefixed with VITE_ via import.meta.env at build time.
-const DEFAULT_LOCAL_API = 'http://localhost:8001';
+const DEFAULT_LOCAL_API = 'http://localhost:8741';
 
 export const API_URL = import.meta.env.VITE_API_URL || DEFAULT_LOCAL_API;
 
