@@ -1,3 +1,26 @@
 # Diurne Mobile App
 
-This folder is a placeholder for the future React Native mobile application.
+Application mobile pour la gestion de stock Diurne (Offline-First).
+
+## Architecture
+- **Expo** (TypeScript)
+- **SQLite** (Base de données locale)
+- **React Native Paper** (UI)
+
+## Structure
+```
+src/
+  ├── core/         # Database, Theme, Utils
+  ├── features/     # Écrans et logique métier (Auth, Inventory...)
+  └── navigation/   # Configuration React Navigation
+```
+
+## Démarrage
+1. `npm install`
+2. `npx expo start`
+
+## Fonctionnalités
+- [x] Structure & Navigation
+- [x] Base de données Offline (SQLite)
+- [ ] Authentification
+- [ ] Inventaire & Mouvements

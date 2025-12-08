@@ -16,9 +16,10 @@ Diurne is a carpet company. This app allows managing stock, production progress,
 *   **Network Detection**: `expo-network`.
 *   **Navigation**: React Navigation v6.
 
-## 3. Navigation Structure (Strict)
+## 3. Navigation Structure (Strict) 
 Implement the navigation tree exactly as follows:
-```text
+```text 
+
 ROOT
  ├── Login Screen
  ├── Menu Principal (Dashboard)
@@ -128,3 +129,4 @@ When a user performs an action (e.g., "Move Carpet A to Warehouse"):
 4.  **Error Handling**: All network calls MUST have a `catch` block that determines if the error is "Network Unreachable" (Queue it) or "Logic Error" (Alert User).
 
 START by scaffolding the Navigation Tree and the SQLite Database Service.
+__
