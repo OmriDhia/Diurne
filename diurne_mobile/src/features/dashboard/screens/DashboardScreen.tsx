@@ -8,9 +8,9 @@ export const DashboardScreen = () => {
 
     const menuItems = [
         { title: 'Inventaire', icon: 'clipboard-list', route: 'Inventory' },
-        { title: 'Entrée Stock', icon: 'arrow-right-bold-box', route: 'StockIn' },
-        { title: 'Sortie Stock', icon: 'arrow-left-bold-box', route: 'StockOut' },
-        { title: 'Recherche', icon: 'magnify', route: 'Search' },
+        { title: 'Entrée Stock', icon: 'arrow-right-bold-box', route: 'StockMovement', params: { type: 'IN' } },
+        { title: 'Sortie Stock', icon: 'arrow-left-bold-box', route: 'StockMovement', params: { type: 'OUT' } },
+        { title: 'Recherche', icon: 'magnify', route: 'ProductSearch' },
     ];
 
     return (
@@ -18,7 +18,7 @@ export const DashboardScreen = () => {
             <Text variant="headlineSmall" style={styles.header}>Menu Principal</Text>
             <View style={styles.grid}>
                 {menuItems.map((item, index) => (
-                    <Card key={index} style={styles.card} onPress={() => navigation.navigate(item.route)}>
+                    <Card key={index} style={styles.card} onPress={() => navigation.navigate(item.route, item.params)}>
                         <Card.Content style={styles.cardContent}>
                             <Avatar.Icon size={50} icon={item.icon} />
                             <Text variant="titleMedium" style={styles.cardTitle}>{item.title}</Text>

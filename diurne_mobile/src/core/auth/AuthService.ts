@@ -7,16 +7,26 @@ const TOKEN_KEY = 'user_jwt_token';
 
 export const AuthService = {
     async login(email: string, password: string) {
-        // Mock login for now or real API call
-        // const response = await axios.post(`${API_URL}/login_check`, { email, password });
-        // const { token } = response.data;
+        // Mock login with roles for demo
+        await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network
 
-        // Simulate API delay and success
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        let name = 'Utilisateur';
+        let role = 'USER';
+
+        if (email.includes('admin')) {
+            name = 'Admin User';
+            role = 'ADMIN';
+        } else if (email.includes('atelier')) {
+            name = 'Chef Atelier';
+            role = 'WORKSHOP';
+        } else if (email.includes('stage')) {
+            name = 'Stagiaire';
+            role = 'INTERN';
+        }
+
         const token = 'mock_jwt_token_' + Math.random();
-
         await this.setToken(token);
-        return { token, user: { email, name: 'Test User' } };
+        return { token, user: { email, name, role } };
     },
 
     async logout() {

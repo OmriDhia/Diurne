@@ -10,8 +10,14 @@ import { View, ActivityIndicator } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
+import { ProfileScreen } from '../features/auth/screens/ProfileScreen';
+import { IconButton } from 'react-native-paper';
+import { Image, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
 export const RootNavigator = () => {
   const { token, restoreToken, isLoading } = useAuthStore();
+  const navigation = useNavigation<any>();
 
   useEffect(() => {
     restoreToken();
@@ -27,16 +33,34 @@ export const RootNavigator = () => {
 
   return (
     <Stack.Navigator>
-      {token == null ? (
-        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-      ) : (
+      {token ? (
         <>
-          <Stack.Screen name="Main" component={DashboardScreen} options={{ title: 'Menu Principal' }} />
+          <Stack.Screen
+            name="Dashboard"
+            component={DashboardScreen}
+            options={{
+              headerTitle: '',
+              headerLeft: () => (
+                <Image
+                  source={require('../assets/logo.png')}
+                  style={{ width: 120, height: 40, marginLeft: 10, tintColor: 'black' }}
+                  resizeMode="contain"
+                />
+              ),
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+                  <IconButton icon="account-circle" size={30} />
+                </TouchableOpacity>
+              )
+            }}
+          />
           <Stack.Screen name="Inventory" component={InventoryScreen} />
-          <Stack.Screen name="StockIn" component={StockMovementScreen} initialParams={{ type: 'IN' }} />
-          <Stack.Screen name="StockOut" component={StockMovementScreen} initialParams={{ type: 'OUT' }} />
-          <Stack.Screen name="Search" component={ProductSearchScreen} />
+          <Stack.Screen name="StockMovement" component={StockMovementScreen} />
+          <Stack.Screen name="ProductSearch" component={ProductSearchScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} options={{ presentation: 'modal', title: 'Mon Profil' }} />
         </>
+      ) : (
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       )}
     </Stack.Navigator>
   );
