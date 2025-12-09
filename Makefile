@@ -21,6 +21,9 @@ up:
 fix-perms:
 	@echo "🔧 Fixing permissions..."
 	docker-compose exec -u root backend chown -R www-data:www-data /var/www/symfony/var
+	@echo "🔧 Fixing frontend permissions..."
+	mkdir -p diurne_vuejs/node_modules || sudo mkdir -p diurne_vuejs/node_modules
+	sudo chown -R $(USER):$(USER) diurne_vuejs/node_modules || true
 
 # Install Dependencies
 install-deps:

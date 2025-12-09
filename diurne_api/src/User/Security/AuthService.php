@@ -149,6 +149,8 @@ class AuthService
             'coop_tilleuls_forgot_password.update',
             'coop_tilleuls_forgot_password.get_token',
             'redirect_home',
+            'authenticate_mobile_user',
+            'create_mobile_user',
         ];
     }
 }

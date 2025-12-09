@@ -12,6 +12,10 @@ security:
             entity:
                 class: App\User\Entity\User
                 property: email
+        app_mobile_user_provider:
+            entity:
+                class: App\User\Entity\UserMobileApp
+                property: email
 
     # Firewalls configuration
     firewalls:
@@ -21,6 +25,9 @@ security:
         register:
             pattern:  ^/api/register
             stateless: false
+        mobile_login:
+            pattern: ^/api/mobile/authenticate
+            security: false
         api:
             pattern:   ^/api
             stateless: false
@@ -46,6 +53,8 @@ security:
     access_control:
         - { path: ^api/register, roles: PUBLIC_ACCESS }
         - { path: ^/api/authenticate, roles: PUBLIC_ACCESS }
+        - { path: ^/api/mobile/authenticate, roles: PUBLIC_ACCESS }
+        - { path: ^/api/mobile/users, methods: [POST], roles: PUBLIC_ACCESS }
         - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api/v1, roles: IS_AUTHENTICATED_FULLY  }

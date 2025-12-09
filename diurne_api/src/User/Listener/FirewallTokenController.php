@@ -4,6 +4,7 @@ namespace App\User\Listener;
 
 use Exception;
 use App\User\Repository\UserRepository;
+use App\User\Repository\UserMobileAppRepository;
 use App\User\Security\AuthService;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,9 +13,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class FirewallTokenController
 {
-    public function __construct(private readonly AuthService $authService, private readonly Security $security, private readonly UserRepository $userRepository)
-    {
-    }
+    public function __construct(
+        private readonly AuthService $authService,
+        private readonly Security $security,
+        private readonly UserRepository $userRepository,
+        private readonly UserMobileAppRepository $mobileUserRepository
+    ) {}
 
     /**
      * @return void
@@ -57,6 +61,9 @@ class FirewallTokenController
 
             if (!$session->get('user')) {
                 $user = $this->userRepository->findByEmail($email);
+                if (!$user) {
+                    $user = $this->mobileUserRepository->findOneBy(['email' => $email]);
+                }
                 $session->set('user', $user);
                 if (!$user instanceof UserInterface) {
                     $this->handleInvalidToken($event, 'Unauthorized to access this content', 401);

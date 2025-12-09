@@ -2,7 +2,7 @@ import axios from 'axios';
 import { API_URL } from '../config/config';
 import { TOKEN_STORAGE_NAME, USER_INFO_STORAGE_NAME, COMMERCIAL_MANAGER_ROLE_NAME, DESIGNER_MANAGER_ROLE_NAME, COMMERCIAL_ROLE_NAME, DESIGNER_ROLE_NAME, SUPER_ADMIN_ROLE_NAME } from '../composables/constants';
 import store from '../store';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import axiosInstance from '../config/http';
 import cryptoLocalStorage from '../composables/crypto-localStorage';
 
@@ -22,71 +22,77 @@ export default {
     },
     async doLogin(credentials) {
         try {
-            const  res = await axios.post(LOGIN_URL, credentials);
+            const res = await axios.post(LOGIN_URL, credentials);
             const userData = res.data.response;
-            localStorage.setItem(TOKEN_STORAGE_NAME,userData.token);
-            store.commit('setIsAuthenticate',true);
+            localStorage.setItem(TOKEN_STORAGE_NAME, userData.token);
+            store.commit('setIsAuthenticate', true);
 
             const info = await this.getUserInfoApi(userData.user_id);
             this.setUserInfo(info);
-            
+
             return userData;
-          } catch (error) {
-            throw new Error('Échec de la connexion. Veuillez vérifier vos identifiants.');
-            //throw new Error(error.response.data.detail);
-          }
+        } catch (error) {
+            console.error(error);
+            if (error.response && error.response.data && error.response.data.detail) {
+                throw new Error(error.response.data.detail);
+            } else if (error.message) {
+                throw new Error(error.message);
+            } else {
+                throw new Error('Échec de la connexion. Veuillez vérifier vos identifiants.');
+            }
+        }
     },
-    async doLogout(){
+    async doLogout() {
         localStorage.removeItem(TOKEN_STORAGE_NAME);
         localStorage.removeItem(USER_INFO_STORAGE_NAME);
-        store.commit('setIsAuthenticate',false);
+        store.commit('setIsAuthenticate', false);
         window.location.reload();
     },
-    async getUserInfoApi(userId){
+    async getUserInfoApi(userId) {
         try {
-            const  res = await axiosInstance.get(`/api/user/${userId}`);
+            const res = await axiosInstance.get(`/api/user/${userId}`);
             return res.data.response
-          } catch (error) {
+        } catch (error) {
             throw new Error('Échec de récupération des infos utilisateur');
-          }
+        }
     },
-    getUserInfo(){
+    getUserInfo() {
         return cryptoLocalStorage.retrieveDecryptedData(USER_INFO_STORAGE_NAME)
     },
-    setUserInfo(data){
+    setUserInfo(data) {
         cryptoLocalStorage.storeEncryptedData(data, USER_INFO_STORAGE_NAME)
     },
-    getUserInfoFromToken(){
+    getUserInfoFromToken() {
         const token = this.getToken();
         try {
             const decodedToken = jwtDecode(token);
             return decodedToken;
-          } catch (error) {
+        } catch (error) {
             console.error('Erreur lors du décryptage du token :', error);
             return null;
-          }
+        }
     },
-    async passRecover(credentials){
+    async passRecover(credentials) {
         try {
-            const  res = await axios.post(PASS_RECOVER_URL, credentials);
+            const res = await axios.post(PASS_RECOVER_URL, credentials);
             return res.data.response;
-          } catch (error) {
+        } catch (error) {
             throw new Error('Échec de la réinitialisation de mot de passe. Veuillez vérifier votre Email.');
-          }
+        }
     },
-    async passReset(token, credentials){
+    async passReset(token, credentials) {
         try {
-            const  res = await axios.post(PASS_RESET_URL + token , credentials);
+            const res = await axios.post(PASS_RESET_URL + token, credentials);
             return res.data.response;
-          } catch (error) {
-            if(error.response.data.detail){
+        } catch (error) {
+            if (error.response.data.detail) {
                 throw new Error(error.response.data.detail);
-            }else{
+            } else {
                 throw new Error('Échec de la réinitialisation de mot de passe.');
             }
-          }
+        }
     },
-    getUserMenu(){
+    getUserMenu() {
         const info = this.getUserInfo();
         const menu = (info && info.menus) ? info.menus : [];
         const mapped = menu.map(m => {
@@ -117,13 +123,13 @@ export default {
 
         return mapped;
     },
-    affectUserRoles(userInfo){
-        if(userInfo){
-            store.commit('setIsDesigner',userInfo?.profile === DESIGNER_ROLE_NAME);
-            store.commit('setIsDesignerManager',userInfo?.profile === DESIGNER_MANAGER_ROLE_NAME);
-            store.commit('setIsCommertial',userInfo?.profile === COMMERCIAL_ROLE_NAME);
-            store.commit('setIsCommercialManager',userInfo?.profile === COMMERCIAL_MANAGER_ROLE_NAME);
-            store.commit('setIsSuperAdmin',userInfo?.profile === SUPER_ADMIN_ROLE_NAME); 
+    affectUserRoles(userInfo) {
+        if (userInfo) {
+            store.commit('setIsDesigner', userInfo?.profile === DESIGNER_ROLE_NAME);
+            store.commit('setIsDesignerManager', userInfo?.profile === DESIGNER_MANAGER_ROLE_NAME);
+            store.commit('setIsCommertial', userInfo?.profile === COMMERCIAL_ROLE_NAME);
+            store.commit('setIsCommercialManager', userInfo?.profile === COMMERCIAL_MANAGER_ROLE_NAME);
+            store.commit('setIsSuperAdmin', userInfo?.profile === SUPER_ADMIN_ROLE_NAME);
         }
     }
 };

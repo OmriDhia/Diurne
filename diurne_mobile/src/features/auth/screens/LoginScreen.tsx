@@ -58,9 +58,9 @@ export const LoginScreen = () => {
             <View style={styles.demoSection}>
                 <Text variant="bodySmall" style={styles.demoTitle}>— DEMO ACCOUNTS —</Text>
                 <View style={styles.demoButtons}>
-                    <Button mode="outlined" compact onPress={() => { setEmail('admin@diurne.com'); setPassword('demo'); }}>Admin</Button>
-                    <Button mode="outlined" compact onPress={() => { setEmail('atelier@diurne.com'); setPassword('demo'); }}>Atelier</Button>
-                    <Button mode="outlined" compact onPress={() => { setEmail('stage@diurne.com'); setPassword('demo'); }}>Stage</Button>
+                    <Button mode="outlined" compact onPress={() => { setEmail('admin@diurne.com'); setPassword('12345678'); }}>Admin</Button>
+                    <Button mode="outlined" compact onPress={() => { setEmail('atelier@diurne.com'); setPassword('12345678'); }}>Atelier</Button>
+                    <Button mode="outlined" compact onPress={() => { setEmail('stage@diurne.com'); setPassword('12345678'); }}>Stage</Button>
                 </View>
             </View>
         </View>

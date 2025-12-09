@@ -1,32 +1,35 @@
-import axios from 'axios';
+import client from '../../api/client';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
-const API_URL = 'https://api.diurne.com'; // Replace with actual dev/prod URL
 const TOKEN_KEY = 'user_jwt_token';
 
 export const AuthService = {
     async login(email: string, password: string) {
-        // Mock login with roles for demo
-        await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network
+        try {
+            const response = await client.post('/mobile/authenticate', { email, password });
+            const { token, user } = response.data; // Assuming API returns { token, user: {...} } OR I need to fetch user separately?
+            // Wait, my API /mobile/authenticate returns JUST { token }.
+            // I need to decode token to get user ID or Email, OR fetch user details.
+            // The AuthMobileAppController returns ['token' => $token, 'id' => $user->getId()].
 
-        let name = 'Utilisateur';
-        let role = 'USER';
+            const userId = response.data.id;
+            await this.setToken(token);
 
-        if (email.includes('admin')) {
-            name = 'Admin User';
-            role = 'ADMIN';
-        } else if (email.includes('atelier')) {
-            name = 'Chef Atelier';
-            role = 'WORKSHOP';
-        } else if (email.includes('stage')) {
-            name = 'Stagiaire';
-            role = 'INTERN';
+            // Fetch User Details to get Role/Permission
+            // We assume there is an endpoint or we just return basic info for now.
+            // But the store expects `user` object.
+            // Let's fetch user object.
+
+            const userResponse = await client.get(`/mobile/users/${userId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            return { token, user: userResponse.data };
+        } catch (error) {
+            console.error(error);
+            throw error;
         }
-
-        const token = 'mock_jwt_token_' + Math.random();
-        await this.setToken(token);
-        return { token, user: { email, name, role } };
     },
 
     async logout() {
