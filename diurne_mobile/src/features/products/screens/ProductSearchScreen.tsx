@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import { TextInput, Card, Text, Chip, ActivityIndicator } from 'react-native-paper';
+import { TextInput, Card, Text, Chip, ActivityIndicator, SegmentedButtons } from 'react-native-paper';
 import { getDatabase } from '../../../core/database/Database';
 
 export const ProductSearchScreen = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [mode, setMode] = useState('EMPL'); // EMPL, MVT, PROD, PHOTO
 
     const handleSearch = async () => {
         if (!query) return;
         setLoading(true);
         try {
             const db = getDatabase();
-            // Simple LIKE query on RN
+            // Placeholder: Logic would differ based on 'mode'
             const data = await db.getAllAsync(
                 'SELECT * FROM carpets WHERE rn LIKE ? LIMIT 20',
                 [`%${query}%`]
@@ -28,8 +29,20 @@ export const ProductSearchScreen = () => {
 
     return (
         <View style={styles.container}>
+            <SegmentedButtons
+                value={mode}
+                onValueChange={setMode}
+                buttons={[
+                    { value: 'EMPL', label: 'Empl' },
+                    { value: 'MVT', label: 'Mvt' },
+                    { value: 'PROD', label: 'Prod' },
+                    { value: 'PHOTO', label: 'Photo' },
+                ]}
+                style={styles.tabs}
+            />
+
             <TextInput
-                label="Recherche (RN)"
+                label={`Recherche ${mode}...`}
                 value={query}
                 onChangeText={setQuery}
                 right={<TextInput.Icon icon="magnify" onPress={handleSearch} />}
@@ -62,6 +75,7 @@ export const ProductSearchScreen = () => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 10 },
+    tabs: { marginBottom: 15 },
     input: { marginBottom: 10 },
     loader: { margin: 20 },
     card: { marginBottom: 10 },

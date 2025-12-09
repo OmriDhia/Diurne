@@ -11,6 +11,13 @@ import { View, ActivityIndicator } from 'react-native';
 const Stack = createNativeStackNavigator();
 
 import { ProfileScreen } from '../features/auth/screens/ProfileScreen';
+import { ProgressReportScreen } from '../features/workshops/screens/ProgressReportScreen';
+import { PhotoUploadScreen } from '../features/photos/screens/PhotoUploadScreen';
+import { ParametersMenuScreen } from '../features/admin/screens/ParametersMenuScreen';
+import { AdminUserScreen } from '../features/admin/screens/AdminUserScreen';
+import { AdminWorkshopScreen } from '../features/admin/screens/AdminWorkshopScreen';
+import { AdminTypeScreen } from '../features/admin/screens/AdminTypeScreen';
+
 import { IconButton } from 'react-native-paper';
 import { Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -57,6 +64,14 @@ export const RootNavigator = () => {
           <Stack.Screen name="Inventory" component={InventoryScreen} />
           <Stack.Screen name="StockMovement" component={StockMovementScreen} />
           <Stack.Screen name="ProductSearch" component={ProductSearchScreen} />
+          <Stack.Screen name="ProgressReport" component={ProgressReportScreen} />
+          <Stack.Screen name="PhotoUpload" component={PhotoUploadScreen} />
+          <Stack.Screen name="Parameters" component={ParametersMenuScreen} />
+
+          <Stack.Screen name="AdminUser" component={AdminUserScreen} />
+          <Stack.Screen name="AdminWorkshop" component={AdminWorkshopScreen} />
+          <Stack.Screen name="AdminType" component={AdminTypeScreen} />
+
           <Stack.Screen name="Profile" component={ProfileScreen} options={{ presentation: 'modal', title: 'Mon Profil' }} />
         </>
       ) : (

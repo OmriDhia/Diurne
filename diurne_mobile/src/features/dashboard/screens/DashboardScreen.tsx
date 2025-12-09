@@ -10,7 +10,10 @@ export const DashboardScreen = () => {
         { title: 'Inventaire', icon: 'clipboard-list', route: 'Inventory' },
         { title: 'Entrée Stock', icon: 'arrow-right-bold-box', route: 'StockMovement', params: { type: 'IN' } },
         { title: 'Sortie Stock', icon: 'arrow-left-bold-box', route: 'StockMovement', params: { type: 'OUT' } },
+        { title: 'Progress Report', icon: 'list-status', route: 'ProgressReport' },
         { title: 'Recherche', icon: 'magnify', route: 'ProductSearch' },
+        { title: 'Saisie Photo', icon: 'camera', route: 'PhotoUpload' },
+        { title: 'Paramètres', icon: 'cog', route: 'Parameters' },
     ];
 
     return (
