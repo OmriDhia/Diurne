@@ -8,17 +8,30 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { initDatabase } from './src/core/database/Database';
 import { View, ActivityIndicator } from 'react-native';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
+import './src/core/GlobalHandlers'; // Import global handlers for side effects
 
 const queryClient = new QueryClient();
 
-export default function App() {
+// Separate component for the app logic to ensure ErrorBoundary wraps it all
+function MainApp() {
   const [isDbInitialized, setIsDbInitialized] = React.useState(false);
+  const [initError, setInitError] = React.useState<Error | null>(null);
 
   React.useEffect(() => {
-    initDatabase().then(() => {
-      setIsDbInitialized(true);
-    });
+    initDatabase()
+      .then(() => {
+        setIsDbInitialized(true);
+      })
+      .catch(error => {
+        setInitError(error instanceof Error ? error : new Error(String(error)));
+      });
   }, []);
+
+  if (initError) {
+    // Throwing here will be caught by ErrorBoundary
+    throw initError;
+  }
 
   if (!isDbInitialized) {
     return (
@@ -29,15 +42,23 @@ export default function App() {
   }
 
   return (
+    <QueryClientProvider client={queryClient}>
+      <PaperProvider theme={DiurneTheme}>
+        <NavigationContainer>
+          <StatusBar style="auto" />
+          <RootNavigator />
+        </NavigationContainer>
+      </PaperProvider>
+    </QueryClientProvider>
+  );
+}
+
+export default function App() {
+  return (
     <SafeAreaProvider>
-      <QueryClientProvider client={queryClient}>
-        <PaperProvider theme={DiurneTheme}>
-          <NavigationContainer>
-            <StatusBar style="auto" />
-            <RootNavigator />
-          </NavigationContainer>
-        </PaperProvider>
-      </QueryClientProvider>
+      <ErrorBoundary>
+        <MainApp />
+      </ErrorBoundary>
     </SafeAreaProvider>
   );
 }
