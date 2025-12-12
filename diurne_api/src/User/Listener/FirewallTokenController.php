@@ -4,7 +4,7 @@ namespace App\User\Listener;
 
 use Exception;
 use App\User\Repository\UserRepository;
-use App\User\Repository\UserMobileAppRepository;
+use App\MobileAppApi\Repository\UserMobileAppRepository;
 use App\User\Security\AuthService;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;

@@ -6,10 +6,10 @@ namespace App\MobileAppApi\Controller\MobileApp\Permissions;
 
 use App\Common\Controller\CommandQueryController;
 use App\Common\Response\SuccessResponse;
-use App\MobileAppApi\Bus\Command\MobileApp\Permissions\CreatePermissionMobileAppCommand;
-use App\MobileAppApi\Bus\Command\MobileApp\Permissions\UpdatePermissionMobileAppCommand;
-use App\MobileAppApi\Bus\Command\MobileApp\Permissions\DeletePermissionMobileAppCommand;
-use App\MobileAppApi\Bus\Query\MobileApp\Permissions\GetPermissionMobileAppQuery;
+use App\MobileAppApi\Bus\Command\Permissions\CreatePermissionMobileApp\CreatePermissionMobileAppCommand;
+use App\MobileAppApi\Bus\Command\Permissions\UpdatePermissionMobileApp\UpdatePermissionMobileAppCommand;
+use App\MobileAppApi\Bus\Command\Permissions\DeletePermissionMobileApp\DeletePermissionMobileAppCommand;
+use App\MobileAppApi\Bus\Query\Permissions\GetPermissionMobileApp\GetPermissionMobileAppQuery;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
