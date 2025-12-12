@@ -1,23 +1,10 @@
 import * as SQLite from 'expo-sqlite';
 
-let db: SQLite.SQLiteDatabase | null = null;
-
-export const getDatabase = () => {
-  if (!db) {
-    try {
-      db = SQLite.openDatabaseSync('diurne.db');
-    } catch (e) {
-      console.error("Failed to open database synchronously:", e);
-      throw e;
-    }
-  }
-  return db;
-};
+const db = SQLite.openDatabaseSync('diurne.db');
 
 export const initDatabase = async () => {
   try {
-    const database = getDatabase();
-    await database.execAsync(`
+    await db.execAsync(`
       PRAGMA journal_mode = WAL;
       CREATE TABLE IF NOT EXISTS carpets (
         id INTEGER PRIMARY KEY NOT NULL,
@@ -68,6 +55,7 @@ export const initDatabase = async () => {
     console.log('Database initialized successfully');
   } catch (error) {
     console.error('Database initialization failed', error);
-    throw error; // Propagate error to MainApp
   }
 };
+
+export const getDatabase = () => db;

@@ -77,6 +77,32 @@ services:
     networks:
       - diurne-network
 
+  mobile:
+    container_name: diurne_mobile_app
+    build:
+      context: ./diurne_mobile
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+    volumes:
+      - ./diurne_mobile:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - REACT_NATIVE_PACKAGER_HOSTNAME=${REACT_NATIVE_PACKAGER_HOSTNAME:-10.0.0.0}
+      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+      - EXPO_PUBLIC_API_URL=${EXPO_PUBLIC_API_URL}
+    networks:
+      - diurne-network
+    stdin_open: true
+    tty: true
+    command: npx expo start --host lan --port 8082
+
 networks:
   diurne-network:
     driver: bridge

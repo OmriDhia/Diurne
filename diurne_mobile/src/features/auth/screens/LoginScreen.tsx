@@ -9,6 +9,8 @@ export const LoginScreen = () => {
     const [password, setPassword] = React.useState('');
     const [loading, setLoading] = React.useState(false);
 
+    const [showPassword, setShowPassword] = React.useState(false);
+
     const handleLogin = async () => {
         if (!email || !password) return;
         setLoading(true);
@@ -42,8 +44,14 @@ export const LoginScreen = () => {
                 label="Password"
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry
+                secureTextEntry={!showPassword}
                 style={styles.input}
+                right={
+                    <TextInput.Icon
+                        icon={showPassword ? "eye-off" : "eye"}
+                        onPress={() => setShowPassword(!showPassword)}
+                    />
+                }
             />
             <Button
                 mode="contained"

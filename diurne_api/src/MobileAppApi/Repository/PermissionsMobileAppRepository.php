@@ -1,0 +1,23 @@
+<?php
+
+namespace App\MobileAppApi\Repository;
+
+use App\MobileAppApi\Entity\PermissionsMobileApp;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<PermissionsMobileApp>
+ *
+ * @method PermissionsMobileApp|null find($id, $lockMode = null, $lockVersion = null)
+ * @method PermissionsMobileApp|null findOneBy(array $criteria, array $orderBy = null)
+ * @method PermissionsMobileApp[]    findAll()
+ * @method PermissionsMobileApp[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class PermissionsMobileAppRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, PermissionsMobileApp::class);
+    }
+}

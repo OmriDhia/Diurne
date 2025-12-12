@@ -1,5 +1,6 @@
 import client from '../../api/client';
 import * as SecureStore from 'expo-secure-store';
+import { saveUser, clearUser, getCurrentUser } from '../database/Database';
 import { Platform } from 'react-native';
 
 const TOKEN_KEY = 'user_jwt_token';
@@ -8,24 +9,23 @@ export const AuthService = {
     async login(email: string, password: string) {
         try {
             const response = await client.post('/mobile/authenticate', { email, password });
-            const { token, user } = response.data; // Assuming API returns { token, user: {...} } OR I need to fetch user separately?
-            // Wait, my API /mobile/authenticate returns JUST { token }.
-            // I need to decode token to get user ID or Email, OR fetch user details.
-            // The AuthMobileAppController returns ['token' => $token, 'id' => $user->getId()].
+            console.log('LOGIN RESPONSE:', JSON.stringify(response.data, null, 2));
+            const apiResponse = response.data;
+            const { token, user_id } = apiResponse.response;
 
-            const userId = response.data.id;
             await this.setToken(token);
 
             // Fetch User Details to get Role/Permission
-            // We assume there is an endpoint or we just return basic info for now.
-            // But the store expects `user` object.
-            // Let's fetch user object.
-
-            const userResponse = await client.get(`/mobile/users/${userId}`, {
+            const userResponse = await client.get(`/mobile/users/${user_id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            return { token, user: userResponse.data };
+            const userData = userResponse.data.response;
+            
+            // Sync to Local DB
+            await saveUser(userData, token);
+
+            return { token, user: userData };
         } catch (error) {
             console.error(error);
             throw error;
@@ -34,6 +34,28 @@ export const AuthService = {
 
     async logout() {
         await SecureStore.deleteItemAsync(TOKEN_KEY);
+        await clearUser();
+    },
+
+    async getCurrentUser() {
+        return await getCurrentUser();
+    },
+
+    async refreshUser(userId: number) {
+        try {
+            const token = await this.getToken();
+            if (!token) return null;
+
+            const userResponse = await client.get(`/mobile/users/${userId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const userData = userResponse.data.response;
+            await saveUser(userData, token);
+            return userData;
+        } catch (e) {
+            console.warn('Failed to refresh user from API, using local data', e);
+            return await this.getCurrentUser();
+        }
     },
 
     async getToken() {

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { AuthService } from '../auth/AuthService';
 
 // TODO: Move to Env variable
-const BASE_URL = 'https://api.diurne.com/api';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://api.diurne.com/api';
 
 export const apiClient = axios.create({
     baseURL: BASE_URL,
