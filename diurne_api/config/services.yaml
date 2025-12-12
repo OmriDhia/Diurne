@@ -10,6 +10,7 @@ imports:
   - { resource: ./services/CheckingList/services.yaml }
   - { resource: ./services/ProgressReport/services.yaml }
   - { resource: ./services/Invoices/services.yaml }
+  - { resource: ./services/MobileAppApi/services.yaml }
 
 parameters:
 

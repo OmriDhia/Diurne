@@ -6,7 +6,7 @@ namespace App\MobileAppApi\Controller\MobileApp\UserMobileApp;
 
 use App\Common\Controller\CommandQueryController;
 use App\Common\Response\SuccessResponse;
-use App\MobileAppApi\Bus\Command\MobileApp\Auth\SignInMobileAppCommand;
+use App\MobileAppApi\Bus\Command\Auth\SignInMobileApp\SignInMobileAppCommand;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;

@@ -29,6 +29,9 @@ progressRepport_controllers:
 invoices_controllers:
   resource: ../../src/Invoices/Controller
   type: attribute
+mobile_app_api_controllers:
+  resource: ../../src/MobileAppApi/Controller
+  type: attribute
 kernel:
   resource: App\Kernel
   type: attribute
